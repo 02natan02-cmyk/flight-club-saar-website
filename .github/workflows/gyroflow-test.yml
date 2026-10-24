@@ -3,6 +3,8 @@ on:
   push:
     branches: [gyroflow-test]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -37,11 +39,14 @@ jobs:
           BIN=$(find gf -type f -name gyroflow -perm -u+x | head -1); [ -z "$BIN" ] && BIN=$(find gf -type f -iname 'gyroflow*' -perm -u+x | grep -v '\.so' | head -1)
           echo "BIN=$BIN"
           export QT_QPA_PLATFORM=offscreen
-          "$BIN" --help 2>&1 | head -60 || true
+          mkdir -p out
+          { echo "BIN=$BIN"; "$BIN" --version 2>&1 | head -5; "$BIN" --help 2>&1 | head -80; } > out/hilfe.txt || true
           START=$(date +%s)
-          timeout 1500 "$BIN" "$PWD/clips/avata.mp4" -f -t _stab -p "{ 'codec': 'H.264/AVC', 'output_width': 1920, 'output_height': 1080 }" 2>&1 | tail -60 || echo "Fehlercode $?"
-          echo "Dauer: $(( $(date +%s) - START )) s"
-          ls -la clips
+          timeout 1500 "$BIN" "$PWD/clips/avata.mp4" -f -t _stab -p "{ 'codec': 'H.264/AVC', 'output_width': 1920, 'output_height': 1080 }" > out/render.txt 2>&1; echo "Exit $?" >> out/render.txt
+          echo "Dauer: $(( $(date +%s) - START )) s" >> out/render.txt
+          ls -la clips >> out/render.txt
+          nproc >> out/render.txt
+          tail -40 out/render.txt
       - name: Vorschaubilder
         if: always()
         run: |
@@ -51,6 +56,14 @@ jobs:
           for f in clips/*_stab*; do [ -f "$f" ] && ffmpeg -v error -y -i "$f" -t 6 -vf scale=640:-2 -c:v libx264 -crf 28 -an out/stab_klein.mp4; done
           ffmpeg -v error -y -i clips/avata.mp4 -t 6 -vf scale=640:-2 -c:v libx264 -crf 28 -an out/orig_klein.mp4 || true
           ls -la out
+      - name: Ergebnis in Branch ablegen
+        if: always()
+        run: |
+          cd out
+          git init -q -b gyroflow-ergebnis
+          git config user.name "gyroflow-test"; git config user.email "actions@github.com"
+          git add -A && git commit -q -m "Ergebnis Gyroflow-Test $(date -u +%FT%TZ)"
+          git push -f -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gyroflow-ergebnis
       - uses: actions/upload-artifact@v4
         if: always()
         with:
