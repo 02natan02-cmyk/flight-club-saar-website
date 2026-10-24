@@ -12,7 +12,7 @@ env:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Testclip wie ein Mitglied hochladen und Gyroflow-Station anstoßen
         env:
@@ -42,5 +42,27 @@ jobs:
           print('done', post({'a': 'done', 'id': j['id'], 'item': item}))
           open('job.txt', 'w').write(j['id'])
           PY
-          gh workflow run gyroflow.yml -R "$GITHUB_REPOSITORY" --ref main -f job="$(cat job.txt)"
-          echo "Auftrag $(cat job.txt) an die Gyroflow-Station übergeben"
+          echo "Auftrag $(cat job.txt) hochgeladen. Make startet die Gyroflow-Station jetzt selbst."
+      - name: Warten, bis die Station fertig ist (Status wie die Website, einmal pro Minute)
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, json, time, urllib.request, urllib.parse
+          HOOK = os.environ['HOOK']; job = open('job.txt').read().strip()
+          for i in range(55):
+              time.sleep(60)
+              r = urllib.request.urlopen(HOOK + '?' + urllib.parse.urlencode({'a': 'status', 'id': job}), timeout=60).read().decode()
+              j = json.loads(r)
+              if j.get('url'): print('::add-mask::' + j['url'])
+              print(f'{i + 1} min:', j.get('st'), j.get('msg', ''))
+              if j.get('st') == 'fertig':
+                  req = urllib.request.Request(j['url'], headers={'Range': 'bytes=0-1023'})
+                  with urllib.request.urlopen(req, timeout=60) as d:
+                      head = d.read(); print('Download geht:', d.status, len(head), 'Bytes gelesen, Datei', j.get('name'), j.get('size'), 'Bytes')
+                      assert head[4:8] == b'ftyp', 'keine MP4-Datei'
+                  raise SystemExit(0)
+              if j.get('st') == 'fehler':
+                  raise SystemExit('Station meldet Fehler: ' + j.get('msg', ''))
+          raise SystemExit('Zeit abgelaufen')
+          PY
+# Lauf 2: Make startet die Station selbst (GitHub-Verbindung in Make)
