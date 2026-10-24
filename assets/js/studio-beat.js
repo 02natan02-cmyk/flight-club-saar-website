@@ -107,18 +107,18 @@ function analyse(pcm, sr) {
   for (let f = Math.max(0, frames - Math.round(P)); f < frames; f++) if (score[f] > ev) { ev = score[f]; end = f; }
   const idx = []; for (let f = end; f >= 0; f = back[f]) { idx.push(f); if (back[f] < 0) break; }
   idx.reverse();
-  // Zeitpunkt eines Frames: Mitte des Analysefensters
-  const tOf = f => (f * H + N / 2) / fs;
+  // Zeitpunkt eines Frames (der Anschlag fällt im Mittel ins dritte Viertel des Analysefensters)
+  const tOf = f => (f * H + N * .75) / fs;
   const beats = new Float32Array(idx.map(tOf));
   // Tempo per Ausgleichsgerade durch alle Beats (genauer als einzelne Abstände)
-  let per = P * hop;
+  let period = P * hop;
   if (beats.length > 3) {
     const m = beats.length; let sx = 0, sy = 0, sxx = 0, sxy = 0;
     for (let i = 0; i < m; i++) { sx += i; sy += beats[i]; sxx += i * i; sxy += i * beats[i]; }
     const sl = (m * sxy - sx * sy) / (m * sxx - sx * sx);
-    if (sl > .25 && sl < 1.2) per = sl;
+    if (sl > .25 && sl < 1.2) period = sl;
   }
-  const bpm = Math.round(600 / per) / 10;
+  const bpm = Math.round(600 / period) / 10;
   // Bass-Stärke je Beat (0..1): darauf sitzen später die Schnitte
   const raw = idx.map(f => Math.max(eLow[f], f > 0 ? eLow[f - 1] : 0, f + 1 < frames ? eLow[f + 1] : 0));
   const srt = raw.slice().sort((a, b) => a - b), ref = srt[Math.floor(srt.length * .95)] || 1;
