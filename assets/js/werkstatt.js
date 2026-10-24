@@ -313,7 +313,8 @@
       txt.textContent = VP_TXT[sel];
       if (sel && anim && GS() && !RM) gsap.fromTo(parts.find(p => p.dataset.vp === sel), { y: -10 }, { y: 0, duration: 0.6, ease: 'back.out(3)' });
     }
-    btns.forEach(b => { b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => { touched = true; setSel(sel === b.dataset.vpB ? '' : b.dataset.vpB, true); }); });
+    // Erster Tipp wählt immer aus (auch wenn der Selbst-Impuls den Teil gerade markiert hat), danach schaltet ein Tipp um
+    btns.forEach(b => { b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => { const was = touched; touched = true; setSel(was && sel === b.dataset.vpB ? '' : b.dataset.vpB, true); }); });
     firstSight(card, () => {
       if (!GS() || RM) return;
       gsap.from($$('.ws-vline li', card), { opacity: 0, x: -16, stagger: 0.15, duration: 0.6, ease: 'expo.out' });
@@ -851,11 +852,11 @@
     const KEY = 'fcs-werkstatt-setup';
     let saved = store.get(KEY, []); if (!Array.isArray(saved)) saved = [];
     boxes.forEach(b => { b.checked = saved.includes(b.dataset.su); });
-    let shown = 0;
+    let shown = 0, cntT = null;
     function upd(anim) {
       const done = boxes.filter(b => b.checked), n = done.length, all = n === boxes.length;
       const off = 100 - n / boxes.length * 100;
-      if (GS() && anim && !RM) { gsap.to(fg, { strokeDashoffset: off, duration: 0.7, ease: 'expo.out' }); const o = { v: shown }; gsap.to(o, { v: n, duration: 0.5, snap: { v: 1 }, onUpdate: () => { nEl.textContent = o.v; } }); }
+      if (GS() && anim && !RM) { gsap.to(fg, { strokeDashoffset: off, duration: 0.7, ease: 'expo.out', overwrite: true }); if (cntT) cntT.kill(); const o = { v: +nEl.textContent || 0 }; cntT = gsap.to(o, { v: n, duration: 0.5, snap: { v: 1 }, onUpdate: () => { nEl.textContent = o.v; } }); }
       else { fg.style.strokeDashoffset = off; nEl.textContent = n; }
       shown = n;
       ring.classList.toggle('done', all);
@@ -867,7 +868,15 @@
     }
     boxes.forEach(b => b.addEventListener('change', () => { hint.done(); upd(true); }));
     $('.ws-su-reset', sec).addEventListener('click', () => { boxes.forEach(b => { b.checked = false; }); upd(true); });
-    $$('[data-go-tab]', sec).forEach(a => a.addEventListener('click', () => { if (W.wsSelectTab) W.wsSelectTab(a.dataset.goTab); }));
+    // Pfeil öffnet den Tab und scrollt so, dass Reiter und Inhalt zu sehen sind (am Handy liegt der Inhalt unter der Reiterleiste)
+    $$('[data-go-tab]', sec).forEach(a => a.addEventListener('click', ev => {
+      if (!W.wsSelectTab) return;
+      ev.preventDefault(); ev.stopPropagation();
+      W.wsSelectTab(a.dataset.goTab);
+      const tl = $('#tabs [role=tablist]') || $('#tabs');
+      if (W.FCS && FCS.scrollTo) FCS.scrollTo(tl, -70); else tl.scrollIntoView({ behavior: RM ? 'auto' : 'smooth' });
+      history.replaceState(null, '', '#tabs');
+    }));
     upd(false);
     // Propeller-Warnung: einmal drehen und „abheben“
     const pr = $('.ws-props-p', sec);

@@ -34,6 +34,7 @@
      WISSENSDATENBANK
      ===================================================================== */
 
+  let cmpSet = null; // wird vom Kompatibilitäts-Check gesetzt
   // Betaflight Arming-Flags: Name, Kurztitel, Bedeutung, Lösungsschritte, a = mehrdeutiges Wort (braucht Zusammenhang), al = alte Namen.
   // Namen wie in Betaflight 2026.6 (Quelltext: https://github.com/betaflight/betaflight/blob/2026.6.2/src/main/fc/runtime_config.c)
   const FLAGS = [
@@ -256,7 +257,7 @@
     { id: 'usb', cat: 'Betaflight', t: 'Configurator erkennt die Flugsteuerung nicht',
       kw: 'usb:3 configurator:2 erkennt:2.5 erkannt:2.5 comport:3 com:1.5 treiber:3 driver:3 dfu:3 flashen:3 flash:2.5 firmware:2 update:2 bootloader:3 boot:2 webapp:2 browser:1 verbindung:1',
       i: 'Meist liegt es am Kabel oder am Treiber.',
-      s: ['Anderes USB-Kabel probieren. Viele Kabel laden nur und übertragen keine Daten.', 'Unter Windows fehlt oft der Treiber. Für den Flash-Modus (DFU) helfen Werkzeuge wie ImpulseRC Driver Fixer oder Zadig.', 'Nur ein Programm gleichzeitig: Ist der Configurator doppelt offen, oder hält ein anderes Programm den Port fest?', 'Zum Flashen: Boot-Taste gedrückt halten, USB einstecken, loslassen. Dann erscheint „DFU“ als Port.', 'Die Web-Version des Configurators läuft in Chrome oder Edge. Der Browser fragt nach der Freigabe für den USB-Port.', 'Vor jedem Flashen die Einstellungen sichern: in der CLI <code>diff all</code> ausgeben und speichern.'],
+      s: ['Anderes USB-Kabel probieren. Viele Kabel laden nur und übertragen keine Daten.', 'Unter Windows fehlt oft der Treiber. Für den Flash-Modus (DFU) helfen Werkzeuge wie ImpulseRC Driver Fixer oder Zadig.', 'Nur ein Programm gleichzeitig: Ist der Configurator doppelt offen, oder hält ein anderes Programm den Port fest?', 'Zum Flashen: Boot-Taste gedrückt halten, USB einstecken, loslassen. Dann erscheint „DFU“ als Port.', 'Die Betaflight App (app.betaflight.com) läuft in Chrome und Edge, seit Version 2026.6 auch in Firefox ab Version 151. Der Browser fragt nach der Freigabe für den USB-Port.', 'Vor jedem Flashen die Einstellungen sichern: in der CLI <code>diff all</code> ausgeben und speichern.'],
       more: ['arming'] },
 
     { id: 'loeten', cat: 'Löten/Bauen', t: 'Löten lernen',
@@ -523,8 +524,38 @@
     const m = bubble('bot', h + `<div class="th-chips">${c}</div>`);
     animIn(m, true);
   }
+  // Nennt die Frage genau eine Brille und einen Sender, antwortet der Doktor direkt mit dem Ergebnis des Kompatibilitäts-Checks
+  function cmpFromText(t) {
+    const q = ' ' + norm(t) + ' ';
+    const rx = [], tx = [], hit = (re) => re.test(q);
+    if (hit(/ (dji )?goggles? ?n3 | brille n3 | n3 /)) rx.push('dgn3');
+    else if (hit(/ (dji )?goggles? ?3 | g3 /)) rx.push('dg3');
+    if (hit(/ integra /)) rx.push('dgi');
+    if (hit(/ (dji )?goggles? ?2 | g2 /) && !hit(/ hdzero /)) rx.push('dg2');
+    if (hit(/ (fpv )?goggles? v ?2 | v2 brille /)) rx.push('dv2');
+    if (hit(/ goggles? x /)) rx.push('wsx'); else if (hit(/ goggles? l /)) rx.push('wsl');
+    else if (hit(/ (walksnail|avatar) (hd )?(goggles?|brille) /)) rx.push('wsg');
+    if (hit(/ (walksnail|avatar) vrx /)) rx.push('wsv');
+    if (hit(/ hdzero (goggles?|brille) ?2 /)) rx.push('hz2'); else if (hit(/ hdzero (goggles?|brille) /)) rx.push('hzg');
+    if (hit(/ hdzero vrx /)) rx.push('hzv');
+    if (hit(/ analog\w* (brille|goggles?|empfaenger) | skyzone | fat ?shark | orqa /)) rx.push('an');
+    if (hit(/ o4 ?(air ?unit ?)?pro /)) tx.push('o4p'); else if (hit(/ o4 /)) tx.push('o4');
+    if (hit(/ o3 /)) tx.push('o3');
+    if (hit(/ (walksnail|avatar) (vtx|sender|kit|air ?unit) | moonlight /)) tx.push('ws');
+    if (hit(/ hdzero (vtx|sender) /)) tx.push('hz');
+    if (hit(/ analog\w* (vtx|sender) /)) tx.push('an');
+    return rx.length === 1 && tx.length === 1 ? [rx[0], tx[0]] : null;
+  }
   async function answer(text) {
     lastQ = text;
+    const pair = cmpFromText(text);
+    if (pair) {
+      const [v, word, extra, why] = verdict(pair[0], pair[1]);
+      await typing(600);
+      const head = `${Gr(plain(RX[pair[0]][1]))} und ${TX[pair[1]][1]}`;
+      const m = bubble('bot', `<p class="th-tt"><span>${esc(head)}</span></p><p class="th-cv th-cv-${v}"><b>${esc(word)}</b>${extra ? ' · ' + esc(extra) : ''}</p><p>${esc(why)}</p><div class="th-chips">${chip('Im Kompatibilitäts-Check ansehen', { act: 'check', v: pair.join('|') })}${chip('Andere Frage', { act: 'focus' })}</div>`);
+      lastEntry = BY.kompat; animIn(m, true); return;
+    }
     const res = search(text);
     if (!res.length || res[0].s < 1.5) return fallback(res);
     const top = res[0];
@@ -534,7 +565,7 @@
   function ask(text) {
     text = String(text || '').trim().slice(0, 200); if (!text) return;
     queue = queue.then(async () => {
-      if (!started) await greet(true);
+      await greet(true);
       const m = bubble('me', `<p>${esc(text)}</p>`); animIn(m);
       await answer(text);
     }).catch(() => {});
@@ -542,8 +573,13 @@
   }
   FCS.doktor = ask;
 
-  async function greet(fast) {
-    if (started) return; started = true;
+  // Begrüßung genau einmal und immer vor der ersten Antwort (sonst landet sie am Handy unter der Antwort)
+  let greeting = null;
+  function greet(fast) {
+    if (started) return greeting || Promise.resolve();
+    started = true; greeting = greetRun(fast).catch(() => {}); return greeting;
+  }
+  async function greetRun(fast) {
     const txt = 'Hallo, ich bin der FPV-Doktor. Beschreib kurz, was nicht klappt, oder tipp auf ein Thema. Tippfehler sind kein Problem.';
     if (!fast) await typing(700);
     const m = bubble('bot', `<p class="th-greet"><span class="sr">${txt}</span><span class="th-typed" aria-hidden="true"></span></p><div class="th-chips"></div>`);
@@ -585,7 +621,7 @@
       });
     } else if (a === 'verein') prefill();
     else if (a === 'flagtool') { openFlag(); scrollToEl($('#flagtool')); setTimeout(() => { const i = $('#flag-in'); if (i) i.focus({ preventScroll: true }); }, RM ? 50 : 900); }
-    else if (a === 'check') scrollToEl($('#check'));
+    else if (a === 'check') { if (v && cmpSet) { const [r, t] = String(v).split('|'); cmpSet(r, t); } scrollToEl(v && innerWidth <= 980 ? $('.th-cmp-stage') : $('#check')); }
     else if (a === 'faq') openFaq(v, true);
     else if (a === 'link' && v) location.href = v;
     else if (a === 'focus') input.focus();
@@ -610,11 +646,12 @@
     });
     form.addEventListener('submit', (ev) => { ev.preventDefault(); const v = input.value; input.value = ''; firstClick = false; $$('.th-chip.pulse', log).forEach(c => c.classList.remove('pulse')); ask(v); });
     input.addEventListener('focus', () => { if (!started) greet(true); });
-    $('.th-restart').addEventListener('click', () => { log.innerHTML = ''; started = false; lastQ = ''; lastEntry = null; queue = Promise.resolve(); greet(false); input.focus({ preventScroll: true }); });
+    $('.th-restart').addEventListener('click', () => { log.innerHTML = ''; started = false; greeting = null; lastQ = ''; lastEntry = null; queue = Promise.resolve(); greet(false); input.focus({ preventScroll: true }); });
     // Platzhalter wechselt Beispiele, solange das Feld leer ist
     const ex = ['z. B. Kopter armt nicht', 'z. B. kein osd', 'z. B. rxloss', 'z. B. elrs bindet nicht', 'z. B. Bild nur Schnee', 'z. B. Akku aufgebläht', 'z. B. welche Kanäle sind erlaubt'];
     let exI = 0;
-    if (!RM) setInterval(() => { if (document.activeElement !== input && !input.value) { exI = (exI + 1) % ex.length; input.placeholder = ex[exI]; } }, 2600);
+    let docVis = false; new IntersectionObserver(es => { docVis = es.some(x => x.isIntersecting); }).observe(form);
+    if (!RM) setInterval(() => { if (docVis && document.activeElement !== input && !input.value) { exI = (exI + 1) % ex.length; input.placeholder = ex[exI]; } }, 2600);
     // Selbst-Impuls: Begrüßung beim ersten Sichtkontakt
     const io = new IntersectionObserver((es) => { if (es.some(x => x.isIntersecting)) { io.disconnect(); setTimeout(() => greet(false), RM ? 0 : 350); } }, { threshold: .35 });
     io.observe(doc);
@@ -780,6 +817,7 @@
   }
   const stage = $('.th-cmp-stage');
   if (stage) {
+    cmpSet = (r, t) => { const a = $(`input[name="cmp-rx"][value="${r}"]`), b = $(`input[name="cmp-tx"][value="${t}"]`); if (!a || !b) return; demo = false; a.checked = true; b.checked = true; update(false); };
     const big = $('.th-big', stage), why = $('.th-why', stage), hintT = $('.th-cmp-hint-t', stage), sub = $('.th-sub', stage);
     let demo = true, last = '';
     const update = (fromUser) => {

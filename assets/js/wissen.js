@@ -1,8 +1,9 @@
 /* Flight Club Saar – FPV-Wissen
    3D-Drohne (three.js), Schaltplan, Videosysteme, Kanäle, Weg zum ersten Flug, Checkliste, Glossar.
    Läuft als Modul. GSAP und Plugins kommen global aus fcs.js; wir warten auf „fcs:ready“.
-   Stand 24.10.2026: kein Festkleben mehr beim Scrollen. Die Drohne wird per Regler zerlegt
-   (und zerlegt sich beim ersten Sichtkontakt einmal von selbst). */
+   Stand 24.10.2026 abends: Die Drohne zerlegt sich wieder beim Scrollen (ScrollTrigger, kurzer Halt
+   von höchstens etwa 70 % Bildschirmhöhe). Regler und Knöpfe bleiben als Alternative: Der Regler folgt
+   dem Scrollen, wer ihn zieht, übernimmt, bis das Scrollen den Wert wieder einholt. */
 import * as THREE from '../lib/three.module.min.js';
 
 const D = document, W = window;
@@ -74,7 +75,7 @@ function webgl2() { try { const c = D.createElement('canvas'); return !!(W.WebGL
 
 function drone() {
   const sec = $('#drohne'); if (!sec) return;
-  const stage = $('.wi-stage', sec), canvas = $('.wi-canvas', sec);
+  const stage = $('.wi-stage', sec), track = $('.wi-track', sec) || stage, canvas = $('.wi-canvas', sec);
   const labs = $$('.wi-lab', sec), card = $('.wi-card', sec);
   const hint = makeHint($('.wi-hint-drag', sec));
   const ids = PARTS.map(p => p.id);
@@ -107,11 +108,12 @@ function drone() {
   const flat = () => { if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne. Tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.'; };
   if (!webgl2()) { sec.classList.add('no-3d'); flat(); return; }
   sec.classList.add('is-3d'); if (RM) sec.classList.add('rm');
-  api = drone3d({ sec, stage, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
+  if (RM && lede) lede.textContent = 'Eine 5-Zoll-Freestyle-Drohne, in ihre Bauteile zerlegt. Tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.';
+  api = drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
   if (!api) { sec.classList.remove('is-3d', 'rm'); sec.classList.add('no-3d'); flat(); }
 }
 
-function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
+function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -362,6 +364,8 @@ function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
   const labW = {}, labH = {}; const measure = () => labs.forEach(b => { labW[b.dataset.part] = b.offsetWidth || 100; labH[b.dataset.part] = b.offsetHeight || 28; });
   const roYaw = $('[data-wi-yaw]', sec), roEx = $('[data-wi-ex]', sec), exRange = $('.wi-ex-range', sec), exBtns = $$('.wi-explode button', sec);
   let rangeHeld = false, rangeT = 0;
+  const hintT = $('.wi-hint-t', sec); let hintMode = '';
+  const setHint = (m) => { if (!hintT || m === hintMode) return; hintMode = m; hintT.textContent = m === 'scroll' ? '↓ Weiterscrollen zerlegt die Drohne' : 'Bauteil antippen · ziehen dreht'; };
 
   function size() {
     Wd = stage.clientWidth || 1; Hd = stage.clientHeight || 1;
@@ -447,14 +451,18 @@ function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
       if (exRange && !rangeHeld && performance.now() - rangeT > 500) { exRange.value = ex; }
       if (exRange) exRange.style.setProperty('--p', ex + '%');
       exBtns.forEach(b => b.classList.toggle('on', (+b.dataset.go === 1) === (e > .5)));
+      if (exRange) exRange.setAttribute('aria-valuetext', ex >= 98 ? 'ganz zerlegt' : ex <= 2 ? 'zusammengebaut' : ex + ' Prozent zerlegt');
+      setHint(st && e < .35 ? 'scroll' : 'parts');
       lastEx = ex;
     }
   }
 
   function frame(now) {
     raf = 0; if (!running) return;
-    const dt = Math.min(.05, (now - last) / 1000); last = now; clock += dt;
-    e += (target - e) * (RM ? 1 : 1 - Math.pow(.004, dt));
+    const rdt = Math.min(.25, Math.max(0, (now - last) / 1000)), dt = Math.min(.05, rdt); last = now; clock += dt;
+    // weiches Nachziehen wie „scrub“, nach echter Zeit, damit es auch auf langsamen Geräten nicht hinterherhinkt
+    e += (target - e) * (RM ? 1 : 1 - Math.pow(.003, rdt));
+    if (Math.abs(target - e) < .0005) e = target;
     if (!drag) { yaw += vel; vel *= Math.pow(.05, dt); if (Math.abs(vel) < 1e-5) vel = 0; }
     root.rotation.y = yaw + impulse.v + (RM ? 0 : e * .8);
     applyExplode(dt); layoutCamera(); glow();
@@ -522,30 +530,60 @@ function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
     return hit ? hit.object.userData.part : null;
   }
 
-  /* ---------- Zerlegen: Regler und Knöpfe (kein Festkleben beim Scrollen) ---------- */
-  let touched = false, autoT = null;
-  const user = () => { touched = true; if (autoT) { autoT.kill(); autoT = null; } };
-  exBtns.forEach(b => b.addEventListener('click', () => {
-    user(); target = +b.dataset.go; rangeT = 0; kick();
-  }));
+  /* ---------- Zerlegen: beim Scrollen (scrub), dazu Regler und Knöpfe ----------
+     Scrollen steuert, solange niemand Regler oder Knöpfe benutzt. Wer sie benutzt, übernimmt,
+     bis der Scroll-Wert den gewählten Wert wieder einholt oder der Abschnitt verlassen wird.
+     So springt nichts und beides beißt sich nicht. */
+  let st = null, manual = null, lastT = 0, touched = false, autoT = null;
+  const fromScroll = (p) => smooth(clamp((p - .1) / .74));
+  const user = (v) => { touched = true; if (autoT) { autoT.kill(); autoT = null; } manual = v; target = v; kick(); };
+  // Bühne klebt unter der Kapitel-Leiste: deren Höhe als Abstand nach oben
+  const tocH = () => { const t = $('.toc'); sec.style.setProperty('--wi-top', (t ? Math.round(t.getBoundingClientRect().height) : 0) + 'px'); };
+  tocH(); addEventListener('resize', tocH, { passive: true }); setTimeout(tocH, 400);
+  if (!RM && has('ScrollTrigger') && track !== stage) {
+    sec.classList.add('scrub');
+    st = ScrollTrigger.create({
+      trigger: track, start: 'top 72%', end: 'bottom bottom', invalidateOnRefresh: true,
+      onUpdate: s => {
+        const t = fromScroll(s.progress);
+        if (manual !== null) {
+          // Abschnitt verlassen: Scrollen übernimmt wieder, der Zustand bleibt bis zum nächsten Scrollen stehen
+          if (!s.isActive) { manual = null; lastT = t; return; }
+          if ((lastT - manual) * (t - manual) <= 0 || Math.abs(t - manual) < .015) manual = null;
+        }
+        lastT = t;
+        if (manual === null) { target = t; kick(); }
+      }
+    });
+    // Solange die Bühne klebt: Erscheint oben das Menü wieder (beim Hochscrollen), rückt die Überschrift darunter
+    ScrollTrigger.create({ trigger: track, start: () => 'top ' + (parseFloat(getComputedStyle(sec).getPropertyValue('--wi-top')) || 52) + 'px', end: 'bottom bottom', invalidateOnRefresh: true, toggleClass: { targets: sec, className: 'stuck' } });
+    lastT = fromScroll(st.progress); target = lastT; e = lastT;
+    // „Drohne zerlegen“ oben im Seitenkopf: durch den Abschnitt gleiten, dabei zerlegt sie sich
+    $$('a[href="#drohne"]').forEach(a => a.addEventListener('click', ev => {
+      if (!st) return; ev.preventDefault(); ev.stopPropagation();
+      manual = null; scrollToY(st.start + (st.end - st.start) * .92);
+      history.replaceState(null, '', '#drohne');
+    }));
+  }
+  exBtns.forEach(b => b.addEventListener('click', () => { rangeT = 0; user(+b.dataset.go); }));
   if (exRange) {
     exRange.value = Math.round(target * 100);
-    const set = () => { user(); rangeT = performance.now(); target = clamp(exRange.value / 100); exRange.style.setProperty('--p', exRange.value + '%'); kick(); };
+    const set = () => { rangeT = performance.now(); user(clamp(exRange.value / 100)); exRange.style.setProperty('--p', exRange.value + '%'); };
     exRange.addEventListener('input', set);
-    exRange.addEventListener('pointerdown', () => { rangeHeld = true; user(); });
+    exRange.addEventListener('pointerdown', () => { rangeHeld = true; touched = true; if (autoT) { autoT.kill(); autoT = null; } });
     const rel = () => { rangeHeld = false; rangeT = performance.now(); };
     exRange.addEventListener('pointerup', rel); exRange.addEventListener('pointercancel', rel); exRange.addEventListener('change', rel);
   }
 
-  /* ---------- Selbst-Impuls: dreht sich einmal und zerlegt sich von allein ---------- */
+  /* ---------- Selbst-Impuls: dreht sich einmal. Ohne Scroll-Steuerung zerlegt sie sich dabei von allein ---------- */
   firstSight(stage, () => {
-    if (RM || !GS()) { if (!touched) { target = 1; kick(); } hint.show(); return; }
+    if (RM || !GS()) { if (!touched && !st) { target = 1; kick(); } hint.show(); return; }
     autoT = gsap.timeline()
       .to(impulse, { v: 1.05, duration: 1.5, ease: 'power2.inOut', onUpdate: kick, onStart: kick })
-      .add(() => { if (!touched) { target = 1; kick(); } }, .5)
+      .add(() => { if (!touched && !st) { target = 1; kick(); } }, .5)
       .to(impulse, { v: .45, duration: 1.2, ease: 'power2.inOut', onUpdate: kick })
-      .add(() => hint.show(), 1.4);
-  }, .4);
+      .add(() => hint.show(), .9);
+  }, .3);
 
   size(); renderOnce();
   return { select(id) { selected = id; region && kick(); } };
@@ -570,6 +608,8 @@ function envScene() {
 /* =====================================================================
    02 · Schaltplan
    ===================================================================== */
+/* Spannungen: DJI O4 Air Unit 3,7 bis 13,2 V, O4 Air Unit Pro 7,4 bis 26,4 V (https://www.dji.com/global/o4-air-unit/specs),
+   O3 Air Unit 7,4 bis 26,4 V (https://www.progressiverc.com/products/dji-o3-air-unit). Recherche 24.10.2026. */
 const SP_COL = { p: '#ff4b5c', n: '#6f7c90', s: '#3fe0ff', v: '#ffb020', ph: '#c78bff' };
 const SP_LAYOUT = {
   wide: {
@@ -652,16 +692,16 @@ function spWires(m, r) {
     { id: 'rx_rx', a: 'f_ra', b: 'r_b', c: 's', x2: true, t: 'FC TX zu Empfänger RX', p: cf ? 'FC TX2 → Empfänger CH2 (RX)' : 'FC TX2 → Empfänger RX', x: 'Der Rückkanal: Der FC schickt Telemetrie zur Funke, zum Beispiel die Akkuspannung. Auch hier gilt TX an RX.', e: 'Leitung vergessen: Steuern klappt oft trotzdem, aber die Telemetrie fehlt. Bei ExpressLRS gehen ohne sie auch keine Updates über den FC.' }
   ];
   if (!dig) L.push(
-    { id: 'cam_5v', a: 'f_c5v', b: 'c5v', c: 'p', t: 'Strom für die Kamera', p: 'FC 5V → Kamera 5V', x: 'Analoge Kameras laufen meist an 5 V. Viele vertragen auch mehr, das steht im Datenblatt.', e: 'Kamera an ein Pad mit zu hoher Spannung gelötet. Erst ins Datenblatt schauen, dann löten.' },
+    { id: 'cam_5v', a: 'f_c5v', b: 'c5v', c: 'p', t: 'Strom für die Kamera', p: 'FC 5V → Kamera 5V', x: 'Analoge FPV-Kameras laufen an 5 V. Viele vertragen mehr (steht dann als Bereich auf der Kamera, z. B. 5 bis 40 V), dann gehen auch 9 V oder VBAT.', e: 'Eine Kamera, die nur 5 V verträgt, an VBAT gelötet: Sie brennt beim ersten Einstecken durch. 5 V verträgt jede gängige analoge FPV-Kamera.' },
     { id: 'cam_gnd', a: 'f_cgnd', b: 'cgnd', c: 'n', t: 'Masse der Kamera', p: 'FC GND → Kamera GND', x: 'Die Masse für Strom und Videosignal.', e: 'Schlecht gelötete Masse: Streifen und Flackern im Bild.' },
     { id: 'cam_vid', a: 'cvid', b: 'f_cvid', c: 'v', t: 'Kamerabild zum FC', p: 'Kamera VIDEO → FC CAM', x: 'Das analoge Bild geht zuerst in den FC. Dort blendet der OSD-Chip Akkuspannung, Flugzeit und Warnungen ein.', e: 'Video an das VTX-Pad statt an CAM gelötet: Dann fehlt das OSD oder das Bild bleibt schwarz.' },
     { id: 'vtx_vid', a: 'f_va', b: 'v_a', c: 'v', t: 'Bild mit OSD zum Videosender', p: 'FC VTX → Videosender VIDEO', x: 'Vom FC geht das Bild samt Einblendungen in den Videosender und von dort per Funk in deine Brille.', e: 'Videoleitung lang und direkt neben den Motorkabeln: Störungen im Bild. Kurz halten und Abstand zu den Phasen lassen.' },
-    { id: 'vtx_pwr', a: 'f_vpwr', b: 'v_pwr', c: 'p', t: 'Strom für den Videosender', p: 'FC VBAT oder 9-V-Pad → Videosender VIN', x: 'Viele analoge Sender nehmen direkt Akkuspannung, andere brauchen 5 V oder 9 V. Was deiner braucht, steht im Datenblatt.', e: 'Videosender am falschen Spannungspad: Ein 5-V-Sender an VBAT brennt durch, ein Sender, der mehr braucht, startet an 5 V nicht sauber.' },
+    { id: 'vtx_pwr', a: 'f_vpwr', b: 'v_pwr', c: 'p', t: 'Strom für den Videosender', p: 'FC VBAT oder 9-V-Pad → Videosender VIN', x: 'Steht beim Sender 2S bis 6S (z. B. 7 bis 26 V), kommt er direkt an VBAT. Steht dort 5 V, gehört er an ein 5-V-Pad, bei 7 bis 13 V an ein 9-V- oder 10-V-Pad.', e: 'Videosender am falschen Spannungspad: Ein 5-V-Sender an VBAT brennt durch, ein Sender, der mehr braucht, startet an 5 V nicht sauber.' },
     { id: 'vtx_gnd', a: 'f_vgnd', b: 'v_gnd', c: 'n', t: 'Masse des Videosenders', p: 'FC GND → Videosender GND', x: 'Gemeinsame Masse mit FC und Kamera.', e: 'Masse an einem weit entfernten Pad: Störstreifen im Bild. Masse dicht neben der Videoleitung führen.' },
     { id: 'vtx_sa', a: 'v_b', b: 'f_vb', c: 's', t: 'SmartAudio oder Tramp', p: 'Videosender SA → FC TX1', x: 'Eine einzelne Leitung, über die der FC Kanal und Leistung des Senders einstellt, direkt im OSD-Menü. In Betaflight im Ports-Tab bei UART1 „VTX (TBS SmartAudio)“ oder „VTX (IRC Tramp)“ wählen.', e: 'An ein RX-Pad gelötet: Dann reagiert der Sender nicht. SmartAudio und Tramp gehören an TX.' }
   );
   else L.push(
-    { id: 'du_pwr', a: 'f_vpwr', b: 'v_pwr', c: 'p', t: 'Strom für den digitalen Sender', p: 'FC VBAT oder 9-V/10-V-Pad → Sender VIN', x: 'Digitale Sender brauchen deutlich mehr Strom als analoge. Je nach Modell kommen sie an VBAT oder an ein eigenes 9-V- oder 10-V-Pad, das steht in der Anleitung.', e: 'An ein 5-V-Pad gehängt: Der Sender startet ständig neu oder gar nicht.' },
+    { id: 'du_pwr', a: 'f_vpwr', b: 'v_pwr', c: 'p', t: 'Strom für den digitalen Sender', p: 'FC VBAT oder 9-V/10-V-Pad → Sender VIN', x: 'Digitale Sender brauchen deutlich mehr Strom als analoge. DJI O3 und O4 Air Unit Pro vertragen 7,4 bis 26,4 V und kommen direkt an VBAT (2S bis 6S). Die kleine O4 Air Unit verträgt nur 3,7 bis 13,2 V: Am 4S- oder 6S-Kopter gehört sie an ein 9-V- oder 10-V-Pad. Für Walksnail und HDZero gilt dieselbe Regel: 2S bis 6S an VBAT, bis 13 V an 9 V oder 10 V.', e: 'An ein 5-V-Pad gehängt: Der Sender startet ständig neu oder gar nicht.' },
     { id: 'du_gnd', a: 'f_vgnd', b: 'v_gnd', c: 'n', t: 'Masse des Senders', p: 'FC GND → Sender GND', x: 'Gemeinsame Masse für Strom und Daten.', e: 'Kabel am mitgelieferten Stecker anders belegt als gedacht. Nicht nach Farben gehen, sondern nach der Beschriftung.' },
     { id: 'du_tx', a: 'v_a', b: 'f_vb', c: 's', x2: true, t: 'Sender TX zu FC RX', p: 'Sender TX → FC RX1', x: 'Datenleitung für das OSD: Sender und FC sprechen über MSP DisplayPort miteinander. TX geht an RX, die Leitungen werden gekreuzt.', e: 'TX und RX vertauscht: kein OSD in der Brille. Im Ports-Tab muss bei UART1 „VTX (MSP + DisplayPort)“ eingeschaltet sein.' },
     { id: 'du_rx', a: 'f_va', b: 'v_b', c: 's', x2: true, t: 'FC TX zu Sender RX', p: 'FC TX1 → Sender RX', x: 'Über diese Leitung schickt der FC die OSD-Daten an den Sender, der sie ins Bild einblendet.', e: 'Leitung abgerissen: Bild da, aber keine Einblendungen. Die dünnen Kabel am Stecker brechen gern nach Crashs.' },
@@ -887,7 +927,7 @@ function schaltplan() {
    ===================================================================== */
 const VS = {
   analog: { name: 'Analog', tag: 'Analog', lat: 'SEHR DIREKT', rows: [['Latenz-Gefühl', 'Sehr direkt. Das Bild kommt ohne Umweg über Komprimierung in die Brille.'], ['Bild', 'Geringe Auflösung. Bei schwachem Signal Rauschen und Streifen.'], ['Bei schwachem Signal', 'Das Bild wird langsam schlechter, bleibt aber meist noch erkennbar.'], ['Kompatibilität', 'Jede analoge Brille, auch von verschiedenen Herstellern.'], ['Preis-Klasse', 'Günstigster Einstieg, gebraucht gut zu finden.']] },
-  dji: { name: 'DJI O4', tag: 'Digital', lat: 'GERING', rows: [['Latenz-Gefühl', 'Gering. Für Freestyle und Filmaufnahmen weit verbreitet.'], ['Bild', 'Die höchste Bildqualität der vier Systeme, in HD.'], ['Bei schwachem Signal', 'Bleibt lange klar, dann ruckelt das Bild oder friert ein.'], ['Kompatibilität', 'Nur mit passenden DJI-Brillen.'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] },
+  dji: { name: 'DJI O4', tag: 'Digital', lat: 'GERING', rows: [['Latenz-Gefühl', 'Gering. Für Freestyle und Filmaufnahmen weit verbreitet.'], ['Bild', 'Die höchste Bildqualität der vier Systeme, in HD.'], ['Bei schwachem Signal', 'Bleibt lange klar, dann ruckelt das Bild oder friert ein.'], ['Kompatibilität', 'Nur mit DJI-Brillen: Goggles 3 und N3, seit der Firmware vom Januar 2025 auch Goggles 2 und Integra (dann mit etwas mehr Latenz).'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] },
   walksnail: { name: 'Walksnail Avatar', tag: 'Digital', lat: 'GERING', rows: [['Latenz-Gefühl', 'Gering.'], ['Bild', 'HD, scharfes Bild.'], ['Bei schwachem Signal', 'Bleibt lange klar, dann ruckelt das Bild oder friert ein.'], ['Kompatibilität', 'Nur mit Walksnail-Brillen oder dem Walksnail-Empfänger.'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] },
   hdzero: { name: 'HDZero', tag: 'Digital', lat: 'SEHR GERING, FEST', rows: [['Latenz-Gefühl', 'Sehr gering und immer gleich: Die Latenz ist fest.'], ['Bild', 'HD, klar. Beliebt bei Rennpiloten.'], ['Bei schwachem Signal', 'Eher Bildfehler als ein stehendes Bild.'], ['Kompatibilität', 'Nur mit HDZero-Brillen oder dem HDZero-Empfänger.'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] }
 };
@@ -1192,11 +1232,11 @@ function checkliste() {
   try { store = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(store)) store = []; } catch (e) { store = []; }
   boxes.forEach(b => { b.checked = store.includes(b.dataset.ck); });
   ofEl.textContent = boxes.length;
-  let shownN = 0;
+  let shownN = 0, cntT = null;
   function update(anim) {
     const done = boxes.filter(b => b.checked), n = done.length, all = n === boxes.length;
     const pct = n / boxes.length * 100;
-    if (GS() && anim && !RM) { gsap.to(fgc, { strokeDashoffset: 100 - pct, duration: .7, ease: 'expo.out' }); const o = { v: shownN }; gsap.to(o, { v: n, duration: .5, snap: { v: 1 }, onUpdate: () => { nEl.textContent = o.v; } }); }
+    if (GS() && anim && !RM) { gsap.to(fgc, { strokeDashoffset: 100 - pct, duration: .7, ease: 'expo.out', overwrite: true }); if (cntT) cntT.kill(); const o = { v: +nEl.textContent || 0 }; cntT = gsap.to(o, { v: n, duration: .5, snap: { v: 1 }, onUpdate: () => { nEl.textContent = o.v; } }); }
     else { fgc.style.strokeDashoffset = 100 - pct; nEl.textContent = n; }
     shownN = n;
     ring.classList.toggle('done', all);

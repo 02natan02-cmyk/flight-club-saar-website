@@ -350,3 +350,10 @@
   .th-osdflag{animation:none}
   .th-ok-svg circle,.th-ok-svg path{stroke-dashoffset:0}
 }
+
+/* FPV-Doktor: direkte Antwort aus dem Kompatibilitäts-Check */
+.th-cv{margin:.3em 0;font:600 13px/1.3 var(--hud);letter-spacing:.1em;text-transform:uppercase}
+.th-cv b{font:400 26px/1 var(--big);letter-spacing:.03em;margin-right:4px}
+.th-cv-ok{color:var(--green)}
+.th-cv-warn{color:var(--amber)}
+.th-cv-no{color:var(--red)}
