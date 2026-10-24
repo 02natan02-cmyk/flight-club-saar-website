@@ -12,7 +12,7 @@
 /* Boot-OSD (Bildmitte) */
 .i3d-boot{position:absolute;left:0;right:0;top:50%;margin-top:-1.6em;text-align:center;transform-origin:50% 50%;
   font:600 clamp(12px,1.25vw,15px)/1.5 var(--i3d-hud);letter-spacing:.24em;text-transform:uppercase;color:var(--i3d-ink);
-  text-shadow:0 0 2px #000,0 0 10px rgba(63,224,255,.45)}
+  text-shadow:0 0 2px #000,0 1px 1px #000}
 .i3d-boot p{margin:0}
 .i3d-boot b{color:var(--i3d-a,#3fe0ff);font-weight:600}
 .i3d-b1{min-height:1.5em}
@@ -26,10 +26,10 @@
 .i3d-tl{left:max(16px,env(safe-area-inset-left));top:max(16px,env(safe-area-inset-top));display:flex;align-items:center;gap:8px}
 .i3d-tr{right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top))}
 .i3d-bl{left:max(16px,env(safe-area-inset-left));bottom:max(26px,env(safe-area-inset-bottom))}
-.i3d-rec{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4b5c;box-shadow:0 0 8px rgba(255,75,92,.8)}
-.i3d-armed{position:absolute;left:50%;top:max(46px,calc(env(safe-area-inset-top) + 40px));transform:translateX(-50%);opacity:0;
+.i3d-rec{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4b5c}
+.i3d-armed{position:absolute;left:50%;top:max(var(--i3d-armed-top,46px),calc(env(safe-area-inset-top) + 30px));transform:translateX(-50%);opacity:0;
   font:700 clamp(14px,1.5vw,18px)/1 var(--i3d-hud);letter-spacing:.32em;padding-left:.32em;color:#3ee08a;
-  text-shadow:0 0 2px #000,0 0 12px rgba(62,224,138,.55)}
+  text-shadow:0 0 2px #000,0 1px 1px #000}
 
 /* Titel unter dem Logo (Position und Größe setzt intro3d.js passend zum Logo) */
 .i3d-title{position:absolute;left:0;right:0;top:70%;text-align:center;pointer-events:none;transform-origin:50% 0}

@@ -341,7 +341,12 @@ export async function playIntro(root, opts = {}) {
       window.FCSIntro3D.stats = stats;
       window.FCSIntro3D.debug = {
         ready: true, stats, tl: mainTl,
-        seek(T) { seeked = true; bootTl.pause(); mainTl.pause(); mainTl.time(T, false); R3.render(T, S, revealed); return T; },
+        seek(T) {
+          seeked = true; bootTl.pause(); mainTl.pause();
+          if (T < TL.bootEnd) { mainTl.time(TL.bootEnd, false); bootTl.time(T); gsap.set(boot, { opacity: 1, y: 0, scaleY: 1 }); }
+          else mainTl.time(T, false);
+          R3.render(Math.max(T, TL.bootEnd), S, revealed); return T;
+        },
         skip, layout: () => R3.layoutInfo(), r3: () => R3, S
       };
     }
@@ -882,7 +887,7 @@ async function buildScene(T, C) {
     Object.assign(L, { W, H, portrait, d, rpx: d / 2, cx: W / 2, cy: top + d / 2, titleTop: top + d + gap1, ts, ss });
     C.titleWrap.style.top = L.titleTop.toFixed(1) + 'px';
     t2.style.marginTop = gap2.toFixed(1) + 'px';
-    if (C.armedEl) C.armedEl.style.top = Math.max(38, Math.min(46, top - 30)).toFixed(0) + 'px';
+    if (C.armedEl) C.armedEl.style.setProperty('--i3d-armed-top', Math.max(38, Math.min(46, top - 30)).toFixed(0) + 'px');
     renderer.setSize(W, H, false);
     veilMat.uniforms.uRes.value.set(W * dpr, H * dpr);
     buildCam();
