@@ -52,33 +52,67 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    smooth(); nav(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 
-  /* Smooth Scroll mit Lenis, verbunden mit ScrollTrigger */
+  /* Natives Scrollen (ruckelt nicht). Sprungmarken gleiten mit Abstand zur Leiste oben. */
+  FCS.scrollTo = (target, off = -84) => {
+    const el = typeof target === 'string' ? $(target) : target; if (!el && typeof target !== 'number') return;
+    const y = typeof target === 'number' ? target : el.getBoundingClientRect().top + scrollY + off - (document.body.classList.contains('has-toc') ? 52 : 0);
+    window.scrollTo({ top: Math.max(0, y), behavior: RM ? 'auto' : 'smooth' });
+  };
   function smooth() {
-    if (RM || !has('Lenis')) return;
-    const lenis = new Lenis({ lerp: 0.11, smoothWheel: true, wheelMultiplier: 1 });
-    FCS.lenis = lenis;
-    if (has('ScrollTrigger')) { lenis.on('scroll', ScrollTrigger.update); gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0); }
-    else { const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
-    $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => { const id = a.getAttribute('href'); if (id.length > 1 && $(id)) { e.preventDefault(); lenis.scrollTo(id, { offset: -70 }); } }));
+    document.addEventListener('click', e => {
+      const a = e.target.closest && e.target.closest('a[href*="#"]'); if (!a) return;
+      const u = new URL(a.href, location.href); if (u.pathname !== location.pathname || !u.hash || u.hash.length < 2) return;
+      let el = null; try { el = $(decodeURIComponent(u.hash)); } catch (err) {} if (!el) return;
+      e.preventDefault(); FCS.scrollTo(el); history.replaceState(null, '', u.hash);
+    });
+    // Beim Öffnen mit #abschnitt erst nach dem Aufbau springen
+    if (location.hash.length > 1) setTimeout(() => { let el = null; try { el = $(decodeURIComponent(location.hash)); } catch (err) {} if (el) FCS.scrollTo(el); }, 450);
   }
 
   function nav() {
     const n = $('.nav'); if (!n) return;
     let last = 0;
-    const on = () => { const y = scrollY; n.classList.toggle('solid', y > 40); n.classList.toggle('hide', y > 500 && y > last + 4 && !document.body.classList.contains('menu-open')); if (y < last - 4) n.classList.remove('hide'); last = y; };
+    const on = () => {
+      const y = scrollY; n.classList.toggle('solid', y > 40);
+      if (y > 420 && y > last + 6 && !document.body.classList.contains('menu-open')) n.classList.add('hide');
+      else if (y < last - 6 || y < 420) n.classList.remove('hide');
+      document.body.classList.toggle('nav-hidden', n.classList.contains('hide'));
+      const tt = $('.totop'); if (tt) tt.classList.toggle('on', y > innerHeight * 1.6);
+      last = y;
+    };
     addEventListener('scroll', on, { passive: true }); on();
     const b = $('.burger'), m = $('.menu');
-    if (b && m) b.addEventListener('click', () => {
-      const open = b.getAttribute('aria-expanded') !== 'true';
+    const setOpen = open => {
       b.setAttribute('aria-expanded', open); m.classList.toggle('open', open); document.body.classList.toggle('menu-open', open);
-      if (FCS.lenis) open ? FCS.lenis.stop() : FCS.lenis.start();
-      if (open && has('gsap') && !RM) gsap.fromTo($$('.menu a'), { y: 60, opacity: 0 }, { y: 0, opacity: 1, stagger: .06, duration: .7, ease: 'expo.out', delay: .15 });
-    });
-    if (m) $$('.menu a').forEach(a => a.addEventListener('click', () => { b.click(); }));
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+      if (open && has('gsap') && !RM) gsap.fromTo($$('.menu .mt'), { y: 40, opacity: 0 }, { y: 0, opacity: 1, stagger: .035, duration: .6, ease: 'expo.out', delay: .12 });
+    };
+    if (b && m) {
+      b.addEventListener('click', () => setOpen(b.getAttribute('aria-expanded') !== 'true'));
+      $$('.menu a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+      addEventListener('keydown', e => { if (e.key === 'Escape' && m.classList.contains('open')) setOpen(false); });
+    }
+    // Nach oben
+    const tt = document.createElement('button'); tt.type = 'button'; tt.className = 'totop'; tt.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="sr">Nach oben</span>';
+    tt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' })); document.body.appendChild(tt);
+  }
+
+  /* Inhaltsverzeichnis: Abschnitte mit data-toc="Name" werden zu einer Leiste, die oben mitläuft */
+  function toc() {
+    const secs = $$('main [data-toc]'); if (secs.length < 2) return;
+    const bar = document.createElement('nav'); bar.className = 'toc'; bar.setAttribute('aria-label', 'Auf dieser Seite');
+    bar.innerHTML = `<div class="toc-in"><span class="toc-l">Auf dieser Seite</span>${secs.map((s, i) => { if (!s.id) s.id = 'abschnitt-' + (i + 1); return `<a href="#${s.id}" data-i="${i}"><b>${String(i + 1).padStart(2, '0')}</b>${s.dataset.toc}</a>`; }).join('')}</div>`;
+    const head = $('main .pagehead'); head ? head.after(bar) : $('main').prepend(bar);
+    document.body.classList.add('has-toc');
+    const links = $$('a', bar), inner = $('.toc-in', bar);
+    let cur = -1;
+    const mark = i => { if (i === cur) return; cur = i; links.forEach((a, k) => a.classList.toggle('on', k === i)); const a = links[i]; if (a) inner.scrollTo({ left: a.offsetLeft - inner.clientWidth / 2 + a.offsetWidth / 2, behavior: RM ? 'auto' : 'smooth' }); };
+    const upd = () => { const y = innerHeight * .35; let i = 0; secs.forEach((s, k) => { if (s.getBoundingClientRect().top < y) i = k; }); mark(i); };
+    addEventListener('scroll', upd, { passive: true }); upd();
   }
 
   function reveal() {
@@ -106,9 +140,11 @@
     const els = $$('[data-count]'); if (!els.length) return;
     const go = (el) => {
       const to = parseFloat(el.dataset.count), dec = (el.dataset.count.split('.')[1] || '').length, pre = el.dataset.pre || '', suf = el.dataset.suf || '';
-      if (RM || !has('gsap')) { el.textContent = pre + to.toLocaleString('de-DE', { minimumFractionDigits: dec }) + suf; return; }
+      // Jahreszahlen ohne Tausenderpunkt (2022, nicht 2.022)
+      const fmt = v => el.dataset.from && to > 1900 && to < 2100 ? String(Math.round(v)) : v.toLocaleString('de-DE', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+      if (RM || !has('gsap')) { el.textContent = pre + fmt(to) + suf; return; }
       const o = { v: parseFloat(el.dataset.from || 0) };
-      gsap.to(o, { v: to, duration: 2.2, ease: 'expo.out', onUpdate: () => el.textContent = pre + o.v.toLocaleString('de-DE', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suf });
+      gsap.to(o, { v: to, duration: 2.2, ease: 'expo.out', onUpdate: () => el.textContent = pre + fmt(o.v) + suf });
     };
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { go(e.target); io.unobserve(e.target); } }), { threshold: .4 });
     els.forEach(e => io.observe(e));
@@ -178,12 +214,15 @@
     vs.forEach(v => { v.muted = true; v.playsInline = true; io.observe(v); });
   }
 
+  /* Kleiner Entwurfs-Hinweis unten links: klappt nach ein paar Sekunden zu einem Punkt zusammen */
   function draftbar() {
     try { if (sessionStorage.getItem('fcs-draft-x')) return; } catch (e) {}
-    const b = document.createElement('div'); b.className = 'draftbar';
-    b.innerHTML = '<span class="dot" style="color:#ffb020"></span><span>Entwurf · Vorschau für den Vorstand</span><button type="button" aria-label="Hinweis schließen">×</button>';
+    const b = document.createElement('aside'); b.className = 'draftbar'; b.setAttribute('aria-label', 'Hinweis');
+    b.innerHTML = '<span class="dot" style="color:#ffb020"></span><span class="db-t">Entwurf · Vorschau für den Vorstand</span><button type="button" aria-label="Hinweis schließen">×</button>';
     b.querySelector('button').onclick = () => { b.remove(); try { sessionStorage.setItem('fcs-draft-x', 1); } catch (e) {} };
     document.body.appendChild(b);
+    setTimeout(() => b.classList.add('mini'), 5000);
+    b.addEventListener('pointerenter', () => b.classList.remove('mini')); b.addEventListener('pointerleave', () => b.classList.add('mini'));
   }
 
   function magnets() {
@@ -234,7 +273,7 @@
       if (fld) fld.classList.toggle('bad', !ok);
       if (!ok && !first) first = i;
     });
-    if (first) { first.focus({ preventScroll: true }); (FCS.lenis ? FCS.lenis.scrollTo(first, { offset: -140 }) : first.scrollIntoView({ block: 'center' })); return false; }
+    if (first) { first.focus({ preventScroll: true }); FCS.scrollTo(first, -160); return false; }
     return true;
   }
   FCS.validate = validate;
@@ -250,7 +289,7 @@
   function nextBadge() {
     const n = FCS.next(); $$('[data-next]').forEach(el => {
       if (!n) { el.textContent = 'Neue Termine folgen'; return; }
-      el.textContent = `${FCS.fmtDate(n.d)} · ${n.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}`;
+      el.textContent = el.dataset.next === 'kurz' ? FCS.fmtDate(n.d) : `${FCS.fmtDate(n.d)} · ${n.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}`;
     });
   }
 

@@ -10,36 +10,22 @@
     <p class="crumb"><a href="index.html">Start</a> / FPV-Wissen</p>
     <p class="kicker">Lernen im Flight Club Saar</p>
     <h1 class="h1" id="wi-h1" data-split>FPV-Wissen</h1>
-    <p class="lede">Wie eine FPV-Drohne aufgebaut ist, wie sie verkabelt wird, welche Kanäle du in Deutschland nutzen darfst und wie du sicher zu deinem ersten Flug kommst. Zum Drehen, Anklicken und Ausprobieren.</p>
-    <nav class="wi-toc" aria-label="Kapitel dieser Seite">
-      <a href="#drohne"><b>01</b><span>Drohne in 3D</span></a>
-      <a href="#schaltplan"><b>02</b><span>Schaltplan</span></a>
-      <a href="#video"><b>03</b><span>Videosysteme</span></a>
-      <a href="#kanaele"><b>04</b><span>Kanäle</span></a>
-      <a href="#weg"><b>05</b><span>Erster Flug</span></a>
-      <a href="#check"><b>06</b><span>Checkliste</span></a>
-      <a href="#glossar"><b>07</b><span>Glossar</span></a>
-    </nav>
+    <p class="lede">Hier lernst du FPV zum Anfassen: Drohne zerlegen, Schaltplan anklicken, Kanäle planen und Schritt für Schritt zum ersten Flug.</p>
+    <div class="btns wi-quick">
+      <a class="btn solid" href="#drohne">Drohne zerlegen <span class="arr">→</span></a>
+      <a class="btn ghost" href="#schaltplan">Schaltplan</a>
+      <a class="btn ghost" href="#kanaele">Kanal-Rechner</a>
+      <a class="btn ghost" href="#glossar">Begriff suchen</a>
+    </div>
   </div>
 </section>
 
-<nav class="wi-rail" aria-label="Kapitelleiste">
-  <a href="#drohne" data-wi-rail="drohne"><b>01</b><span>Drohne in 3D</span></a>
-  <a href="#schaltplan" data-wi-rail="schaltplan"><b>02</b><span>Schaltplan</span></a>
-  <a href="#video" data-wi-rail="video"><b>03</b><span>Videosysteme</span></a>
-  <a href="#kanaele" data-wi-rail="kanaele"><b>04</b><span>Kanäle</span></a>
-  <a href="#weg" data-wi-rail="weg"><b>05</b><span>Erster Flug</span></a>
-  <a href="#check" data-wi-rail="check"><b>06</b><span>Checkliste</span></a>
-  <a href="#glossar" data-wi-rail="glossar"><b>07</b><span>Glossar</span></a>
-</nav>
-
-<!-- 01 · Drohne in 3D -->
-<section class="wi-drone" id="drohne" aria-labelledby="drohne-h">
-  <div class="wi-track">
-    <div class="wi-stage">
-      <div class="wi-stage-bg" aria-hidden="true"></div>
-      <canvas class="wi-canvas" role="img" aria-label="3D-Modell einer 5-Zoll-FPV-Drohne. Ziehen dreht das Modell, Antippen eines Bauteils öffnet eine Infokarte."></canvas>
-      <svg class="wi-fallback" viewBox="0 0 400 400" role="img" aria-label="Zeichnung einer 5-Zoll-FPV-Drohne von oben mit Rahmen, vier Motoren, Propellern, Akku und Kamera">
+<!-- Drohne in 3D -->
+<section class="wi-drone" id="drohne" data-toc="Drohne 3D" aria-labelledby="drohne-h">
+  <div class="wi-stage">
+    <div class="wi-stage-bg" aria-hidden="true"></div>
+    <canvas class="wi-canvas" role="img" aria-label="3D-Modell einer 5-Zoll-FPV-Drohne. Ziehen dreht das Modell, Antippen eines Bauteils öffnet eine Infokarte."></canvas>
+    <svg class="wi-fallback" viewBox="0 0 400 400" role="img" aria-label="Zeichnung einer 5-Zoll-FPV-Drohne von oben mit Rahmen, vier Motoren, Propellern, Akku und Kamera">
         <g fill="none" stroke-linecap="round" stroke-linejoin="round">
           <g stroke="#2a3446" stroke-width="22"><path d="M110 110 290 290M290 110 110 290"/></g>
           <g stroke="#3fe0ff" stroke-width="1.5" opacity=".55"><circle cx="110" cy="110" r="64"/><circle cx="290" cy="110" r="64"/><circle cx="110" cy="290" r="64"/><circle cx="290" cy="290" r="64"/></g>
@@ -57,55 +43,54 @@
           <text x="252" y="40">MOTOR</text>
         </g>
       </svg>
-      <div class="osd-frame" aria-hidden="true"><i></i></div>
-      <div class="wi-stage-head">
-        <p class="kicker">01 · Bauteile</p>
-        <h2 class="h2" id="drohne-h" data-split>Die Drohne in 3D</h2>
-        <p class="wi-stage-lede">Eine typische 5-Zoll-Freestyle-Drohne. Scroll weiter, dann fliegt sie auseinander. Tipp auf ein Bauteil, um zu sehen, was es macht und worauf du achten musst.</p>
+    <div class="osd-frame" aria-hidden="true"><i></i></div>
+    <div class="wi-stage-head">
+      <p class="kicker">Bauteile</p>
+      <h2 class="h2" id="drohne-h" data-split>Die Drohne in 3D</h2>
+      <p class="wi-stage-lede">Zerleg eine 5-Zoll-Freestyle-Drohne und tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.</p>
+    </div>
+    <div class="osd wi-ro" aria-hidden="true">5 ZOLL · <b>10</b> BAUTEILE<br>YAW <b data-wi-yaw>000</b>° · ZERLEGT <b data-wi-ex>0</b> %</div>
+    <ul class="wi-labels" aria-label="Bauteile der Drohne">
+      <li><button type="button" class="wi-lab" data-part="rahmen"><i></i><span>Rahmen</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="motor"><i></i><span>Motor</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="prop"><i></i><span>Propeller</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="esc"><i></i><span>4in1-ESC</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="fc"><i></i><span>Flugcontroller</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="kamera"><i></i><span>FPV-Kamera</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="vtx"><i></i><span>Videosender</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="rx"><i></i><span>Empfänger</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="akku"><i></i><span>LiPo-Akku</span></button></li>
+      <li><button type="button" class="wi-lab" data-part="strap"><i></i><span>Akku-Strap</span></button></li>
+    </ul>
+    <p class="wi-hint wi-hint-drag" aria-hidden="true">Bauteil antippen · ziehen dreht</p>
+    <div class="wi-card" hidden>
+      <p class="wi-card-n">Bauteil <b data-wi-cn>1</b> von 10</p>
+      <h3 class="h3 wi-card-t">Rahmen</h3>
+      <p class="wi-card-k">Was es macht</p>
+      <p class="wi-card-what"></p>
+      <p class="wi-card-k amber">Worauf achten</p>
+      <p class="wi-card-tip"></p>
+      <div class="wi-card-nav">
+        <button type="button" class="wi-rbtn" data-step="-1" aria-label="Vorheriges Bauteil">‹</button>
+        <button type="button" class="wi-rbtn" data-step="1" aria-label="Nächstes Bauteil">›</button>
+        <button type="button" class="wi-rbtn wi-card-x" aria-label="Infokarte schließen">×</button>
       </div>
-      <div class="osd wi-ro" aria-hidden="true">5 ZOLL · <b>10</b> BAUTEILE<br>YAW <b data-wi-yaw>000</b>° · EXPLOSION <b data-wi-ex>0</b> %</div>
-      <ul class="wi-labels" aria-label="Bauteile der Drohne">
-        <li><button type="button" class="wi-lab" data-part="rahmen"><i></i><span>Rahmen</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="motor"><i></i><span>Motor</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="prop"><i></i><span>Propeller</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="esc"><i></i><span>4in1-ESC</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="fc"><i></i><span>Flugcontroller</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="kamera"><i></i><span>FPV-Kamera</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="vtx"><i></i><span>Videosender</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="rx"><i></i><span>Empfänger</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="akku"><i></i><span>LiPo-Akku</span></button></li>
-        <li><button type="button" class="wi-lab" data-part="strap"><i></i><span>Akku-Strap</span></button></li>
-      </ul>
-      <p class="wi-hint wi-hint-drag" aria-hidden="true"><span class="wi-hint-a">←</span> ziehen zum Drehen <span class="wi-hint-a">→</span></p>
-      <div class="wi-card" hidden>
-        <p class="wi-card-n">Bauteil <b data-wi-cn>1</b> von 10</p>
-        <h3 class="h3 wi-card-t">Rahmen</h3>
-        <p class="wi-card-k">Was es macht</p>
-        <p class="wi-card-what"></p>
-        <p class="wi-card-k amber">Worauf achten</p>
-        <p class="wi-card-tip"></p>
-        <div class="wi-card-nav">
-          <button type="button" class="wi-rbtn" data-step="-1" aria-label="Vorheriges Bauteil">‹</button>
-          <button type="button" class="wi-rbtn" data-step="1" aria-label="Nächstes Bauteil">›</button>
-          <button type="button" class="wi-rbtn wi-card-x" aria-label="Infokarte schließen">×</button>
-        </div>
-      </div>
-      <div class="wi-explode">
-        <button type="button" data-go="0">Zusammen</button>
-        <span class="wi-ex-bar" aria-hidden="true"><i></i></span>
-        <button type="button" data-go="1">Auseinander</button>
-      </div>
+    </div>
+    <div class="wi-explode">
+      <button type="button" data-go="0">Zusammen</button>
+      <input type="range" class="wi-ex-range" min="0" max="100" value="0" step="1" aria-label="Drohne zerlegen, 0 heißt zusammengebaut, 100 heißt ganz zerlegt">
+      <button type="button" data-go="1">Zerlegen</button>
     </div>
   </div>
 </section>
 
-<!-- 02 · Schaltplan -->
-<section class="sec wi-sp" id="schaltplan" aria-labelledby="sp-h">
+<!-- Schaltplan -->
+<section class="sec wi-sec wi-sp" id="schaltplan" data-toc="Schaltplan" aria-labelledby="sp-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">02 · Verkabelung</p>
+      <p class="kicker">Verkabelung</p>
       <h2 class="h2" id="sp-h" data-split>Schaltplan zum Anklicken</h2>
-      <p class="lede" data-reveal>So hängt alles zusammen. Wähle dein Videosystem und deinen Empfänger, dann tipp auf eine Leitung oder ein Bauteil. Du siehst, was durch die Leitung fließt, an welchen Pin sie gehört und was beim Löten oft schiefgeht.</p>
+      <p class="lede" data-reveal>Wähl dein Videosystem und deinen Empfänger, dann tipp auf eine Leitung: Du siehst, wohin sie gehört und was beim Löten oft schiefgeht.</p>
     </div>
     <div class="wi-sp-ctrl" data-reveal>
       <fieldset class="wi-fs">
@@ -139,7 +124,7 @@
         </ul>
       </div>
       <aside class="wi-sp-info panel" aria-live="polite">
-        <p class="kicker" data-sp-k>Leitung</p>
+        <p class="wi-card-k" data-sp-k>Leitung</p>
         <h3 class="h3" data-sp-t>Akku Plus zum XT60</h3>
         <p class="wi-sp-pins" data-sp-p></p>
         <p data-sp-x></p>
@@ -157,34 +142,34 @@
   </div>
 </section>
 
-<!-- 03 · Videosysteme -->
-<section class="sec wi-vs" id="video" aria-labelledby="vs-h">
+<!-- Videosysteme -->
+<section class="sec wi-sec wi-vs" id="video" data-toc="Videosysteme" aria-labelledby="vs-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">03 · Bild in die Brille</p>
+      <p class="kicker">Bild in die Brille</p>
       <h2 class="h2" id="vs-h" data-split>Videosysteme im Vergleich</h2>
-      <p class="lede" data-reveal>Analog oder digital: Das ist die erste große Entscheidung beim Einstieg. Die wichtigste Regel vorweg: Digitale Systeme funktionieren nur mit Brillen oder Empfängern desselben Systems. Analoge Sender passen zu jeder analogen Brille.</p>
+      <p class="lede" data-reveal>Analog oder digital? Wähl ein System und schieb den Regler: So verändert sich dein Bild, wenn das Signal schwächer wird.</p>
     </div>
     <div class="wi-vs-grid">
       <div class="wi-vwrap">
-      <div class="wi-viewer" data-sys="analog">
-        <video class="wi-vid" muted loop playsinline preload="none" poster="media/natur.webp" data-wi-src="media/natur.mp4" aria-hidden="true"></video>
-        <canvas class="wi-vfx" aria-hidden="true"></canvas>
-        <div class="scanlines wi-vscan" aria-hidden="true"></div>
-        <div class="osd-frame" aria-hidden="true"><i></i></div>
-        <div class="osd wi-v-tl" aria-hidden="true"><b data-v-name>ANALOG</b> · 5.8 GHZ</div>
-        <div class="osd wi-v-tr" aria-hidden="true">SIGNAL <span class="wi-bars" data-v-bars><i></i><i></i><i></i><i></i><i></i></span></div>
-        <div class="osd wi-v-warn warn blink" aria-hidden="true" hidden>SIGNAL SCHWACH</div>
-        <div class="osd wi-v-bl" aria-hidden="true">LATENZ <b data-v-lat>SEHR DIREKT</b></div>
-        <p class="wi-hint wi-hint-sig" aria-hidden="true">Regler schieben: Signal wird schwächer</p>
-      </div>
-      <p class="wi-v-note">Nachgestellte Darstellung zur Veranschaulichung, keine Messung.</p>
+        <div class="wi-viewer" data-sys="analog">
+          <video class="wi-vid" muted loop playsinline preload="none" poster="media/natur.webp" data-wi-src="media/natur.mp4" aria-hidden="true"></video>
+          <canvas class="wi-vfx" aria-hidden="true"></canvas>
+          <div class="scanlines wi-vscan" aria-hidden="true"></div>
+          <div class="osd-frame" aria-hidden="true"><i></i></div>
+          <div class="osd wi-v-tl" aria-hidden="true"><b data-v-name>ANALOG</b> · 5.8 GHZ</div>
+          <div class="osd wi-v-tr" aria-hidden="true">SIGNAL <span class="wi-bars" data-v-bars><i></i><i></i><i></i><i></i><i></i></span></div>
+          <div class="osd wi-v-warn warn blink" aria-hidden="true" hidden>SIGNAL SCHWACH</div>
+          <div class="osd wi-v-bl" aria-hidden="true">LATENZ <b data-v-lat>SEHR DIREKT</b></div>
+        </div>
+        <p class="wi-v-note">Nachgestellte Darstellung zur Veranschaulichung, keine Messung.</p>
       </div>
       <div class="wi-vs-side">
         <div class="field wi-sig">
           <label for="wi-sig">Signalstärke: Entfernung und Hindernisse</label>
           <input type="range" id="wi-sig" min="0" max="100" value="100" aria-describedby="wi-sig-h">
           <p class="hint" id="wi-sig-h"><span>schwach</span><span data-v-val>100 %</span><span>stark</span></p>
+          <p class="wi-hint wi-hint-sig" aria-hidden="true">Regler schieben</p>
         </div>
         <div class="wi-vs-cards" role="group" aria-label="Videosystem wählen">
           <button type="button" class="wi-vcard" data-sys="analog" aria-pressed="true"><span class="tag amber">Analog</span><b>Analog</b><span class="mute">Jede analoge Brille</span></button>
@@ -195,67 +180,77 @@
       </div>
     </div>
     <div class="wi-vs-detail panel" aria-live="polite">
-      <div class="wi-vs-dhead"><span class="tag amber" data-d-tag>Analog</span><h3 class="h3" data-d-name>Analog</h3></div>
+      <div class="wi-vs-dhead"><span class="tag amber" data-d-tag>Analog</span><h3 class="h3" data-d-name>Analog</h3><p class="wi-vs-rule">Digitale Systeme laufen nur mit Brillen desselben Systems, analoge Sender mit jeder analogen Brille.</p></div>
       <dl class="wi-vs-rows" data-d-rows></dl>
     </div>
   </div>
 </section>
 
-<!-- 04 · Kanäle -->
-<section class="sec wi-ch" id="kanaele" aria-labelledby="ch-h">
+<!-- Kanäle -->
+<section class="sec wi-sec wi-ch" id="kanaele" data-toc="Kanäle" aria-labelledby="ch-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">04 · Analog 5,8 GHz</p>
+      <p class="kicker">Analog 5,8 GHz</p>
       <h2 class="h2" id="ch-h" data-split>Kanäle und Frequenzen</h2>
-      <p class="lede" data-reveal>Jeder analoge Videosender funkt auf einem Kanal. Fliegen zwei Piloten auf demselben oder einem zu nahen Kanal, stören sie sich gegenseitig das Bild. In Deutschland ist nur der Bereich von 5725 bis 5875 MHz frei nutzbar, mit höchstens 25 mW (EIRP).</p>
+      <p class="lede" data-reveal>Sag, wie viele ihr gleichzeitig fliegt: Der Kanal-Rechner schlägt Kanäle vor, die sich nicht stören und in Deutschland erlaubt sind.</p>
     </div>
-    <div class="wi-ch-ctrl" data-reveal>
-      <fieldset class="wi-fs">
-        <legend class="lbl">Bänder einblenden</legend>
-        <div class="chips">
-          <label class="chip"><input type="checkbox" name="wi-band" value="R" checked><span>Raceband</span></label>
-          <label class="chip"><input type="checkbox" name="wi-band" value="F" checked><span>Fatshark</span></label>
-          <label class="chip"><input type="checkbox" name="wi-band" value="A" checked><span>Band A</span></label>
-          <label class="chip"><input type="checkbox" name="wi-band" value="B" checked><span>Band B</span></label>
-          <label class="chip"><input type="checkbox" name="wi-band" value="E" checked><span>Band E</span></label>
-        </div>
-      </fieldset>
-    </div>
-    <div class="wi-spec panel">
-      <div class="wi-spec-key" aria-hidden="true"><span><i class="ok"></i>in DE erlaubt</span><span><i class="no"></i>in DE nicht erlaubt</span><span><i class="pick"></i>Vorschlag für eure Gruppe</span></div>
-      <div class="wi-spec-box"><svg class="wi-spec-svg" role="group" aria-label="Frequenzspektrum der analogen 5,8-GHz-Kanäle. Kanäle sind anklickbar."></svg><noscript><p class="mute">Das Spektrum wird mit JavaScript gezeichnet. Erlaubt sind in Deutschland die Kanäle zwischen 5725 und 5875 MHz.</p></noscript></div>
-      <p class="wi-spec-tip" aria-live="polite">Tipp auf einen Kanal, um Frequenz und Status zu sehen.</p>
-    </div>
-    <div class="wi-pick panel">
-      <div class="wi-pick-head">
-        <p class="kicker">Werkzeug</p>
+    <div class="wi-ch-grid">
+      <div class="wi-pick panel">
+        <p class="wi-card-k">Kanal-Rechner</p>
         <h3 class="h3" data-pick-t>Wir fliegen zu viert: welche Kanäle?</h3>
-        <p class="mute">Wähle, wie viele ihr gleichzeitig in der Luft seid. Wir schlagen Kanäle mit möglichst viel Abstand vor, alle im erlaubten Bereich und mit etwas Luft zu den Rändern.</p>
+        <p class="lbl" id="wi-pick-l">Wie viele Piloten sind gleichzeitig in der Luft?</p>
+        <div class="wi-pick-row">
+          <div class="wi-pick-n" role="group" aria-labelledby="wi-pick-l">
+            <button type="button" data-n="1" aria-pressed="false">1</button>
+            <button type="button" data-n="2" aria-pressed="false">2</button>
+            <button type="button" data-n="3" aria-pressed="false">3</button>
+            <button type="button" data-n="4" aria-pressed="true">4</button>
+            <button type="button" data-n="5" aria-pressed="false">5</button>
+            <button type="button" data-n="6" aria-pressed="false">6</button>
+          </div>
+          <p class="wi-hint wi-hint-pick" aria-hidden="true">Wie viele?</p>
+        </div>
+        <ol class="wi-pick-out" aria-live="polite"></ol>
+        <p class="wi-pick-note mute" data-pick-note></p>
       </div>
-      <div class="wi-pick-n" role="group" aria-label="Anzahl der Piloten">
-        <button type="button" data-n="1" aria-pressed="false">1</button>
-        <button type="button" data-n="2" aria-pressed="false">2</button>
-        <button type="button" data-n="3" aria-pressed="false">3</button>
-        <button type="button" data-n="4" aria-pressed="true">4</button>
-        <button type="button" data-n="5" aria-pressed="false">5</button>
-        <button type="button" data-n="6" aria-pressed="false">6</button>
+      <div class="wi-spec panel">
+        <div class="wi-spec-top">
+          <div class="wi-spec-key" aria-hidden="true"><span><i class="ok"></i>in DE erlaubt</span><span><i class="no"></i>nicht erlaubt</span><span><i class="pick"></i>Vorschlag</span></div>
+          <fieldset class="wi-fs wi-bands">
+            <legend class="sr">Bänder einblenden</legend>
+            <div class="chips">
+              <label class="chip"><input type="checkbox" name="wi-band" value="R" checked><span>Raceband</span></label>
+              <label class="chip"><input type="checkbox" name="wi-band" value="F" checked><span>Fatshark</span></label>
+              <label class="chip"><input type="checkbox" name="wi-band" value="A" checked><span>A</span></label>
+              <label class="chip"><input type="checkbox" name="wi-band" value="B" checked><span>B</span></label>
+              <label class="chip"><input type="checkbox" name="wi-band" value="E" checked><span>E</span></label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="wi-spec-box"><svg class="wi-spec-svg" role="group" aria-label="Frequenzspektrum der analogen 5,8-GHz-Kanäle. Kanäle sind anklickbar."></svg><noscript><p class="mute">Das Spektrum wird mit JavaScript gezeichnet. Erlaubt sind in Deutschland die Kanäle zwischen 5725 und 5875 MHz.</p></noscript></div>
+        <p class="wi-spec-tip" aria-live="polite">Tipp auf einen Kanal, um Frequenz und Status zu sehen.</p>
       </div>
-      <p class="wi-hint wi-hint-pick" aria-hidden="true">Wie viele?</p>
-      <ol class="wi-pick-out" aria-live="polite"></ol>
-      <p class="wi-pick-note mute" data-pick-note></p>
     </div>
-    <p class="wi-legal">Stand 2026, ohne Gewähr. Maßgeblich sind die Vorgaben der Bundesnetzagentur. Wer mehr Kanäle oder mehr Sendeleistung nutzen will, braucht ein Amateurfunkzeugnis mit eigenem Rufzeichen.</p>
+    <details class="fold wi-fold">
+      <summary>Warum nur diese Kanäle?</summary>
+      <div class="fold-in">
+        <p>Jeder analoge Videosender funkt auf einem Kanal. Fliegen zwei Piloten auf demselben oder einem zu nahen Kanal, stören sie sich gegenseitig das Bild. Deshalb sucht der Rechner Kanäle mit möglichst viel Abstand und etwas Luft zu den Rändern.</p>
+        <p>In Deutschland ist nur der Bereich von 5725 bis 5875 MHz frei nutzbar, mit höchstens 25 mW (EIRP). Kanäle außerhalb sind im Spektrum rot markiert.</p>
+        <p>Wer mehr Kanäle oder mehr Sendeleistung nutzen will, braucht ein Amateurfunkzeugnis mit eigenem Rufzeichen.</p>
+        <p class="wi-legal">Stand 2026, ohne Gewähr. Maßgeblich sind die Vorgaben der Bundesnetzagentur.</p>
+      </div>
+    </details>
   </div>
 </section>
 
-<!-- 05 · Weg zum ersten Flug -->
-<section class="sec wi-way" id="weg" aria-labelledby="way-h">
+<!-- Weg zum ersten Flug -->
+<section class="sec wi-sec wi-way" id="weg" data-toc="Erster Flug" aria-labelledby="way-h">
   <div class="wrap">
     <div class="sec-head wi-way-head">
       <div>
-        <p class="kicker">05 · Schritt für Schritt</p>
+        <p class="kicker">Schritt für Schritt</p>
         <h2 class="h2" id="way-h" data-split>Dein Weg zum ersten Flug</h2>
-        <p class="lede" data-reveal>Sechs Wegpunkte vom Schreibtisch bis zum Spot. Zieh die Strecke zur Seite oder nimm die Pfeile.</p>
+        <p class="lede" data-reveal>Sechs Wegpunkte vom Simulator bis zum Spot. Zieh die Strecke zur Seite oder nimm die Pfeile.</p>
       </div>
       <div class="wi-way-ctrl">
         <button type="button" class="wi-rbtn" data-way="-1" aria-label="Vorheriger Wegpunkt">‹</button>
@@ -270,47 +265,47 @@
       <svg class="wi-way-svg" aria-hidden="true"><path class="wi-way-bg"/><path class="wi-way-fg"/></svg>
       <div class="wi-way-drone" aria-hidden="true"><svg viewBox="0 0 40 40"><g fill="none" stroke="#3fe0ff" stroke-width="2"><path d="M10 10 30 30M30 10 10 30"/><circle cx="10" cy="10" r="6"/><circle cx="30" cy="10" r="6"/><circle cx="10" cy="30" r="6"/><circle cx="30" cy="30" r="6"/></g><rect x="15" y="15" width="10" height="10" rx="2" fill="#ffb020"/></svg></div>
       <article class="wi-step">
-        <p class="wi-wp"><i></i>WP 1</p>
-        <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="70" height="46" rx="4" stroke="#3fe0ff"/><path d="M43 52v10M28 64h30" stroke="#3fe0ff"/><path d="M20 40c8-14 18-18 30-10s18 4 22-8" stroke="#ffb020"/><rect x="74" y="34" width="40" height="30" rx="8" stroke="#eaf4ff"/><circle cx="86" cy="49" r="5" stroke="#eaf4ff"/><circle cx="102" cy="49" r="5" stroke="#eaf4ff"/><path d="M86 34V22M102 34V22" stroke="#eaf4ff"/></g></svg>
-        <h3 class="h3">Simulator am PC</h3>
-        <p>Steck deine Funke per USB an den PC und flieg im Simulator, zum Beispiel Liftoff, Velocidrone oder Uncrashed. Stell gleich den Acro-Modus ein, so fliegt später auch deine echte Drohne. Jeder Crash im Simulator kostet nichts.</p>
-        <p class="wi-step-tags"><span class="tag">Zu Hause</span><span class="tag">Funke</span></p>
-      </article>
-      <article class="wi-step">
-        <p class="wi-wp"><i></i>WP 2</p>
-        <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round"><circle cx="34" cy="26" r="16" stroke="#3fe0ff"/><circle cx="86" cy="26" r="16" stroke="#3fe0ff"/><circle cx="34" cy="58" r="16" stroke="#3fe0ff"/><circle cx="86" cy="58" r="16" stroke="#3fe0ff"/><path d="M46 36h28v12H46z" stroke="#ffb020"/><path d="M34 26 46 36M86 26 74 36M34 58 46 48M86 58 74 48" stroke="#eaf4ff"/></g></svg>
-        <h3 class="h3">Tiny Whoop in der Halle</h3>
-        <p>Ein Tiny Whoop wiegt nur ein paar Dutzend Gramm und hat Ringe um die Propeller. Crashs tun weder dir noch der Halle weh. Im Winter fliegen wir gemeinsam in der Halle, komm einfach vorbei.</p>
-        <p class="wi-step-tags"><a class="btn ghost" href="hallenfliegen.html">Hallentermine <span class="arr">→</span></a></p>
-      </article>
-      <article class="wi-step">
-        <p class="wi-wp"><i></i>WP 3</p>
-        <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="8" width="52" height="66" rx="4" stroke="#eaf4ff"/><path d="M26 24h32M26 34h32M26 44h20" stroke="#3fe0ff"/><circle cx="88" cy="40" r="20" stroke="#ffb020"/><path d="m79 40 6 6 12-13" stroke="#ffb020"/></g></svg>
-        <h3 class="h3">Papiere und Versicherung</h3>
-        <p>Für jede Drohne brauchst du in Deutschland eine Haftpflichtversicherung. Hat sie eine Kamera oder wiegt sie 250 g und mehr, registrierst du dich beim Luftfahrt-Bundesamt als Betreiber und klebst deine e-ID sichtbar auf. Ab 250 g brauchst du dazu den EU-Kompetenznachweis A1/A3, den du online beim LBA machst.</p>
-        <p class="wi-step-tags"><a class="btn ghost" href="https://www.lba.de" target="_blank" rel="noopener">lba.de <span class="arr">↗</span></a></p>
-      </article>
-      <article class="wi-step">
-        <p class="wi-wp"><i></i>WP 4</p>
-        <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 34c0-8 6-12 14-12h28c8 0 14 4 14 12v6c0 6-4 10-10 10H48l-6-8h-8l-6 8h-8c-6 0-10-4-10-10z" stroke="#3fe0ff"/><circle cx="92" cy="22" r="9" stroke="#eaf4ff"/><path d="M80 66c0-12 6-20 12-20s12 8 12 20" stroke="#eaf4ff"/><path d="M98 18c6-4 12-6 18-6" stroke="#ffb020"/></g></svg>
-        <h3 class="h3">Erster Flug mit Spotter</h3>
-        <p>Mit der Brille auf siehst du die Drohne nicht direkt. Deshalb steht ein Spotter neben dir, der sie mit eigenen Augen im Blick hat und dich warnt. Such dir eine freie Fläche ohne Menschen und prüf vorher auf der dipul-Karte, ob du dort fliegen darfst.</p>
-        <p class="wi-step-tags"><a class="btn ghost" href="https://www.dipul.de" target="_blank" rel="noopener">dipul.de <span class="arr">↗</span></a></p>
-      </article>
-      <article class="wi-step">
-        <p class="wi-wp"><i></i>WP 5</p>
-        <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 70c20-10 40-14 60-12s36 8 52 12" stroke="#3ee08a"/><path d="M30 24 90 24M60 14v20" stroke="#eaf4ff"/><ellipse cx="30" cy="24" rx="18" ry="4" stroke="#3fe0ff"/><ellipse cx="90" cy="24" rx="18" ry="4" stroke="#3fe0ff"/><rect x="50" y="28" width="20" height="10" rx="3" stroke="#ffb020"/><path d="M60 42c0 8-4 14-10 18" stroke="#3fe0ff" stroke-dasharray="3 5"/></g></svg>
-        <h3 class="h3">5 Zoll draußen am Spot</h3>
-        <p>Mit einer 5-Zoll-Drohne kommen Tempo und Gewicht dazu. Fang auf einer weiten Wiese an, nicht zwischen Bäumen, und flieg mit Leuten, die schon Erfahrung haben. Auf unserer Spot-Karte siehst du, wo wir unterwegs sind.</p>
-        <p class="wi-step-tags"><a class="btn ghost" href="spots.html">Spot-Karte <span class="arr">→</span></a></p>
-      </article>
-      <article class="wi-step">
-        <p class="wi-wp"><i></i>WP 6</p>
-        <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="40" r="30" stroke="#3fe0ff"/><path d="M42 40h36M60 22v36" stroke="#eaf4ff" opacity=".5"/><path d="m47 41 9 9 18-20" stroke="#ffb020"/><path d="M14 40H4M116 40h-10" stroke="#3fe0ff"/></g></svg>
-        <h3 class="h3">Mitglied werden</h3>
-        <p>Im Verein fliegst du nicht allein: Hallenabende im Winter, gemeinsame Flugtage und Leute, die dir beim Bauen und Löten helfen. Und wenn es mal gekracht hat, wird zusammen repariert.</p>
-        <p class="wi-step-tags"><a class="btn solid" href="mitglied.html">Mitglied werden <span class="arr">→</span></a></p>
-      </article>
+          <p class="wi-wp"><i></i>WP 1</p>
+          <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="70" height="46" rx="4" stroke="#3fe0ff"/><path d="M43 52v10M28 64h30" stroke="#3fe0ff"/><path d="M20 40c8-14 18-18 30-10s18 4 22-8" stroke="#ffb020"/><rect x="74" y="34" width="40" height="30" rx="8" stroke="#eaf4ff"/><circle cx="86" cy="49" r="5" stroke="#eaf4ff"/><circle cx="102" cy="49" r="5" stroke="#eaf4ff"/><path d="M86 34V22M102 34V22" stroke="#eaf4ff"/></g></svg>
+          <h3 class="h3">Simulator am PC</h3>
+          <p>Steck deine Funke per USB an den PC und flieg im Simulator, zum Beispiel Liftoff, Velocidrone oder Uncrashed. Stell gleich den Acro-Modus ein, so fliegt später auch deine echte Drohne. Jeder Crash im Simulator kostet nichts.</p>
+          <p class="wi-step-tags"><span class="tag">Zu Hause</span><span class="tag">Funke</span></p>
+        </article>
+        <article class="wi-step">
+          <p class="wi-wp"><i></i>WP 2</p>
+          <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round"><circle cx="34" cy="26" r="16" stroke="#3fe0ff"/><circle cx="86" cy="26" r="16" stroke="#3fe0ff"/><circle cx="34" cy="58" r="16" stroke="#3fe0ff"/><circle cx="86" cy="58" r="16" stroke="#3fe0ff"/><path d="M46 36h28v12H46z" stroke="#ffb020"/><path d="M34 26 46 36M86 26 74 36M34 58 46 48M86 58 74 48" stroke="#eaf4ff"/></g></svg>
+          <h3 class="h3">Tiny Whoop in der Halle</h3>
+          <p>Ein Tiny Whoop wiegt nur ein paar Dutzend Gramm und hat Ringe um die Propeller. Crashs tun weder dir noch der Halle weh. Im Winter fliegen wir gemeinsam in der Halle, komm einfach vorbei.</p>
+          <p class="wi-step-tags"><a class="btn ghost" href="hallenfliegen.html">Hallentermine <span class="arr">→</span></a></p>
+        </article>
+        <article class="wi-step">
+          <p class="wi-wp"><i></i>WP 3</p>
+          <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="8" width="52" height="66" rx="4" stroke="#eaf4ff"/><path d="M26 24h32M26 34h32M26 44h20" stroke="#3fe0ff"/><circle cx="88" cy="40" r="20" stroke="#ffb020"/><path d="m79 40 6 6 12-13" stroke="#ffb020"/></g></svg>
+          <h3 class="h3">Papiere und Versicherung</h3>
+          <p>Für jede Drohne brauchst du in Deutschland eine Haftpflichtversicherung. Hat sie eine Kamera oder wiegt sie 250 g und mehr, registrierst du dich beim Luftfahrt-Bundesamt als Betreiber und klebst deine e-ID sichtbar auf. Ab 250 g brauchst du dazu den EU-Kompetenznachweis A1/A3, den du online beim LBA machst.</p>
+          <p class="wi-step-tags"><a class="btn ghost" href="https://www.lba.de" target="_blank" rel="noopener">lba.de <span class="arr">↗</span></a></p>
+        </article>
+        <article class="wi-step">
+          <p class="wi-wp"><i></i>WP 4</p>
+          <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 34c0-8 6-12 14-12h28c8 0 14 4 14 12v6c0 6-4 10-10 10H48l-6-8h-8l-6 8h-8c-6 0-10-4-10-10z" stroke="#3fe0ff"/><circle cx="92" cy="22" r="9" stroke="#eaf4ff"/><path d="M80 66c0-12 6-20 12-20s12 8 12 20" stroke="#eaf4ff"/><path d="M98 18c6-4 12-6 18-6" stroke="#ffb020"/></g></svg>
+          <h3 class="h3">Erster Flug mit Spotter</h3>
+          <p>Mit der Brille auf siehst du die Drohne nicht direkt. Deshalb steht ein Spotter neben dir, der sie mit eigenen Augen im Blick hat und dich warnt. Such dir eine freie Fläche ohne Menschen und prüf vorher auf der dipul-Karte, ob du dort fliegen darfst.</p>
+          <p class="wi-step-tags"><a class="btn ghost" href="https://www.dipul.de" target="_blank" rel="noopener">dipul.de <span class="arr">↗</span></a></p>
+        </article>
+        <article class="wi-step">
+          <p class="wi-wp"><i></i>WP 5</p>
+          <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 70c20-10 40-14 60-12s36 8 52 12" stroke="#3ee08a"/><path d="M30 24 90 24M60 14v20" stroke="#eaf4ff"/><ellipse cx="30" cy="24" rx="18" ry="4" stroke="#3fe0ff"/><ellipse cx="90" cy="24" rx="18" ry="4" stroke="#3fe0ff"/><rect x="50" y="28" width="20" height="10" rx="3" stroke="#ffb020"/><path d="M60 42c0 8-4 14-10 18" stroke="#3fe0ff" stroke-dasharray="3 5"/></g></svg>
+          <h3 class="h3">5 Zoll draußen am Spot</h3>
+          <p>Mit einer 5-Zoll-Drohne kommen Tempo und Gewicht dazu. Fang auf einer weiten Wiese an, nicht zwischen Bäumen, und flieg mit Leuten, die schon Erfahrung haben. Auf unserer Spot-Karte siehst du, wo wir unterwegs sind.</p>
+          <p class="wi-step-tags"><a class="btn ghost" href="spots.html">Spot-Karte <span class="arr">→</span></a></p>
+        </article>
+        <article class="wi-step">
+          <p class="wi-wp"><i></i>WP 6</p>
+          <svg class="wi-step-ico" viewBox="0 0 120 80" aria-hidden="true"><g fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="40" r="30" stroke="#3fe0ff"/><path d="M42 40h36M60 22v36" stroke="#eaf4ff" opacity=".5"/><path d="m47 41 9 9 18-20" stroke="#ffb020"/><path d="M14 40H4M116 40h-10" stroke="#3fe0ff"/></g></svg>
+          <h3 class="h3">Mitglied werden</h3>
+          <p>Im Verein fliegst du nicht allein: Hallenabende im Winter, gemeinsame Flugtage und Leute, die dir beim Bauen und Löten helfen. Und wenn es mal gekracht hat, wird zusammen repariert.</p>
+          <p class="wi-step-tags"><a class="btn solid" href="mitglied.html">Mitglied werden <span class="arr">→</span></a></p>
+        </article>
     </div>
   </div>
   <div class="wrap">
@@ -318,27 +313,31 @@
   </div>
 </section>
 
-<!-- 06 · Checkliste -->
-<section class="sec wi-check" id="check" aria-labelledby="check-h">
+<!-- Checkliste -->
+<section class="sec wi-sec wi-check" id="check" data-toc="Checkliste" aria-labelledby="check-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">06 · Vor dem Start</p>
+      <p class="kicker">Vor dem Start</p>
       <h2 class="h2" id="check-h" data-split>Checkliste vor dem Flug</h2>
-      <p class="lede" data-reveal>Geh sie vor jedem Akku einmal durch. Dein Fortschritt bleibt auf diesem Gerät gespeichert, bis du ihn zurücksetzt.</p>
+      <p class="lede" data-reveal>Geh sie vor jedem Akku durch und hak ab, was passt. Dein Stand bleibt auf diesem Gerät gespeichert.</p>
     </div>
     <div class="wi-check-grid">
       <div class="wi-ring panel" aria-live="polite">
-        <svg viewBox="0 0 220 220" aria-hidden="true">
-          <circle class="wi-ring-bg" cx="110" cy="110" r="92"/>
-          <circle class="wi-ring-ticks" cx="110" cy="110" r="104"/>
-          <circle class="wi-ring-fg" cx="110" cy="110" r="92" pathLength="100"/>
-        </svg>
-        <div class="wi-ring-in">
-          <b data-ck-n>0</b><span>von <span data-ck-of>11</span></span>
-          <small data-ck-state>DISARMED</small>
+        <div class="wi-ring-dial">
+          <svg viewBox="0 0 220 220" aria-hidden="true">
+            <circle class="wi-ring-bg" cx="110" cy="110" r="92"/>
+            <circle class="wi-ring-ticks" cx="110" cy="110" r="104"/>
+            <circle class="wi-ring-fg" cx="110" cy="110" r="92" pathLength="100"/>
+          </svg>
+          <div class="wi-ring-in">
+            <b data-ck-n>0</b><span>von <span data-ck-of>11</span></span>
+            <small data-ck-state>DISARMED</small>
+          </div>
         </div>
-        <p class="wi-ring-msg" data-ck-msg>Hak ab, was du geprüft hast.</p>
-        <button type="button" class="btn ghost wi-ck-reset">Für den nächsten Akku zurücksetzen</button>
+        <div class="wi-ring-txt">
+          <p class="wi-ring-msg" data-ck-msg>Hak ab, was du geprüft hast.</p>
+          <button type="button" class="btn ghost wi-ck-reset">Für den nächsten Akku zurücksetzen</button>
+        </div>
       </div>
       <div class="wi-check-list">
         <p class="wi-hint wi-hint-ck" aria-hidden="true">Tippe zum Abhaken</p>
@@ -364,13 +363,13 @@
   </div>
 </section>
 
-<!-- 07 · Glossar -->
-<section class="sec wi-gl" id="glossar" aria-labelledby="gl-h">
+<!-- Glossar -->
+<section class="sec wi-sec wi-gl" id="glossar" data-toc="Glossar" aria-labelledby="gl-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">07 · Nachschlagen</p>
+      <p class="kicker">Nachschlagen</p>
       <h2 class="h2" id="gl-h" data-split>Glossar</h2>
-      <p class="lede" data-reveal>Die Wörter, die du am Spot und in der WhatsApp-Gruppe hörst, kurz erklärt.</p>
+      <p class="lede" data-reveal>Die Wörter, die du am Spot und in der WhatsApp-Gruppe hörst, kurz erklärt. Such einen Begriff oder filter nach Buchstabe und Thema.</p>
     </div>
     <div class="wi-gl-ctrl">
       <div class="field wi-gl-search">
@@ -378,8 +377,8 @@
         <input type="search" id="wi-q" autocomplete="off" spellcheck="false" placeholder="zum Beispiel Failsafe">
         <p class="wi-hint wi-hint-gl" aria-hidden="true">Tipp einen Begriff</p>
       </div>
-      <fieldset class="wi-fs">
-        <legend class="lbl">Gruppe</legend>
+      <fieldset class="wi-fs wi-gl-cats">
+        <legend class="lbl">Thema</legend>
         <div class="chips">
           <label class="chip"><input type="radio" name="wi-cat" value="" checked><span>Alle</span></label>
           <label class="chip"><input type="radio" name="wi-cat" value="fliegen"><span>Fliegen</span></label>
@@ -389,12 +388,13 @@
           <label class="chip"><input type="radio" name="wi-cat" value="regeln"><span>Regeln</span></label>
         </div>
       </fieldset>
-      <p class="wi-gl-count hud" aria-live="polite"><b data-gl-n>0</b> Begriffe</p>
+      <div class="wi-gl-abc" role="group" aria-label="Nach Anfangsbuchstabe filtern"></div>
     </div>
+    <p class="wi-gl-count" aria-live="polite"><b data-gl-n>9</b> <span data-gl-t>Begriffe für den Anfang</span></p>
     <dl class="wi-gl-grid">
-      <div class="wi-term" data-cat="fliegen" data-alias="rate modus manuell"><dt>Acro (Rate-Modus)</dt><dd>Flugmodus ohne Selbstnivellierung. Die Drohne bleibt in dem Winkel, den du einsteuerst, bis du gegensteuerst. So fliegt fast jeder FPV-Pilot.</dd></div>
+      <div class="wi-term" data-start data-cat="fliegen" data-alias="rate modus manuell"><dt>Acro (Rate-Modus)</dt><dd>Flugmodus ohne Selbstnivellierung. Die Drohne bleibt in dem Winkel, den du einsteuerst, bis du gegensteuerst. So fliegt fast jeder FPV-Pilot.</dd></div>
       <div class="wi-term" data-cat="fliegen" data-alias="self level stabilisiert"><dt>Angle</dt><dd>Flugmodus mit Selbstnivellierung: Lässt du den Knüppel los, richtet sich die Drohne gerade aus. Die Neigung ist begrenzt, Flips gehen damit nicht.</dd></div>
-      <div class="wi-term" data-cat="fliegen" data-alias="scharf schalten disarm"><dt>Arming</dt><dd>Scharfschalten der Motoren per Schalter an der Funke. Erst danach drehen die Motoren. Nach der Landung immer zuerst disarmen.</dd></div>
+      <div class="wi-term" data-start data-cat="fliegen" data-alias="scharf schalten disarm"><dt>Arming</dt><dd>Scharfschalten der Motoren per Schalter an der Funke. Erst danach drehen die Motoren. Nach der Landung immer zuerst disarmen.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="firmware configurator"><dt>Betaflight</dt><dd>Verbreitete freie Firmware für Flugcontroller. Eingestellt wird sie am PC mit dem Betaflight-Configurator.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="log tuning"><dt>Blackbox</dt><dd>Flugdatenschreiber im Flugcontroller. Er zeichnet Gyro-Werte und Steuerbefehle auf, die man später zum Tuning auswertet.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="bind n fly plug n play ready to fly kaufen"><dt>BNF, PNP, RTF</dt><dd>Bind-N-Fly: fertig, nur noch an deine Funke binden. Plug-N-Play: ohne Empfänger. Ready-To-Fly: komplett mit Funke, oft auch mit Brille.</dd></div>
@@ -405,17 +405,17 @@
       <div class="wi-term" data-cat="regeln" data-alias="karte flugverbot zonen"><dt>dipul</dt><dd>Digitale Plattform Unbemannte Luftfahrt. Auf ihrer Karte siehst du, wo in Deutschland Flugbeschränkungen gelten.</dd></div>
       <div class="wi-term" data-cat="funk" data-alias="aufnahme recorder"><dt>DVR</dt><dd>Digital Video Recorder: nimmt das Bild auf, das du in der Brille siehst, meist auf eine SD-Karte in der Brille.</dd></div>
       <div class="wi-term" data-cat="funk" data-alias="expresslrs fernsteuerung"><dt>ELRS (ExpressLRS)</dt><dd>Offenes Funksystem für die Steuerung, mit großer Reichweite und geringer Latenz. Es gibt Versionen für 2,4 GHz und für 868/915 MHz.</dd></div>
-      <div class="wi-term" data-cat="technik" data-alias="regler speed controller"><dt>ESC</dt><dd>Electronic Speed Controller: der Regler, der die Drehzahl der bürstenlosen Motoren steuert.</dd></div>
+      <div class="wi-term" data-start data-cat="technik" data-alias="regler speed controller"><dt>ESC</dt><dd>Electronic Speed Controller: der Regler, der die Drehzahl der bürstenlosen Motoren steuert.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="esc regler stack"><dt>4in1-ESC</dt><dd>Vier Regler auf einer Platine. Sitzt im Stack unter dem Flugcontroller und bekommt den Akkustrom.</dd></div>
-      <div class="wi-term" data-cat="funk" data-alias="signalverlust drop"><dt>Failsafe</dt><dd>Was die Drohne tut, wenn das Steuersignal abreißt. Bei FPV-Drohnen meist: Motoren aus. Vor dem ersten Flug ohne Propeller testen.</dd></div>
-      <div class="wi-term" data-cat="technik" data-alias="flugcontroller flight controller"><dt>FC</dt><dd>Flugcontroller: Platine mit Prozessor und Gyro. Er rechnet aus deinen Steuerbefehlen die Drehzahl jedes Motors.</dd></div>
+      <div class="wi-term" data-start data-cat="funk" data-alias="signalverlust drop"><dt>Failsafe</dt><dd>Was die Drohne tut, wenn das Steuersignal abreißt. Bei FPV-Drohnen meist: Motoren aus. Vor dem ersten Flug ohne Propeller testen.</dd></div>
+      <div class="wi-term" data-start data-cat="technik" data-alias="flugcontroller flight controller"><dt>FC</dt><dd>Flugcontroller: Platine mit Prozessor und Gyro. Er rechnet aus deinen Steuerbefehlen die Drehzahl jedes Motors.</dd></div>
       <div class="wi-term" data-cat="fliegen" data-alias="tricks flips"><dt>Freestyle</dt><dd>Fliegen ohne Strecke: Flips, Rolls, Powerloops und saubere Linien durch einen Spot.</dd></div>
-      <div class="wi-term" data-cat="funk" data-alias="brille headset"><dt>Goggles</dt><dd>Die FPV-Brille. Sie zeigt das Live-Bild der Kamera an der Drohne.</dd></div>
+      <div class="wi-term" data-start data-cat="funk" data-alias="brille headset"><dt>Goggles</dt><dd>Die FPV-Brille. Sie zeigt das Live-Bild der Kamera an der Drohne.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="sensor drehrate imu"><dt>Gyro</dt><dd>Sensor auf dem Flugcontroller, der misst, wie schnell sich die Drohne um jede Achse dreht.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="motor drehzahl"><dt>KV</dt><dd>Kennzahl für Motoren: Umdrehungen pro Minute je Volt ohne Last. Für 6S nimmt man niedrigere KV als für 4S.</dd></div>
       <div class="wi-term" data-cat="regeln" data-alias="a1 a3 kompetenznachweis drohnenführerschein"><dt>EU-Kompetenznachweis A1/A3</dt><dd>Online-Schulung mit Test beim Luftfahrt-Bundesamt. Pflicht für Drohnen ab 250 g in der offenen Kategorie.</dd></div>
       <div class="wi-term" data-cat="regeln" data-alias="luftfahrt bundesamt registrierung"><dt>LBA</dt><dd>Luftfahrt-Bundesamt. Hier registrierst du dich als Betreiber und machst den EU-Kompetenznachweis.</dd></div>
-      <div class="wi-term" data-cat="akku" data-alias="lipo lihv zellen spannung"><dt>LiPo, LiHV</dt><dd>Lithium-Polymer-Akku: 3,7 V Nennspannung pro Zelle, voll geladen 4,2 V. LiHV ist die Hochvolt-Variante, voll geladen 4,35 V.</dd></div>
+      <div class="wi-term" data-start data-cat="akku" data-alias="lipo lihv zellen spannung"><dt>LiPo, LiHV</dt><dd>Lithium-Polymer-Akku: 3,7 V Nennspannung pro Zelle, voll geladen 4,2 V. LiHV ist die Hochvolt-Variante, voll geladen 4,35 V.</dd></div>
       <div class="wi-term" data-cat="fliegen" data-alias="reichweite"><dt>Long Range</dt><dd>Flüge, bei denen Reichweite und Effizienz zählen. Auch hier gilt: Der Spotter muss die Drohne mit eigenen Augen sehen.</dd></div>
       <div class="wi-term" data-cat="akku" data-alias="kapazität c rate entladestrom"><dt>mAh, C-Rate</dt><dd>mAh ist die Kapazität, also wie lange der Akku hält. Die C-Rate gibt an, wie viel Strom er liefern kann, als Vielfaches der Kapazität.</dd></div>
       <div class="wi-term" data-cat="akku" data-alias="zellen 1s 4s 6s"><dt>1S bis 6S</dt><dd>Zahl der Zellen in Reihe. 1S für Tiny Whoops, 4S oder 6S für 5 Zoll. Jede Zelle bringt 3,7 V Nennspannung.</dd></div>
@@ -425,23 +425,24 @@
       <div class="wi-term" data-cat="fliegen" data-alias="wackeln vibration propwash"><dt>Prop wash</dt><dd>Wackeln, wenn die Drohne in ihre eigene verwirbelte Luft fällt, zum Beispiel beim Abbremsen oder nach einem Flip nach unten.</dd></div>
       <div class="wi-term" data-cat="fliegen" data-alias="empfindlichkeit drehgeschwindigkeit"><dt>Rates</dt><dd>Wie schnell sich die Drohne bei vollem Knüppelausschlag dreht. Eine persönliche Einstellung, ähnlich wie die Mausempfindlichkeit am PC.</dd></div>
       <div class="wi-term" data-cat="funk" data-alias="tramp vtx steuern kanal leistung"><dt>SmartAudio</dt><dd>Protokoll, mit dem der Flugcontroller einen analogen Videosender steuert: Kanal und Leistung lassen sich dann im OSD-Menü ändern. IRC Tramp ist ein ähnliches Protokoll.</dd></div>
-      <div class="wi-term" data-cat="regeln" data-alias="beobachter sichtkontakt"><dt>Spotter</dt><dd>Beobachter neben dir, der die Drohne mit eigenen Augen im Blick behält und dich warnt. Wer mit Brille fliegt, braucht einen Spotter.</dd></div>
+      <div class="wi-term" data-start data-cat="regeln" data-alias="beobachter sichtkontakt"><dt>Spotter</dt><dd>Beobachter neben dir, der die Drohne mit eigenen Augen im Blick behält und dich warnt. Wer mit Brille fliegt, braucht einen Spotter.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="fc esc turm"><dt>Stack</dt><dd>Flugcontroller und 4in1-ESC übereinander auf Abstandshaltern, verbunden mit einem Kabelbaum.</dd></div>
       <div class="wi-term" data-cat="fliegen" data-alias="gas schub"><dt>Throttle</dt><dd>Gas. Der Knüppel steuert die Drehzahl aller Motoren gleichzeitig, also Steigen und Sinken.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="whoop halle klein"><dt>Tiny Whoop</dt><dd>Sehr kleine Drohne mit Ringen um die Propeller, gemacht für das Fliegen in Räumen und in der Halle.</dd></div>
       <div class="wi-term" data-cat="fliegen" data-alias="umdrehen flip over after crash"><dt>Turtle Mode</dt><dd>Schalterfunktion, die die Motoren rückwärts drehen lässt. So dreht sich eine Drohne, die auf dem Rücken liegt, wieder um.</dd></div>
       <div class="wi-term" data-cat="technik" data-alias="serielle schnittstelle tx rx"><dt>UART</dt><dd>Serielle Schnittstelle am Flugcontroller mit einem TX- und einem RX-Pad. Empfänger und digitale Videosender hängen daran. TX geht immer an RX.</dd></div>
-      <div class="wi-term" data-cat="funk" data-alias="videosender sender"><dt>VTX</dt><dd>Videosender: funkt das Kamerabild zur Brille. Bei digitalen Systemen hängt die Kamera direkt am Sender.</dd></div>
+      <div class="wi-term" data-start data-cat="funk" data-alias="videosender sender"><dt>VTX</dt><dd>Videosender: funkt das Kamerabild zur Brille. Bei digitalen Systemen hängt die Kamera direkt am Sender.</dd></div>
       <div class="wi-term" data-cat="funk" data-alias="dji o4 digital sender"><dt>Air Unit</dt><dd>So heißt bei DJI der digitale Videosender mit eigener Kamera. Er ersetzt bei digitalen Systemen den analogen VTX und die analoge Kamera.</dd></div>
       <div class="wi-term" data-cat="akku" data-alias="stecker xt30 xt60"><dt>XT30, XT60</dt><dd>Steckverbinder für den Akku. XT60 für 5 Zoll, XT30 für kleinere Drohnen mit weniger Strom.</dd></div>
       <div class="wi-term" data-cat="fliegen" data-alias="achsen gieren nicken rollen"><dt>Yaw, Pitch, Roll</dt><dd>Die drei Drehachsen. Yaw (Gieren) dreht um die Hochachse, Pitch (Nicken) kippt nach vorne oder hinten, Roll (Rollen) kippt zur Seite.</dd></div>
     </dl>
-    <p class="wi-gl-empty panel" hidden>Dazu haben wir noch nichts. Frag beim <a href="hilfe.html">FPV-Doktor</a> nach, dann kommt der Begriff hier mit rein.</p>
+    <p class="wi-gl-empty panel" hidden>Dazu haben wir noch nichts. Frag beim <a href="hilfe.html#doktor">FPV-Doktor</a> nach, dann kommt der Begriff hier mit rein.</p>
+    <div class="wi-gl-foot"><button type="button" class="btn ghost wi-gl-more" aria-expanded="false">Alle <span data-gl-all>43</span> Begriffe zeigen <span class="arr">↓</span></button></div>
   </div>
 </section>
 
-<!-- 08 · Abschluss -->
-<section class="wi-cta" aria-labelledby="cta-h">
+<!-- Abschluss -->
+<section class="wi-cta" id="frag" aria-labelledby="cta-h">
   <video class="bgvid" data-auto data-src="media/turm.mp4" poster="media/turm.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
   <div class="scanlines" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
@@ -451,7 +452,7 @@
   <div class="wrap wi-cta-in">
     <p class="kicker">Nicht allein bauen</p>
     <h2 class="h2" id="cta-h" data-split>Frag den Verein</h2>
-    <p class="lede" data-reveal>Wenn du beim Löten, in Betaflight oder bei der Kanalwahl nicht weiterkommst: Im Flight Club Saar hilft dir jemand, der das schon hinter sich hat.</p>
+    <p class="lede" data-reveal>Du kommst beim Löten, in Betaflight oder bei der Kanalwahl nicht weiter? Im Flight Club Saar hilft dir jemand, der das schon hinter sich hat.</p>
     <div class="btns" data-reveal>
       <a class="btn solid" href="hilfe.html">Technik-Hilfe öffnen <span class="arr">→</span></a>
       <a class="btn amber" href="mitglied.html">Mitglied werden <span class="arr">→</span></a>

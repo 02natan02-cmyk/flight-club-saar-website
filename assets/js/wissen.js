@@ -1,6 +1,8 @@
 /* Flight Club Saar – FPV-Wissen
    3D-Drohne (three.js), Schaltplan, Videosysteme, Kanäle, Weg zum ersten Flug, Checkliste, Glossar.
-   Läuft als Modul. GSAP und Plugins kommen global aus fcs.js; wir warten auf „fcs:ready“. */
+   Läuft als Modul. GSAP und Plugins kommen global aus fcs.js; wir warten auf „fcs:ready“.
+   Stand 24.10.2026: kein Festkleben mehr beim Scrollen. Die Drohne wird per Regler zerlegt
+   (und zerlegt sich beim ersten Sichtkontakt einmal von selbst). */
 import * as THREE from '../lib/three.module.min.js';
 
 const D = document, W = window;
@@ -44,7 +46,13 @@ function makeHint(node) {
     get gone() { return gone; }
   };
 }
-const scrollToY = (y) => { if (W.FCS && FCS.lenis) FCS.lenis.scrollTo(y, { duration: 1.4 }); else W.scrollTo({ top: y, behavior: RM ? 'auto' : 'smooth' }); };
+const scrollToY = (y) => { if (W.FCS && FCS.scrollTo) FCS.scrollTo(Math.round(y)); else W.scrollTo({ top: y, behavior: RM ? 'auto' : 'smooth' }); };
+/* CSS-Endlosanimationen anhalten, solange ein Abschnitt nicht zu sehen ist */
+function pauseOffscreen() {
+  const secs = $$('main > section'); if (!secs.length || !('IntersectionObserver' in W)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '80px 0px' });
+  secs.forEach(s => io.observe(s));
+}
 
 /* =====================================================================
    01 · Drohne in 3D
@@ -66,7 +74,7 @@ function webgl2() { try { const c = D.createElement('canvas'); return !!(W.WebGL
 
 function drone() {
   const sec = $('#drohne'); if (!sec) return;
-  const stage = $('.wi-stage', sec), track = $('.wi-track', sec), canvas = $('.wi-canvas', sec);
+  const stage = $('.wi-stage', sec), canvas = $('.wi-canvas', sec);
   const labs = $$('.wi-lab', sec), card = $('.wi-card', sec);
   const hint = makeHint($('.wi-hint-drag', sec));
   const ids = PARTS.map(p => p.id);
@@ -96,14 +104,14 @@ function drone() {
   sec.addEventListener('keydown', e => { if (e.key === 'Escape' && !card.hidden) close(); });
 
   const lede = $('.wi-stage-lede', sec);
-  const flat = () => { if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne. Tipp auf ein Bauteil, um zu sehen, was es macht und worauf du achten musst.'; };
+  const flat = () => { if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne. Tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.'; };
   if (!webgl2()) { sec.classList.add('no-3d'); flat(); return; }
-  sec.classList.add('is-3d'); if (RM) { sec.classList.add('rm'); if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne, schon in ihre Teile zerlegt. Mit den Knöpfen unten baust du sie zusammen. Tipp auf ein Bauteil, um zu sehen, was es macht und worauf du achten musst.'; }
-  api = drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
+  sec.classList.add('is-3d'); if (RM) sec.classList.add('rm');
+  api = drone3d({ sec, stage, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
   if (!api) { sec.classList.remove('is-3d', 'rm'); sec.classList.add('no-3d'); flat(); }
 }
 
-function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
+function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -352,7 +360,8 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
   const ray = new THREE.Raycaster(); const ndc = new THREE.Vector2();
   const labMap = {}; labs.forEach(b => { labMap[b.dataset.part] = b; });
   const labW = {}, labH = {}; const measure = () => labs.forEach(b => { labW[b.dataset.part] = b.offsetWidth || 100; labH[b.dataset.part] = b.offsetHeight || 28; });
-  const roYaw = $('[data-wi-yaw]', sec), roEx = $('[data-wi-ex]', sec), exBar = $('.wi-ex-bar i', sec), exBtns = $$('.wi-explode button', sec);
+  const roYaw = $('[data-wi-yaw]', sec), roEx = $('[data-wi-ex]', sec), exRange = $('.wi-ex-range', sec), exBtns = $$('.wi-explode button', sec);
+  let rangeHeld = false, rangeT = 0;
 
   function size() {
     Wd = stage.clientWidth || 1; Hd = stage.clientHeight || 1;
@@ -430,7 +439,14 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
   function readouts() {
     const deg = Math.round(((root.rotation.y * 180 / Math.PI) % 360 + 360) % 360), ex = Math.round(e * 100);
     if (deg !== lastYaw && roYaw) { roYaw.textContent = String(deg).padStart(3, '0'); lastYaw = deg; }
-    if (ex !== lastEx) { if (roEx) roEx.textContent = ex; if (exBar) exBar.style.transform = `scaleX(${e})`; exBtns.forEach(b => b.classList.toggle('on', (+b.dataset.go === 1) === (e > .5))); lastEx = ex; }
+    if (ex !== lastEx) {
+      if (roEx) roEx.textContent = ex;
+      // Regler folgt der Animation, außer jemand hält ihn gerade fest
+      if (exRange && !rangeHeld && performance.now() - rangeT > 500) { exRange.value = ex; }
+      if (exRange) exRange.style.setProperty('--p', ex + '%');
+      exBtns.forEach(b => b.classList.toggle('on', (+b.dataset.go === 1) === (e > .5)));
+      lastEx = ex;
+    }
   }
 
   function frame(now) {
@@ -449,8 +465,8 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
 
   /* Nur rendern, wenn sichtbar */
   const io = new IntersectionObserver(es => { running = es.some(x => x.isIntersecting) && D.visibilityState !== 'hidden'; if (running) kick(); }, { rootMargin: '120px 0px' });
-  io.observe(track);
-  D.addEventListener('visibilitychange', () => { if (D.visibilityState === 'hidden') running = false; else { const r = track.getBoundingClientRect(); running = r.bottom > 0 && r.top < innerHeight; kick(); } });
+  io.observe(stage);
+  D.addEventListener('visibilitychange', () => { if (D.visibilityState === 'hidden') running = false; else { const r = stage.getBoundingClientRect(); running = r.bottom > 0 && r.top < innerHeight; kick(); } });
   new ResizeObserver(size).observe(stage);
   if (D.fonts && D.fonts.ready) D.fonts.ready.then(() => { battT.image.getContext('2d') && redrawBatt(); measure(); });
   function redrawBatt() {
@@ -499,22 +515,30 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
     return hit ? hit.object.userData.part : null;
   }
 
-  /* ---------- Scrollen: auseinanderfliegen ---------- */
-  let st = null;
-  if (!RM && has('ScrollTrigger')) {
-    st = ScrollTrigger.create({ trigger: track, start: 'top top', end: 'bottom bottom', onUpdate: s => { const p = s.progress; target = p < .08 ? 0 : p > .72 ? 1 : (p - .08) / .64; kick(); } });
-  }
+  /* ---------- Zerlegen: Regler und Knöpfe (kein Festkleben beim Scrollen) ---------- */
+  let touched = false, autoT = null;
+  const user = () => { touched = true; if (autoT) { autoT.kill(); autoT = null; } };
   exBtns.forEach(b => b.addEventListener('click', () => {
-    const v = +b.dataset.go; hint.done();
-    if (st) scrollToY(st.start + (st.end - st.start) * (v ? .78 : 0) + (v ? 0 : -2)); else { target = v; kick(); }
+    user(); target = +b.dataset.go; rangeT = 0; kick();
   }));
+  if (exRange) {
+    exRange.value = Math.round(target * 100);
+    const set = () => { user(); rangeT = performance.now(); target = clamp(exRange.value / 100); kick(); };
+    exRange.addEventListener('input', set);
+    exRange.addEventListener('pointerdown', () => { rangeHeld = true; user(); });
+    const rel = () => { rangeHeld = false; rangeT = performance.now(); };
+    exRange.addEventListener('pointerup', rel); exRange.addEventListener('pointercancel', rel); exRange.addEventListener('change', rel);
+  }
 
-  /* ---------- Selbst-Impuls ---------- */
+  /* ---------- Selbst-Impuls: dreht sich einmal und zerlegt sich von allein ---------- */
   firstSight(stage, () => {
-    hint.show();
-    if (RM || !GS()) return;
-    gsap.timeline().to(impulse, { v: 1.05, duration: 1.5, ease: 'power2.inOut', onUpdate: kick }).to(impulse, { v: .45, duration: 1.2, ease: 'power2.inOut', onUpdate: kick });
-  }, .45);
+    if (RM || !GS()) { if (!touched) { target = 1; kick(); } hint.show(); return; }
+    autoT = gsap.timeline()
+      .to(impulse, { v: 1.05, duration: 1.5, ease: 'power2.inOut', onUpdate: kick })
+      .add(() => { if (!touched) { target = 1; kick(); } }, .5)
+      .to(impulse, { v: .45, duration: 1.2, ease: 'power2.inOut', onUpdate: kick })
+      .add(() => hint.show(), 1.4);
+  }, .4);
 
   size(); renderOnce();
   return { select(id) { selected = id; region && kick(); } };
@@ -830,6 +854,14 @@ function schaltplan() {
   }
   new ResizeObserver(relayout).observe(board);
   relayout();
+  // Selbst-Impuls: nach dem Zeichnen zeigt der Plan von allein drei Leitungen nacheinander
+  const tour = ['bat_p', 'harn', 'rx_tx'];
+  let tourT = 0;
+  function runTour(i) {
+    if (hint.gone || i >= tour.length) return;
+    show({ kind: 'w', id: tour[i] }, false);
+    if (i + 1 < tour.length) tourT = setTimeout(() => runTour(i + 1), 1900);
+  }
   // Vor dem ersten Sichtkontakt unsichtbar, dann wird gezeichnet
   if (GS() && !RM && has('DrawSVGPlugin')) gsap.set($$('.sp-line', svg), { drawSVG: '0%' });
   firstSight(board, () => {
@@ -837,8 +869,8 @@ function schaltplan() {
     if (GS() && !RM && has('DrawSVGPlugin')) {
       const lines = $$('.sp-line', svg);
       gsap.fromTo($$('.sp-c', svg), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .6, stagger: .05, ease: 'expo.out', clearProps: 'transform,opacity' });
-      gsap.fromTo(lines, { drawSVG: '0%' }, { drawSVG: '100%', duration: .7, ease: 'power2.inOut', stagger: .04, delay: .3, onComplete: () => { drawn = true; } });
-      gsap.delayedCall(.3 + lines.length * .04 + .5, () => { show({ kind: 'w', id: 'bat_p' }, false); hint.show(); drawn = true; });
+      gsap.fromTo(lines, { drawSVG: '0%' }, { drawSVG: '100%', duration: .7, ease: 'power2.inOut', stagger: .03, delay: .3, onComplete: () => { drawn = true; } });
+      gsap.delayedCall(.3 + lines.length * .03 + .5, () => { hint.show(); drawn = true; runTour(0); });
     } else { drawn = true; show({ kind: 'w', id: 'bat_p' }, false); hint.show(); }
   }, .3);
 }

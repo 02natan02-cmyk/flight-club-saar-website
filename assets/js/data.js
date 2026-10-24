@@ -55,12 +55,13 @@ FCS.data = {
   // Spots: nur, was der Vorstand freigegeben hat. Neue Spots kommen über das Formular und werden geprüft.
   spots: [
     { id: 'eiweiler', n: 'Großwaldhalle Eiweiler', typ: 'halle', lat: 49.3640113, lng: 6.935687, adr: 'Hambacher Weg 12, 66265 Heusweiler-Eiweiler',
-      t: 'Unsere Winterhalle: Tiny Whoops, Gates, Licht aus und Brille auf. Nur an den Hallenterminen.', regel: 'Nur zu Vereinsterminen', stern: null, k: [] },
+      t: 'Unsere Winterhalle: Tiny Whoops, Gates, Licht aus und Brille auf. Nur an den Hallenterminen.', regel: 'Nur zu Vereinsterminen', stern: null, k: [],
+      foto: 'media/chronik/2026-10-17.webp', fotoAlt: 'Leuchtende Tiny Whoops beim Saisonstart in Eiweiler' },
     { id: 'holz', n: 'Glück-Auf-Halle Holz', typ: 'halle', lat: 49.330219, lng: 6.987745, adr: 'Glück-Auf-Weg 5, 66265 Heusweiler-Holz',
       t: 'Zweite Winterhalle im Dezember. Gleiche Regeln wie in Eiweiler.', regel: 'Nur zu Vereinsterminen', stern: null, k: [] },
     { id: 'goettelborn', n: 'Förderturm Göttelborn', typ: 'industrie', lat: 49.3435266, lng: 7.0386915, adr: 'Göttelborn, 66287 Quierschied',
-      t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben – nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [],
-      foto: 'media/spots/goettelborn.webp' }
+      t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben, nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [],
+      foto: 'media/spots/goettelborn.webp', fotoAlt: 'Stahlgerüst am Förderturm Göttelborn' }
   ],
   spotTypen: {
     halle: { n: 'Halle', c: '#3fe0ff' },
