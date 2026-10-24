@@ -83,6 +83,10 @@
 /* Beim Scrollen zerlegen: Bühne klebt kurz unter der Kapitel-Leiste (höchstens ca. 2/3 Bildschirmhöhe) */
 .wi-drone.is-3d.scrub .wi-stage{position:sticky;top:var(--wi-top,52px);height:calc(100vh - var(--wi-top,52px));height:calc(100svh - var(--wi-top,52px));max-height:none}
 .wi-drone.is-3d.scrub .wi-track::after{content:"";display:block;height:65vh;height:65svh}
+/* Beim Hochscrollen kommt das Menü (74 px, am Handy 70 px) über die Kapitel-Leiste: Überschrift und Anzeige rücken mit */
+.wi-drone.is-3d .wi-stage-head,.wi-drone.is-3d .wi-ro{transition:transform .45s var(--ease),opacity .4s}
+body:not(.nav-hidden) .wi-drone.is-3d.scrub.stuck .wi-stage-head,body:not(.nav-hidden) .wi-drone.is-3d.scrub.stuck .wi-ro{transform:translateY(74px)}
+@media (max-width:700px){body:not(.nav-hidden) .wi-drone.is-3d.scrub.stuck .wi-stage-head{transform:translateY(70px)}}
 @media (max-height:560px){
   .wi-drone.is-3d.scrub .wi-stage{position:relative;top:auto}
   .wi-drone.is-3d.scrub .wi-track::after{display:none}

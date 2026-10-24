@@ -1063,7 +1063,9 @@ function init() {
     const cmp = [];
     if (!res.pb && res.prev) cmp.push(`Deine Bestzeit: ${fmtLap(res.prev)}, dir fehlen ${fmtSec(res.total - res.prev)}.`);
     const top = LB.state === 'ok' ? lbRows(res.kat, res.mode)[0] : null;
-    if (top) cmp.push(res.total <= top.st ? `Das ist schneller als Platz 1 (${esc(top.n)}, ${fmtLap(top.st)}).` : `Platz 1: ${esc(top.n)} mit ${fmtLap(top.st)}.`);
+    const pn = getPilot().n;
+    if (top && pn && normName(top.n) === normName(pn)) cmp.push(res.total < top.st ? 'Du bleibst auf Platz 1.' : `Du stehst auf Platz 1 mit ${fmtLap(top.st)}.`);
+    else if (top) cmp.push(res.total <= top.st ? `Das ist schneller als Platz 1 (${esc(top.n)}, ${fmtLap(top.st)}).` : `Platz 1: ${esc(top.n)} mit ${fmtLap(top.st)}.`);
     $('[data-rr-cmp]', rres).innerHTML = cmp.join(' ');
     resUpload();
     rres.hidden = false; stage.classList.add('is-card');
@@ -1154,7 +1156,9 @@ function init() {
       const rows = lbRows(kat, mode);
       const e = sel === 'top' ? rows.find(r => r.nf > 0) : LB.list.find(r => r.id === sel.slice(3));
       if (e) {
-        g = await ghostFetch(e);
+        // eigener Eintrag mit passendem Geist auf diesem Gerät: lokal nehmen, spart eine Anfrage
+        const own = W.FCS.board.mine ? W.FCS.board.mine()[e.id] : null;
+        g = own && mine && Math.abs(mine.total - e.st) <= 1 ? mine : await ghostFetch(e);
         const rk = rows.findIndex(r => r.id === e.id) + 1;
         label = (rk ? 'PLATZ ' + rk + ' · ' : '') + e.n.toUpperCase().slice(0, 22);
         if (!g && tok === R.gTok) toast('Der Geist konnte gerade nicht geladen werden.');

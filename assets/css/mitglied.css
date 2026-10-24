@@ -29,7 +29,9 @@ main [hidden]{display:none!important}
 .mg-need{margin:0;padding:14px 16px 14px 34px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);font-size:14.5px;color:#cfdcec;display:grid;gap:6px}
 .mg-need li::marker{color:var(--sig)}
 .mg-need a{color:var(--sig)}
-@media (max-width:980px){.mg-grid{grid-template-columns:minmax(0,1fr)}.mg-side{display:none}}
+/* Am Handy bleibt die Karte sichtbar: oben die Vorschau, unter dem Antrag die Hinweise und die Kontaktknöpfe */
+@media (max-width:980px){.mg-grid{grid-template-columns:minmax(0,1fr)}.mg-side{display:contents}
+  .mg-live{order:-2;width:min(100%,320px);margin:0 auto}.mg-hint{order:-1;justify-content:center;text-align:center}.mg-need{order:1}.mg-wa{order:2}}
 
 .steps{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .steps button{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:0;border:0;background:none;font:600 12px var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);cursor:pointer;text-align:left}
@@ -94,3 +96,7 @@ main [hidden]{display:none!important}
 
 /* Tippflächen: mindestens 44 px */
 .btn{min-height:44px}
+.mg-wa{display:grid;gap:10px;margin-top:14px}
+.mg-wa:empty{display:none}
+.mg-wa .btn{justify-content:space-between;text-transform:none;letter-spacing:.04em;font-size:13px}
+.mg-wa .btn small{font:500 12px var(--hud);letter-spacing:.06em;opacity:.7}

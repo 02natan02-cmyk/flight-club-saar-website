@@ -174,6 +174,11 @@
     $('#a-ein').value = today;
     $('#a-geb').max = today; $('#a-geb').min = '1900-01-01';
     $('#glid').textContent = D.verein.glaeubigerId;
+    if (D.verein.iban) $('#v-iban').textContent = D.verein.iban;
+    if (D.verein.bic) $('#v-bic').textContent = D.verein.bic;
+    // Fragen direkt per WhatsApp an den Vorstand (Nummern aus den Vereinsdaten)
+    const wa = $('#mg-wa');
+    if (wa) wa.innerHTML = (D.kontakte || []).filter(k => k.wa).map(k => `<a class="btn ghost" href="https://wa.me/${encodeURIComponent(k.wa)}?text=${encodeURIComponent(`Hallo ${k.name}, ich habe eine Frage zur Mitgliedschaft im Flight Club Saar: `)}" target="_blank" rel="noopener">WhatsApp an ${esc(k.name)}<small>${esc(k.rolle || '')}</small></a>`).join('');
     $('#a-geb').addEventListener('change', u18);
     $$('input[name=Mitgliedschaft]').forEach(i => i.addEventListener('change', summary));
     $$('input[name=Zahlungsart]').forEach(i => i.addEventListener('change', pay));

@@ -359,6 +359,9 @@
   })();
 
   FCS.validate = validate;
+  // Fehlermarkierung verschwindet, sobald man das Feld korrigiert
+  const unbad = e => { const fld = e.target.closest && (e.target.closest('.field.bad') || e.target.closest('.check.bad')); if (fld) fld.classList.remove('bad'); };
+  document.addEventListener('input', unbad, true); document.addEventListener('change', unbad, true);
   FCS.checks = {
     iban: (v) => {
       const s = v.replace(/\s+/g, '').toUpperCase(); if (!/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(s)) return false;

@@ -190,6 +190,132 @@
     });
   }
 
+  /* ---------- Flugvideos: Video-Links aus den Bewertungen (Feld link, höchstens 300 Zeichen) ----------
+     YouTube lädt erst nach Klick über youtube-nocookie.com. Instagram, TikTok und andere bleiben Link-Karten (neuer Tab),
+     weil deren Einbettung fremde Skripte lädt. Nur http(s), alles escaped, rel="noopener nofollow ugc". */
+  const VP = {
+    youtube: { n: 'YouTube', c: '#ff4b4b', svg: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg>' },
+    instagram: { n: 'Instagram', c: '#ff5fa2', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>' },
+    tiktok: { n: 'TikTok', c: '#3fe0ff', svg: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg>' },
+    facebook: { n: 'Facebook', c: '#5b9bff', svg: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.5-1.3 1.3-1.3H17V2.5h-2.6C11.6 2.5 10 4.2 10 6.9v1.6H7.5v3.3H10v9.7h4v-9.7h2.7l.4-3.3z"/></svg>' },
+    vimeo: { n: 'Vimeo', c: '#35c3f3', svg: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 7.4c-.1 2-1.5 4.7-4.2 8.1-2.8 3.6-5.1 5.4-7.1 5.4-1.2 0-2.2-1.1-3-3.3L6.1 11.7C5.5 9.5 4.9 8.4 4.2 8.4c-.1 0-.7.3-1.6 1L1.6 8.1l3-2.7c1.4-1.2 2.4-1.8 3-1.9 1.6-.2 2.6.9 3 3.4.4 2.6.7 4.2.9 4.8.5 2.1 1 3.2 1.5 3.2.4 0 1.1-.7 1.9-2 .9-1.4 1.3-2.4 1.4-3.1.1-1.2-.3-1.8-1.4-1.8-.5 0-1 .1-1.5.3 1-3.3 3-4.9 5.9-4.8 2.1.1 3.1 1.5 3 4.1z"/></svg>' },
+    web: { n: 'Link', c: '#9db1cc', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.3 1.3"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.3-1.3"/></svg>' }
+  };
+  const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>';
+  const CAM = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/></svg>';
+  const PLUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  // Eingabe säubern: ohne https:// davor wird es ergänzt, sonst nur http(s) mit echtem Hostnamen, höchstens 300 Zeichen
+  function vidNorm(raw) {
+    let t = String(raw || '').trim(); if (!t) return '';
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(t)) { if (/^(\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/|\?|$)/i.test(t)) t = 'https://' + t.replace(/^\/+/, ''); else return null; }
+    let u; try { u = new URL(t); } catch (e) { return null; }
+    if (!/^https?:$/.test(u.protocol) || !/\.[a-z]{2,}$/i.test(u.hostname) || u.username || u.password) return null;
+    return u.href.length <= 300 ? u.href : null;
+  }
+  function vidParse(link) {
+    const href = vidNorm(link); if (!href) return null;
+    const u = new URL(href), h = u.hostname.toLowerCase().replace(/^(www|m|mobile|vm|vt)\./, ''), p = u.pathname;
+    const o = { href, k: 'web', yt: '', short: false, what: 'Video-Link', host: h };
+    if (/^(youtube\.com|youtu\.be|youtube-nocookie\.com|music\.youtube\.com)$/.test(h)) {
+      o.k = 'youtube'; o.short = /^\/shorts\//.test(p); o.what = o.short ? 'YouTube Short' : 'YouTube-Video';
+      const m = h === 'youtu.be' ? p.match(/^\/([\w-]{11})/) : p.match(/^\/(?:shorts|embed|live|v)\/([\w-]{11})/);
+      const id = m ? m[1] : (u.searchParams.get('v') || '');
+      if (/^[\w-]{11}$/.test(id)) o.yt = id;
+    } else if (/^(instagram\.com|instagr\.am)$/.test(h)) { o.k = 'instagram'; o.what = /^\/(reels?|tv)\//.test(p) ? 'Instagram-Reel' : 'Instagram-Beitrag'; }
+    else if (/(^|\.)tiktok\.com$/.test(h)) { o.k = 'tiktok'; o.what = 'TikTok-Video'; }
+    else if (/^(facebook\.com|fb\.watch|fb\.com)$/.test(h)) { o.k = 'facebook'; o.what = 'Facebook-Video'; }
+    else if (/(^|\.)vimeo\.com$/.test(h)) { o.k = 'vimeo'; o.what = 'Vimeo-Video'; }
+    return o;
+  }
+  // Feld mit Live-Erkennung: zeigt sofort, welche Plattform erkannt wurde
+  function vidField(inp, hint, idle) {
+    if (!inp || !hint) return;
+    // Beim Tippen nur freundlich, der Hinweis „kein Link“ kommt erst beim Senden (beim Verlassen des Feldes würde er Knöpfe verschieben)
+    const upd = strict => {
+      const v = inp.value.trim(), fld = inp.closest('.field');
+      const idleT = () => { hint.textContent = idle || ''; hint.className = 'hint vd-hint'; };
+      if (!v) { idleT(); inp.removeAttribute('aria-invalid'); if (fld && !$$('[aria-invalid=true]', fld).length) fld.classList.remove('bad'); return; }
+      const p = vidParse(v);
+      if (p) { hint.innerHTML = `<span class="vd-hic" style="--pc:${VP[p.k].c}">${VP[p.k].svg}</span>${esc(p.what)}${p.k === 'web' ? ' · ' + esc(p.host) : ''} erkannt`; hint.className = 'hint vd-hint vd-ok'; inp.removeAttribute('aria-invalid'); if (fld && !$$('[aria-invalid=true]', fld).length) fld.classList.remove('bad'); }
+      else if (strict) { hint.textContent = 'Das ist noch kein Link. Bitte die Adresse mit https:// einfügen.'; hint.className = 'hint vd-hint vd-bad'; inp.setAttribute('aria-invalid', 'true'); }
+      else idleT();
+    };
+    inp.addEventListener('input', () => upd(false));
+    inp.addEventListener('blur', () => { const n = vidNorm(inp.value); if (n && n !== inp.value) { inp.value = n; upd(false); } });
+    inp._vupd = upd; upd(false);
+  }
+  const VD = { all: new Set() };
+  const vidsOf = id => rtOf(id).map(x => ({ x, v: vidParse(x.link) })).filter(o => o.v);
+  function vidCard({ x, v }) {
+    const P = VP[v.k], by = `<span class="vd-by"><b>${esc(x.n)}</b>${x.d ? ' · ' + lvTime(x.d) : ''}</span>`;
+    if (v.k === 'youtube' && v.yt) return `<li class="vd vd-yt${v.short ? ' is-short' : ''}" data-vx="${esc(x.id)}" style="--pc:${P.c}">
+        <div class="vd-box" data-yt="${v.yt}"><span class="vd-art">${P.svg}</span><button class="vd-play" type="button" aria-label="Video laden (YouTube): Flug von ${esc(x.n)}"><i>${PLAY}</i><span>Video laden (YouTube)</span></button></div>
+        <div class="vd-meta"><span class="vd-pf">${P.svg}${esc(v.what)}</span>${by}<a class="vd-out" href="${esc(v.href)}" target="_blank" rel="noopener nofollow ugc">Auf YouTube öffnen<span class="sr"> (neues Fenster)</span><span aria-hidden="true"> ↗</span></a></div>
+      </li>`;
+    return `<li class="vd vd-link" data-vx="${esc(x.id)}" style="--pc:${P.c}"><a class="vd-card" href="${esc(v.href)}" target="_blank" rel="noopener nofollow ugc">
+        <span class="vd-ic">${P.svg}</span><span class="vd-tx"><b>${esc(v.what)}${v.k === 'web' ? ' · ' + esc(v.host) : ''}</b>${by}</span>
+        <span class="vd-go">${v.k === 'web' ? 'Link öffnen' : 'Auf ' + P.n + ' ansehen'}<span class="sr"> (neues Fenster)</span><span aria-hidden="true"> ↗</span></span></a></li>`;
+  }
+  // Bereich „So sieht der Spot aus der Luft aus“ in den Details
+  function vdHTML(s) {
+    const head = `<p class="vd-h">${CAM}So sieht der Spot aus der Luft aus</p>`;
+    const add = `<button class="vd-add" type="button" data-vadd="${esc(s.id)}">${PLUS}<span>Dein Flug hier? Video verlinken</span></button>`;
+    if (!live()) return `${head}<div class="vd-empty"><p>Hast du hier gefilmt? Verlinke dein Video beim Bewerten.</p>${add}</div>`;
+    if (RT.st === 'idle' || RT.st === 'load') return `${head}<div class="vd-sk" aria-hidden="true"><i></i></div>`;
+    if (RT.st === 'err') return `${head}<p class="vd-0">Videos gerade nicht erreichbar.</p>`;
+    const V = vidsOf(s.id);
+    if (!V.length) return `${head}<div class="vd-empty"><p>Noch kein Video von diesem Spot. Zeig den anderen, wie es hier von oben aussieht.</p>${add}</div>`;
+    const all = VD.all.has(s.id), show = all ? V : V.slice(0, 4);
+    return `${head}<ul class="vd-list">${show.map(vidCard).join('')}</ul>${V.length > 4 && !all ? `<button class="rv-all" type="button" data-vall="${esc(s.id)}">Alle ${V.length} Videos zeigen</button>` : ''}${add}`;
+  }
+  // Handy-Leiste unter der Karte: Videos als Wischreihe
+  function vdStrip(s) {
+    if (!live() || RT.st !== 'ok') return '';
+    const V = vidsOf(s.id);
+    if (!V.length) return `<button class="ms-vadd" type="button" data-vadd="${esc(s.id)}">${PLUS}<span>Dein Flug hier? Video verlinken</span></button>`;
+    return `<p class="ms-vh">${CAM}So sieht der Spot aus der Luft aus</p><ul class="ms-vids">${V.slice(0, 8).map(({ x, v }) => {
+      const P = VP[v.k], inner = `<span class="vd-ic">${P.svg}</span><span class="ms-vt"><b>${esc(v.what)}</b><span>${esc(x.n)}</span></span>`;
+      return `<li style="--pc:${P.c}">${v.k === 'youtube' && v.yt
+        ? `<button class="ms-v" type="button" data-vplay="${esc(x.id)}" data-spot="${esc(s.id)}">${inner}<span class="ms-vg">${PLAY}Abspielen</span></button>`
+        : `<a class="ms-v" href="${esc(v.href)}" target="_blank" rel="noopener nofollow ugc">${inner}<span class="ms-vg">${esc(P.n)} ↗<span class="sr"> (neues Fenster)</span></span></a>`}</li>`;
+    }).join('')}</ul>`;
+  }
+  function ytLoad(box) {
+    if (!box || box.classList.contains('loaded')) return;
+    const id = box.dataset.yt; if (!/^[\w-]{11}$/.test(id || '')) return;
+    const li = box.closest('.vd'), who = li ? ($('.vd-by b', li) || {}).textContent || '' : '';
+    const f = document.createElement('iframe');
+    f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
+    f.title = 'YouTube-Video: Flug von ' + who;
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.setAttribute('allowfullscreen', '');
+    box.innerHTML = ''; box.appendChild(f); box.classList.add('loaded');
+    f.focus({ preventScroll: true });
+  }
+  // Einladung „Video verlinken“: Spot öffnen, Bewerten-Formular mit dem Video-Feld zeigen
+  function vidInvite(id) {
+    stopImpulse(); touched = true;
+    toggleDet(id, true);
+    const f = $('#rateform'); if (!f) return;
+    if (!f.classList.contains('go')) { f.classList.add('go'); const g = G(); if (g) g.from($$('.rf-more', f), { opacity: 0, y: 8, duration: .45, ease: 'expo.out', stagger: .05 }); }
+    const inp = $('#r-link');
+    setTimeout(() => { if (inp) { go(inp, -Math.round(innerHeight * .3)); inp.focus({ preventScroll: true }); } }, RM ? 0 : 120);
+  }
+  function vidWire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('.vd-play,[data-vadd],[data-vplay],[data-vall]'); if (!t) return;
+      if (t.classList.contains('vd-play')) { ytLoad(t.closest('.vd-box')); return; }
+      if (t.hasAttribute('data-vadd')) { vidInvite(t.dataset.vadd); return; }
+      if (t.hasAttribute('data-vall')) { VD.all.add(t.dataset.vall); const box = t.closest('[data-vd]'), s = byId(t.dataset.vall); if (box && s) box.innerHTML = vdHTML(s); return; }
+      // Handy-Leiste: zum Video in den Details springen und dort abspielen
+      const id = t.dataset.spot, vx = t.dataset.vplay; stopImpulse(); touched = true;
+      toggleDet(id, true);
+      const card = $(`.sp-item[data-id="${CSS.escape(id)}"] .vd[data-vx="${CSS.escape(vx)}"]`);
+      if (card) { go(card, -90); ytLoad($('.vd-box', card)); }
+    });
+  }
+
   /* ---------- Bewertungen live (FCS.board, Bereich 'spot:<id>') ----------
      Einmal laden, sobald die Spot-Liste in Sicht kommt (oder ein Spot geöffnet wird). Danach nur noch lokal rechnen. */
   const RT = { st: 'idle', list: [], all: new Set(), seen: false };
@@ -228,6 +354,7 @@
     const li = x => { const m = lvMine(x.id), v = stOf(x); return `<li class="rv-i${m ? ' is-mine' : ''}" data-lv-id="${esc(x.id)}">
         <div class="rv-top"><b class="rv-n">${esc(x.n)}</b>${m ? '<span class="lv-mine">Deine</span>' : ''}${v ? `<span class="rv-st" aria-label="${v} von 5 Sternen">${starRow(v)}</span>` : ''}${lvTime(x.d)}</div>
         ${x.t ? `<p class="rv-t">${esc(x.t)}</p>` : ''}
+        ${(v => v ? `<a class="rv-v" href="${esc(v.href)}" target="_blank" rel="noopener nofollow ugc" style="--pc:${VP[v.k].c}">${VP[v.k].svg}<span>${esc(v.what)}${v.k === 'web' ? ' · ' + esc(v.host) : ''}</span><span class="sr"> (neues Fenster)</span><span aria-hidden="true"> ↗</span></a>` : '')(vidParse(x.link))}
         ${lvActs()}
       </li>`; };
     return `<p class="rv-h">${L.length} ${L.length === 1 ? 'Bewertung' : 'Bewertungen'}</p><ul class="rv-list">${show.map(li).join('')}${stat}</ul>${L.length > 3 && !all ? `<button class="rv-all" type="button" data-rv-all="${esc(s.id)}">Alle ${L.length} Bewertungen zeigen</button>` : ''}`;
@@ -236,6 +363,9 @@
     $$('[data-rt]').forEach(el => { el.innerHTML = rtBadge(el.dataset.rt, !!el.closest('#spotlist')); el.hidden = !el.innerHTML; });
     $$('[data-rt-big]').forEach(el => { const s = byId(el.dataset.rtBig); if (s) el.innerHTML = rtBig(s); });
     $$('[data-rv]').forEach(el => { const s = byId(el.dataset.rv); if (s) el.innerHTML = rvHTML(s); });
+    // Videos: bereits geladene YouTube-Fenster nicht neu aufbauen
+    $$('[data-vd]').forEach(el => { const s = byId(el.dataset.vd); if (s && !$('.vd-box.loaded', el)) el.innerHTML = vdHTML(s); });
+    $$('[data-vs]').forEach(el => { const s = byId(el.dataset.vs); if (s) el.innerHTML = vdStrip(s); });
   }
   // Selbst-Impuls: die Durchschnitte zählen einmal hoch, wenn sie zum ersten Mal zu sehen sind
   function rtCount() {
@@ -972,6 +1102,7 @@
           <div><dt>Fliegen</dt><dd>${esc(s.regel)}</dd></div>
           <div><dt>Bewertung</dt><dd class="sp-st" data-rt-big="${esc(s.id)}">${rtBig(s)}</dd></div>
         </dl>
+        <div class="vd-wrap" data-vd="${esc(s.id)}">${vdHTML(s)}</div>
         <div class="rv" data-rv="${esc(s.id)}">${rvHTML(s)}</div>
         <div class="sp-rate-slot"></div>
       </div>
@@ -1044,7 +1175,7 @@
     const t = typ(s);
     box.style.setProperty('--c', t.c);
     const pic = s.foto ? `<img src="${esc(s.foto)}" alt="" loading="lazy" decoding="async">` : typIcon(s.typ);
-    box.innerHTML = `<div class="ms-row"><span class="ms-pic">${pic}</span><div class="ms-t"><p class="sp-typ"><i></i>${esc(t.n)}</p><p class="ms-n">${esc(s.n)}</p><p class="sp-rt ms-rt" data-rt="${esc(s.id)}"${rtBadge(s.id) ? '' : ' hidden'}>${rtBadge(s.id)}</p></div></div><div class="ms-b">${routeBtn(s)}<button class="btn ghost" type="button" data-det="${esc(s.id)}">Details${IC.chev}</button></div>`;
+    box.innerHTML = `<div class="ms-row"><span class="ms-pic">${pic}</span><div class="ms-t"><p class="sp-typ"><i></i>${esc(t.n)}</p><p class="ms-n">${esc(s.n)}</p><p class="sp-rt ms-rt" data-rt="${esc(s.id)}"${rtBadge(s.id) ? '' : ' hidden'}>${rtBadge(s.id)}</p></div></div><div class="ms-b">${routeBtn(s)}<button class="btn ghost" type="button" data-det="${esc(s.id)}">Details${IC.chev}</button></div><div class="ms-vw" data-vs="${esc(s.id)}">${vdStrip(s)}</div>`;
     wire(box);
     $('[data-det]', box).addEventListener('click', () => { stopImpulse(); touched = true; const li = $(`.sp-item[data-id="${CSS.escape(s.id)}"]`); toggleDet(s.id, true); if (li) go(li, -16); });
   }
@@ -1079,6 +1210,7 @@
     $$('.field.bad,.check.bad', f).forEach(x => x.classList.remove('bad'));
     $('.stars', f).removeAttribute('data-v'); $('#rf-word').textContent = '';
     const nm = lvName(); if (nm) $('#r-name').value = nm;
+    const li = $('#r-link'); if (li && li._vupd) li._vupd(false);
   }
   function rateInto(id, slot) {
     const f = $('#rateform'), s = byId(id); if (!f || !slot || !s) return;
@@ -1094,6 +1226,7 @@
     const st = $('.stars', f), labs = $$('label', st), word = $('#rf-word'), btn = $('#rf-go'), ok = $('#rf-ok'), bad = $('#rf-bad');
     const setV = (k, v) => v ? st.setAttribute(k, v) : st.removeAttribute(k);
     const cur = () => +(st.getAttribute('data-v') || 0);
+    vidField($('#r-link'), $('#r-link-h'), 'Reel, Short oder anderes Video von deinem Flug hier.');
     if (!live()) { btn.textContent = 'Bewertung senden'; $('#rf-dsgvo').innerHTML = 'Meine Bewertung darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).'; }
     $$('input', st).forEach(i => i.addEventListener('change', () => {
       setV('data-v', i.value); word.textContent = WORD[+i.value];
@@ -1115,6 +1248,10 @@
       const hp = $('[name=_honey]', f); if (hp && hp.value) return;
       const id = f.dataset.spot, s = byId(id); if (!s) return;
       const n = $('#r-name').value.trim().replace(/\s+/g, ' ').slice(0, 40), t = $('#r-txt').value.trim().slice(0, 500), stv = +(($('input[name=Sterne]:checked', f) || {}).value || 0);
+      // Video-Link (freiwillig): nur http(s), sonst Feld markieren und nicht senden
+      const li = $('#r-link'), raw = li ? li.value.trim() : '', link = raw ? vidNorm(raw) : '';
+      if (raw && !link) { if (li._vupd) li._vupd(true); li.closest('.field').classList.add('bad'); li.focus(); return; }
+      if (li && link) li.value = link;
       lvKeepName(n);
       lvBusy(btn, true, live() ? 'Wird veröffentlicht …' : 'Wird gesendet …');
       if (!live()) {
@@ -1124,13 +1261,13 @@
         f.classList.add('sent'); ok.innerHTML = `${LVI.ok}<p><b>Danke!</b> Deine Bewertung erscheint nach der Freigabe durch den Vorstand.</p>`; ok.hidden = false; ok.focus({ preventScroll: true });
         return;
       }
-      let r = { ok: false, err: 'netz' }; try { r = await FCS.board.add({ b: 'spot:' + id, n, st: stv, t }); } catch (er) {}
+      let r = { ok: false, err: 'netz' }; try { r = await FCS.board.add({ b: 'spot:' + id, n, st: stv, t, link }); } catch (er) {}
       lvBusy(btn, false);
-      if (!r.ok) { fail(r.err === 'abgelehnt' ? 'Prüf Name und Kommentar und versuch es nochmal.' : 'Gerade nicht erreichbar, versuch es gleich nochmal.'); return; }
-      RT.list.unshift({ id: r.id, b: 'spot:' + id, n, st: stv, t: t || null, d: lvNow(), _new: 1 });
+      if (!r.ok) { fail(r.err === 'abgelehnt' ? 'Prüf Name, Kommentar und Video-Link und versuch es nochmal.' : 'Gerade nicht erreichbar, versuch es gleich nochmal.'); return; }
+      RT.list.unshift({ id: r.id, b: 'spot:' + id, n, st: stv, t: t || null, link: link || null, d: lvNow(), _new: 1 });
       RT.seen = true; rtPaint();
       f.classList.add('sent');
-      ok.innerHTML = `${LVI.ok}<div class="rf-ok-in"><p><b>Danke, deine Bewertung ist online.</b></p>
+      ok.innerHTML = `${LVI.ok}<div class="rf-ok-in"><p><b>Danke, deine Bewertung ist online.</b>${link ? ' Dein Video steht jetzt bei diesem Spot.' : ''}</p>
         <div class="lv-code"><span class="lv-code-l">Dein Löschcode</span><code>${esc(r.pw)}</code><button class="lv-copy" type="button" data-copy="${esc(r.pw)}">${LVI.copy}<span>Code kopieren</span></button></div>
         <p class="lv-note">Auf diesem Gerät merken wir ihn uns.</p></div>`;
       ok.hidden = false; ok.focus({ preventScroll: true });
@@ -1196,12 +1333,32 @@
       });
     }
 
-    // Senden: alte Fehlermeldung weg, nach Erfolg Danke zeigen
-    f.addEventListener('submit', () => { $$('.form-bad', f).forEach(x => x.hidden = true); }, true);
+    // Video-Links (freiwillig, bis zu 3): Plattform wird erkannt, ungültige Links halten das Senden an
+    const vbox = $('#sf-vids'), vmore = $('#sf-vmore');
+    const vrow = k => `<div class="sf-vrow"><input id="s-v${k}" name="Video ${k}" type="url" inputmode="url" maxlength="300" autocomplete="off" spellcheck="false" placeholder="Noch ein Link" aria-label="Video-Link ${k}" aria-describedby="s-v${k}-h"><span class="hint vd-hint" id="s-v${k}-h"></span></div>`;
+    const vcount = () => $$('.sf-vrow', vbox).length;
+    if (vbox && vmore) {
+      vidField($('#s-v1'), $('#s-v1-h'), 'Instagram, TikTok, YouTube, Facebook oder ein anderer Link');
+      vmore.addEventListener('click', () => {
+        const k = vcount() + 1; if (k > 3) return;
+        vmore.insertAdjacentHTML('beforebegin', vrow(k));
+        const inp = $('#s-v' + k); vidField(inp, $(`#s-v${k}-h`), ''); inp.focus();
+        const g = G(); if (g) g.from(inp.closest('.sf-vrow'), { opacity: 0, y: -6, duration: .35, ease: 'expo.out' });
+        vmore.hidden = k >= 3;
+      });
+    }
+    // Senden: alte Fehlermeldung weg, Video-Links prüfen, nach Erfolg Danke zeigen
+    f.addEventListener('submit', e => {
+      $$('.form-bad', f).forEach(x => x.hidden = true);
+      let bad = null;
+      $$('.sf-vrow input', f).forEach(i => { const raw = i.value.trim(); if (!raw) return; const n = vidNorm(raw); if (n) i.value = n; else { if (i._vupd) i._vupd(true); if (!bad) bad = i; } });
+      if (bad) { e.preventDefault(); e.stopImmediatePropagation(); bad.closest('.field').classList.add('bad'); bad.focus({ preventScroll: true }); FCS.scrollTo(bad, -160); }
+    }, true);
     f.addEventListener('fcs:sent', () => { const ok = $('.sf-ok', f); if (ok) setTimeout(() => { go(ok, -Math.round(innerHeight * .3)); const b = $('#sf-again'); if (b) b.focus({ preventScroll: true }); }, 60); });
     const again = $('#sf-again');
     if (again) again.addEventListener('click', () => {
       f.reset(); clear(); f.classList.remove('sent');
+      $$('.sf-vrow', f).slice(1).forEach(r => r.remove()); if (vmore) vmore.hidden = false; const v1 = $('#s-v1'); if (v1 && v1._vupd) v1._vupd(false);
       $$('.form-ok,.form-bad', f).forEach(x => x.hidden = true);
       say('Am Spot? Dann tipp auf „Meinen Standort nehmen“.');
       $('#s-name').focus({ preventScroll: true }); go(f, -20);
@@ -1211,7 +1368,7 @@
   /* ---------- Start ---------- */
   function init() {
     if (!S.length) return;
-    rules(); filters(); radar(); list(); sel(); send(); rate(); impulse(); ratingsInit();
+    rules(); filters(); radar(); list(); sel(); send(); rate(); impulse(); ratingsInit(); vidWire();
     $$('.mp-vbtn').forEach(b => b.addEventListener('click', () => { touched = true; setView(b.dataset.view); }));
     $('#map-fail-radar').addEventListener('click', () => setView('radar'));
     const g = G();

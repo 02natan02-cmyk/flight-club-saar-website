@@ -635,9 +635,10 @@
     const up = e => { if (!dragging) return; dragging = false; if (moved < 6) { const b = document.elementFromPoint(e.clientX, e.clientY); const btn = b && b.closest('.rimg'); if (btn) open(btn.dataset.src); } setTimeout(() => idle = true, 2500); };
     st.addEventListener('pointerup', up); st.addEventListener('pointercancel', () => dragging = false);
     inn.addEventListener('keydown', e => { const b = e.target.closest('.rimg'); if (b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(b.dataset.src); } });
-    const lb = $('#lb'); const open = (src) => { $('#lb-img').src = src; lb.showModal ? lb.showModal() : lb.setAttribute('open', ''); };
+    // Nach dem Antippen kommt am Handy noch ein Klick hinterher: der darf das gerade geöffnete Bild nicht gleich wieder schließen
+    const lb = $('#lb'); let openedAt = 0; const open = (src) => { if (lb.open) return; $('#lb-img').src = src; openedAt = performance.now(); lb.showModal ? lb.showModal() : lb.setAttribute('open', ''); };
     const close = () => { lb.close ? lb.close() : lb.removeAttribute('open'); };
-    $('#lb-x').addEventListener('click', close); lb.addEventListener('click', e => { if (e.target === lb) close(); });
+    $('#lb-x').addEventListener('click', close); lb.addEventListener('click', e => { if (e.target === lb && performance.now() - openedAt > 450) close(); });
     let on = false; new IntersectionObserver(es => { on = es[0].isIntersecting; if (on) tick(); }).observe(st);
     function tick() { if (!on) return; if (!dragging) { if (idle && !RM) vel += (.12 - vel) * .02; else vel *= .95; rot += vel; apply(); } requestAnimationFrame(tick); }
     addEventListener('resize', () => { rad = build(); apply(); });

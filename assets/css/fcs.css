@@ -17,7 +17,8 @@
   --ease:cubic-bezier(.2,.7,.1,1);
 }
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
+html{-webkit-text-size-adjust:100%;scroll-behavior:auto;scroll-padding-top:136px}
+@media (max-width:700px){html{scroll-padding-top:124px}}
 body{margin:0;background:var(--night);color:var(--osd);font:400 16px/1.6 var(--body);overflow-x:clip;-webkit-font-smoothing:antialiased}
 img,video,canvas,svg{display:block;max-width:100%}
 a{color:inherit}
@@ -204,7 +205,7 @@ h1,h2,h3{hyphens:auto;overflow-wrap:break-word}
 .draftbar.mini .db-t,.draftbar.mini button{opacity:0;width:0;padding:0;overflow:hidden}
 .draftbar{transition:max-width .5s var(--ease),padding .4s,opacity .3s,transform .3s var(--ease)}
 body.nav-hidden .draftbar.mini{opacity:0;transform:translateY(12px);pointer-events:none}
-.draftbar button{border:0;background:none;color:inherit;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;min-width:32px;min-height:32px;margin:-8px -8px -8px 0}
+.draftbar button{border:0;background:none;color:inherit;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;min-width:44px;min-height:44px;margin:-14px -12px -14px -4px}
 @media (max-width:420px){.draftbar{font-size:10px;letter-spacing:.08em}}
 
 /* ---------- Mauszeiger = Vereinslogo als Mini-Quad (nur Maus) ---------- */
@@ -276,4 +277,4 @@ details.fold>.fold-in{padding:0 22px 22px}
 /* Prüfbericht 24.10.: Tippflächen am Handy, Hinweise je Gerät */
 .only-touch{display:none}
 @media (pointer:coarse){.only-touch{display:inline}.only-fine{display:none}
- .toc a,.toc button{min-height:40px;display:inline-flex;align-items:center}}
+ .toc a,.toc button{min-height:44px;display:inline-flex;align-items:center}}

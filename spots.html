@@ -18,7 +18,7 @@
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=d7340379">
 <link rel="stylesheet" href="assets/lib/leaflet.css">
-<link rel="stylesheet" href="assets/css/spots.css?v=e20e51a2">
+<link rel="stylesheet" href="assets/css/spots.css?v=6295b87b">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -171,6 +171,7 @@
         <span class="err">Bitte tipp auf die Sterne.</span>
       </div>
       <div class="field rf-more"><label for="r-txt">Kommentar <span class="opt">freiwillig</span></label><textarea id="r-txt" name="Kommentar" rows="2" maxlength="500" placeholder="Ein Tipp für andere Piloten: Parken, Hindernisse, beste Zeit"></textarea></div>
+      <div class="field rf-more rf-vid"><label for="r-link">Video-Link <span class="opt">freiwillig</span></label><input id="r-link" name="Video" type="url" inputmode="url" maxlength="300" autocomplete="off" spellcheck="false" placeholder="Instagram, TikTok, YouTube …" aria-describedby="r-link-h"><span class="hint vd-hint" id="r-link-h"></span><span class="err">Bitte einen Link mit https:// einfügen oder das Feld leer lassen.</span></div>
       <div class="field rf-more"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required minlength="2" maxlength="40" autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
       <label class="check rf-more"><input type="checkbox" name="Datenschutz" value="ja" required><span id="rf-dsgvo">Meine Angaben erscheinen öffentlich auf der Website (<a href="datenschutz.html">Datenschutz</a>).</span></label>
       <button class="btn solid rf-more rf-go" type="submit" id="rf-go">Bewertung veröffentlichen</button>
@@ -222,6 +223,11 @@
           </div>
           <div class="field"><label for="s-txt">Ein Satz dazu</label><textarea id="s-txt" name="Beschreibung" rows="3" placeholder="Parken, Hindernisse, beste Tageszeit …"></textarea></div>
         </div>
+        <div class="field sf-vids" id="sf-vids"><label for="s-v1">Video-Links <span class="opt">freiwillig, bis zu 3</span></label>
+          <div class="sf-vrow"><input id="s-v1" name="Video 1" type="url" inputmode="url" maxlength="300" autocomplete="off" spellcheck="false" placeholder="Dein Flug über dem Spot" aria-describedby="s-v1-h"><span class="hint vd-hint" id="s-v1-h"></span></div>
+          <button class="sf-vmore" type="button" id="sf-vmore"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Noch einen Link</button>
+          <span class="err">Bitte nur Links mit https:// eintragen oder das Feld leer lassen.</span>
+        </div>
       </fieldset>
 
       <fieldset class="sf-step">
@@ -255,7 +261,7 @@
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=d736006b"></script>
+<script src="assets/js/data.js?v=662e00e5"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -266,6 +272,6 @@
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/lib/leaflet.js"></script>
 <script src="assets/js/fcs.js?v=1c4550fb"></script>
-<script src="assets/js/spots.js?v=a375dc7f"></script>
+<script src="assets/js/spots.js?v=315d147f"></script>
 </body>
 </html>

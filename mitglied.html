@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=d7340379">
-<link rel="stylesheet" href="assets/css/mitglied.css?v=a779bbd9">
+<link rel="stylesheet" href="assets/css/mitglied.css?v=9e92215f">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -150,7 +150,7 @@
               <div class="field iban-f"><label for="a-iban">IBAN</label><input id="a-iban" name="IBAN" data-sepa data-check="iban" required inputmode="text" autocomplete="off" spellcheck="false" placeholder="DE00 0000 0000 0000 0000 00" aria-describedby="iban-ok"><span class="iban-ok" id="iban-ok" aria-live="polite"></span><span class="err" id="iban-err">Diese IBAN stimmt nicht. Bitte Ziffer für Ziffer prüfen.</span></div>
               <div class="mandate"><p class="lbl">SEPA-Lastschriftmandat</p><p>Gläubiger-ID des Vereins: <b id="glid">DE65ZZZ00002925192</b> · Mandatsreferenz: wird vom Verein vergeben</p><p>Ich ermächtige den Flight Club Saar e. V., den Aufnahmebeitrag sowie den jährlichen Mitgliedsbeitrag bis auf Widerruf per SEPA-Basislastschrift einzuziehen. Der Jahresbeitrag wird, sofern nichts anderes beschlossen wird, jeweils zum 01. Januar eines Jahres eingezogen. Die Kündigung der Mitgliedschaft richtet sich nach der gültigen Vereinssatzung und ist gegenüber dem Vorstand zu erklären.</p></div>
             </div>
-            <div id="ueber" hidden class="mandate mg-ueber"><p class="lbl">Überweisung</p><p>Bitte überweise den Betrag nach der Bestätigung durch den Vorstand an: <b>Flight Club Saar e. V.</b> · IBAN <b>DE87 8306 5408 0007 0100 28</b> · BIC GENODEF1SLR · Verwendungszweck: Aufnahme und Jahresbeitrag, dein Name.</p></div>
+            <div id="ueber" hidden class="mandate mg-ueber"><p class="lbl">Überweisung</p><p>Bitte überweise den Betrag nach der Bestätigung durch den Vorstand an: <b>Flight Club Saar e. V.</b> · IBAN <b id="v-iban">DE87 8306 5408 0007 0100 28</b> · BIC <span id="v-bic">GENODEF1SLR</span> · Verwendungszweck: Aufnahme und Jahresbeitrag, dein Name.</p></div>
           </fieldset>
 
           <fieldset class="step" data-step="5">
@@ -187,6 +187,7 @@
           <li>Unter 18: ein Elternteil, das mit unterschreibt</li>
           <li>Fragen? <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li>
         </ul>
+        <div class="mg-wa" id="mg-wa" aria-label="Fragen per WhatsApp"></div>
       </aside>
     </div>
 
@@ -212,7 +213,7 @@
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=d736006b"></script>
+<script src="assets/js/data.js?v=662e00e5"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -222,6 +223,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=1c4550fb"></script>
-<script src="assets/js/mitglied.js?v=c578d42b"></script>
+<script src="assets/js/mitglied.js?v=3a8d9919"></script>
 </body>
 </html>

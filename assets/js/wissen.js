@@ -555,8 +555,9 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
         if (manual === null) { target = t; kick(); }
       }
     });
+    // Solange die Bühne klebt: Erscheint oben das Menü wieder (beim Hochscrollen), rückt die Überschrift darunter
+    ScrollTrigger.create({ trigger: track, start: () => 'top ' + (parseFloat(getComputedStyle(sec).getPropertyValue('--wi-top')) || 52) + 'px', end: 'bottom bottom', invalidateOnRefresh: true, toggleClass: { targets: sec, className: 'stuck' } });
     lastT = fromScroll(st.progress); target = lastT; e = lastT;
-    D.addEventListener('fcs:ready', () => ScrollTrigger.refresh(), { once: true });
     // „Drohne zerlegen“ oben im Seitenkopf: durch den Abschnitt gleiten, dabei zerlegt sie sich
     $$('a[href="#drohne"]').forEach(a => a.addEventListener('click', ev => {
       if (!st) return; ev.preventDefault(); ev.stopPropagation();
@@ -1231,11 +1232,11 @@ function checkliste() {
   try { store = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(store)) store = []; } catch (e) { store = []; }
   boxes.forEach(b => { b.checked = store.includes(b.dataset.ck); });
   ofEl.textContent = boxes.length;
-  let shownN = 0;
+  let shownN = 0, cntT = null;
   function update(anim) {
     const done = boxes.filter(b => b.checked), n = done.length, all = n === boxes.length;
     const pct = n / boxes.length * 100;
-    if (GS() && anim && !RM) { gsap.to(fgc, { strokeDashoffset: 100 - pct, duration: .7, ease: 'expo.out' }); const o = { v: shownN }; gsap.to(o, { v: n, duration: .5, snap: { v: 1 }, onUpdate: () => { nEl.textContent = o.v; } }); }
+    if (GS() && anim && !RM) { gsap.to(fgc, { strokeDashoffset: 100 - pct, duration: .7, ease: 'expo.out', overwrite: true }); if (cntT) cntT.kill(); const o = { v: +nEl.textContent || 0 }; cntT = gsap.to(o, { v: n, duration: .5, snap: { v: 1 }, onUpdate: () => { nEl.textContent = o.v; } }); }
     else { fgc.style.strokeDashoffset = 100 - pct; nEl.textContent = n; }
     shownN = n;
     ring.classList.toggle('done', all);

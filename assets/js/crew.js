@@ -149,6 +149,20 @@
       f.addEventListener('input', stopIdle, { once: true });
     }
     f.addEventListener('fcs:sent', () => flip(false));
+    // Sicherheitsnetz: Nimmt der Mailweg den Bildanhang nicht an, geht das Profil ohne Bild raus
+    // und der Vorstand liest in der Mail, dass das Bild nachgeliefert werden muss
+    const send0 = FCS.send;
+    FCS.send = async (form, extra = {}) => {
+      let r = await send0(form, extra).catch(() => ({ ok: false }));
+      const att = form === f ? $('#pf-att') : null;
+      if (!r.ok && att && att.files && att.files.length) {
+        const keep = att.files[0];
+        attach(att, null);
+        r = await send0(form, { Profilbild: 'Das Bild konnte nicht angehängt werden, bitte per WhatsApp an den Vorstand schicken lassen' }).catch(() => ({ ok: false }));
+        if (!r.ok) attach(att, keep);
+      }
+      return r;
+    };
   }
 
   /* =====================================================================
