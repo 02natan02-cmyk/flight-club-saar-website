@@ -111,11 +111,11 @@
       const o = { r: .5, rot: 0, pr: 0 };
       const upd = () => { build(o.r, o.rot); if (fst) fst.textContent = 'F' + fNum(o.pr).toFixed(1); };
       upd();
-      gsap.timeline({ delay: .3, onComplete: () => iris.classList.add('gone') })
-        .to(o, { r: 14, rot: .3, pr: .18, duration: .55, ease: 'power2.out', onUpdate: upd })
-        .to(o, { r: 250, rot: 1.15, pr: 1, duration: 1.4, ease: 'power3.in', onUpdate: upd }, '+=.2');
-      gsap.from(['.fm-h1a', '.fm-h1b'], { yPercent: 110, opacity: 0, duration: 1.2, stagger: .12, ease: 'expo.out', delay: 1.45 });
-      gsap.from(['.fm-head .crumb', '.fm-head .kicker', '.fm-head-l', '.fm-stats li'], { y: 26, opacity: 0, duration: .9, stagger: .06, ease: 'expo.out', delay: 1.7 });
+      gsap.timeline({ delay: .2, onComplete: () => iris.classList.add('gone') })
+        .to(o, { r: 14, rot: .3, pr: .18, duration: .45, ease: 'power2.out', onUpdate: upd })
+        .to(o, { r: 250, rot: 1.15, pr: 1, duration: 1.05, ease: 'power3.in', onUpdate: upd }, '+=.1');
+      gsap.from(['.fm-h1a', '.fm-h1b'], { yPercent: 110, opacity: 0, duration: 1.1, stagger: .1, ease: 'expo.out', delay: .95 });
+      gsap.from(['.fm-head .crumb', '.fm-head-l', '.fm-head-b'], { y: 22, opacity: 0, duration: .8, stagger: .06, ease: 'expo.out', delay: 1.15 });
     }
     if (hasG() && window.ScrollTrigger && !RM) gsap.to('.fm-head-in', { yPercent: -12, opacity: .3, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: 'bottom top', scrub: true } });
     // Timecode läuft mit 25 Bildern pro Sekunde
@@ -135,48 +135,26 @@
   }
 
   /* =========================================================
-     KAPITEL-LEISTE: Timeline mit Abspielkopf
+     AUFKLAPPER: Werkzeuge in „Mehr dazu“ messen sich beim Öffnen neu
      ========================================================= */
-  function timeline() {
-    const bar = $('#fm-tl'); if (!bar) return;
-    const links = $$('[data-tl]', bar), secs = links.map(a => document.getElementById(a.dataset.tl));
-    if (secs.some(s => !s)) return;
-    links.forEach(a => { a.title = 'Kapitel ' + $('b', a).textContent + ': ' + $('span', a).textContent; });
-    const lis = links.map(a => a.parentElement), headEl = $('.fm-tl-head', bar), clips = $('.fm-tl-clips', bar);
-    const tcEl = $('[data-tl-tc]', bar), nEl = $('[data-tl-n]', bar), nameEl = $('[data-tl-name]', bar), nav = $('.nav');
-    const sentinel = document.createElement('div'); sentinel.setAttribute('aria-hidden', 'true'); sentinel.style.height = '1px';
-    bar.parentNode.insertBefore(sentinel, bar);
-    let tops = [], start = 0, cur = -1;
-    const upd = () => {
-      if (!tops.length) return;
-      const y = scrollY + innerHeight * .35;
-      let i = 0; for (let k = 0; k < tops.length; k++) if (y >= tops[k].top) i = k;
-      const t = tops[i], f = clamp((y - t.top) / t.h, 0, 1), li = lis[i];
-      headEl.style.transform = `translateX(${(clips.offsetLeft + li.offsetLeft + f * li.offsetWidth).toFixed(1)}px)`;
-      headEl.style.opacity = y < start ? 0 : 1;
-      if (i !== cur) {
-        cur = i;
-        links.forEach((a, k) => { a.classList.toggle('on', k === i); a.classList.toggle('done', k < i); if (k === i) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
-        nEl.textContent = String(i + 1).padStart(2, '0'); nameEl.textContent = $('span', links[i]).textContent;
-      }
-      if (tcEl) tcEl.textContent = fmtTC(Math.max(0, Math.floor((scrollY - start + innerHeight) / 6)));
-      const stuck = sentinel.getBoundingClientRect().top < 0;
-      bar.classList.toggle('down', !!(stuck && nav && !nav.classList.contains('hide') && !document.body.classList.contains('menu-open')));
-    };
-    const layout = () => {
-      tops = secs.map(s => { const r = s.getBoundingClientRect(); return { top: r.top + scrollY, h: Math.max(1, r.height) }; });
-      start = tops[0].top;
-      tops.forEach((t, i) => { lis[i].style.flex = `${(t.h / 1000).toFixed(3)} 1 26px`; });
-      if (nav) bar.style.setProperty('--navh', nav.offsetHeight + 'px');
-      upd();
-    };
-    FM.layoutTL = layout;
-    if (nav) new MutationObserver(upd).observe(nav, { attributes: true, attributeFilter: ['class'] });
-    addEventListener('scroll', upd, { passive: true });
-    addEventListener('resize', layout);
-    addEventListener('load', layout);
-    if (window.ResizeObserver) { let rq = 0; new ResizeObserver(() => { cancelAnimationFrame(rq); rq = requestAnimationFrame(layout); }).observe($('main') || document.body); }
-    layout();
+  function folds() {
+    $$('details.fold').forEach(d => d.addEventListener('toggle', () => {
+      if (d.open && hasG() && !RM) { const fi = $('.fold-in', d); if (fi) gsap.from(fi, { y: 14, opacity: 0, duration: .5, ease: 'expo.out', clearProps: 'transform,opacity' }); }
+      requestAnimationFrame(() => { dispatchEvent(new Event('resize')); if (window.ScrollTrigger) ScrollTrigger.refresh(); });
+    }));
+  }
+
+  /* =========================================================
+     „WAS WILLST DU WISSEN?“: Kacheln springen zu den Kapiteln
+     ========================================================= */
+  function asks() {
+    const ol = $('#fm-ask'); if (!ol) return;
+    const as = $$('a', ol); let i = -1;
+    const clear = () => as.forEach(a => a.classList.remove('hot'));
+    // Selbst-Impuls: ein Lichtrahmen wandert über die Fragen, bis jemand eine antippt
+    const st = auto(ol, () => { clear(); i = (i + 1) % as.length; as[i].classList.add('hot'); }, 1300, addHint(ol, 'Frage antippen, du springst hin'));
+    ['pointerenter', 'pointerdown', 'focusin'].forEach(n => ol.addEventListener(n, () => { clear(); st.stop(); }, { passive: true }));
+    if (!RM && hasG() && window.ScrollTrigger) gsap.from(as, { y: 24, opacity: 0, duration: .8, stagger: .035, ease: 'expo.out', scrollTrigger: { trigger: ol, start: 'top 88%', once: true } });
   }
 
   /* =========================================================
@@ -262,49 +240,72 @@
   ];
   function shelf() {
     const list = $('#fm-shelf'); if (!list) return;
-    const say = $('#fm-shelf-say'), sort = $('#fm-sort'), root = list.closest('.fm-shelf');
+    const say = $('#fm-shelf-say'), sort = $('#fm-sort'), root = list.closest('.fm-shelf'), card = $('#fm-cam-card');
     const GY = { ja: ['green', 'Gyroflow: ja'], nein: ['', 'Gyroflow: nein'], 'prüfen': ['amber', 'Gyroflow: prüfen'], 'nicht gelistet': ['amber', 'Gyroflow: nicht gelistet'], '360': ['sig', 'Reframen in der App'] };
+    const KL = { whoop: 'Tiny Whoop', cine: 'Cinewhoop', fuenf: '5 Zoll', lr: 'Long Range' };
     const SAY = {
-      alle: 'Alle 17 Kameras. Wähl eine Kopter-Klasse, um zu sehen, was passt.',
+      alle: 'Alle 17 Kameras, der Balken zeigt das Gewicht. Wähl eine Kopter-Klasse, um zu sehen, was passt.',
       whoop: 'Tiny Whoops tragen praktisch keine Extra-Kamera. Gefilmt wird mit dem Videosystem selbst, etwa der <b>DJI O4 Air Unit</b>, oder mit dem DVR der Brille.',
       cine: 'Cinewhoops brauchen leichte Kameras: Mini-HD, Naked GoPro oder ein digitales System mit eigener Aufnahme.',
       fuenf: '5 Zoll trägt fast alles, auch eine volle Action-Cam. Achte auf die Startmasse: Ab 250 Gramm ist laut Bundesverkehrsministerium ein Kompetenznachweis Pflicht.',
       lr: 'Bei Long Range zählen Bildqualität und Laufzeit. Eine volle Action-Cam oder ein 360-Grad-Modell ist hier gut aufgehoben.'
     };
-    let shown = false;
+    const MAXG = Math.max(...CAMS.map(c => c.g || 0));
+    const info = c => {
+      const gy = GY[c.gy], fits = c.k.map(k => KL[k]).join(', ');
+      return `<p class="fm-cc-t"><span class="tag">${esc(c.t)}</span><span class="tag ${gy[0]}">${gy[1]}</span></p>` +
+        `<p class="fm-cc-n">${esc(c.n)}</p><p class="fm-cc-w"><b>${esc(c.gt)}</b></p><p class="fm-cc-s">${esc(c.s)}</p>` +
+        `<p class="fm-cc-k"><span>Passt zu</span> ${fits ? esc(fits) : 'eigene Drohne, keine Extra-Kamera'}</p>`;
+    };
+    let shown = false, cur = CAMS[0].n, demo = null;
+    const byName = n => CAMS.find(c => c.n === n);
+    function show(n, open) {
+      const c = byName(n); if (!c) return;
+      cur = n;
+      if (card) card.innerHTML = info(c);
+      $$('.fm-cam', list).forEach(b => {
+        const on = b.dataset.n === n; b.classList.toggle('sel', on);
+        if (open !== undefined) { const li = b.parentElement; const o = on && open; li.classList.toggle('open', o); b.setAttribute('aria-expanded', o); }
+      });
+    }
     function render() {
       const by = sort.value, arr = CAMS.slice();
       if (by === 'g') arr.sort((a, b) => (a.g == null) - (b.g == null) || (a.g || 0) - (b.g || 0));
       if (by === 'n') arr.sort((a, b) => a.n.localeCompare(b.n, 'de'));
       if (by === 't') arr.sort((a, b) => a.t.localeCompare(b.t, 'de') || (a.g || 999) - (b.g || 999));
-      list.innerHTML = arr.map(c => {
-        const gy = GY[c.gy];
-        return `<li class="fm-cam" data-k="${c.k.join(' ')}"><div class="fm-cam-n"><b>${esc(c.n)}</b><span>${esc(c.t)}</span></div>` +
-          `<div class="fm-cam-w"><i${c.g == null ? ' class="na"' : ''} style="--w:${c.g == null ? 0 : (shown ? c.g / 201 : 0).toFixed(3)}" data-w="${c.g == null ? 0 : (c.g / 201).toFixed(3)}"></i><span>${c.g == null ? '<em>' + esc(c.gt) + '</em>' : esc(c.gt)}</span></div>` +
-          `<p class="fm-cam-s">${esc(c.s)}</p><div class="fm-cam-g"><span class="tag ${gy[0]}">${gy[1]}</span></div></li>`;
+      list.innerHTML = arr.map((c, i) => {
+        const w = c.g == null ? 0 : c.g / MAXG;
+        return `<li><button type="button" class="fm-cam" data-n="${esc(c.n)}" data-k="${c.k.join(' ')}" aria-expanded="false" aria-controls="fm-cx-${i}">` +
+          `<span class="fm-cam-n">${esc(c.n)}<small>${esc(c.t)}</small></span>` +
+          `<span class="fm-cam-w">${c.g == null ? `<em>${esc(c.gt)}</em>` : `<i style="--w:${shown ? w.toFixed(3) : 0}" data-w="${w.toFixed(3)}"></i>`}</span>` +
+          `<span class="fm-cam-g">${c.g == null ? '' : de(c.g, c.g % 1 ? 1 : 0) + '&nbsp;g'}</span></button>` +
+          `<div class="fm-cam-x" id="fm-cx-${i}">${info(c)}</div></li>`;
       }).join('');
-      filter();
+      $$('.fm-cam', list).forEach(b => {
+        b.addEventListener('click', () => { stopDemo(); const li = b.parentElement; show(b.dataset.n, !li.classList.contains('open')); });
+        b.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { stopDemo(); show(b.dataset.n); } });
+        b.addEventListener('focus', () => show(b.dataset.n));
+      });
+      filter(); show(cur);
     }
     function filter() {
-      const k = radioVal('klasse'); let n = 0;
-      $$('.fm-cam', list).forEach(li => { const fit = k === 'alle' || li.dataset.k.split(' ').includes(k); li.classList.toggle('off', !fit); li.classList.toggle('fit', fit && k !== 'alle'); if (fit) n++; });
+      const k = radioVal('klasse'); let n = 0, first = null;
+      $$('.fm-cam', list).forEach(b => { const fit = k === 'alle' || b.dataset.k.split(' ').includes(k); b.parentElement.classList.toggle('off', !fit); b.parentElement.classList.toggle('fit', fit && k !== 'alle'); if (fit) { n++; if (!first) first = b.dataset.n; } });
       say.innerHTML = SAY[k] + (k !== 'alle' ? ` <b>${n} passen.</b>` : '');
+      return first;
     }
     const grow = () => { shown = true; $$('.fm-cam-w i', list).forEach(i => i.style.setProperty('--w', i.dataset.w)); };
-    $$('input[name=klasse]').forEach(r => r.addEventListener('change', filter));
+    $$('input[name=klasse]').forEach(r => r.addEventListener('change', () => { const f = filter(); const c = byName(cur); if (f && c && radioVal('klasse') !== 'alle' && !c.k.includes(radioVal('klasse'))) show(f); }));
     sort.addEventListener('change', () => { render(); if (shown) requestAnimationFrame(grow); });
     render();
     onVis(list, v => { if (v && !shown) setTimeout(grow, 200); }, '-10% 0px');
     const ks = ['alle', 'whoop', 'cine', 'fuenf', 'lr']; let i = 0;
-    auto(root, () => { i = (i + 1) % ks.length; setRadio('klasse', ks[i]); }, 2800, $('.fm-hint-shelf'));
-  }
-
-  /* Filmstreifen-Divider bewegt sich mit dem Scrollen */
-  function reel() {
-    const el = $('#fm-reel'); if (!el) return;
-    const ids = Array.from({ length: 13 }, (_, i) => 'k' + String(i + 1).padStart(2, '0'));
-    el.innerHTML = ids.concat(ids.slice(0, 5)).map(s => `<img src="media/filmen/${s}.webp" alt="" loading="lazy" width="320" height="180">`).join('');
-    if (!RM && hasG() && window.ScrollTrigger) gsap.fromTo(el, { x: 0 }, { x: () => -Math.max(0, el.scrollWidth - innerWidth) * .7, ease: 'none', scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
+    const st = auto(root, () => { i = (i + 1) % ks.length; setRadio('klasse', ks[i]); }, 2800, $('.fm-hint-shelf'));
+    // Selbst-Impuls: die Detailkarte wandert durch die Kameras, bis jemand eingreift
+    let j = 0, seen = false;
+    onVis(root, v => { seen = v; }, '0px');
+    if (!RM) demo = setInterval(() => { if (!st.on || !seen || document.hidden) return; const vis = $$('li:not(.off) .fm-cam', list); if (vis.length) show(vis[(j++) % vis.length].dataset.n); }, 1400);
+    function stopDemo() { if (demo) { clearInterval(demo); demo = null; } st.stop(); }
   }
 
   /* =========================================================
@@ -941,7 +942,8 @@
     const steps = $$('#fm-ig-steps button'); if (!steps.length) return;
     const scr = $$('#fm-ig .fm-ig-s'), root = $('.fm-collab');
     let cur = 0;
-    const go = (i) => { cur = i; steps.forEach((b, k) => b.setAttribute('aria-pressed', k === i)); scr.forEach((s, k) => s.classList.toggle('on', k === i)); };
+    const desc = $('#fm-ig-desc');
+    const go = (i) => { cur = i; steps.forEach((b, k) => b.setAttribute('aria-pressed', k === i)); scr.forEach((s, k) => s.classList.toggle('on', k === i)); const em = $('em', steps[i]); if (desc && em) desc.textContent = em.textContent; };
     steps.forEach((b, k) => b.addEventListener('click', () => go(k)));
     go(0);
     auto(root, () => go((cur + 1) % steps.length), 2800, $('.fm-hint-ig'));
@@ -976,22 +978,35 @@
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
     let n = 0;
-    box.innerHTML = CK.map(([g, items]) => `<div class="fm-ck-g"><h3>${g}</h3><ul>${items.map(t => { const id = 'fmck' + (n++); return `<li><label class="check"><input type="checkbox" id="${id}" data-k="${id}"${saved[id] ? ' checked' : ''}><span>${esc(t)}</span></label></li>`; }).join('')}</ul></div>`).join('');
+    // Vier Bereiche als Reiter: kurz statt einer langen Liste
+    box.innerHTML = `<div class="fm-ck-tabs" role="tablist" aria-label="Bereiche der Checkliste">${CK.map(([g, items], i) => `<button type="button" role="tab" id="fmck-t${i}" aria-controls="fmck-p${i}" aria-selected="${i === 0}" tabindex="${i ? -1 : 0}">${esc(g)}<small data-ck-c="${i}">0/${items.length}</small></button>`).join('')}</div>` +
+      CK.map(([g, items], i) => `<div class="fm-ck-g" role="tabpanel" id="fmck-p${i}" aria-labelledby="fmck-t${i}"${i ? ' hidden' : ''}><ul>${items.map(t => { const id = 'fmck' + (n++); return `<li><label class="check"><input type="checkbox" id="${id}" data-k="${id}"${saved[id] ? ' checked' : ''}><span>${esc(t)}</span></label></li>`; }).join('')}</ul></div>`).join('');
     const boxes = $$('input', box), ring = $('#fm-ck-ring'), nEl = $('#fm-ck-n'), st = $('#fm-ck-st');
+    const tabs = $$('[role=tab]', box), panes = $$('[role=tabpanel]', box);
+    const sel = (i, focus) => {
+      tabs.forEach((t, k) => { const on = k === i; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; panes[k].hidden = !on; });
+      if (focus) tabs[i].focus();
+      if (hasG() && !RM) gsap.from($$('li', panes[i]), { y: 10, opacity: 0, duration: .4, stagger: .03, ease: 'expo.out', clearProps: 'transform,opacity' });
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => sel(i));
+      t.addEventListener('keydown', e => { const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (!d) return; e.preventDefault(); sel((i + d + tabs.length) % tabs.length, true); });
+    });
     $('#fm-ck-t').textContent = boxes.length;
     function upd() {
       const done = boxes.filter(b => b.checked).length, f = done / boxes.length;
       ring.style.strokeDashoffset = (1 - f).toFixed(3); nEl.textContent = done;
       st.textContent = done === boxes.length ? 'BEREIT ZUM FILMEN' : done ? `CHECK ${done}/${boxes.length}` : 'STANDBY';
       st.classList.toggle('ok', done === boxes.length);
+      panes.forEach((p, i) => { const bs = $$('input', p), d = bs.filter(b => b.checked).length; const c = $(`[data-ck-c="${i}"]`, box); if (c) c.textContent = d + '/' + bs.length; tabs[i].classList.toggle('done', d === bs.length); });
       try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(boxes.filter(b => b.checked).map(b => [b.dataset.k, 1])))); } catch (e) {}
     }
     box.addEventListener('change', upd);
     $('#fm-ck-reset').addEventListener('click', () => { boxes.forEach(b => { b.checked = false; }); upd(); });
     upd();
-    // Selbst-Impuls: ein Lichtbalken wandert über die offenen Punkte
+    // Selbst-Impuls: ein Lichtbalken wandert über die offenen Punkte im sichtbaren Reiter
     let i = 0;
-    const scan = () => { const open = boxes.filter(b => !b.checked); $$('.check.scan', box).forEach(l => l.classList.remove('scan')); if (!open.length) return; const l = open[i++ % open.length].closest('.check'); l.classList.add('scan'); };
+    const scan = () => { const pane = panes.find(p => !p.hidden) || panes[0]; const open = $$('input', pane).filter(b => !b.checked); $$('.check.scan', box).forEach(l => l.classList.remove('scan')); if (!open.length) return; open[i++ % open.length].closest('.check').classList.add('scan'); };
     auto(box, scan, 1100, addHint(box, 'Antippen zum Abhaken'));
     box.addEventListener('pointerdown', () => $$('.check.scan', box).forEach(l => l.classList.remove('scan')));
   }
@@ -1133,7 +1148,7 @@
       while ((j = low.indexOf(qq, i)) !== -1) { out += e.slice(i, j) + '<mark>' + e.slice(j, j + qq.length) + '</mark>'; i = j + qq.length; }
       return out + e.slice(i);
     };
-    const more = $('#fm-gl-more'), FIRST = 24; let all = false;
+    const more = $('#fm-gl-more'), FIRST = matchMedia('(max-width:620px)').matches ? 6 : 9; let all = false;
     function render() {
       const q = input.value.trim().toLowerCase(), c = radioVal('glc');
       const items = GL.filter(([t, k, d]) => (c === 'Alle' || k === c) && (!q || (t + ' ' + d).toLowerCase().includes(q))).sort((a, b) => a[0].localeCompare(b[0], 'de', { numeric: true }));
@@ -1178,11 +1193,10 @@
   }
 
   function init() {
-    [head, timeline, quick, shelf, reel, shutterSim, slowmo, flicker, nd, fov, shake, beforeAfter, wb, bits, moves, uptilt, rates, reframe, music, post, checklist, glossary, slates, revealFix].forEach(f => {
+    [head, folds, asks, quick, shelf, shutterSim, slowmo, flicker, nd, fov, shake, beforeAfter, wb, bits, moves, uptilt, rates, reframe, music, post, checklist, glossary, slates, revealFix].forEach(f => {
       try { f(); } catch (e) { console.error('filmen.js:', f.name, e); }
     });
     if (window.ScrollTrigger) { ScrollTrigger.refresh(); addEventListener('load', () => ScrollTrigger.refresh()); }
-    if (FM.layoutTL) requestAnimationFrame(FM.layoutTL);
   }
   document.addEventListener('fcs:ready', init, { once: true });
 })();

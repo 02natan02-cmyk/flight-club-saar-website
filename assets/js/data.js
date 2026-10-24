@@ -89,6 +89,8 @@ FCS.data = {
     { ch: 5, a: 'OrcaFPV', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
     { ch: 6, a: 'Booyaka FPV', o: 'Grube Göttelborn', clip: 'media/kanal/booyaka.mp4', ig: 'wojtasczyk_natan' }
   ],
+  // Bestenliste „Kannst du fliegen?“: Make-Szenario 8156727 (Webhook → Datenspeicher „FCS Whoop Bestenliste“)
+  highscore: { url: 'https://hook.eu1.make.com/gq3bv9u25ybq6tzu5o2l9ecf4tcnuovk' },
   // Instagram @flightclubsaar, Aufrufe Stand 24.10.2026
   reels: [
     { id: 'DdRQZOsI0vS', v: 6203, d: '2026-09-14', t: 'Addicted to Dance 2026', c: 'mit @addicted2dancecontest', clip: 1 },

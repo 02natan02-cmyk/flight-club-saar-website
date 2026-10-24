@@ -16,8 +16,8 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fcs.css?v=3da5a2de">
-<link rel="stylesheet" href="assets/css/wissen.css?v=6e1198f0">
+<link rel="stylesheet" href="assets/css/fcs.css?v=befd523c">
+<link rel="stylesheet" href="assets/css/wissen.css?v=9e956a9d">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -39,7 +39,6 @@
   <div class="wi-head-cross" aria-hidden="true"><i></i></div>
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / FPV-Wissen</p>
-    <p class="kicker">Lernen im Flight Club Saar</p>
     <h1 class="h1" id="wi-h1" data-split>FPV-Wissen</h1>
     <p class="lede">Hier lernst du FPV zum Anfassen: Drohne zerlegen, Schaltplan anklicken, Kanäle planen und Schritt für Schritt zum ersten Flug.</p>
     <div class="btns wi-quick">
@@ -76,7 +75,6 @@
       </svg>
     <div class="osd-frame" aria-hidden="true"><i></i></div>
     <div class="wi-stage-head">
-      <p class="kicker">Bauteile</p>
       <h2 class="h2" id="drohne-h" data-split>Die Drohne in 3D</h2>
       <p class="wi-stage-lede">Zerleg eine 5-Zoll-Freestyle-Drohne und tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.</p>
     </div>
@@ -119,7 +117,6 @@
 <section class="sec wi-sec wi-sp" id="schaltplan" data-toc="Schaltplan" aria-labelledby="sp-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Verkabelung</p>
       <h2 class="h2" id="sp-h" data-split>Schaltplan zum Anklicken</h2>
       <p class="lede" data-reveal>Wähl dein Videosystem und deinen Empfänger, dann tipp auf eine Leitung: Du siehst, wohin sie gehört und was beim Löten oft schiefgeht.</p>
     </div>
@@ -177,7 +174,6 @@
 <section class="sec wi-sec wi-vs" id="video" data-toc="Videosysteme" aria-labelledby="vs-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Bild in die Brille</p>
       <h2 class="h2" id="vs-h" data-split>Videosysteme im Vergleich</h2>
       <p class="lede" data-reveal>Analog oder digital? Wähl ein System und schieb den Regler: So verändert sich dein Bild, wenn das Signal schwächer wird.</p>
     </div>
@@ -210,10 +206,13 @@
         </div>
       </div>
     </div>
-    <div class="wi-vs-detail panel" aria-live="polite">
-      <div class="wi-vs-dhead"><span class="tag amber" data-d-tag>Analog</span><h3 class="h3" data-d-name>Analog</h3><p class="wi-vs-rule">Digitale Systeme laufen nur mit Brillen desselben Systems, analoge Sender mit jeder analogen Brille.</p></div>
-      <dl class="wi-vs-rows" data-d-rows></dl>
-    </div>
+    <details class="fold wi-vs-detail">
+      <summary><span class="wi-vs-sum"><span class="tag amber" data-d-tag>Analog</span><span>Im Detail: <b data-d-name>Analog</b></span></span></summary>
+      <div class="fold-in" aria-live="polite">
+        <p class="wi-vs-rule">Digitale Systeme laufen nur mit Brillen desselben Systems, analoge Sender mit jeder analogen Brille.</p>
+        <dl class="wi-vs-rows" data-d-rows></dl>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -221,7 +220,6 @@
 <section class="sec wi-sec wi-ch" id="kanaele" data-toc="Kanäle" aria-labelledby="ch-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Analog 5,8 GHz</p>
       <h2 class="h2" id="ch-h" data-split>Kanäle und Frequenzen</h2>
       <p class="lede" data-reveal>Sag, wie viele ihr gleichzeitig fliegt: Der Kanal-Rechner schlägt Kanäle vor, die sich nicht stören und in Deutschland erlaubt sind.</p>
     </div>
@@ -279,7 +277,6 @@
   <div class="wrap">
     <div class="sec-head wi-way-head">
       <div>
-        <p class="kicker">Schritt für Schritt</p>
         <h2 class="h2" id="way-h" data-split>Dein Weg zum ersten Flug</h2>
         <p class="lede" data-reveal>Sechs Wegpunkte vom Simulator bis zum Spot. Zieh die Strecke zur Seite oder nimm die Pfeile.</p>
       </div>
@@ -348,7 +345,6 @@
 <section class="sec wi-sec wi-check" id="check" data-toc="Checkliste" aria-labelledby="check-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Vor dem Start</p>
       <h2 class="h2" id="check-h" data-split>Checkliste vor dem Flug</h2>
       <p class="lede" data-reveal>Geh sie vor jedem Akku durch und hak ab, was passt. Dein Stand bleibt auf diesem Gerät gespeichert.</p>
     </div>
@@ -398,9 +394,8 @@
 <section class="sec wi-sec wi-gl" id="glossar" data-toc="Glossar" aria-labelledby="gl-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Nachschlagen</p>
       <h2 class="h2" id="gl-h" data-split>Glossar</h2>
-      <p class="lede" data-reveal>Die Wörter, die du am Spot und in der WhatsApp-Gruppe hörst, kurz erklärt. Such einen Begriff oder filter nach Buchstabe und Thema.</p>
+      <p class="lede" data-reveal>Die Wörter, die du am Spot und in der WhatsApp-Gruppe hörst, kurz erklärt: Such einen Begriff oder wähl ein Thema.</p>
     </div>
     <div class="wi-gl-ctrl">
       <div class="field wi-gl-search">
@@ -419,7 +414,6 @@
           <label class="chip"><input type="radio" name="wi-cat" value="regeln"><span>Regeln</span></label>
         </div>
       </fieldset>
-      <div class="wi-gl-abc" role="group" aria-label="Nach Anfangsbuchstabe filtern"></div>
     </div>
     <p class="wi-gl-count" aria-live="polite"><b data-gl-n>9</b> <span data-gl-t>Begriffe für den Anfang</span></p>
     <dl class="wi-gl-grid">
@@ -481,7 +475,6 @@
   <div class="wi-horizon" aria-hidden="true"><i></i><b></b></div>
   <div class="osd wi-cta-osd" aria-hidden="true"><span class="blink" style="color:var(--green)">●</span> BEREIT</div>
   <div class="wrap wi-cta-in">
-    <p class="kicker">Nicht allein bauen</p>
     <h2 class="h2" id="cta-h" data-split>Frag den Verein</h2>
     <p class="lede" data-reveal>Du kommst beim Löten, in Betaflight oder bei der Kanalwahl nicht weiter? Im Flight Club Saar hilft dir jemand, der das schon hinter sich hat.</p>
     <div class="btns" data-reveal>
@@ -496,15 +489,15 @@
   <div class="wrap">
     <div class="foot-grid">
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social"><a href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" aria-label="Instagram @flightclubsaar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="TikTok @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></a><a href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="YouTube @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a></div></div>
-      <div><h4>Fliegen</h4><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
-      <div><h4>Lernen</h4><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
-      <div><h4>Verein</h4><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+      <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=b5b2c4f6"></script>
+<script src="assets/js/data.js?v=77e1c85b"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -514,6 +507,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=3f4b46c4"></script>
-<script src="assets/js/wissen.js?v=cdba1296" type="module"></script>
+<script src="assets/js/wissen.js?v=ce093523" type="module"></script>
 </body>
 </html>

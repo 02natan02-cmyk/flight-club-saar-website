@@ -15,6 +15,7 @@ PAGES = [
   ('hilfe.html', 'Technik-Hilfe · Flight Club Saar e. V.', 'Der FPV-Doktor hilft bei Betaflight, VTX, ELRS, Kanälen und Kompatibilität. Plus Forum-Fragen an den Verein.', 'hilfe', ['hilfe']),
   ('mitglied.html', 'Mitglied werden · Flight Club Saar e. V.', 'Online-Mitgliedsantrag mit SEPA-Lastschrift: 30 € im Jahr, 20 € unter 18, einmalig 20 € Aufnahme. Plus deine Mitgliedskarte zum Mitnehmen.', 'mitglied', ['mitglied']),
   ('filmen.html', 'Clip-Studio & FPV filmen · Flight Club Saar e. V.', 'Clip-Studio: Video hochladen, Vereinslogo und Sticker drauf, runterladen oder einsenden. Dazu der große Film-Ratgeber für FPV: Kameras, ND-Filter, Schnitt, Musik.', 'filmen', ['studio', 'filmen']),
+  ('simulator.html', 'FPV-Simulator · Flight Club Saar e. V.', 'FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller, Touch oder Tastatur durch die Turnhalle fliegen. Acro- und Angle-Modus, Betaflight-Rates, Rundenzeit.', 'sim', ['three', 'sim']),
   ('crew.html', 'Crew · Flight Club Saar e. V.', 'Die Piloten des Flight Club Saar, dein Profil mit Social-Links und die Pinnwand der Crew.', 'crew', ['crew']),
   ('markt.html', 'Biete/Suche · Flight Club Saar e. V.', 'Die Biete/Suche-Wand des Vereins: Kopter, Brillen und Teile von Piloten für Piloten. Kostenlos, vom Vorstand geprüft.', 'markt', ['markt']),
   ('impressum.html', 'Impressum · Flight Club Saar e. V.', 'Impressum des Flight Club Saar e. V.', '', ['recht']),
@@ -110,9 +111,9 @@ def foot():
   <div class="wrap">
     <div class="foot-grid">
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social">{soc}</div></div>
-      <div><h4>Fliegen</h4><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
-      <div><h4>Lernen</h4><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
-      <div><h4>Verein</h4><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+      <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
@@ -124,20 +125,19 @@ def scripts(extra, file):
     tags = [f'<script src="assets/js/data.js?v={ver("assets/js/data.js")}"></script>']
     tags += [f'<script src="{s}"></script>' for s in LIB['gsap']]
     if 'leaflet' in extra:
-        tags.insert(0, '<link rel="stylesheet" href="assets/lib/leaflet.css">')
         tags.append('<script src="assets/lib/leaflet.js"></script>')
     tags.append(f'<script src="assets/js/fcs.js?v={ver("assets/js/fcs.js")}"></script>')
     for e in extra:
         if e in ('leaflet', 'three'): continue
         js = f'assets/js/{e}.js'
         if (OUT / js).exists():
-            mod = ' type="module"' if 'three' in extra and e in ('home', 'wissen') else ''
+            mod = ' type="module"' if 'three' in extra and e in ('home', 'wissen', 'sim') else ''
             tags.append(f'<script src="{js}?v={ver(js)}"{mod}></script>')
         css = f'assets/css/{e}.css'
     return '\n'.join(tags)
 
 def page_css(extra):
-    out = []
+    out = ['<link rel="stylesheet" href="assets/lib/leaflet.css">'] if 'leaflet' in extra else []
     for e in extra:
         css = f'assets/css/{e}.css'
         if (OUT / css).exists(): out.append(f'<link rel="stylesheet" href="{css}?v={ver(css)}">')

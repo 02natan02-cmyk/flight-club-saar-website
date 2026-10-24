@@ -16,8 +16,9 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fcs.css?v=3da5a2de">
-<link rel="stylesheet" href="assets/css/spots.css?v=2a77cd83">
+<link rel="stylesheet" href="assets/css/fcs.css?v=befd523c">
+<link rel="stylesheet" href="assets/lib/leaflet.css">
+<link rel="stylesheet" href="assets/css/spots.css?v=d25cc237">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -48,15 +49,15 @@
 <section class="sec sp-sec sp-rules" id="regeln" data-toc="Regeln" aria-labelledby="regeln-h">
   <div class="wrap">
     <div class="rl-head">
-      <h2 class="h2 sp-h2" id="regeln-h" data-split>Jeder fliegt auf eigene Verantwortung.</h2>
-      <p class="rl-intro">Die Spots auf dieser Karte sind Orte, an denen sich Piloten aus dem Verein zum Fliegen treffen oder getroffen haben. Der Flight Club Saar e. V. veranstaltet dort nichts, ist nicht Eigentümer und gibt keine Erlaubnis zum Betreten oder Fliegen.</p>
+      <h2 class="h2 sp-h2" id="regeln-h">Jeder fliegt auf eigene Verantwortung.</h2>
+      <p class="rl-intro">Die Spots auf dieser Karte sind Orte, an denen sich Piloten aus dem Verein zum Fliegen treffen oder getroffen haben. Der Flight Club Saar e.&nbsp;V. veranstaltet dort nichts, ist nicht Eigentümer und gibt keine Erlaubnis zum Betreten oder Fliegen.</p>
     </div>
 
-    <div class="rl-rail" id="rl-rail">
+    <div class="rl-rail" id="rl-rail" role="region" aria-label="Die fünf Regeln" tabindex="0">
       <ol class="rl-cards" id="rl-cards">
         <li class="rl-card">
           <span class="rl-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><b>1</b></span>
-          <h3 class="rl-t">Haftpflichtversicherung ist Pflicht.</h3>
+          <h3 class="rl-t">Haftpflicht&shy;versicherung ist Pflicht.</h3>
           <p>Ohne eine Versicherung, die deine Drohne abdeckt, fliegst du nicht.</p>
         </li>
         <li class="rl-card">
@@ -103,7 +104,7 @@
   <div class="wrap">
     <div class="mp-head">
       <h2 class="h2 sp-h2" id="karte-h" data-split>Unsere Spots</h2>
-      <p class="mp-intro">Tipp auf einen Punkt oder einen Spot in der Liste: Er wird auf der Karte markiert. Mit „Route“ führt dich Google Maps hin.</p>
+      <p class="mp-intro">Tipp auf einen Punkt oder einen Spot in der Liste, er wird auf der Karte markiert. Mit „Route“ führt dich Google Maps hin.</p>
     </div>
 
     <div class="mp-bar">
@@ -148,7 +149,7 @@
       <input type="hidden" name="Formular" value="Spot bewerten">
       <input type="hidden" name="Spot" id="rate-spot">
       <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-      <p class="rf-h">Warst du dort? Bewerte den Spot.</p>
+      <p class="rf-h">Warst du dort? Tipp auf die Sterne.</p>
       <div class="field rf-stars">
         <span class="lbl" id="rf-st">Sterne</span>
         <div class="stars" role="radiogroup" aria-labelledby="rf-st">
@@ -160,10 +161,10 @@
         </div>
         <span class="err">Bitte tipp auf die Sterne.</span>
       </div>
-      <div class="field"><label for="r-txt">Kommentar (freiwillig)</label><input id="r-txt" name="Kommentar" placeholder="Tipp für andere Piloten"></div>
-      <div class="field"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
-      <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Bewertung darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-      <button class="btn solid" type="submit">Bewertung senden</button>
+      <div class="field rf-more"><label for="r-txt">Kommentar <span class="opt">freiwillig</span></label><input id="r-txt" name="Kommentar" placeholder="Ein Tipp für andere Piloten"></div>
+      <div class="field rf-more"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
+      <label class="check rf-more"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Bewertung darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+      <button class="btn solid rf-more" type="submit">Bewertung senden</button>
       <div class="form-ok sp-ok" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><p><b>Danke!</b> Deine Bewertung erscheint nach der Freigabe durch den Vorstand.</p></div>
       <div class="form-bad sp-bad" hidden><p><b>Das hat nicht geklappt.</b> Bitte versuch es noch einmal.</p></div>
     </form>
@@ -176,10 +177,10 @@
     <div class="send-side">
       <h2 class="h2 sp-h2" id="send-h" data-split>Spot melden</h2>
       <p class="send-intro">Du kennst einen guten Platz? Schick ihn uns. Der Vorstand prüft jeden Vorschlag und schaltet ihn frei, in der Regel innerhalb von 24 Stunden.</p>
-      <ol class="send-flow" aria-label="So geht es weiter">
-        <li><b>1</b>Du schickst den Spot</li>
-        <li><b>2</b>Der Vorstand prüft ihn</li>
-        <li><b>3</b>Er erscheint auf der Karte</li>
+      <ol class="send-flow" aria-label="So geht es nach dem Senden weiter">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg>Du schickst den Spot</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20M8.5 11l2 2 3.5-3.5"/></svg>Der Vorstand prüft ihn</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Er erscheint auf der Karte</li>
       </ol>
       <p class="send-wa">Lieber direkt schreiben? <span id="wa-btns"></span></p>
     </div>
@@ -206,11 +207,11 @@
           <div class="field"><span class="lbl">Foto</span>
             <label class="drop" id="drop"><input type="file" name="attachment" accept="image/*" id="s-foto" aria-label="Foto vom Spot wählen">
               <span class="drop-in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span><b>Foto wählen</b><small>oder hierher ziehen</small></span></span>
-              <img id="s-prev" alt="" hidden>
             </label>
             <button class="drop-x" type="button" id="s-foto-x" hidden>Foto entfernen</button>
+            <span class="hint geo-bad" id="foto-msg" aria-live="polite"></span>
           </div>
-          <div class="field"><label for="s-txt">Ein Satz dazu</label><textarea id="s-txt" name="Beschreibung" rows="2" placeholder="Parken, Hindernisse, beste Tageszeit …"></textarea></div>
+          <div class="field"><label for="s-txt">Ein Satz dazu</label><textarea id="s-txt" name="Beschreibung" rows="3" placeholder="Parken, Hindernisse, beste Tageszeit …"></textarea></div>
         </div>
       </fieldset>
 
@@ -237,16 +238,15 @@
   <div class="wrap">
     <div class="foot-grid">
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social"><a href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" aria-label="Instagram @flightclubsaar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="TikTok @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></a><a href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="YouTube @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a></div></div>
-      <div><h4>Fliegen</h4><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
-      <div><h4>Lernen</h4><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
-      <div><h4>Verein</h4><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+      <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
   </div>
 </footer>
-<link rel="stylesheet" href="assets/lib/leaflet.css">
-<script src="assets/js/data.js?v=b5b2c4f6"></script>
+<script src="assets/js/data.js?v=77e1c85b"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -257,6 +257,6 @@
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/lib/leaflet.js"></script>
 <script src="assets/js/fcs.js?v=3f4b46c4"></script>
-<script src="assets/js/spots.js?v=2e436f8f"></script>
+<script src="assets/js/spots.js?v=15e10577"></script>
 </body>
 </html>

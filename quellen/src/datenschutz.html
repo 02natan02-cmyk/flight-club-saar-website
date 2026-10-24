@@ -13,11 +13,11 @@
   <div class="wrap recht">
     <nav class="rnav" aria-label="Abschnitte">
       <p class="rnav-h">Kapitel</p>
-      <a href="#wer">Verantwortlich</a><a href="#kurz">Auf einen Blick</a><a href="#hosting">Hosting</a><a href="#formulare">Formulare</a><a href="#antrag">Mitgliedsantrag</a><a href="#einsendungen">Einsendungen</a><a href="#extern">Externe Inhalte</a><a href="#geraet">Auf deinem Gerät</a><a href="#rechte">Deine Rechte</a>
+      <a href="#wer">Verantwortlich</a><a href="#kurz">Auf einen Blick</a><a href="#hosting">Hosting</a><a href="#formulare">Formulare</a><a href="#antrag">Mitgliedsantrag</a><a href="#einsendungen">Einsendungen</a><a href="#bestenliste">Bestenliste</a><a href="#extern">Externe Inhalte</a><a href="#geraet">Auf deinem Gerät</a><a href="#rechte">Deine Rechte</a>
       <a class="rnav-alt" href="impressum.html">Zum Impressum <span aria-hidden="true">→</span></a>
     </nav>
     <div class="rtext">
-      <div class="rtools"><span class="rtools-t">9 Kapitel · antippen</span><button class="rall" type="button" aria-pressed="false">Alle öffnen</button></div>
+      <div class="rtools"><span class="rtools-t">10 Kapitel · antippen</span><button class="rall" type="button" aria-pressed="false">Alle öffnen</button></div>
 
       <details class="rch" id="wer" open>
         <summary><h2>Verantwortlich</h2></summary>
@@ -39,6 +39,7 @@
             <li>Schriften und Programmbibliotheken liegen auf unserem eigenen Server. Beim Aufruf werden dafür keine fremden Server angefragt.</li>
             <li>Inhalte von Instagram, Kartenkacheln und ähnliche fremde Inhalte laden erst, wenn du sie mit einem Klick aktivierst.</li>
             <li>Daten aus Formularen bekommen nur wir, und zwar per E-Mail.</li>
+            <li>In der Bestenliste des Spiels steht nur, was du selbst einträgst: einen Namen deiner Wahl und deine Punkte.</li>
           </ul>
         </div>
       </details>
@@ -72,6 +73,15 @@
         </div>
       </details>
 
+      <details class="rch" id="bestenliste" open>
+        <summary><h2>Bestenliste im Spiel</h2></summary>
+        <div class="rch-in">
+          <p>Im Spiel „Kannst du fliegen?“ kannst du nach einer Runde freiwillig einen Namen eintragen und dein Ergebnis speichern. Dann übertragen wir diesen Namen zusammen mit Punkten, Gates, Combo, Flugzeit, Geräteart (Handy oder Computer) und Datum an den Dienst Make (make.com, Rechenzentrum in der EU). Dort wird der Eintrag gespeichert und auf dieser Website allen Besuchern in der Bestenliste angezeigt. Nimm deshalb gern einen Spitznamen statt deines echten Namens.</p>
+          <p>Rechtsgrundlage ist deine Einwilligung durch das Eintragen (Art. 6 Abs. 1 lit. a DSGVO). Möchtest du einen Eintrag löschen lassen, schreib uns an <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a>. Die Bestenliste lädt erst, wenn du das Spiel startest oder sie selbst öffnest. Dabei wird technisch deine IP-Adresse an Make übertragen, damit die Liste ausgeliefert werden kann.</p>
+          <p>Der FPV-Simulator läuft komplett in deinem Browser. Deine Funke oder dein Controller wird nur dort ausgelesen, nichts davon wird gesendet.</p>
+        </div>
+      </details>
+
       <details class="rch" id="extern" open>
         <summary><h2>Externe Inhalte und Links</h2></summary>
         <div class="rch-in">
@@ -89,7 +99,7 @@
       <details class="rch" id="geraet" open>
         <summary><h2>Auf deinem Gerät</h2></summary>
         <div class="rch-in">
-          <p>Für ein paar Komfortfunktionen merkt sich die Seite Kleinigkeiten im Speicher deines Browsers (localStorage und sessionStorage), zum Beispiel ob du das Intro schon gesehen hast, abgehakte Punkte auf Checklisten oder deinen Bestwert im Whoop-Rennen. Diese Daten bleiben auf deinem Gerät und werden nicht an uns übertragen. Du kannst sie über die Einstellungen deines Browsers löschen.</p>
+          <p>Für ein paar Komfortfunktionen merkt sich die Seite Kleinigkeiten im Speicher deines Browsers (localStorage und sessionStorage), zum Beispiel ob du das Intro schon gesehen hast, abgehakte Punkte auf Checklisten deinen Bestwert im Whoop-Rennen oder die Einstellungen, Bestzeiten und die Tastenbelegung deiner Funke im Simulator. Diese Daten bleiben auf deinem Gerät und werden nicht an uns übertragen. Du kannst sie über die Einstellungen deines Browsers löschen.</p>
         </div>
       </details>
 
@@ -119,7 +129,7 @@
   function label() { var open = chs.every(function (c) { return c.open; }); all.textContent = open ? 'Alle schließen' : 'Alle öffnen'; all.setAttribute('aria-pressed', open); }
   function mode() {
     var d = mq.matches, h = hashEl(); R.classList.toggle('desk', d);
-    chs.forEach(function (c, i) { c.open = d || i === 0 || (h && c.contains(h)) || c.dataset.u === '1'; });
+    chs.forEach(function (c, i) { c.open = d || i === 0 || (h && c.contains(h)) || c.dataset.u === '1'; c.querySelector('summary').tabIndex = d ? -1 : 0; });
     label();
   }
   mode(); mq.addEventListener ? mq.addEventListener('change', mode) : mq.addListener(mode);

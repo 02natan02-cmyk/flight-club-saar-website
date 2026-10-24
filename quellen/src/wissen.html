@@ -8,7 +8,6 @@
   <div class="wi-head-cross" aria-hidden="true"><i></i></div>
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / FPV-Wissen</p>
-    <p class="kicker">Lernen im Flight Club Saar</p>
     <h1 class="h1" id="wi-h1" data-split>FPV-Wissen</h1>
     <p class="lede">Hier lernst du FPV zum Anfassen: Drohne zerlegen, Schaltplan anklicken, Kanäle planen und Schritt für Schritt zum ersten Flug.</p>
     <div class="btns wi-quick">
@@ -45,7 +44,6 @@
       </svg>
     <div class="osd-frame" aria-hidden="true"><i></i></div>
     <div class="wi-stage-head">
-      <p class="kicker">Bauteile</p>
       <h2 class="h2" id="drohne-h" data-split>Die Drohne in 3D</h2>
       <p class="wi-stage-lede">Zerleg eine 5-Zoll-Freestyle-Drohne und tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.</p>
     </div>
@@ -88,7 +86,6 @@
 <section class="sec wi-sec wi-sp" id="schaltplan" data-toc="Schaltplan" aria-labelledby="sp-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Verkabelung</p>
       <h2 class="h2" id="sp-h" data-split>Schaltplan zum Anklicken</h2>
       <p class="lede" data-reveal>Wähl dein Videosystem und deinen Empfänger, dann tipp auf eine Leitung: Du siehst, wohin sie gehört und was beim Löten oft schiefgeht.</p>
     </div>
@@ -146,7 +143,6 @@
 <section class="sec wi-sec wi-vs" id="video" data-toc="Videosysteme" aria-labelledby="vs-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Bild in die Brille</p>
       <h2 class="h2" id="vs-h" data-split>Videosysteme im Vergleich</h2>
       <p class="lede" data-reveal>Analog oder digital? Wähl ein System und schieb den Regler: So verändert sich dein Bild, wenn das Signal schwächer wird.</p>
     </div>
@@ -179,10 +175,13 @@
         </div>
       </div>
     </div>
-    <div class="wi-vs-detail panel" aria-live="polite">
-      <div class="wi-vs-dhead"><span class="tag amber" data-d-tag>Analog</span><h3 class="h3" data-d-name>Analog</h3><p class="wi-vs-rule">Digitale Systeme laufen nur mit Brillen desselben Systems, analoge Sender mit jeder analogen Brille.</p></div>
-      <dl class="wi-vs-rows" data-d-rows></dl>
-    </div>
+    <details class="fold wi-vs-detail">
+      <summary><span class="wi-vs-sum"><span class="tag amber" data-d-tag>Analog</span><span>Im Detail: <b data-d-name>Analog</b></span></span></summary>
+      <div class="fold-in" aria-live="polite">
+        <p class="wi-vs-rule">Digitale Systeme laufen nur mit Brillen desselben Systems, analoge Sender mit jeder analogen Brille.</p>
+        <dl class="wi-vs-rows" data-d-rows></dl>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -190,7 +189,6 @@
 <section class="sec wi-sec wi-ch" id="kanaele" data-toc="Kanäle" aria-labelledby="ch-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Analog 5,8 GHz</p>
       <h2 class="h2" id="ch-h" data-split>Kanäle und Frequenzen</h2>
       <p class="lede" data-reveal>Sag, wie viele ihr gleichzeitig fliegt: Der Kanal-Rechner schlägt Kanäle vor, die sich nicht stören und in Deutschland erlaubt sind.</p>
     </div>
@@ -248,7 +246,6 @@
   <div class="wrap">
     <div class="sec-head wi-way-head">
       <div>
-        <p class="kicker">Schritt für Schritt</p>
         <h2 class="h2" id="way-h" data-split>Dein Weg zum ersten Flug</h2>
         <p class="lede" data-reveal>Sechs Wegpunkte vom Simulator bis zum Spot. Zieh die Strecke zur Seite oder nimm die Pfeile.</p>
       </div>
@@ -317,7 +314,6 @@
 <section class="sec wi-sec wi-check" id="check" data-toc="Checkliste" aria-labelledby="check-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Vor dem Start</p>
       <h2 class="h2" id="check-h" data-split>Checkliste vor dem Flug</h2>
       <p class="lede" data-reveal>Geh sie vor jedem Akku durch und hak ab, was passt. Dein Stand bleibt auf diesem Gerät gespeichert.</p>
     </div>
@@ -367,9 +363,8 @@
 <section class="sec wi-sec wi-gl" id="glossar" data-toc="Glossar" aria-labelledby="gl-h">
   <div class="wrap">
     <div class="sec-head">
-      <p class="kicker">Nachschlagen</p>
       <h2 class="h2" id="gl-h" data-split>Glossar</h2>
-      <p class="lede" data-reveal>Die Wörter, die du am Spot und in der WhatsApp-Gruppe hörst, kurz erklärt. Such einen Begriff oder filter nach Buchstabe und Thema.</p>
+      <p class="lede" data-reveal>Die Wörter, die du am Spot und in der WhatsApp-Gruppe hörst, kurz erklärt: Such einen Begriff oder wähl ein Thema.</p>
     </div>
     <div class="wi-gl-ctrl">
       <div class="field wi-gl-search">
@@ -388,7 +383,6 @@
           <label class="chip"><input type="radio" name="wi-cat" value="regeln"><span>Regeln</span></label>
         </div>
       </fieldset>
-      <div class="wi-gl-abc" role="group" aria-label="Nach Anfangsbuchstabe filtern"></div>
     </div>
     <p class="wi-gl-count" aria-live="polite"><b data-gl-n>9</b> <span data-gl-t>Begriffe für den Anfang</span></p>
     <dl class="wi-gl-grid">
@@ -450,7 +444,6 @@
   <div class="wi-horizon" aria-hidden="true"><i></i><b></b></div>
   <div class="osd wi-cta-osd" aria-hidden="true"><span class="blink" style="color:var(--green)">●</span> BEREIT</div>
   <div class="wrap wi-cta-in">
-    <p class="kicker">Nicht allein bauen</p>
     <h2 class="h2" id="cta-h" data-split>Frag den Verein</h2>
     <p class="lede" data-reveal>Du kommst beim Löten, in Betaflight oder bei der Kanalwahl nicht weiter? Im Flight Club Saar hilft dir jemand, der das schon hinter sich hat.</p>
     <div class="btns" data-reveal>

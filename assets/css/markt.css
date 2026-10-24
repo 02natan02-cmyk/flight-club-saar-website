@@ -10,7 +10,7 @@
 main [hidden]{display:none!important}
 
 /* ---------- Kopf ---------- */
-.mk-head{min-height:88svh;padding-bottom:40px}
+.mk-head{min-height:0;padding:118px 0 40px}
 .mk-head .mk-head-bg{filter:saturate(1.25) brightness(.36) blur(1.5px);transform:scale(1.08);object-position:50% 40%}
 .mk-head::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(70% 70% at 78% 40%,rgba(63,224,255,.10),transparent 60%),linear-gradient(90deg,rgba(4,9,18,.85) 0%,rgba(4,9,18,.35) 60%,rgba(4,9,18,.6) 100%)}
 .mk-osd-tl{top:96px;left:clamp(26px,5vw,60px)}
@@ -46,8 +46,8 @@ main [hidden]{display:none!important}
 .mk-hang:hover .mk-tg em{color:#fff}
 
 /* ---------- Wegpunkte ---------- */
-.mk-plan{position:relative;padding:20px 0 clamp(60px,9vh,110px)}
-.mk-plan-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 24px;margin-bottom:26px;padding-top:26px;border-top:1px solid var(--line)}
+.mk-plan{position:relative;margin:0 0 clamp(22px,3vw,34px);padding:18px clamp(16px,2.4vw,28px) 20px;border-radius:var(--r);border:1px solid var(--line);background:linear-gradient(180deg,rgba(16,36,74,.4),rgba(8,18,38,.5))}
+.mk-plan-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 24px;margin-bottom:20px}
 .mk-plan-head .h3{margin:0;color:var(--sig)}
 .mk-plan-head p{margin:0;font-size:15px;max-width:62ch}
 .mk-wps-box{position:relative}
@@ -89,7 +89,7 @@ main [hidden]{display:none!important}
 }
 
 /* ---------- Wand: Steuerung ---------- */
-.mk-wall{padding-top:clamp(40px,7vh,80px)}
+.mk-wall{padding-top:clamp(28px,4.5vh,56px)}
 .mk-ctrl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
 .mk-seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:5px;border-radius:999px;border:1px solid var(--line-hi);background:rgba(3,8,18,.6)}
 .mk-seg label{position:relative;z-index:2;cursor:pointer}
@@ -351,7 +351,7 @@ main [hidden]{display:none!important}
 .mk-arm.armed .mk-arm-osd b{color:var(--green);text-shadow:0 0 12px rgba(62,224,138,.7)}
 .mk-checks{position:relative;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .mk-checks::after{content:"";position:absolute;left:-2%;right:-2%;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--sig),transparent);box-shadow:0 0 14px var(--sig);opacity:0;pointer-events:none}
-.mk-pre.idle .mk-checks::after{animation:mklist 3.6s ease-in-out infinite}
+.mk-pre.idle .mk-checks::after{animation:mklist 3.6s ease-in-out 1.2s 3}
 @keyframes mklist{0%{opacity:0;transform:translateY(0)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateY(var(--sh,200px))}}
 .mk-chk{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:14px;align-items:start;height:100%;padding:16px 16px 16px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(2,6,14,.5);cursor:pointer;transition:border-color .3s,background .3s}
 .mk-chk:hover{border-color:var(--line-hi)}
@@ -367,7 +367,7 @@ main [hidden]{display:none!important}
 .mk-chk-t span{font-size:14.5px;color:#c2d3ea;line-height:1.5}
 .mk-chk-t a{color:var(--sig)}
 .mk-chk-s{font-size:10.5px;letter-spacing:.18em;color:var(--amber);padding-top:4px}
-.mk-pre.idle .mk-chk-s{animation:blink 1.2s steps(2,end) infinite}
+.mk-pre.idle .mk-chk-s{animation:blink 1.2s steps(2,end) 8}
 .mk-chk input:checked~.mk-chk-s{color:var(--green);animation:none}
 .mk-fine{margin:18px 0 0;font-size:13.5px;color:var(--mute);max-width:80ch}
 @media (max-width:760px){.mk-checks{grid-template-columns:minmax(0,1fr)}.mk-pre-head{grid-template-columns:minmax(0,1fr)}.mk-arm{grid-row:1;justify-self:start;grid-template-columns:auto auto;align-items:center}.mk-armq{width:110px}.mk-arm-osd{justify-items:start}}
@@ -452,3 +452,42 @@ html.mk-lock,html.mk-lock body{overflow:hidden}
   .mk-goggle::after{display:none}
   .mk-card{transform:none!important}
 }
+
+/* ---------- Runde 2: kürzer und übersichtlicher ---------- */
+.mk-wall.sec,.mk-send.sec,.mk-comm.sec,.mk-safe.sec{padding-bottom:clamp(48px,7vh,88px)}
+.mk-send.sec,.mk-comm.sec,.mk-safe.sec{padding-top:clamp(48px,7vh,88px)}
+.mk-sh{margin-bottom:clamp(20px,3vw,30px);gap:8px}
+.mk-sh .h2{font-size:clamp(40px,5.4vw,76px);margin:0}
+.mk-sh .lede{margin:0;font-size:clamp(16px,1.3vw,18px)}
+.mk-comm .h2,.mk-pre-head .h2{font-size:clamp(40px,5.4vw,76px)}
+.mk-comm-txt .lede{font-size:clamp(16px,1.3vw,18px)}
+.mk-head-txt .lede{margin:16px 0 22px;font-size:clamp(16px,1.4vw,19px)}
+.mk-badges{margin-top:18px}
+.mk-wp-now{display:none}
+/* Leere Wand: keine Filter ohne Anzeigen, nur der Leerzustand */
+.mk-wall.is-empty .mk-ctrl,.mk-wall.is-empty .mk-kats,.mk-wall.is-empty .mk-wall-hint,.mk-wall.is-empty .mk-readout{display:none}
+.mk-orbit{aspect-ratio:1/.62}
+@media (max-width:900px){.mk-head{padding:104px 0 30px}}
+@media (max-width:760px){
+  /* Ablauf: drei Wegpunkte nebeneinander, der aktive Text darunter */
+  .mk-wps{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .mk-wp{justify-items:center;text-align:center;gap:0}
+  .mk-wp-btn{grid-auto-flow:row;justify-content:center;gap:8px;text-align:center}
+  .mk-wp-node{width:52px;height:52px}
+  .mk-wp-t{font-size:13px}
+  .mk-wp p{display:none}
+  .mk-wp-now{display:block;margin:14px 0 0;min-height:3em;color:#d6e4f5;font-size:15px;line-height:1.5}
+  .mk-plan-head p{font-size:14px}
+}
+@media (max-width:620px){
+  .mk-rail-box{display:none}
+  .mk-pv-tilt{max-width:220px}
+  .mk-plan-head p{display:none}
+  .mk-pv-label{margin-bottom:6px}
+  .mk-orbit{aspect-ratio:1/.8}
+}
+/* Endlos-Animationen laufen nur, solange ihr Abschnitt zu sehen ist */
+.mk-off *,.mk-off *::before,.mk-off *::after{animation-play-state:paused!important}
+.mk-errsum{padding:12px 16px;border-radius:12px;border:1px solid rgba(255,75,92,.55);background:rgba(255,75,92,.08);color:#ffd2d6;font-size:15px;line-height:1.5}
+.mk-errsum b{color:#fff}
+.mk-form .check.bad{border-color:var(--red);background:rgba(255,75,92,.06)}

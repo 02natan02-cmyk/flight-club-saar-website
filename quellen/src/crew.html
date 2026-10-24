@@ -1,348 +1,79 @@
-<!-- 1 · SEITENKOPF -->
+<!-- SEITENKOPF -->
 <section class="pagehead cw-head">
-  <video class="bgvid" data-auto muted loop playsinline preload="metadata" poster="media/schiff.webp" data-src="media/schiff.mp4"></video>
-  <div class="scanlines"></div><div class="vignette"></div><div class="osd-frame"><i></i></div>
-  <div class="osd cw-osd-l"><span class="blink" style="color:var(--red)">●</span> REC · CREW-KANAL</div>
+  <video class="bgvid" data-auto muted loop playsinline preload="metadata" poster="media/schiff.webp" data-src="media/schiff.mp4" aria-hidden="true"></video>
+  <div class="scanlines" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div><div class="osd-frame" aria-hidden="true"><i></i></div>
+  <div class="osd cw-osd-l" aria-hidden="true"><span class="blink" style="color:var(--red)">●</span> REC · CREW-KANAL</div>
   <div class="osd cw-osd-r" aria-hidden="true"><b id="cw-clock">00:00</b></div>
   <div class="wrap cw-head-grid">
     <div class="cw-head-txt">
-      <p class="crumb"><a href="index.html">Start</a> / Crew-Bereich</p>
-      <p class="kicker">Für Mitglieder</p>
-      <h1 class="h1" data-split>Crew-Bereich</h1>
-      <p class="lede">Hier landet alles, was du für den Verein beisteuerst: dein Clip, dein Profil, dein Beitrag auf der Pinnwand. Du brauchst kein Login. Alles geht an den Vorstand und wird vor dem Veröffentlichen geprüft, so schnell es geht.</p>
+      <p class="crumb"><a href="index.html">Start</a> / Crew</p>
+      <h1 class="h1" data-split>Die Crew</h1>
+      <p class="lede">Hier siehst du, wer bei uns fliegt, ergänzt deine eigene Pilotenkarte und schreibst auf die Pinnwand, ganz ohne Login.</p>
     </div>
-    <nav class="cw-menu" id="cw-menu" aria-label="Crew-Menü">
+    <nav class="cw-menu" id="cw-menu" aria-label="Schnellwahl Crew">
       <p class="cw-menu-t hud" aria-hidden="true">CREW-MENÜ</p>
-      <a href="#studio"><b>Clip-Studio</b><small>Logo und Sticker aufs Video</small></a>
-      <a href="#einsenden"><b>Clip einsenden</b><small>Ab zum Vorstand</small></a>
-      <a href="#werkzeuge"><b>Werkzeugkasten</b><small>Musik, Schnitt, selbst posten</small></a>
+      <a href="#crew"><b>Piloten</b><small>Wer bei uns fliegt</small></a>
       <a href="#profil"><b>Profil ergänzen</b><small>Deine Karte in der Crew</small></a>
       <a href="#pinnwand"><b>Pinnwand</b><small>Beiträge aus der Crew</small></a>
+      <a href="filmen.html#studio"><b>Clip-Studio</b><small>Logo aufs Video, fertig</small></a>
       <p class="cw-menu-f hud" aria-hidden="true">Pfeiltasten wählen · Enter öffnet</p>
     </nav>
   </div>
 </section>
 
-<!-- 2 · CLIP-STUDIO -->
-<section class="sec cw-studio" id="studio">
+<!-- VERWEIS: CLIP-STUDIO -->
+<section class="cw-csc" aria-labelledby="csc-h">
   <div class="wrap">
-    <div class="sec-head">
-      <p class="kicker">Clip-Studio</p>
-      <h2 class="h2" data-split>Logo drauf, fertig.</h2>
-      <p class="lede" data-reveal>Wähl dein Video, zieh das Vereinslogo oder andere Sticker drauf, stell das Format für Reels, Feed oder YouTube ein und rendere es. Das alles passiert in deinem Browser. Dein Video geht erst an uns, wenn du es selbst einsendest.</p>
-    </div>
-
-    <div class="st" id="st">
-      <div class="st-main">
-        <div class="st-stagewrap" id="st-wrap">
-          <div class="st-stage" id="st-stage">
-            <canvas id="st-cv" aria-hidden="true"></canvas>
-            <div class="st-layer" id="st-layer" role="group" aria-label="Sticker auf dem Video"></div>
-            <div class="st-drop" id="st-drop">
-              <label class="btn solid" for="st-file"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>Eigenes Video wählen</label>
-              <span>oder hierher ziehen · MP4, MOV oder WebM</span>
-            </div>
-            <div class="st-dragover" aria-hidden="true"><b>Loslassen</b><span>Video wird nur in deinem Browser geöffnet</span></div>
-            <p class="st-hint" id="st-hint" aria-hidden="true"><span class="st-hint-dot"></span><span id="st-hint-t">Zieh die Sticker aufs Video</span></p>
-            <div class="st-err" id="st-err" role="alert" hidden></div>
-          </div>
-        </div>
-        <input class="sr" type="file" id="st-file" accept="video/mp4,video/quicktime,video/webm,video/*">
-
-        <div class="st-transport">
-          <div class="st-osd hud" aria-hidden="true"><span id="st-tag" class="st-tag">DEMO</span><span id="st-fmt">ORIGINAL</span></div>
-          <button class="st-ic" type="button" id="st-play" aria-label="Abspielen"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M7 4.5v15l13-7.5z"/><path class="i-pause" d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
-          <span class="st-time hud" id="st-time">0:00 / 0:00</span>
-          <button class="st-ic" type="button" id="st-mute" aria-label="Ton" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="i-on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="i-off" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-          <span class="st-name" id="st-name">Beispielvideo</span>
-          <label class="btn ghost st-other" for="st-file">Video wählen</label>
-        </div>
-
-        <div class="tl" id="tl" aria-label="Video kürzen">
-          <canvas class="tl-strip" id="tl-strip" aria-hidden="true"></canvas>
-          <div class="tl-shade tl-l" id="tl-sl"></div><div class="tl-shade tl-r" id="tl-sr"></div>
-          <div class="tl-win" id="tl-win"></div>
-          <div class="tl-h tl-a" id="tl-a" role="slider" tabindex="0" aria-label="Start des Clips" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><i></i></div>
-          <div class="tl-h tl-b" id="tl-b" role="slider" tabindex="0" aria-label="Ende des Clips" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><i></i></div>
-          <div class="tl-ph" id="tl-ph" aria-hidden="true"></div>
-        </div>
-        <div class="tl-read hud"><span>Start <b id="tl-ra">0:00,0</b></span><span>Länge <b id="tl-rl">0,0 s</b> <em>max. 60 s</em></span><span>Ende <b id="tl-rb">0:00,0</b></span></div>
-        <p class="tl-hint">Kürzen: Zieh die gelben Griffe oder das ganze Fenster. Mit den Pfeiltasten geht es auf die Zehntelsekunde genau.</p>
-      </div>
-
-      <div class="st-panel panel">
-        <div class="st-tabs" role="tablist" aria-label="Schritte im Clip-Studio">
-          <button role="tab" id="tab-stk" aria-controls="pn-stk" aria-selected="true" type="button"><b>01</b>Sticker</button>
-          <button role="tab" id="tab-fmt" aria-controls="pn-fmt" aria-selected="false" tabindex="-1" type="button"><b>02</b>Format</button>
-          <button role="tab" id="tab-name" aria-controls="pn-name" aria-selected="false" tabindex="-1" type="button"><b>03</b>Name</button>
-          <button role="tab" id="tab-go" aria-controls="pn-go" aria-selected="false" tabindex="-1" type="button"><b>04</b>Rendern</button>
-          <i class="st-tabs-bar" aria-hidden="true"></i>
-        </div>
-
-        <div class="st-pane" role="tabpanel" id="pn-stk" aria-labelledby="tab-stk">
-          <p class="st-help" id="st-help-tray">Zieh einen Sticker aufs Video oder klick ihn an.</p>
-          <div class="tray" id="tray"></div>
-          <div class="stk-ctl" id="stk-ctl">
-            <p class="st-help" id="stk-none">Tipp einen Sticker auf dem Video an, um ihn zu bearbeiten.</p>
-            <div class="stk-edit" id="stk-edit" hidden>
-              <p class="stk-title hud"><span class="dot" style="color:var(--sig)"></span><span id="stk-name">Sticker</span></p>
-              <label class="rng"><span>Größe</span><input type="range" id="stk-size" min="4" max="100" value="25"><output id="stk-size-o">25 %</output></label>
-              <label class="rng"><span>Drehung</span><input type="range" id="stk-rot" min="-180" max="180" value="0"><output id="stk-rot-o">0°</output></label>
-              <div class="stk-btns"><button class="btn ghost" type="button" id="stk-front">Nach vorn</button><button class="btn ghost st-del" type="button" id="stk-del">Löschen</button></div>
-            </div>
-            <p class="st-keys hud">Ziehen verschiebt · Mausrad oder zwei Finger: Größe · Griff oben: drehen<br>Tastatur: Pfeile · + und − · Q und E · Entf</p>
-          </div>
-          <div class="st-next"><button class="btn ghost" type="button" id="stk-clear">Alle entfernen</button><button class="btn" type="button" data-go="tab-fmt">Weiter <span class="arr">→</span></button></div>
-        </div>
-
-        <div class="st-pane" role="tabpanel" id="pn-fmt" aria-labelledby="tab-fmt" hidden>
-          <p class="st-help">Wofür ist der Clip? Das Format bestimmt den Bildausschnitt.</p>
-          <div class="fmts" role="radiogroup" aria-label="Format">
-            <label class="fmt"><input type="radio" name="st-fmt" value="orig" checked><span><i style="--a:1.778"></i><b>Original</b><small>wie aufgenommen</small></span></label>
-            <label class="fmt"><input type="radio" name="st-fmt" value="9:16"><span><i style="--a:.5625"></i><b>9:16</b><small>Reels · TikTok · Shorts</small></span></label>
-            <label class="fmt"><input type="radio" name="st-fmt" value="1:1"><span><i style="--a:1"></i><b>1:1</b><small>Feed</small></span></label>
-            <label class="fmt"><input type="radio" name="st-fmt" value="16:9"><span><i style="--a:1.778"></i><b>16:9</b><small>YouTube · Website</small></span></label>
-          </div>
-          <label class="rng" id="pan-row" hidden><span id="pan-lbl">Ausschnitt</span><input type="range" id="pan" min="0" max="100" value="50"><output id="pan-o">Mitte</output></label>
-          <p class="st-help" id="pan-help" hidden>Oder zieh das Video direkt im Bild zur Seite.</p>
-          <div class="st-next"><button class="btn" type="button" data-go="tab-name">Weiter <span class="arr">→</span></button></div>
-        </div>
-
-        <div class="st-pane" role="tabpanel" id="pn-name" aria-labelledby="tab-name" hidden>
-          <div class="field"><label for="ln-name">Pilotenname als Bauchbinde</label><input id="ln-name" maxlength="28" placeholder="Dein Pilotenname" autocomplete="nickname"><span class="hint">Erscheint unten links im Video, mit „Flight Club Saar e. V.“ darunter.</span></div>
-          <div class="field"><span class="lbl">Wann?</span><div class="chips">
-            <label class="chip"><input type="radio" name="ln-mode" value="start" checked><span>Am Anfang (5 s)</span></label>
-            <label class="chip"><input type="radio" name="ln-mode" value="all"><span>Ganzes Video</span></label>
-            <label class="chip"><input type="radio" name="ln-mode" value="off"><span>Aus</span></label>
-          </div></div>
-          <div class="st-next"><button class="btn" type="button" data-go="tab-go">Weiter <span class="arr">→</span></button></div>
-        </div>
-
-        <div class="st-pane" role="tabpanel" id="pn-go" aria-labelledby="tab-go" hidden>
-          <div class="field"><span class="lbl">Qualität</span><div class="qual">
-            <label class="check"><input type="radio" name="st-q" value="hoch" checked><span><b>Hoch</b><br><small class="mute">Beste Qualität für Instagram, TikTok und YouTube.</small></span></label>
-            <label class="check"><input type="radio" name="st-q" value="mail"><span><b>Mail-tauglich</b><br><small class="mute">Kleiner, passt als Anhang (bis <span data-maxmail>9</span> MB).</small></span></label>
-          </div></div>
-          <dl class="sum hud" id="sum"></dl>
-          <button class="btn solid st-render" type="button" id="st-render"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg><span>Rendern</span></button>
-          <p class="st-help" id="st-render-why"></p>
-          <div class="prog" id="prog" hidden>
-            <div class="bat" aria-hidden="true"><i id="bat-fill"></i><span class="bat-tip"></span></div>
-            <div class="prog-row hud"><span id="prog-t" role="status" aria-live="polite">Rendert … 0 %</span><span id="prog-eta"></span></div>
-            <button class="btn ghost" type="button" id="prog-x">Abbrechen</button>
-          </div>
-          <div class="res" id="res" hidden>
-            <p class="res-ok hud"><span class="dot" style="color:var(--green)"></span><span>Fertig gerendert · <span id="res-info"></span></span></p>
-            <video id="res-v" controls playsinline preload="metadata"></video>
-            <div class="btns"><a class="btn solid" id="res-dl" download>Herunterladen</a><button class="btn" type="button" id="res-share" hidden>Teilen</button><button class="btn amber" type="button" id="res-send">Jetzt einsenden <span class="arr">→</span></button></div>
-          </div>
-          <p class="st-help small">Kann dein Browser nicht rendern, sendest du das Video einfach ohne Sticker ein.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 3 · EINSENDEN -->
-<section class="sec cw-send" id="einsenden">
-  <div class="wrap send-grid">
-    <div class="send-side">
-      <p class="kicker">Einsenden</p>
-      <h2 class="h2" data-split>Ab zum Vorstand</h2>
-      <p class="lede" data-reveal>Der Vorstand schaut sich jeden Clip an, bevor er auf der Website oder auf unseren Kanälen erscheint. Clips bis <span data-maxmail>9</span> MB gehen direkt als Anhang mit. Für größere zeigt dir das Formular automatisch den passenden Weg.</p>
-      <div class="route" id="route" data-reveal aria-hidden="true">
-        <svg viewBox="0 0 420 300" class="route-svg">
-          <path class="r-line" id="r-mail" d="M60 150 C140 150 150 70 210 70 S290 150 360 150"/>
-          <path class="r-line" id="r-link" d="M60 150 L360 150"/>
-          <path class="r-line" id="r-wa" d="M60 150 C140 150 150 230 210 230 S290 150 360 150"/>
-          <circle class="r-pk" r="5"/><circle class="r-pk" r="5"/><circle class="r-pk" r="5"/>
-        </svg>
-        <div class="r-node r-me" style="left:14%;top:50%"><b>Du</b><span>Dein Gerät</span></div>
-        <div class="r-node r-v" style="left:86%;top:50%"><b>Vorstand</b><span>prüft</span></div>
-        <div class="r-tag" data-r="mail" style="left:50%;top:23%">Anhang</div>
-        <div class="r-tag" data-r="link" style="left:50%;top:50%">Upload-Link</div>
-        <div class="r-tag" data-r="wa" style="left:50%;top:77%">WhatsApp</div>
-      </div>
-      <div class="dest" data-reveal><span>Danach auf</span><b>Website</b><b>Instagram</b><b>TikTok</b><b>YouTube</b></div>
-      <div class="reach" id="reach" data-reveal>
-        <p class="reach-h">Dein Clip kann so viele Leute erreichen</p>
-        <div class="reach-g" id="reach-g"></div>
-        <p class="reach-s hud" id="reach-s"></p>
-      </div>
-    </div>
-
-    <form class="panel sendform" data-fcs-form id="clipform" novalidate>
-      <input type="hidden" name="_subject" value="Neuer Clip für die Vereinsseite (Flight Club Saar, Entwurf)">
-      <input type="hidden" name="Formular" value="Clip einsenden">
-      <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-      <input type="file" name="attachment" id="cf-att" hidden tabindex="-1" aria-hidden="true">
-
-      <div class="field" id="cf-vfield">
-        <span class="lbl">Dein Video</span>
-        <label class="vdrop" id="cf-drop">
-          <input type="file" id="cf-pick" accept="video/mp4,video/quicktime,video/webm,video/*" aria-label="Fertiges Video wählen">
-          <span class="vdrop-in" id="cf-empty"><b>Fertiges Video wählen</b><span>oder hierher ziehen. Im Clip-Studio gerendert? Dann ist es schon hier.</span></span>
-          <span class="vclip" id="cf-clip" hidden><video id="cf-v" muted playsinline preload="metadata"></video><span class="vclip-t"><b id="cf-vn">clip.mp4</b><span id="cf-vs">0 MB</span><em class="tag" id="cf-badge">Anhang</em></span></span>
-        </label>
-        <input class="sr" type="text" name="Video" id="cf-status" required tabindex="-1" aria-hidden="true">
-        <span class="err">Bitte wähl zuerst dein Video oder rendere es im Clip-Studio.</span>
-      </div>
-      <div class="big" id="cf-big" hidden>
-        <p id="cf-big-t"></p>
-        <div class="btns" id="cf-big-b"></div>
-      </div>
-
-      <div class="grid g2">
-        <div class="field"><label for="cf-pilot">Pilotenname</label><input id="cf-pilot" name="Pilotenname" required autocomplete="nickname"><span class="err">Bitte deinen Pilotennamen eingeben.</span></div>
-        <div class="field"><label for="cf-name">Dein Name</label><input id="cf-name" name="Name" required autocomplete="name"><span class="err">Bitte deinen Namen eingeben.</span></div>
-      </div>
-      <div class="grid g2">
-        <div class="field"><label for="cf-kontakt">E-Mail oder WhatsApp</label><input id="cf-kontakt" name="Kontakt" required autocomplete="email"><span class="hint">Für Rückfragen zum Clip.</span><span class="err">Wie erreichen wir dich?</span></div>
-        <div class="field"><label for="cf-handle">Instagram oder TikTok</label><input id="cf-handle" name="Handle zum Verlinken" placeholder="@deinname"><span class="hint">Optional. Dann verlinken wir dich.</span></div>
-      </div>
-      <div class="field"><label for="cf-spot">Ort oder Spot</label><input id="cf-spot" name="Ort/Spot" placeholder="z. B. Halle Eiweiler"></div>
-      <div class="field"><label for="cf-txt">Ein paar Worte zum Clip</label><textarea id="cf-txt" name="Beschreibung" placeholder="Was war los? Welcher Kopter, welche Kamera?"></textarea></div>
-      <div class="field" id="cf-where">
-        <span class="lbl">Wo darf es erscheinen?</span>
-        <div class="chips">
-          <label class="chip"><input type="checkbox" value="Website"><span>Website</span></label>
-          <label class="chip"><input type="checkbox" value="Instagram"><span>Instagram</span></label>
-          <label class="chip"><input type="checkbox" value="TikTok"><span>TikTok</span></label>
-          <label class="chip"><input type="checkbox" value="YouTube"><span>YouTube</span></label>
-        </div>
-        <input class="sr" type="text" name="Erscheinen auf" id="cf-where-v" required tabindex="-1" aria-hidden="true">
-        <span class="err">Bitte mindestens einen Ort wählen.</span>
-      </div>
-      <label class="check"><input type="checkbox" name="Video von mir" value="ja" required><span>Das Video ist von mir.</span></label>
-      <label class="check"><input type="checkbox" name="Personen und Kennzeichen" value="ja" required><span>Erkennbare Personen sind einverstanden. Kennzeichen und Hausnummern sind nicht erkennbar.</span></label>
-      <label class="check"><input type="checkbox" name="Regeln eingehalten" value="ja" required><span>Ich habe beim Flug die Regeln eingehalten (Haftpflicht, erlaubtes Gebiet).</span></label>
-      <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Angaben dürfen zur Prüfung des Clips verarbeitet werden (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-      <p class="draftnote">Entwurf: Einsendungen gehen vorerst an info@falcon-eye.de und werden an den Vorstand weitergegeben.</p>
-      <button class="btn solid" type="submit">Clip einsenden <span class="arr">→</span></button>
-      <div class="form-ok" hidden><b>Danke!</b> <span id="cf-ok-t">Dein Clip ist unterwegs. Der Vorstand meldet sich, sobald er freigegeben ist.</span></div>
-      <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schick den Clip per WhatsApp.</div>
-    </form>
-  </div>
-</section>
-
-<!-- 3b · WERKZEUGKASTEN -->
-<section class="sec cw-tools" id="werkzeuge">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="kicker">Werkzeugkasten</p>
-      <h2 class="h2" data-split>Werkzeugkasten für deinen Clip</h2>
-      <p class="lede" data-reveal>Musik, Schnitt und selbst posten: Was wir für FPV-Clips empfehlen, mit den offiziellen Seiten der Programme.</p>
-    </div>
-
-    <div class="tk" id="tk">
-      <div class="tk-tabs" role="tablist" aria-label="Werkzeugkasten">
-        <button role="tab" id="tk-t1" aria-controls="tk-p1" aria-selected="true" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><b>Musik</b><i></i></button>
-        <button role="tab" id="tk-t2" aria-controls="tk-p2" aria-selected="false" tabindex="-1" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg><b>Schnitt</b><i></i></button>
-        <button role="tab" id="tk-t3" aria-controls="tk-p3" aria-selected="false" tabindex="-1" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M12 7v6M9 10h6"/></svg><b>Selbst posten</b><i></i></button>
-      </div>
-
-      <div class="tk-p" role="tabpanel" id="tk-p1" aria-labelledby="tk-t1">
-        <div class="amp-grid">
-          <div class="amp" aria-hidden="true"><span class="amp-l g"></span><span class="amp-l a"></span><span class="amp-l r"></span></div>
-          <div class="amp-cards">
-            <article class="tk-card" data-amp="g">
-              <h3 class="h3">Eigene Songs mit Suno</h3>
-              <p>Mit einem bezahlten Suno-Abo (Pro oder Premier) erzeugst du eigene Musik für deine Videos. Laut den Suno-Nutzungsbedingungen (Stand September 2026) darfst du Songs, die du mit einem bezahlten Plan über Suno herunterlädst, auch kommerziell nutzen. Downloads mit dem kostenlosen Plan sind nur für private Zwecke gedacht, und die Zahl der Downloads pro Monat ist begrenzt.</p>
-              <p class="mute small">Bedingungen können sich ändern. Bitte prüf vor dem Veröffentlichen den aktuellen Stand.</p>
-              <div class="tk-links"><a href="https://suno.com/" target="_blank" rel="noopener">suno.com ↗</a><a href="https://suno.com/terms" target="_blank" rel="noopener">Nutzungsbedingungen ↗</a></div>
-            </article>
-            <article class="tk-card" data-amp="g">
-              <h3 class="h3">YouTube-Audio-Mediathek</h3>
-              <p>In YouTube Studio findest du kostenlose Musik und Soundeffekte. Sie ist für YouTube-Videos gedacht. Ob ein Titel auch auf Instagram oder TikTok erlaubt ist, steht in seiner Lizenz. Bei Creative-Commons-Titeln nennst du den Künstler.</p>
-              <div class="tk-links"><a href="https://www.youtube.com/audiolibrary" target="_blank" rel="noopener">Audio-Mediathek ↗</a></div>
-            </article>
-            <article class="tk-card" data-amp="a">
-              <h3 class="h3">Musik direkt in der App</h3>
-              <p>Postest du selbst, ist die Musikauswahl in Instagram oder TikTok für Beiträge in der jeweiligen App gedacht. Für Clips, die du uns einsendest, nimm lieber Musik aus den Quellen oben oder den Originalton.</p>
-            </article>
-            <article class="tk-card warn" data-amp="r">
-              <h3 class="h3">Keine Chart-Songs</h3>
-              <p>Bekannte Songs aus Radio und Charts sind geschützt. Videos damit werden oft stummgeschaltet, gesperrt oder gelöscht. Für die Vereinskanäle bitte ohne Chart-Musik einsenden.</p>
-            </article>
-          </div>
-        </div>
-      </div>
-
-      <div class="tk-p" role="tabpanel" id="tk-p2" aria-labelledby="tk-t2" hidden>
-        <ol class="pipe" id="pipe">
-          <li data-step="0"><b>Aufnehmen</b><span>Brille an</span></li>
-          <li data-step="1"><b>Stabilisieren</b><span>Gyroflow</span></li>
-          <li data-step="2"><b>Schneiden</b><span>CapCut · DaVinci</span></li>
-          <li data-step="3"><b>Logo drauf</b><span>Clip-Studio</span></li>
-          <li data-step="4"><b>Einsenden</b><span>an den Vorstand</span></li>
-          <i class="pipe-dot" aria-hidden="true"></i>
-        </ol>
-        <div class="tools grid g4">
-          <a class="tool panel" data-step="2" href="https://www.capcut.com/" target="_blank" rel="noopener"><span class="tool-k">Handy · Tablet · PC</span><h3 class="h3">CapCut</h3><p>Schneller Schnitt mit Text, Übergängen und Vorlagen, ideal für Reels und TikTok.</p><span class="tool-u">capcut.com ↗</span></a>
-          <a class="tool panel" data-step="2" href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank" rel="noopener"><span class="tool-k">PC · Mac · kostenlos</span><h3 class="h3">DaVinci Resolve</h3><p>Profi-Schnitt mit Farbkorrektur. Die Grundversion kostet nichts.</p><span class="tool-u">blackmagicdesign.com ↗</span></a>
-          <a class="tool panel" data-step="1" href="https://gyroflow.xyz/" target="_blank" rel="noopener"><span class="tool-k">PC · Mac · kostenlos</span><h3 class="h3">Gyroflow</h3><p>Stabilisiert FPV-Aufnahmen nachträglich mit den Gyro-Daten aus Kamera oder Flugcontroller.</p><span class="tool-u">gyroflow.xyz ↗</span></a>
-          <a class="tool panel" data-step="4" href="https://handbrake.fr/" target="_blank" rel="noopener"><span class="tool-k">PC · Mac · kostenlos</span><h3 class="h3">HandBrake</h3><p>Macht große Videodateien kleiner, praktisch wenn dein Clip zu groß für den Anhang ist.</p><span class="tool-u">handbrake.fr ↗</span></a>
-        </div>
-      </div>
-
-      <div class="tk-p" role="tabpanel" id="tk-p3" aria-labelledby="tk-t3" hidden>
-        <div class="post-grid">
-          <div>
-            <h3 class="h3">Du darfst deine Clips auch selbst posten</h3>
-            <p>Lad uns auf Instagram als Mitwirkende ein, besonders wenn unser Logo drauf ist. Sobald wir die Einladung annehmen, erscheint dein Clip auf beiden Profilen.</p>
-            <ol class="psteps" id="psteps">
-              <li><button type="button" data-ps="0"><b>1</b>Beitrag oder Reel erstellen, mit dem Plus.</button></li>
-              <li><button type="button" data-ps="1"><b>2</b>Vor dem Teilen „Personen markieren“ antippen.</button></li>
-              <li><button type="button" data-ps="2"><b>3</b>„Mitwirkende einladen“ wählen. Je nach App-Version heißt es auch „Co-Autor einladen“.</button></li>
-              <li><button type="button" data-ps="3"><b>4</b>@flightclubsaar suchen und auswählen.</button></li>
-              <li><button type="button" data-ps="4"><b>5</b>Teilen. Wir nehmen die Einladung an.</button></li>
-            </ol>
-            <div class="tagbox">
-              <span class="tagbox-l hud">Hashtag und Markierung</span>
-              <code id="tag-txt">#flightclubsaar @flightclubsaar</code>
-              <button class="btn ghost" type="button" id="tag-copy">Kopieren</button>
-            </div>
-            <p class="mute small">Auf TikTok: Markier @flightclubsaar in der Beschreibung und nutz #flightclubsaar.</p>
-          </div>
-          <div class="phone" id="phone" aria-hidden="true">
-            <div class="ph-screen">
-              <div class="ph-s" data-s="0"><div class="ph-top"><span></span><b>Neuer Beitrag</b><span></span></div><div class="ph-img"><img src="assets/img/sticker/logo-plakette.svg" alt="" width="360" height="360"></div><div class="ph-plus">+</div></div>
-              <div class="ph-s" data-s="1"><div class="ph-top"><span>‹</span><b>Neues Reel</b><span></span></div><div class="ph-row"><span>Bildunterschrift …</span></div><div class="ph-row hot"><span>Personen markieren</span><i>›</i></div><div class="ph-row"><span>Standort hinzufügen</span><i>›</i></div><div class="ph-cta">Teilen</div></div>
-              <div class="ph-s" data-s="2"><div class="ph-top"><span>‹</span><b>Markieren</b><span></span></div><div class="ph-row"><span>Personen markieren</span></div><div class="ph-row hot"><span>Mitwirkende einladen</span><i>›</i></div></div>
-              <div class="ph-s" data-s="3"><div class="ph-top"><span>‹</span><b>Mitwirkende</b><span></span></div><div class="ph-search">flightclub|</div><div class="ph-row hot acc"><img src="assets/img/logo-mark.svg" alt="" width="34" height="34"><span><b>flightclubsaar</b><br>Flight Club Saar e. V.</span></div></div>
-              <div class="ph-s" data-s="4"><div class="ph-top"><span></span><b>Geteilt</b><span></span></div><div class="ph-done"><img src="assets/img/sticker/logo-plakette.svg" alt="" width="96" height="96"><b>du und flightclubsaar</b><span>Einladung gesendet</span></div></div>
-            </div>
-            <i class="ph-finger"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <a class="teaser" href="filmen.html" id="teaser">
-      <div class="lens" aria-hidden="true">
-        <svg viewBox="-100 -100 200 200">
-          <circle r="96" class="ln-o"/><circle r="84" class="ln-r"/><g class="ln-ticks"></g>
-          <g class="ln-blades"></g><circle r="30" class="ln-glass"/><circle r="10" cx="-12" cy="-14" class="ln-glint"/>
-        </svg>
-      </div>
-      <div class="teaser-t">
-        <p class="kicker" style="color:var(--amber)">Neu: FPV filmen</p>
-        <h3 class="teaser-h">Der große Kamera-Ratgeber</h3>
-        <p>Für alle, die mehr aus ihren Aufnahmen holen wollen, bevor sie im Clip-Studio landen.</p>
-        <span class="btn amber solid">Zum Ratgeber <span class="arr">→</span></span>
-      </div>
+    <a class="csc" href="filmen.html#studio">
+      <span class="csc-vis" aria-hidden="true">
+        <video data-auto muted loop playsinline preload="none" poster="media/hero-s.webp" data-src="media/hero-s.mp4"></video>
+        <img class="csc-logo" src="assets/img/sticker/vereinslogo.svg" alt="" width="808" height="555">
+        <img class="csc-ayedo" src="assets/img/partner/ayedo-logo.webp" alt="" width="750" height="249">
+        <span class="csc-rec hud"><i></i>REC</span>
+        <span class="osd-frame"><i></i></span>
+      </span>
+      <span class="csc-t">
+        <span class="csc-h" id="csc-h">Clip-Studio</span>
+        <span class="csc-p">Lad dein eigenes Video hoch, zieh Vereinslogo, Ayedo-Logo und Sticker drauf und lade es fertig runter oder schick es an den Verein. Das Video bleibt auf deinem Gerät, bis du es selbst abschickst.</span>
+        <span class="csc-steps"><span><b>1</b>Video auswählen</span><span><b>2</b>Logos draufziehen</span><span><b>3</b>Runterladen oder schicken</span></span>
+        <span class="btn amber solid">Zum Clip-Studio <span class="arr">→</span></span>
+      </span>
     </a>
+    <p class="csc-more">Tipps zu Kamera, Schnitt und Musik stehen im <a href="filmen.html#ratgeber">Film-Ratgeber</a>.</p>
   </div>
 </section>
 
-<!-- 4 · PROFIL -->
-<section class="sec cw-prof" id="profil">
+<!-- CREW + PILOTEN -->
+<section class="sec cw-crew" id="crew" data-toc="Piloten" aria-labelledby="crew-h">
   <div class="wrap">
-    <div class="sec-head">
-      <p class="kicker">Profil ergänzen</p>
-      <h2 class="h2" data-split>Deine Karte in der Crew</h2>
-      <p class="lede" data-reveal>Füll aus, was du zeigen möchtest. Rechts siehst du sofort, wie deine Karte aussieht. Deine Social-Media-Kanäle verlinken wir nur, wenn du den Haken dafür setzt.</p>
+    <header class="cw-sh">
+      <h2 class="h2" id="crew-h" data-split>Wer bei uns fliegt</h2>
+      <p class="lede">Oben der Vorstand und die Crew 2026, darunter die Piloten aus unserer Community. Tipp eine Karte an, dann dreht sie sich um und zeigt Stil, Ort und Kanäle.</p>
+    </header>
+    <h3 class="cw-sub">Crew 2026</h3>
+    <div class="cdeck" id="cdeck" aria-label="Mitgliedskarten der Crew 2026"></div>
+
+    <div class="pl" id="piloten">
+      <div class="pl-tools">
+        <h3 class="cw-sub">Piloten aus der Community <span class="pl-read hud" id="pl-read" aria-live="polite"></span></h3>
+        <div class="field pl-search"><label for="pl-q">Pilot suchen</label><input type="search" id="pl-q" placeholder="Pilotenname, Vorname oder Ort" autocomplete="off"></div>
+        <div class="chips pl-f" id="pl-f" role="radiogroup" aria-label="Nach Stil filtern"></div>
+      </div>
+      <div class="pl-wrap">
+        <p class="cw-hint" id="pl-hint" aria-hidden="true">Karte antippen</p>
+        <div class="pl-grid" id="pl-grid"></div>
+      </div>
     </div>
+  </div>
+</section>
+
+<!-- PROFIL -->
+<section class="sec cw-prof" id="profil" data-toc="Profil" aria-labelledby="prof-h">
+  <div class="wrap">
+    <header class="cw-sh">
+      <h2 class="h2" id="prof-h" data-split>Profil ergänzen</h2>
+      <p class="lede">Füll kurz aus, was du zeigen möchtest, die Karte tippt live mit. Nach der Freigabe durch den Vorstand steht sie oben bei den Piloten.</p>
+    </header>
     <div class="prof-grid">
       <form class="panel sendform" data-fcs-form id="profform" novalidate>
         <input type="hidden" name="_subject" value="Profil für die Crew-Seite (Flight Club Saar, Entwurf)">
@@ -355,7 +86,7 @@
         </div>
         <div class="grid g2">
           <div class="field"><label for="pf-seit">FPV seit</label><select id="pf-seit" name="FPV seit" data-card="seit"></select></div>
-          <div class="field"><label for="pf-ort">Ort</label><input id="pf-ort" name="Ort" placeholder="optional" maxlength="30" data-card="ort"></div>
+          <div class="field"><label for="pf-ort">Ort <small>optional</small></label><input id="pf-ort" name="Ort" maxlength="30" data-card="ort"></div>
         </div>
         <div class="field"><span class="lbl">Dein Stil</span><div class="chips" id="pf-stil">
           <label class="chip"><input type="checkbox" value="Freestyle"><span>Freestyle</span></label>
@@ -365,24 +96,29 @@
           <label class="chip"><input type="checkbox" value="Whoops"><span>Whoops</span></label>
           <label class="chip"><input type="checkbox" value="Bando"><span>Bando</span></label>
         </div><input type="hidden" name="Stil" id="pf-stil-v"></div>
-        <fieldset class="fs"><legend class="lbl">Dein Gear</legend><div class="grid g3">
-          <div class="field"><label for="pf-kopter">Kopter</label><input id="pf-kopter" name="Kopter" maxlength="40" data-card="kopter" data-back></div>
-          <div class="field"><label for="pf-brille">Brille</label><input id="pf-brille" name="Brille" maxlength="40" data-card="brille" data-back></div>
-          <div class="field"><label for="pf-funke">Funke</label><input id="pf-funke" name="Funke" maxlength="40" data-card="funke" data-back></div>
-        </div></fieldset>
-        <fieldset class="fs"><legend class="lbl">Social Media (optional)</legend><div class="grid g3">
-          <div class="field"><label for="pf-ig">Instagram</label><input id="pf-ig" name="Instagram" placeholder="@name" data-card="ig" data-back></div>
-          <div class="field"><label for="pf-tt">TikTok</label><input id="pf-tt" name="TikTok" placeholder="@name" data-card="tt" data-back></div>
-          <div class="field"><label for="pf-yt">YouTube</label><input id="pf-yt" name="YouTube" placeholder="@kanal" data-card="yt" data-back></div>
-        </div></fieldset>
-        <div class="field"><span class="lbl">Profilbild (optional)</span>
+        <div class="field"><span class="lbl">Profilbild <small>optional</small></span>
           <label class="drop pdrop" id="pf-drop"><input type="file" accept="image/*" id="pf-pic" aria-label="Profilbild wählen"><span class="drop-in"><b>Foto wählen</b><span>wird vor dem Senden auf 800 Pixel verkleinert</span></span><img id="pf-prev" alt="Vorschau deines Profilbilds" width="800" height="600" hidden></label>
         </div>
-        <div class="field"><label for="pf-kontakt">E-Mail oder WhatsApp für Rückfragen</label><input id="pf-kontakt" name="Kontakt" autocomplete="email" placeholder="optional"></div>
+        <details class="fold pf-more">
+          <summary>Mehr angeben: Gear, Social Media, Kontakt <small>optional</small></summary>
+          <div class="fold-in">
+            <fieldset class="fs"><legend class="lbl">Dein Gear</legend><div class="grid g3">
+              <div class="field"><label for="pf-kopter">Kopter</label><input id="pf-kopter" name="Kopter" maxlength="40" data-card="kopter" data-back></div>
+              <div class="field"><label for="pf-brille">Brille</label><input id="pf-brille" name="Brille" maxlength="40" data-card="brille" data-back></div>
+              <div class="field"><label for="pf-funke">Funke</label><input id="pf-funke" name="Funke" maxlength="40" data-card="funke" data-back></div>
+            </div></fieldset>
+            <fieldset class="fs"><legend class="lbl">Social Media</legend><div class="grid g3">
+              <div class="field"><label for="pf-ig">Instagram</label><input id="pf-ig" name="Instagram" placeholder="@name" data-card="ig" data-back></div>
+              <div class="field"><label for="pf-tt">TikTok</label><input id="pf-tt" name="TikTok" placeholder="@name" data-card="tt" data-back></div>
+              <div class="field"><label for="pf-yt">YouTube</label><input id="pf-yt" name="YouTube" placeholder="@kanal" data-card="yt" data-back></div>
+            </div></fieldset>
+            <label class="check"><input type="checkbox" name="Social verlinken" value="ja" id="pf-soc"><span>Meine Social-Media-Kanäle dürfen verlinkt werden.</span></label>
+            <div class="field"><label for="pf-kontakt">E-Mail oder WhatsApp für Rückfragen</label><input id="pf-kontakt" name="Kontakt" autocomplete="email"></div>
+          </div>
+        </details>
         <label class="check"><input type="checkbox" name="Profil zeigen" value="ja" required><span>Mein Profil darf auf der Vereinsseite gezeigt werden (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-        <label class="check"><input type="checkbox" name="Social verlinken" value="ja" id="pf-soc"><span>Meine Social-Media-Kanäle dürfen verlinkt werden.</span></label>
-        <p class="draftnote">Entwurf: Profile gehen vorerst an info@falcon-eye.de und werden an den Vorstand weitergegeben.</p>
         <button class="btn solid" type="submit">Profil senden <span class="arr">→</span></button>
+        <p class="draftnote">Entwurf: Profile gehen vorerst an info@falcon-eye.de und werden an den Vorstand weitergegeben.</p>
         <div class="form-ok" hidden><b>Danke!</b> Dein Profil ist unterwegs. Nach der Freigabe steht deine Karte in der Crew.</div>
         <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal.</div>
       </form>
@@ -413,46 +149,19 @@
            </div>
           </div>
         </div>
-        <div class="pcard-btns"><button class="btn ghost" type="button" id="pc-flip">Karte umdrehen</button></div>
-        <p class="pcard-hint hud" id="pc-hint">Live-Vorschau · tippt mit</p>
+        <div class="pcard-btns"><button class="btn ghost" type="button" id="pc-flip">Karte umdrehen</button><p class="pcard-hint hud" id="pc-hint">Live-Vorschau · tippt mit</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 5 · CREW-GALERIE -->
-<section class="sec cw-crew" id="crew">
+<!-- PINNWAND -->
+<section class="sec cw-pin" id="pinnwand" data-toc="Pinnwand" aria-labelledby="pin-h">
   <div class="wrap">
-    <div class="sec-head center">
-      <p class="kicker">Crew 2026</p>
-      <h2 class="h2" data-split>Die Crew</h2>
-      <p class="lede" data-reveal>Die Piloten, die 2026 dabei sind. Fahr über eine Karte oder tipp sie an, dann dreht sie sich um.</p>
-    </div>
-    <div class="cdeck" id="cdeck" aria-label="Mitgliedskarten der Crew"></div>
-
-    <div class="pl" id="piloten">
-      <div class="pl-head">
-        <h3 class="pl-h" data-split>Piloten aus unserer Community</h3>
-        <p class="lede" data-reveal>Pilotinnen und Piloten aus der Community des Vereins. Filter nach Stil oder such nach einem Namen.</p>
-      </div>
-      <div class="pl-tools">
-        <div class="field pl-search"><label for="pl-q">Pilot suchen</label><input type="search" id="pl-q" placeholder="Pilotenname, Vorname oder Ort" autocomplete="off"></div>
-        <div class="chips pl-f" id="pl-f" role="radiogroup" aria-label="Nach Stil filtern"></div>
-      </div>
-      <p class="pl-read hud" id="pl-read" aria-live="polite"></p>
-      <div class="pl-grid" id="pl-grid"></div>
-    </div>
-  </div>
-</section>
-
-<!-- 6 · PINNWAND -->
-<section class="sec cw-pin" id="pinnwand">
-  <div class="wrap">
-    <div class="sec-head">
-      <p class="kicker">Pinnwand</p>
-      <h2 class="h2" data-split>Was in der Crew los ist</h2>
-      <p class="lede" data-reveal>Neuer Kopter, gelungener Flug, Frage an alle: Schreib einen Beitrag. Der Vorstand gibt ihn frei, dann steht er hier.</p>
-    </div>
+    <header class="cw-sh">
+      <h2 class="h2" id="pin-h" data-split>Pinnwand</h2>
+      <p class="lede">Neuer Kopter, gelungener Flug, Frage an alle: Schreib einen Beitrag. Der Vorstand gibt ihn frei, dann steht er hier.</p>
+    </header>
     <div class="pin-grid">
       <div class="pin-feed" id="pin-feed">
         <div class="nosig" id="nosig">
@@ -464,7 +173,7 @@
             <p class="nosig-t">Die ersten Beiträge erscheinen nach Freigabe.</p>
             <a class="btn" href="#pin-form" id="ns-go">Ersten Beitrag schreiben <span class="arr">→</span></a>
           </div>
-          <div class="osd-frame"><i></i></div>
+          <div class="osd-frame" aria-hidden="true"><i></i></div>
         </div>
       </div>
       <form class="panel sendform" data-fcs-form id="pin-form" novalidate>
@@ -475,12 +184,12 @@
         <input type="file" name="attachment" id="pw-att" hidden tabindex="-1" aria-hidden="true">
         <div class="field"><label for="pw-name">Name oder Pilotenname</label><input id="pw-name" name="Name" required autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
         <div class="field"><label for="pw-txt">Dein Beitrag</label><textarea id="pw-txt" name="Beitrag" required maxlength="800" placeholder="Was gibt es Neues?"></textarea><span class="hint"><span id="pw-cnt">0</span> von 800 Zeichen</span><span class="err">Bitte ein paar Worte schreiben.</span></div>
-        <div class="field"><span class="lbl">Foto (optional)</span>
-          <label class="drop" id="pw-drop"><input type="file" accept="image/*" id="pw-pic" aria-label="Foto wählen"><span class="drop-in"><b>Foto wählen</b><span>oder hierher ziehen</span></span><img id="pw-prev" alt="Vorschau des Fotos" width="800" height="600" hidden></label>
+        <div class="field"><span class="lbl">Foto <small>optional</small></span>
+          <label class="drop pwdrop" id="pw-drop"><input type="file" accept="image/*" id="pw-pic" aria-label="Foto wählen"><span class="drop-in"><b>Foto wählen</b><span>oder hierher ziehen</span></span><img id="pw-prev" alt="Vorschau des Fotos" width="800" height="600" hidden></label>
         </div>
         <label class="check"><input type="checkbox" name="Freigabe" value="ja" required><span>Mein Beitrag darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-        <p class="draftnote">Der Vorstand gibt jeden Beitrag frei. Entwurf: Beiträge gehen vorerst an info@falcon-eye.de.</p>
         <button class="btn solid" type="submit">Beitrag senden <span class="arr">→</span></button>
+        <p class="draftnote">Der Vorstand gibt jeden Beitrag frei. Entwurf: Beiträge gehen vorerst an info@falcon-eye.de.</p>
         <div class="form-ok" hidden><b>Danke!</b> Dein Beitrag erscheint nach der Freigabe durch den Vorstand.</div>
         <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal.</div>
       </form>

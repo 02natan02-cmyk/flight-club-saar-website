@@ -17,15 +17,15 @@
 <section class="sec sp-sec sp-rules" id="regeln" data-toc="Regeln" aria-labelledby="regeln-h">
   <div class="wrap">
     <div class="rl-head">
-      <h2 class="h2 sp-h2" id="regeln-h" data-split>Jeder fliegt auf eigene Verantwortung.</h2>
-      <p class="rl-intro">Die Spots auf dieser Karte sind Orte, an denen sich Piloten aus dem Verein zum Fliegen treffen oder getroffen haben. Der Flight Club Saar e. V. veranstaltet dort nichts, ist nicht Eigentümer und gibt keine Erlaubnis zum Betreten oder Fliegen.</p>
+      <h2 class="h2 sp-h2" id="regeln-h">Jeder fliegt auf eigene Verantwortung.</h2>
+      <p class="rl-intro">Die Spots auf dieser Karte sind Orte, an denen sich Piloten aus dem Verein zum Fliegen treffen oder getroffen haben. Der Flight Club Saar e.&nbsp;V. veranstaltet dort nichts, ist nicht Eigentümer und gibt keine Erlaubnis zum Betreten oder Fliegen.</p>
     </div>
 
-    <div class="rl-rail" id="rl-rail">
+    <div class="rl-rail" id="rl-rail" role="region" aria-label="Die fünf Regeln" tabindex="0">
       <ol class="rl-cards" id="rl-cards">
         <li class="rl-card">
           <span class="rl-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><b>1</b></span>
-          <h3 class="rl-t">Haftpflichtversicherung ist Pflicht.</h3>
+          <h3 class="rl-t">Haftpflicht&shy;versicherung ist Pflicht.</h3>
           <p>Ohne eine Versicherung, die deine Drohne abdeckt, fliegst du nicht.</p>
         </li>
         <li class="rl-card">
@@ -72,7 +72,7 @@
   <div class="wrap">
     <div class="mp-head">
       <h2 class="h2 sp-h2" id="karte-h" data-split>Unsere Spots</h2>
-      <p class="mp-intro">Tipp auf einen Punkt oder einen Spot in der Liste: Er wird auf der Karte markiert. Mit „Route“ führt dich Google Maps hin.</p>
+      <p class="mp-intro">Tipp auf einen Punkt oder einen Spot in der Liste, er wird auf der Karte markiert. Mit „Route“ führt dich Google Maps hin.</p>
     </div>
 
     <div class="mp-bar">
@@ -117,7 +117,7 @@
       <input type="hidden" name="Formular" value="Spot bewerten">
       <input type="hidden" name="Spot" id="rate-spot">
       <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-      <p class="rf-h">Warst du dort? Bewerte den Spot.</p>
+      <p class="rf-h">Warst du dort? Tipp auf die Sterne.</p>
       <div class="field rf-stars">
         <span class="lbl" id="rf-st">Sterne</span>
         <div class="stars" role="radiogroup" aria-labelledby="rf-st">
@@ -129,10 +129,10 @@
         </div>
         <span class="err">Bitte tipp auf die Sterne.</span>
       </div>
-      <div class="field"><label for="r-txt">Kommentar (freiwillig)</label><input id="r-txt" name="Kommentar" placeholder="Tipp für andere Piloten"></div>
-      <div class="field"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
-      <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Bewertung darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-      <button class="btn solid" type="submit">Bewertung senden</button>
+      <div class="field rf-more"><label for="r-txt">Kommentar <span class="opt">freiwillig</span></label><input id="r-txt" name="Kommentar" placeholder="Ein Tipp für andere Piloten"></div>
+      <div class="field rf-more"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
+      <label class="check rf-more"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Bewertung darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+      <button class="btn solid rf-more" type="submit">Bewertung senden</button>
       <div class="form-ok sp-ok" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><p><b>Danke!</b> Deine Bewertung erscheint nach der Freigabe durch den Vorstand.</p></div>
       <div class="form-bad sp-bad" hidden><p><b>Das hat nicht geklappt.</b> Bitte versuch es noch einmal.</p></div>
     </form>
@@ -145,10 +145,10 @@
     <div class="send-side">
       <h2 class="h2 sp-h2" id="send-h" data-split>Spot melden</h2>
       <p class="send-intro">Du kennst einen guten Platz? Schick ihn uns. Der Vorstand prüft jeden Vorschlag und schaltet ihn frei, in der Regel innerhalb von 24 Stunden.</p>
-      <ol class="send-flow" aria-label="So geht es weiter">
-        <li><b>1</b>Du schickst den Spot</li>
-        <li><b>2</b>Der Vorstand prüft ihn</li>
-        <li><b>3</b>Er erscheint auf der Karte</li>
+      <ol class="send-flow" aria-label="So geht es nach dem Senden weiter">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg>Du schickst den Spot</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20M8.5 11l2 2 3.5-3.5"/></svg>Der Vorstand prüft ihn</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Er erscheint auf der Karte</li>
       </ol>
       <p class="send-wa">Lieber direkt schreiben? <span id="wa-btns"></span></p>
     </div>
@@ -175,11 +175,11 @@
           <div class="field"><span class="lbl">Foto</span>
             <label class="drop" id="drop"><input type="file" name="attachment" accept="image/*" id="s-foto" aria-label="Foto vom Spot wählen">
               <span class="drop-in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span><b>Foto wählen</b><small>oder hierher ziehen</small></span></span>
-              <img id="s-prev" alt="" hidden>
             </label>
             <button class="drop-x" type="button" id="s-foto-x" hidden>Foto entfernen</button>
+            <span class="hint geo-bad" id="foto-msg" aria-live="polite"></span>
           </div>
-          <div class="field"><label for="s-txt">Ein Satz dazu</label><textarea id="s-txt" name="Beschreibung" rows="2" placeholder="Parken, Hindernisse, beste Tageszeit …"></textarea></div>
+          <div class="field"><label for="s-txt">Ein Satz dazu</label><textarea id="s-txt" name="Beschreibung" rows="3" placeholder="Parken, Hindernisse, beste Tageszeit …"></textarea></div>
         </div>
       </fieldset>
 

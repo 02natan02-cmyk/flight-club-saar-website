@@ -12,7 +12,7 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss');
-  const scrollToEl = (el, off = -80) => { if (!el) return; FCS.lenis ? FCS.lenis.scrollTo(el, { offset: off }) : el.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); };
+  const scrollToEl = (el, off = -84) => { if (!el) return; FCS.scrollTo ? FCS.scrollTo(el, off) : el.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); };
   const visible = (el, cb, margin = '150px 0px') => { if (!el) return; const io = new IntersectionObserver(es => cb(es[0].isIntersecting), { rootMargin: margin }); io.observe(el); };
 
   /* ---------- Symbole (eigene Linien-Icons, 24er Raster) ---------- */
@@ -177,7 +177,8 @@
       if (window.gsap) gsap.to(fill, { [prop]: s, [vert ? 'scaleX' : 'scaleY']: 1, duration: now || !anim() ? 0 : 1.1, ease: 'power2.inOut' });
       else fill.style.transform = `${prop}(${s})`;
     };
-    const mark = (i) => wps.forEach((w, j) => { w.classList.toggle('on', j === i); w.classList.toggle('here', j === i); w.classList.toggle('done', j < i); });
+    const now = $('#mk-wp-now');
+    const mark = (i) => { wps.forEach((w, j) => { w.classList.toggle('on', j === i); w.classList.toggle('here', j === i); w.classList.toggle('done', j < i); }); if (now) now.textContent = $('p', wps[i]).textContent; };
     const go = (i) => {
       const from = cur; cur = i; mark(i); setFill(i);
       if (!anim()) { if (window.gsap) gsap.set(quad, { x: pos[i].x, y: pos[i].y }); return; }
@@ -253,7 +254,7 @@
   }
   function renderWall() {
     const all = ads(), list = all.filter(match), grid = $('#mk-grid'), empty = $('#mk-empty'), none = $('#mk-none'), read = $('#mk-readout');
-    counts(all);
+    counts(all); $('#wand').classList.toggle('is-empty', !all.length);
     const katN = W.kat === 'alle' ? 'alle Kategorien' : katOf(W.kat).n;
     if (!all.length) {
       grid.innerHTML = ''; grid.hidden = true; none.hidden = true; empty.hidden = false;
@@ -606,15 +607,19 @@
     $$('[name=Preisart]', f).forEach(r => r.addEventListener('change', () => { priceMode(); preview(); }));
     const t = $('#mk-t'), tn = $('#mk-t-n'); t.addEventListener('input', () => tn.textContent = t.value.length);
     let raf = 0; f.addEventListener('input', e => { const fld = e.target.closest('.field,.check'); if (fld && fld.classList.contains('bad') && e.target.id !== 'mk-files') fld.classList.remove('bad'); cancelAnimationFrame(raf); raf = requestAnimationFrame(preview); });
-    f.addEventListener('change', e => { const fld = e.target.closest('.field,.check'); if (fld && e.target.id !== 'mk-files') fld.classList.remove('bad'); cancelAnimationFrame(raf); raf = requestAnimationFrame(preview); });
+    f.addEventListener('change', e => { const fld = e.target.closest('.field,.check'); if (fld && e.target.id !== 'mk-files') fld.classList.remove('bad'); if (!$$('.field.bad, .check.bad', f).length) $('#mk-errsum').hidden = true; cancelAnimationFrame(raf); raf = requestAnimationFrame(preview); });
     photos(); priceMode(); setArt('biete'); draft();
     // Eigene Prüfung läuft vor dem Absenden in fcs.js (Capture-Phase am Dokument)
     document.addEventListener('submit', e => {
       if (e.target !== f) return;
       syncFiles(); preview();
       const base = FCS.validate ? FCS.validate(f) : true, bad = checkCustom();
-      if (base && !bad.length) return;
+      $$('.check', f).forEach(c => { const i = c.querySelector('input[required]'); if (i) c.classList.toggle('bad', !i.checked); });
+      if (base && !bad.length) { $('#mk-errsum').hidden = true; return; }
       e.preventDefault(); e.stopImmediatePropagation();
+      // Kurze Liste, was noch fehlt, direkt über dem Knopf
+      const names = $$('.field.bad, .check.bad', f).map(x => x.classList.contains('check') ? (/privat/i.test(x.textContent) ? 'Privat-Bestätigung' : 'Kontakt sichtbar') : ((x.querySelector('.lbl, label') || {}).textContent || '').replace(/\(.*\)/, '').trim()).filter(Boolean);
+      const sum = $('#mk-errsum'); if (sum && names.length) { sum.innerHTML = `<b>Fast fertig.</b> Bitte prüf noch: ${[...new Set(names)].map(esc).join(', ')}.`; sum.hidden = false; }
       const first = $$('.field.bad, .check.bad', f)[0];
       if (first) { const i = first.querySelector('input:not([type=hidden]):not(:disabled),textarea'); if (i) i.focus({ preventScroll: true }); scrollToEl(first, -140); }
     }, true);
@@ -624,7 +629,8 @@
       const tilt = $('#mk-pv-tilt'), sent = $('#mk-pv-sent');
       const done = () => { tilt.style.visibility = 'hidden'; sent.hidden = false; if (anim()) gsap.from(sent.children, { y: 20, opacity: 0, stagger: .08, duration: .6, ease: 'expo.out' }); };
       if (anim()) gsap.to(tilt, { y: -140, rotationX: 60, scale: .5, opacity: 0, duration: .8, ease: 'power3.in', onComplete: done }); else done();
-      scrollToEl($('#aufgeben'), -70);
+      $('#mk-errsum').hidden = true;
+      const ok = $('.form-ok', f); if (ok) setTimeout(() => ok.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }), 120);
     });
     $('#mk-again').addEventListener('click', () => {
       f.reset(); f.classList.remove('sent'); $$('.form-ok,.form-bad', f).forEach(x => x.hidden = true);
@@ -762,6 +768,7 @@
     D = (window.FCS && FCS.data) || {};
     $$('[data-ico]').forEach(i => { i.outerHTML = ico(i.dataset.ico); });
     head(); rail(); plan(); kats(); seg(); search(); renderWall(); dialog(); form(); tilt(); orbit(); preflight();
+    if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('mk-off', !e.isIntersecting)), { rootMargin: '100px 0px' }); $$('main > section').forEach(sec => io.observe(sec)); }
     if (window.ScrollTrigger) {
       setTimeout(() => ScrollTrigger.refresh(), 400);
       // Höhe ändert sich (Fotos, Leerzustand, gesendetes Formular): Scroll-Auslöser neu vermessen

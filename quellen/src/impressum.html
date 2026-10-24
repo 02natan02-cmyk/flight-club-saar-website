@@ -13,7 +13,7 @@
   <div class="wrap recht">
     <nav class="rnav" aria-label="Abschnitte">
       <p class="rnav-h">Kapitel</p>
-      <a href="#anbieter">Anbieter</a><a href="#vorstand">Vorstand</a><a href="#kontakt">Kontakt</a><a href="#inhalt">Verantwortlich</a><a href="#haftung">Haftung</a><a href="#bilder">Bilder und Filme</a>
+      <a href="#anbieter">Anbieter</a><a href="#vorstand">Vorstand</a><a href="#kontakt">Kontakt</a><a href="#verantwortlich">Verantwortlich</a><a href="#haftung">Haftung</a><a href="#bilder">Bilder und Filme</a>
       <a class="rnav-alt" href="datenschutz.html">Zum Datenschutz <span aria-hidden="true">→</span></a>
     </nav>
     <div class="rtext">
@@ -50,7 +50,7 @@
         </div>
       </details>
 
-      <details class="rch" id="inhalt" open>
+      <details class="rch" id="verantwortlich" open>
         <summary><h2>Verantwortlich für den Inhalt</h2></summary>
         <div class="rch-in">
           <p>Verantwortlich nach § 18 Abs. 2 MStV: Manuel Hoffstetter, Anschrift wie oben.</p>
@@ -95,7 +95,7 @@
   function label() { var open = chs.every(function (c) { return c.open; }); all.textContent = open ? 'Alle schließen' : 'Alle öffnen'; all.setAttribute('aria-pressed', open); }
   function mode() {
     var d = mq.matches, h = hashEl(); R.classList.toggle('desk', d);
-    chs.forEach(function (c, i) { c.open = d || i === 0 || (h && c.contains(h)) || c.dataset.u === '1'; });
+    chs.forEach(function (c, i) { c.open = d || i === 0 || (h && c.contains(h)) || c.dataset.u === '1'; c.querySelector('summary').tabIndex = d ? -1 : 0; });
     label();
   }
   mode(); mq.addEventListener ? mq.addEventListener('change', mode) : mq.addListener(mode);
