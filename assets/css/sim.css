@@ -1,0 +1,334 @@
+/* Flight Club Saar – FPV-Simulator (nur diese Seite). Baut auf fcs.css auf. */
+:root{--sim-mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,Consolas,"Liberation Mono","DejaVu Sans Mono",monospace}
+
+/* ---------- Seitenkopf: kompakt, damit die Bühne gleich darunter kommt ---------- */
+.sim-head{min-height:0;padding:104px 0 22px}
+.sim-head .h1{font-size:clamp(46px,5.8vw,86px)}
+.sim-head .lede{max-width:66ch;margin-top:10px}
+.sim-head-in{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 40px}
+.sim-head-t{min-width:0;flex:1 1 520px}
+.sim-head-b{flex:none}
+.sim-head-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 120% at 85% 10%,rgba(31,73,125,.55),transparent 60%),radial-gradient(40% 80% at 10% 100%,rgba(63,224,255,.08),transparent 70%),var(--night)}
+@media (max-width:700px){.sim-head{padding:96px 0 18px}.sim-head-b{width:100%}.sim-head-b .btn{flex:1 1 auto;justify-content:center;min-height:48px}.sim-head-b .btn.ghost{display:none}.sim-head .crumb{margin-bottom:8px}}
+
+/* ---------- Rahmen ---------- */
+.sim{padding:16px 0 30px}
+.sim-wrap{max-width:1680px;margin:0 auto;padding-inline:clamp(10px,2.4vw,40px)}
+.sim-app{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 384px;gap:14px;height:min(calc(100svh - 150px),800px);min-height:540px}
+.sim-app.no-panel{grid-template-columns:minmax(0,1fr)}
+.sim-app.no-panel .sim-panel{display:none}
+.sim-privacy{display:flex;align-items:center;gap:10px;margin:14px 0 0;font-size:15px;color:var(--mute)}
+.sim-privacy svg{width:20px;height:20px;flex:none;fill:none;stroke:var(--sig);stroke-width:1.8;stroke-linecap:round}
+
+/* ---------- Bühne ---------- */
+.sim-stage{position:relative;min-width:0;overflow:hidden;border-radius:var(--r);border:1px solid var(--line-hi);background:#070a10;isolation:isolate;outline:none;container:simst/size;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.sim-stage:focus-visible{box-shadow:0 0 0 2px var(--sig)}
+.sim-stage.is-live{touch-action:none}
+.sim-canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
+.sim-flash{position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(80% 80% at 50% 50%,rgba(255,75,92,.0),rgba(255,75,92,.55));opacity:0}
+.sim-stage.is-crash .sim-flash{animation:sim-flash 1s ease-out}
+@keyframes sim-flash{0%{opacity:1}100%{opacity:0}}
+
+/* Analog-Look: Vignette, Zeilen und Rauschen, alles nur per transform/opacity */
+.sim-analog{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;display:none}
+.sim-stage.is-analog .sim-analog{display:block}
+.sim-analog::before{content:"";position:absolute;inset:0;z-index:2;background:radial-gradient(115% 95% at 50% 50%,transparent 52%,rgba(0,0,0,.72) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px)}
+.sim-noise{position:absolute;inset:-60%;opacity:.16;background-size:180px 180px;animation:sim-noise .45s steps(5) infinite;will-change:transform}
+@keyframes sim-noise{0%{transform:translate(0,0)}20%{transform:translate(-7%,4%)}40%{transform:translate(5%,-6%)}60%{transform:translate(-3%,7%)}80%{transform:translate(8%,2%)}100%{transform:translate(0,0)}}
+.sim-stage.is-off .sim-noise{animation-play-state:paused}
+
+/* ---------- OSD (wie Betaflight, Monospace) ---------- */
+.sim-osd{position:absolute;inset:0;z-index:4;pointer-events:none;font:700 15px/1.25 var(--sim-mono);letter-spacing:.04em;color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums;text-transform:uppercase}
+.sim-stage.no-osd .sim-osd>*:not(.o-msg):not(.o-arrow){display:none}
+.sim-osd>div{position:absolute;display:flex;flex-direction:column;gap:3px}
+.sim-osd .o-tl{left:16px;top:70px}
+.sim-osd .o-tr{right:16px;top:70px;align-items:flex-end}
+.sim-osd .o-tc{left:50%;top:68px;transform:translateX(-50%);align-items:center}
+.sim-osd .o-tc b{font-size:22px;letter-spacing:.06em}
+.sim-osd .o-tc span{font-size:15px;opacity:.9}
+.sim-osd .o-bl{left:16px;bottom:16px}
+.sim-osd .o-br{right:16px;bottom:16px;align-items:flex-end}
+.sim-osd .warn{color:var(--amber)}
+.sim-osd .bad{color:var(--red)}
+.sim-osd .good{color:var(--green)}
+.o-c{left:50%;top:50%;width:0;height:0}
+.o-cross{position:absolute;left:-14px;top:-14px;width:28px;height:28px}
+.o-cross::before,.o-cross::after{content:"";position:absolute;background:#fff;box-shadow:0 0 2px #000}
+.o-cross::before{left:0;right:0;top:13px;height:2px;-webkit-mask:linear-gradient(90deg,#000 35%,transparent 35% 65%,#000 65%);mask:linear-gradient(90deg,#000 35%,transparent 35% 65%,#000 65%)}
+.o-cross::after{top:0;bottom:0;left:13px;width:2px;-webkit-mask:linear-gradient(180deg,#000 35%,transparent 35% 65%,#000 65%);mask:linear-gradient(180deg,#000 35%,transparent 35% 65%,#000 65%)}
+.o-hor{position:absolute;left:-90px;top:-1px;width:180px;height:2px;background:linear-gradient(90deg,#fff 0 28%,transparent 28% 72%,#fff 72%);box-shadow:0 0 2px #000;opacity:.85;will-change:transform}
+.sim-stage.v-chase .o-hor,.sim-stage.v-chase .o-cross{display:none}
+.o-msg{position:absolute;left:50%;top:calc(50% + 34px);transform:translateX(-50%);margin:0;font-size:17px;text-align:center;white-space:nowrap;letter-spacing:.08em}
+.o-msg.blink{animation:blink 1s steps(2,end) infinite}
+.o-arrow{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;display:none;will-change:transform}
+.o-arrow.on{display:block}
+.o-arrow svg{width:44px;height:44px;fill:var(--sig);stroke:#000;stroke-width:1.5;filter:drop-shadow(0 0 6px rgba(63,224,255,.7))}
+.o-arrow b{position:absolute;left:0;right:0;top:46px;text-align:center;font-size:15px;color:var(--sig)}
+.sim-stage.is-demo .o-tc,.sim-stage.is-demo .o-arrow{display:none}
+
+/* ---------- Werkzeugleiste in der Bühne ---------- */
+.sim-bar{position:absolute;z-index:6;left:50%;top:10px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(4,9,18,.78);border:1px solid rgba(158,196,255,.22);transition:opacity .4s var(--ease);max-width:calc(100% - 20px)}
+.sim-stage.is-flying .sim-bar{opacity:.45}
+.sim-stage.is-flying .sim-bar:hover,.sim-stage .sim-bar:focus-within{opacity:1}
+.sb{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:44px;height:44px;padding:0 13px;border-radius:999px;border:0;background:transparent;color:var(--osd);font:600 15px/1 var(--hud);letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.sb svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.sb:hover{background:rgba(255,255,255,.1)}
+.sb[aria-pressed=true]{background:var(--sig);color:var(--night)}
+.sb[data-act=arm][aria-pressed=true]{background:var(--red);color:#fff}
+.sb[data-act=mode].acro{color:var(--amber)}
+@container simst (max-width:1060px){.sb .sb-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.sb{padding:0;width:44px}.sb[data-act=mode],.sb[data-act=craft]{width:auto;padding:0 11px}.sb[data-act=mode] .sb-t,.sb[data-act=craft] .sb-t{position:static;width:auto;height:auto;clip:auto}.sb[data-act=mode] svg,.sb[data-act=craft] svg{display:none}}
+@container simst (max-width:420px){.sim-bar{gap:1px;padding:3px}.sb[data-act=mode]{padding:0 9px}.sb[data-act=craft]{width:44px;padding:0}.sb[data-act=craft] .sb-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.sb[data-act=craft] svg{display:block}}
+
+/* ---------- Touch-Sticks ---------- */
+.sim-touch{position:absolute;inset:64px 0 0;z-index:5;display:none}
+.sim-stage.is-touch .sim-touch{display:block}
+.st-zone{position:absolute;top:0;bottom:0;width:50%;touch-action:none}
+.st-l{left:0}.st-r{right:0}
+.st-base{position:absolute;left:0;top:0;width:var(--sr,128px);height:var(--sr,128px);margin:calc(var(--sr,128px) / -2) 0 0 calc(var(--sr,128px) / -2);border-radius:50%;border:2px solid rgba(234,244,255,.45);background:radial-gradient(circle,rgba(4,9,18,.15),rgba(4,9,18,.45));will-change:transform}
+.st-base::before,.st-base::after{content:"";position:absolute;background:rgba(234,244,255,.22)}
+.st-base::before{left:50%;top:10%;bottom:10%;width:1px}
+.st-base::after{top:50%;left:10%;right:10%;height:1px}
+.st-knob{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:rgba(234,244,255,.85);box-shadow:0 0 0 3px rgba(63,224,255,.5),0 4px 14px rgba(0,0,0,.5);will-change:transform}
+.st-zone.on .st-base{border-color:var(--sig)}
+.st-zone.on .st-knob{background:#fff}
+.st-lbl{position:absolute;bottom:8px;font:600 15px/1 var(--hud);letter-spacing:.06em;color:rgba(234,244,255,.7);text-shadow:0 1px 3px #000}
+.st-l .st-lbl{left:16px}.st-r .st-lbl{right:16px}
+.sim-stage.is-touch .o-bl,.sim-stage.is-touch .o-br{bottom:auto;top:auto}
+.sim-stage.is-touch .o-bl{left:auto;right:50%;bottom:14px;margin-right:10px;align-items:flex-end}
+.sim-stage.is-touch .o-br{right:auto;left:50%;bottom:14px;margin-left:10px;align-items:flex-start}
+
+/* ---------- Demo-Hinweis, Laden, Hinweise ---------- */
+.sim-cta{position:absolute;z-index:7;left:50%;bottom:clamp(18px,7%,54px);transform:translateX(-50%);display:grid;justify-items:center;gap:10px;width:min(560px,calc(100% - 24px));padding:18px 18px 16px;border-radius:var(--r);background:rgba(4,9,18,.84);border:1px solid rgba(63,224,255,.4);box-shadow:0 18px 50px rgba(0,0,0,.45);text-align:center;transition:opacity .45s var(--ease),transform .45s var(--ease)}
+.sim-cta[hidden]{display:grid!important;opacity:0;pointer-events:none;visibility:hidden;transform:translate(-50%,16px);transition:opacity .45s var(--ease),transform .45s var(--ease),visibility 0s .45s}
+.sim-cta-k{margin:0;display:inline-flex;align-items:center;gap:9px;font:600 15px/1 var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--sig)}
+.sim-cta-k .dot{color:var(--red);animation:blink 1s steps(2,end) infinite}
+.sim-cta .btn{min-height:50px}
+.sim-cta-h{margin:0;font-size:15px;color:#d3e1f3;max-width:46ch}
+.sim-stage.is-off .sim-cta-k .dot{animation-play-state:paused}
+.sim-help{position:absolute;z-index:7;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;width:max-content;max-width:calc(100% - 24px);padding:6px 6px 6px 16px;border-radius:14px;background:rgba(4,9,18,.88);border:1px solid rgba(255,176,32,.55);color:#ffe2a8;font-size:15px;line-height:1.4}
+.sim-help[hidden]{display:none}
+.sim-help p{margin:0}
+.sim-stage.is-touch .sim-help{bottom:auto;top:112px;max-width:min(460px,calc(100% - 24px))}
+@container simst (max-height:430px){.sim-stage.is-touch .sim-help{top:96px}.sim-stage.is-touch .sim-toast{top:auto;bottom:118px}}
+.sim-x{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer}
+.sim-x:hover{background:rgba(255,255,255,.1)}
+.sim-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.sim-toast{position:absolute;z-index:8;left:50%;top:122px;transform:translate(-50%,-8px);margin:0;padding:10px 16px;border-radius:12px;background:rgba(4,9,18,.86);border:1px solid rgba(63,224,255,.45);font:600 15px/1.35 var(--hud);letter-spacing:.03em;color:#fff;text-align:center;max-width:calc(100% - 32px);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s var(--ease)}
+.sim-toast.on{opacity:1;transform:translate(-50%,0)}
+.sim-load{position:absolute;inset:0;z-index:9;display:grid;place-content:center;justify-items:center;gap:14px;background:#070a10;font:600 15px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);transition:opacity .6s}
+.sim-load.gone{opacity:0;pointer-events:none}
+.sim-spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(63,224,255,.2);border-top-color:var(--sig);animation:sim-spin .9s linear infinite}
+@keyframes sim-spin{to{transform:rotate(360deg)}}
+.sim-nogl{position:absolute;inset:0;z-index:10;display:grid;place-content:center;gap:10px;padding:24px;text-align:center;background:radial-gradient(60% 60% at 50% 40%,rgba(31,73,125,.5),transparent),#070a10}
+.sim-nogl[hidden]{display:none}
+.sim-nogl p{margin:0 auto;max-width:52ch;color:#d3e1f3;font-size:15px}
+
+/* ---------- Einstellungen ---------- */
+.sim-panel{position:relative;min-width:0;display:flex;flex-direction:column;border-radius:var(--r);border:1px solid var(--line);background:linear-gradient(180deg,rgba(16,36,74,.62),rgba(8,18,38,.78));overflow:hidden}
+.sim-panel-top{display:flex;align-items:stretch;border-bottom:1px solid var(--line);background:rgba(4,9,18,.4)}
+.sim-panel-x{display:none;margin:4px 4px 4px 0;color:var(--osd)}
+.sim-tabs{flex:1;display:flex;min-width:0}
+.sim-tabs [role=tab]{flex:1 1 auto;min-height:52px;padding:8px 10px;border:0;border-bottom:2px solid transparent;background:none;color:#bcd0ea;font:600 15px/1.2 var(--body);cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+.sim-tabs [role=tab]:hover{color:#fff;background:rgba(255,255,255,.04)}
+.sim-tabs [role=tab][aria-selected=true]{color:#fff;border-bottom-color:var(--sig)}
+.sim-pane{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:18px 18px 22px;display:grid;align-content:start;gap:16px;scrollbar-width:thin;scrollbar-color:rgba(158,196,255,.3) transparent}
+.sim-pane[hidden]{display:none}
+.sim-pane:focus-visible{outline-offset:-3px}
+.sim-pane::-webkit-scrollbar{width:8px}
+.sim-pane::-webkit-scrollbar-thumb{background:rgba(158,196,255,.25);border-radius:8px}
+.sim-h3{margin:6px 0 -4px;font:700 15px/1.2 var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--sig)}
+.sim-note{margin:0;font-size:15px;line-height:1.5;color:#c9d8ec}
+.sim-note.sm{color:var(--mute)}
+.sim-note b{color:#fff}
+.sim-src{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--line-hi);background:rgba(4,9,18,.45)}
+.sim-src b{display:block;font:700 16px/1.3 var(--hud);letter-spacing:.03em}
+.sim-src span{display:block;font-size:15px;line-height:1.45;color:var(--mute)}
+.sim-src-dot{flex:none;width:12px;height:12px;margin-top:5px;border-radius:50%;background:var(--mute)}
+.sim-src.ok .sim-src-dot{background:var(--green);box-shadow:0 0 12px var(--green)}
+.sim-src.warn .sim-src-dot{background:var(--amber);box-shadow:0 0 12px var(--amber)}
+.sim-field{display:grid;gap:4px}
+.sim-field label,.sim-fs legend{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font:600 15px/1.3 var(--body);color:#dbe7f6}
+.sim-field output{font:700 15px var(--sim-mono);color:var(--sig);font-variant-numeric:tabular-nums}
+.sim-fs{border:0;margin:0;padding:0;display:grid;gap:8px;min-width:0}
+.sim-fs legend{padding:0;margin-bottom:8px}
+.sim-sel{width:100%;min-height:46px;padding:10px 12px;border-radius:12px;border:1px solid var(--line-hi);background:rgba(3,8,18,.7);color:var(--osd);font:500 15px var(--body)}
+.sim-seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:rgba(3,8,18,.55);border:1px solid var(--line)}
+.sim-seg.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.sim-seg label{position:relative;display:block;min-width:0}
+.sim-seg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.sim-seg span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:6px 8px;border-radius:10px;font:600 15px/1.2 var(--body);text-align:center;color:#c9d8ec;transition:background .2s,color .2s}
+.sim-seg input:checked+span{background:var(--sig);color:var(--night)}
+.sim-seg input:focus-visible+span{outline:2px solid var(--sig);outline-offset:2px}
+.sim-seg label:hover input:not(:checked)+span{background:rgba(255,255,255,.06)}
+
+/* Regler: großer Daumen, 44 px Tippfläche */
+.sim-range{-webkit-appearance:none;appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:pointer;--p:50%}
+.sim-range::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--sig) var(--p),rgba(158,196,255,.22) var(--p))}
+.sim-range::-moz-range-track{height:6px;border-radius:6px;background:rgba(158,196,255,.22)}
+.sim-range::-moz-range-progress{height:6px;border-radius:6px;background:var(--sig)}
+.sim-range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--sig);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.sim-range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--sig)}
+.sim-range:focus-visible{outline:none}
+.sim-range:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(63,224,255,.35)}
+
+/* Live-Anzeige der Sticks und Kanäle */
+.sim-live{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sim-stick{position:relative;aspect-ratio:1;border-radius:14px;border:1px solid var(--line-hi);background:linear-gradient(rgba(158,196,255,.14),rgba(158,196,255,.14)) 50% 0/1px 100% no-repeat,linear-gradient(90deg,rgba(158,196,255,.14),rgba(158,196,255,.14)) 0 50%/100% 1px no-repeat,rgba(3,8,18,.6)}
+.sim-stick i{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--sig);box-shadow:0 0 12px var(--sig);will-change:transform}
+.sim-stick span{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font:600 15px var(--hud);letter-spacing:.06em;color:var(--mute);text-transform:uppercase}
+.sim-live{margin-bottom:20px}
+.sim-chans{display:grid;gap:6px}
+.sim-ch{display:grid;grid-template-columns:52px minmax(0,1fr) 56px;align-items:center;gap:10px;font:700 15px var(--sim-mono);font-variant-numeric:tabular-nums}
+.sim-ch b{font-weight:700;color:#bcd0ea}
+.sim-ch output{text-align:right;color:#fff}
+.sim-ch i{position:relative;height:10px;border-radius:6px;background:rgba(158,196,255,.16);overflow:hidden}
+.sim-ch u{position:absolute;top:0;bottom:0;left:0;width:100%;background:var(--sig);transform-origin:0 50%;transform:scaleX(0);will-change:transform}
+.sim-ch.c u{left:50%;width:50%}
+.sim-ch.c i::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.4)}
+.sim-ch.sw u{background:var(--amber)}
+.sim-rate{margin:0;font:600 15px var(--sim-mono);color:var(--mute)}
+.sim-rate b{color:var(--green)}
+.sim-btns{gap:8px}
+.sim-btn{padding:12px 16px;font-size:15px;letter-spacing:.06em;min-height:46px}
+.sim-btn:disabled{opacity:.45;cursor:not-allowed}
+.sim-check{padding:10px 12px}
+.sim-check span{font-size:15px}
+.sim-fold>summary{font-size:15px;padding:14px 16px}
+.sim-fold>.fold-in{padding:0 16px 16px}
+.sim-keys{margin:0;display:grid;gap:8px}
+.sim-keys div{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:baseline}
+.sim-keys dt{font:600 15px var(--hud);color:#fff}
+.sim-keys dd{margin:0;font-size:15px;color:#c9d8ec;line-height:1.45}
+kbd{display:inline-block;min-width:28px;padding:3px 7px 5px;border-radius:7px;border:1px solid var(--line-hi);box-shadow:inset 0 -3px 0 rgba(158,196,255,.22);background:rgba(3,8,18,.7);font:700 15px/1.2 var(--sim-mono);text-align:center;color:#fff}
+
+/* Rates-Tabelle */
+.sim-rt{display:grid;grid-template-columns:86px repeat(3,minmax(0,1fr));gap:6px 8px;align-items:center}
+.sim-rt>b{font:700 15px var(--hud);text-align:center;letter-spacing:.06em}
+.sim-rt>b:nth-of-type(1){color:var(--sig)}.sim-rt>b:nth-of-type(2){color:var(--amber)}.sim-rt>b:nth-of-type(3){color:var(--green)}
+.sim-rt>span{font-size:15px;color:#c9d8ec;line-height:1.2}
+.sim-rt input{width:100%;min-width:0;height:44px;padding:0 6px;border-radius:10px;border:1px solid var(--line-hi);background:rgba(3,8,18,.7);color:#fff;font:600 15px var(--sim-mono);text-align:center;-moz-appearance:textfield}
+.sim-rt input::-webkit-inner-spin-button{opacity:.5}
+.sim-rt input:focus{outline:none;border-color:var(--sig);box-shadow:0 0 0 3px rgba(63,224,255,.18)}
+.sim-rt output{font:700 16px var(--sim-mono);text-align:center;color:#fff}
+.sim-curve{width:100%;height:auto;aspect-ratio:2/1;border-radius:12px;border:1px solid var(--line);background:rgba(3,8,18,.6)}
+.sim-angle,.sim-rates{display:grid;gap:12px}
+.sim-best{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sim-best li{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;background:rgba(3,8,18,.45);font-size:15px}
+.sim-best li b{font:700 15px var(--sim-mono);color:var(--sig)}
+.sim-best li.none b{color:var(--mute)}
+
+/* Assistent */
+.sim-wiz{display:grid;gap:10px;padding:16px;border-radius:16px;border:1px solid rgba(63,224,255,.5);background:radial-gradient(120% 80% at 50% 0%,rgba(63,224,255,.1),transparent 60%),rgba(3,8,18,.7)}
+.sim-wiz[hidden]{display:none}
+.sim-wiz-n{margin:0;font:600 15px var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.sim-wiz-n b{color:var(--sig)}
+.sim-wiz-t{margin:0;font:700 20px/1.2 var(--hud);outline:none}
+.sim-wiz-d{margin:0;font-size:15px;line-height:1.5;color:#d3e1f3}
+.sim-wiz-pic{width:100%;max-width:300px;height:auto;justify-self:center}
+.wz-body{fill:rgba(16,36,74,.8);stroke:var(--line-hi);stroke-width:1.5}
+.wz-gim{fill:rgba(3,8,18,.7);stroke:rgba(158,196,255,.35);stroke-width:1.2}
+.wz-dot{fill:#667a96}
+.wz-dot.on{fill:var(--sig);filter:drop-shadow(0 0 5px var(--sig))}
+.wz-sw{fill:#667a96}
+.wz-sw.on{fill:var(--amber)}
+.sim-wiz-pic.a-thr .wz-dot[data-wz=l]{animation:wz-thr 1.6s var(--ease) infinite}
+.sim-wiz-pic.a-rest .wz-dot[data-wz=l]{transform:translate(0,26px)}
+.sim-wiz-pic.a-yaw .wz-dot[data-wz=l]{animation:wz-x 1.4s var(--ease) infinite}
+.sim-wiz-pic.a-pit .wz-dot[data-wz=r]{animation:wz-up 1.4s var(--ease) infinite}
+.sim-wiz-pic.a-rol .wz-dot[data-wz=r]{animation:wz-x 1.4s var(--ease) infinite}
+.sim-wiz-pic.a-sw .wz-sw{animation:wz-sw 1.2s steps(2,end) infinite}
+@keyframes wz-thr{0%,100%{transform:translateY(26px)}45%,60%{transform:translateY(-26px)}}
+@keyframes wz-x{0%,100%{transform:none}40%,70%{transform:translateX(26px)}}
+@keyframes wz-up{0%,100%{transform:none}40%,70%{transform:translateY(-26px)}}
+@keyframes wz-sw{50%{fill:var(--amber)}}
+.sim-raw{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px 10px}
+.sim-raw .rw{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:6px;font:700 15px var(--sim-mono);color:var(--mute)}
+.sim-raw .rw.hit{color:var(--sig)}
+.sim-raw .rw i{position:relative;height:8px;border-radius:5px;background:rgba(158,196,255,.16)}
+.sim-raw .rw i::after{content:"";position:absolute;top:-2px;width:4px;height:12px;margin-left:-2px;border-radius:2px;background:#fff;left:var(--x,50%)}
+.sim-wiz-ok{margin:0;min-height:1.4em;font:600 15px var(--hud);color:var(--green)}
+.sim-wiz-ok.warn{color:var(--amber)}
+
+/* ---------- Abschnitte darunter ---------- */
+.sim-sec{padding:clamp(48px,7vh,84px) 0}
+.sim-sec-b{padding-top:0}
+.sim-cols{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:clamp(24px,4vw,60px);align-items:start}
+.sim-cols-h{display:grid;gap:14px;justify-items:start}
+.sim-cols-h .h2{font-size:clamp(40px,5vw,72px);margin:0;line-height:.92}
+.sim-cols-h .lede{margin:0;font-size:clamp(16px,1.3vw,19px)}
+.sim-folds{display:grid;gap:10px}
+.sim-folds .fold-in p{margin:0 0 10px;font-size:16px;line-height:1.6;color:#d3e1f3}
+.sim-folds .fold-in p:last-child{margin-bottom:0}
+.sim-folds .fold-in a{color:var(--sig)}
+.sim-list{margin:0;padding-left:20px;display:grid;gap:6px;font-size:16px;line-height:1.55;color:#d3e1f3}
+@media (min-width:1101px){.sim-cols-h{position:sticky;top:150px}}
+
+/* ---------- Kleinere Bildschirme ---------- */
+@media (max-width:1100px){
+  .sim-app{display:block;height:auto;min-height:0}
+  .sim-stage{height:min(72vw,calc(100svh - 170px));min-height:330px}
+  .sim-panel{margin-top:12px}
+  .sim-pane{overflow:visible}
+  .sim-app.no-panel .sim-panel{display:flex}
+  .sim-cols{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  .sim-wrap{padding-inline:0}
+  .sim-stage{border-radius:0;border-inline:0;height:auto;aspect-ratio:1/1.02;min-height:0;max-height:calc(100svh - 140px)}
+  .sim-panel{margin:12px 12px 0;border-radius:var(--r)}
+  .sim-privacy{margin:12px 16px 0}
+  .sim-pane{padding:16px 14px 20px}
+  .sim-tabs [role=tab]{padding:6px 6px;font-size:15px}
+  .sim-osd{font-size:15px}
+  .sim-osd .o-tc b{font-size:19px}
+  .sim-rt{grid-template-columns:74px repeat(3,minmax(0,1fr));gap:6px}
+  .sim-keys div{grid-template-columns:96px minmax(0,1fr)}
+  .sim-cta{padding:14px 12px 12px}
+  .sim-cta .btn{padding:14px 14px;font-size:15px;letter-spacing:.06em}
+}
+@container simst (max-width:620px){
+  .sim-osd .o-tl,.sim-osd .o-tr{top:64px}
+  .sim-osd .o-tc{top:64px}
+  .sim-osd [data-o=craft],.sim-osd [data-o=alt],.sim-osd [data-o=time]{display:none}
+  .sim-osd .o-tc span{display:none}
+  .sim-osd .o-tl,.sim-osd .o-tr{gap:2px}
+  .sim-toast{top:104px}
+}
+@container simst (max-height:430px){
+  .sim-osd .o-tl,.sim-osd .o-tr,.sim-osd .o-tc{top:62px}
+  .sim-osd .o-tc span{display:none}
+  .sim-cta{bottom:10px;gap:6px;padding:10px 12px}
+  .sim-cta-h{display:none}
+  .sim-touch{top:58px}
+  .sim-toast{top:96px}
+}
+
+/* ---------- Vollbild (echt oder nachgebaut) ---------- */
+html.sim-lock,html.sim-lock body{overflow:hidden!important;overscroll-behavior:none}
+.sim-app.is-full{position:fixed;inset:0;z-index:300;height:100%;height:100dvh;min-height:0;margin:0;gap:0;background:#000;grid-template-columns:minmax(0,1fr) 384px;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.sim-app.is-full.no-panel{grid-template-columns:minmax(0,1fr)}
+.sim-app.is-full .sim-stage{height:100%;max-height:none;aspect-ratio:auto;border-radius:0;border:0}
+.sim-app.is-full .sim-panel{border-radius:0;border-width:0 0 0 1px;margin:0;background:linear-gradient(180deg,#0d1f3d,#060e1e)}
+.sim-app.is-full .sim-pane{overflow-y:auto}
+.sim-app:fullscreen,.sim-app:fullscreen *{cursor:auto!important}
+.sim-app:fullscreen .sim-stage.is-flying,.sim-app:fullscreen .sim-stage.is-flying *{cursor:none!important}
+@media (max-width:1100px){
+  .sim-app.is-full{display:block}
+  .sim-app.is-full .sim-panel{position:absolute;z-index:20;top:0;right:0;bottom:0;width:min(400px,92vw);display:flex;transform:translateX(105%);transition:transform .45s var(--ease);box-shadow:-20px 0 60px rgba(0,0,0,.6)}
+  .sim-app.is-full.panel-open .sim-panel{transform:none}
+  .sim-app.is-full .sim-panel-x{display:grid}
+}
+html.sim-hidecur .cdrone,html.sim-hidecur .cdot,html.sim-hidecur .cd-lock{opacity:0!important}
+
+/* ---------- Bewegung reduzieren ---------- */
+@media (prefers-reduced-motion:reduce){
+  .sim-noise{animation:none}
+  .sim-wiz-pic *{animation:none!important}
+}
+
+/* ---------- Zustände ---------- */
+.sim-stage.is-demo .sim-touch{display:none}
+.sim-angle[hidden],.sim-field[hidden],.sim-btn[hidden]{display:none}
+.sim-stage.is-flying .st-lbl{opacity:0;transition:opacity .6s}
+.sim-btn.pulse{animation:sim-pulse 1.6s ease-in-out infinite}
+@keyframes sim-pulse{50%{box-shadow:0 0 0 6px rgba(63,224,255,.25)}}

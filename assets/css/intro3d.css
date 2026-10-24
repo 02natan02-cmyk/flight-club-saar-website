@@ -1,0 +1,43 @@
+/* 3D-Eröffnungs-Intro (assets/js/intro3d.js). Liegt im bestehenden #intro, ersetzt dessen alte Kinder solange es läuft. */
+.intro.i3d>.intro-noise,.intro.i3d>.intro-lens,.intro.i3d>.intro-osd{display:none}
+.intro.i3d{touch-action:none;-webkit-user-select:none;user-select:none}
+.i3d-stage{position:absolute;inset:0;z-index:1;overflow:hidden;background:#02050b;contain:strict;
+  --i3d-hud:var(--hud,"Chakra Petch",ui-monospace,monospace);--i3d-big:var(--big,"Bebas Neue","Chakra Petch",sans-serif);
+  --i3d-ink:#eaf4ff;--i3d-mute:#9db1cc}
+.i3d-stage.live{background:transparent}
+.i3d-gl,.i3d-noise{position:absolute;inset:0;width:100%;height:100%;display:block}
+.i3d-gl{opacity:0}
+.i3d-noise{opacity:0;pointer-events:none}
+
+/* Boot-OSD (Bildmitte) */
+.i3d-boot{position:absolute;left:0;right:0;top:50%;margin-top:-1.6em;text-align:center;transform-origin:50% 50%;
+  font:600 clamp(12px,1.25vw,15px)/1.5 var(--i3d-hud);letter-spacing:.24em;text-transform:uppercase;color:var(--i3d-ink);
+  text-shadow:0 0 2px #000,0 1px 1px #000}
+.i3d-boot p{margin:0}
+.i3d-boot b{color:var(--i3d-a,#3fe0ff);font-weight:600}
+.i3d-b1{min-height:1.5em}
+.i3d-b2{opacity:0;font-size:.86em;letter-spacing:.2em;color:#cfe0f5}
+
+/* Flug-OSD in den Ecken, wie in der Brille */
+.i3d-o{position:absolute;opacity:0;font:600 12px/1 var(--i3d-hud);letter-spacing:.16em;text-transform:uppercase;color:var(--i3d-ink);
+  text-shadow:0 0 2px #000,0 0 6px rgba(0,0,0,.9);font-variant-numeric:tabular-nums;white-space:nowrap}
+.i3d-o b{font-weight:600;color:var(--i3d-ink)}
+.i3d-o b.warn{color:var(--i3d-b,#ffb020)}
+.i3d-tl{left:max(16px,env(safe-area-inset-left));top:max(16px,env(safe-area-inset-top));display:flex;align-items:center;gap:8px}
+.i3d-tr{right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top))}
+.i3d-bl{left:max(16px,env(safe-area-inset-left));bottom:max(26px,env(safe-area-inset-bottom))}
+.i3d-rec{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4b5c}
+.i3d-armed{position:absolute;left:50%;top:max(var(--i3d-armed-top,46px),calc(env(safe-area-inset-top) + 30px));transform:translateX(-50%);opacity:0;
+  font:700 clamp(14px,1.5vw,18px)/1 var(--i3d-hud);letter-spacing:.32em;padding-left:.32em;color:#3ee08a;
+  text-shadow:0 0 2px #000,0 1px 1px #000}
+
+/* Titel unter dem Logo (Position und Größe setzt intro3d.js passend zum Logo) */
+.i3d-title{position:absolute;left:0;right:0;top:70%;text-align:center;pointer-events:none;transform-origin:50% 0}
+.i3d-t1{display:block;width:max-content;max-width:none;margin:0 auto;white-space:nowrap;
+  font:400 64px/.9 var(--i3d-big);letter-spacing:.035em;color:var(--i3d-ink);
+  --i3d-glow:0;text-shadow:0 0 calc(var(--i3d-glow) * 28px) rgba(var(--i3d-a-rgb,63,224,255),calc(var(--i3d-glow) * .75))}
+.i3d-t1 .i3d-ch{display:inline-block;will-change:transform,opacity}
+.i3d-t2{display:block;width:max-content;margin:10px auto 0;white-space:nowrap;min-height:1.3em;
+  font:600 15px/1.3 var(--i3d-hud);letter-spacing:.12em;text-transform:uppercase;color:#bcd0ea}
+
+.intro.i3d .intro-skip{z-index:5}

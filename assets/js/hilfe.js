@@ -12,11 +12,18 @@
   const G = () => typeof window.gsap !== 'undefined';
   const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const wait = (ms) => new Promise(r => setTimeout(r, RM ? Math.min(ms, 120) : ms));
-  const scrollToEl = (el, off = -90) => {
+  // Natives Scrollen über fcs.js (rechnet Menü und Kapitel-Leiste mit ein)
+  const scrollToEl = (el, off = -84) => {
     if (!el) return;
-    if (FCS.lenis) FCS.lenis.scrollTo(el, { offset: off, duration: 1.2 });
+    if (FCS.scrollTo) FCS.scrollTo(el, off);
     else { const y = el.getBoundingClientRect().top + scrollY + off; scrollTo({ top: y, behavior: RM ? 'auto' : 'smooth' }); }
   };
+  const WIDE = () => innerWidth >= 981;
+  // Aufklapper, die auf breiten Bildschirmen offen starten (am Handy zu, damit die Seite kurz bleibt)
+  $$('#flagtool, .th-tips').forEach(d => { if (WIDE()) d.open = true; });
+  const openFlag = () => { const d = $('#flagtool'); if (d && !d.open) d.open = true; };
+  document.addEventListener('click', (ev) => { const a = ev.target.closest && ev.target.closest('a[href$="#flagtool"]'); if (a) openFlag(); }, true);
+  if (location.hash === '#flagtool') openFlag();
 
   /* ---------- Zahlen aus data.js sofort eintragen (vor fcs.js-Zählern) ---------- */
   const support = (D.gruppen || []).find(g => /technisch/i.test(g.n));
@@ -551,7 +558,7 @@
     }
     if (dt && e) dt.value = e.flag ? 'Arming-Flag ' + e.flag.n : e.t;
     if (e && e.cat) { const r = $(`input[name="Thema"][value="${e.cat}"]`, f); if (r) r.checked = true; }
-    scrollToEl($('#frage'), -80);
+    scrollToEl($('#frage'));
     setTimeout(() => { f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash'); if (ta) { ta.focus({ preventScroll: true }); try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (err) {} } }, RM ? 50 : 900);
   }
 
@@ -565,8 +572,8 @@
         if (G() && !RM) gsap.fromTo($('.th-armed', r), { scale: 1.6, opacity: 0 }, { scale: 1, opacity: 1, duration: .6, ease: 'back.out(3)', delay: .15 });
       });
     } else if (a === 'verein') prefill();
-    else if (a === 'flagtool') { scrollToEl($('#flagtool'), -90); setTimeout(() => { const i = $('#flag-in'); if (i) i.focus({ preventScroll: true }); }, RM ? 50 : 900); }
-    else if (a === 'check') scrollToEl($('#check'), -70);
+    else if (a === 'flagtool') { openFlag(); scrollToEl($('#flagtool')); setTimeout(() => { const i = $('#flag-in'); if (i) i.focus({ preventScroll: true }); }, RM ? 50 : 900); }
+    else if (a === 'check') scrollToEl($('#check'));
     else if (a === 'faq') openFaq(v, true);
     else if (a === 'link' && v) location.href = v;
     else if (a === 'focus') input.focus();
@@ -607,9 +614,18 @@
     const set = $('.th-sym-set', track);
     const copy = set.cloneNode(true); copy.setAttribute('aria-hidden', 'true'); $$('button', copy).forEach(b => b.tabIndex = -1);
     track.appendChild(copy);
+    // Touch: Leiste zum Wischen. Selbst-Impuls: einmal kurz anschieben, damit man sieht, dass es weitergeht
+    const mq = track.parentElement;
+    if (matchMedia('(hover:none)').matches && mq && !RM) {
+      const io7 = new IntersectionObserver((es) => {
+        if (!es.some(x => x.isIntersecting)) return; io7.disconnect();
+        setTimeout(() => { mq.scrollTo({ left: 140, behavior: 'smooth' }); setTimeout(() => mq.scrollTo({ left: 0, behavior: 'smooth' }), 900); }, 700);
+      }, { threshold: .6 });
+      io7.observe(mq);
+    }
     track.addEventListener('click', (ev) => {
       const b = ev.target.closest('.th-sym'); if (!b) return;
-      scrollToEl($('#doktor .th-doc-grid'), -80);
+      scrollToEl($('#doktor .th-doc-grid'));
       setTimeout(() => ask(b.dataset.ask), RM ? 0 : 750);
     });
   }
@@ -636,16 +652,16 @@
       return;
     }
     fScr.textContent = f.n;
-    fOut.innerHTML = `<h4><code>${f.n}</code> ${esc(f.t)}</h4>${guess ? `<p class="mute">Ich nehme an, du meinst ${f.n}.</p>` : ''}<p>${f.d}</p><ol>${f.s.map(s => `<li>${s}</li>`).join('')}</ol>${list && list.length ? `<div class="th-sug">${list.map(x => `<button type="button" class="th-fchip" data-flag="${x.n}">${x.n}</button>`).join('')}</div>` : ''}`;
+    fOut.innerHTML = `<h3 class="th-fh"><code>${f.n}</code> ${esc(f.t)}</h3>${guess ? `<p class="mute">Ich nehme an, du meinst ${f.n}.</p>` : ''}<p>${f.d}</p><ol>${f.s.map(s => `<li>${s}</li>`).join('')}</ol>${list && list.length ? `<div class="th-sug">${list.map(x => `<button type="button" class="th-fchip" data-flag="${x.n}">${x.n}</button>`).join('')}</div>` : ''}`;
     if (G() && !RM) {
       gsap.fromTo(fScr, { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: .45, ease: 'back.out(2.4)' });
-      gsap.from($$('h4, p, li', fOut), { y: 8, opacity: 0, duration: .35, stagger: .04, ease: 'power2.out' });
+      gsap.from($$('h3, p, li', fOut), { y: 8, opacity: 0, duration: .35, stagger: .04, ease: 'power2.out' });
     }
   }
   if (fIn && fOut && fChips) {
     const render = (all) => { fChips.innerHTML = (all ? FLAGS.map(x => x[0]) : COMMON).map(n => `<button type="button" class="th-fchip" data-flag="${n}" aria-pressed="false">${n}</button>`).join(''); };
     render(false);
-    fMore.addEventListener('click', () => { const open = fMore.getAttribute('aria-expanded') !== 'true'; fMore.setAttribute('aria-expanded', String(open)); fMore.textContent = open ? 'Nur häufige Flags zeigen' : `Alle ${FLAGS.length} Flags zeigen`; render(open); if (fIn.value) { const r = flagFind(fIn.value); flagShow(r.f, r.guess, r.list); } });
+    fMore.addEventListener('click', () => { const open = fMore.getAttribute('aria-expanded') !== 'true'; fMore.setAttribute('aria-expanded', String(open)); fMore.textContent = open ? 'Nur häufige Flags zeigen' : `Alle ${FLAGS.length} Flags zeigen`; const fl = $('#flagchips-l'); if (fl) fl.textContent = open ? `Alle ${FLAGS.length} Flags` : 'Häufige Flags'; render(open); if (fIn.value) { const r = flagFind(fIn.value); flagShow(r.f, r.guess, r.list); } });
     let t = 0;
     fIn.addEventListener('input', () => { fTouched = true; clearTimeout(t); t = setTimeout(() => { const r = flagFind(fIn.value); if (!fIn.value.trim()) { fOut.innerHTML = ''; fScr.textContent = 'ARM'; return; } flagShow(r.f, r.guess, r.list); }, 160); });
     $('.th-flag').addEventListener('click', (ev) => {
@@ -705,7 +721,7 @@
       } else big.textContent = word;
       if (fromUser && hintT) hintT.textContent = 'Ohne Gewähr: Herstellerangaben gehen vor';
       // Handy: Ergebnis ins Bild holen, wenn die Bühne gerade nicht zu sehen ist
-      if (fromUser && innerWidth <= 980) { const rc = stage.getBoundingClientRect(); if (rc.top > innerHeight - 160 || rc.bottom < 80) scrollToEl(stage, -90); }
+      if (fromUser && innerWidth <= 980) { const rc = stage.getBoundingClientRect(); if (rc.top > innerHeight - 160 || rc.bottom < 80) scrollToEl(stage); }
     };
     $$('#cmp-rx input, #cmp-tx input').forEach(i => i.addEventListener('change', () => { if (demo && i.dataset.demo !== '1') demo = false; update(!demo); }));
     ['pointerdown', 'keydown'].forEach(evn => $('.th-cmp').addEventListener(evn, () => { demo = false; }, { passive: true }));
@@ -741,7 +757,7 @@
   function openFaq(id, scroll) {
     const btn = $(`[aria-controls="${id}"]`); if (!btn) return;
     if (btn.getAttribute('aria-expanded') !== 'true') toggle(btn, true);
-    if (scroll) scrollToEl(btn.closest('.th-acc-item'), -100);
+    if (scroll) scrollToEl(btn.closest('.th-acc-item'));
   }
   const acc = $('.th-acc');
   if (acc) {
@@ -781,7 +797,7 @@
       $$('.field.bad, .check.bad', qForm).forEach(x => x.classList.remove('bad'));
       const n = $('#f-name'); if (n) n.focus();
     });
-    qForm.addEventListener('fcs:sent', () => { scrollToEl(qForm, -110); });
+    qForm.addEventListener('fcs:sent', () => { scrollToEl(qForm); });
     const io6 = new IntersectionObserver((es) => {
       if (!es.some(x => x.isIntersecting)) return; io6.disconnect();
       if (G() && !RM) gsap.fromTo($$('.th-topics .chip span', qForm), { y: 0 }, { y: -6, duration: .25, ease: 'power2.out', yoyo: true, repeat: 1, stagger: .06, delay: .4 });
@@ -804,7 +820,15 @@
     setTimeout(step, 1600);
   }
 
+  /* Endlos-Animationen anhalten, solange ein Abschnitt nicht zu sehen ist (nichts ruckelt beim Scrollen) */
+  function pauseOffscreen() {
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '80px 0px' });
+    $$('main > section, main > div').forEach(x => io.observe(x));
+  }
+
   function init() {
+    pauseOffscreen();
     headDemo();
     if (G() && !RM && window.ScrollTrigger) {
       // Kompatibilitäts-Bühne und Karten mit Tiefe

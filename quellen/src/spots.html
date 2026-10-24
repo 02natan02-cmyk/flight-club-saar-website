@@ -1,133 +1,203 @@
 <section class="pagehead sp-head">
   <video class="bgvid" data-auto muted loop playsinline preload="metadata" poster="media/turm.webp" data-src="media/turm.mp4"></video>
   <div class="scanlines"></div><div class="osd-frame"><i></i></div>
-  <div class="osd sp-osd"><span class="blink" style="color:var(--amber)">◉</span> GPS FIX · <b data-spotcount>3</b> SPOTS</div>
+  <div class="osd sp-osd"><span class="dot blink" style="color:var(--amber)"></span> GPS FIX · <b data-spotcount>3</b> SPOTS</div>
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / Spot-Karte</p>
-    <p class="kicker">Wo wir uns treffen</p>
     <h1 class="h1" data-split>Spot-Karte</h1>
-    <p class="lede">Hier treffen wir uns zum Fliegen. Ein Klick auf einen Spot, und Google Maps führt dich hin. Du kennst einen guten Platz? Schick ihn uns, der Vorstand schaltet ihn frei.</p>
-    <div class="btns"><a class="btn amber solid" href="#karte">Zur Karte</a><a class="btn" href="#einsenden">Spot einsenden</a></div>
+    <p class="lede sp-lede">Spots ansehen, Route starten, bewerten und eigenen Spot melden.</p>
+    <div class="btns">
+      <a class="btn amber solid" href="#karte"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Zur Karte</a>
+      <a class="btn" href="#einsenden"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Spot melden</a>
+    </div>
   </div>
 </section>
 
-<!-- Regeln / Haftung -->
-<section class="sec sp-rules" id="regeln">
+<!-- 1 · Regeln: kompakte Karten, Haken schaltet die Route-Knöpfe frei -->
+<section class="sec sp-sec sp-rules" id="regeln" data-toc="Regeln" aria-labelledby="regeln-h">
   <div class="wrap">
-    <div class="warnbox" data-reveal>
-      <div class="warn-stripes" aria-hidden="true"></div>
-      <div class="warn-in">
-        <p class="kicker" style="color:var(--amber)">Bitte zuerst lesen</p>
-        <h2 class="h2">Jeder fliegt auf eigene Verantwortung.</h2>
-        <p class="lede">Die Spots auf dieser Karte sind Orte, an denen sich Piloten aus dem Verein zum Fliegen treffen oder getroffen haben. Der Flight Club Saar e. V. veranstaltet dort nichts, ist nicht Eigentümer und gibt keine Erlaubnis zum Betreten oder Fliegen.</p>
-        <ol class="rules">
-          <li><b>Haftpflichtversicherung ist Pflicht.</b> Ohne eine Versicherung, die deine Drohne abdeckt, fliegst du nicht.</li>
-          <li><b>Prüf selbst, ob du dort fliegen darfst.</b> Flugbeschränkungen, Naturschutz, Abstände zu Menschen und Straßen: Die offizielle Karte dafür ist <a href="https://maptool-dipul.dfs.de/" target="_blank" rel="noopener">dipul.de</a>.</li>
-          <li><b>Frag den Eigentümer.</b> Lost Places und Industrieanlagen sind fast immer Privatgelände. Betreten kann verboten und gefährlich sein.</li>
-          <li><b>Nachweise dabei.</b> EU-Kompetenznachweis, Registrierung als Betreiber beim Luftfahrt-Bundesamt und beim FPV-Fliegen ein Spotter mit Sichtkontakt.</li>
-          <li><b>Keine Haftung durch den Verein.</b> Für Schäden, Unfälle, Verstöße oder Ärger mit Eigentümern ist jeder Pilot selbst verantwortlich. Der Verein haftet dafür nicht.</li>
-        </ol>
-        <p class="mute rules-note">Diese Hinweise ersetzen keine Rechtsberatung. Stand 2026, ohne Gewähr. Infos zu Drohnenregeln gibt es beim <a href="https://www.lba.de/DE/Drohnen/Drohnen_node.html" target="_blank" rel="noopener">Luftfahrt-Bundesamt</a>.</p>
-        <label class="check accept"><input type="checkbox" id="accept"><span>Ich habe die Regeln gelesen und fliege auf eigene Verantwortung. <b>Danach werden die Routen-Knöpfe freigeschaltet.</b></span></label>
-      </div>
+    <div class="rl-head">
+      <h2 class="h2 sp-h2" id="regeln-h">Jeder fliegt auf eigene Verantwortung.</h2>
+      <p class="rl-intro">Die Spots auf dieser Karte sind Orte, an denen sich Piloten aus dem Verein zum Fliegen treffen oder getroffen haben. Der Flight Club Saar e.&nbsp;V. veranstaltet dort nichts, ist nicht Eigentümer und gibt keine Erlaubnis zum Betreten oder Fliegen.</p>
     </div>
+
+    <div class="rl-rail" id="rl-rail" role="region" aria-label="Die fünf Regeln" tabindex="0">
+      <ol class="rl-cards" id="rl-cards">
+        <li class="rl-card">
+          <span class="rl-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><b>1</b></span>
+          <h3 class="rl-t">Haftpflicht&shy;versicherung ist Pflicht.</h3>
+          <p>Ohne eine Versicherung, die deine Drohne abdeckt, fliegst du nicht.</p>
+        </li>
+        <li class="rl-card">
+          <span class="rl-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg><b>2</b></span>
+          <h3 class="rl-t">Prüf selbst, ob du dort fliegen darfst.</h3>
+          <p>Flugbeschränkungen, Naturschutz, Abstände zu Menschen und Straßen: Die offizielle Karte dafür ist <a href="https://maptool-dipul.dfs.de/" target="_blank" rel="noopener">dipul.de</a>.</p>
+        </li>
+        <li class="rl-card">
+          <span class="rl-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16.5 6.5l2.5 2.5M14 9l2 2"/></svg><b>3</b></span>
+          <h3 class="rl-t">Frag den Eigentümer.</h3>
+          <p>Lost Places und Industrieanlagen sind fast immer Privatgelände. Betreten kann verboten und gefährlich sein.</p>
+        </li>
+        <li class="rl-card">
+          <span class="rl-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.8-1.7 2-2.4 3.2-2.4s2.4.7 3.2 2.4M14.5 10h4M14.5 13.5h3"/></svg><b>4</b></span>
+          <h3 class="rl-t">Nachweise dabei.</h3>
+          <p>EU-Kompetenznachweis, Registrierung als Betreiber beim Luftfahrt-Bundesamt und beim FPV-Fliegen ein Spotter mit Sichtkontakt.</p>
+        </li>
+        <li class="rl-card">
+          <span class="rl-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"/><path d="M12 10v4.5M12 17.2v.3"/></svg><b>5</b></span>
+          <h3 class="rl-t">Keine Haftung durch den Verein.</h3>
+          <p>Für Schäden, Unfälle, Verstöße oder Ärger mit Eigentümern ist jeder Pilot selbst verantwortlich. Der Verein haftet dafür nicht.</p>
+        </li>
+      </ol>
+    </div>
+    <p class="rl-swipe" aria-hidden="true"><span class="rl-dots" id="rl-dots"></span>Wischen für alle 5 Regeln</p>
+
+    <div class="rl-accept" id="rl-accept">
+      <label class="rl-check" for="accept">
+        <input type="checkbox" id="accept" aria-describedby="rl-state">
+        <span class="rl-box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><i class="rl-ring"></i></span>
+        <span class="rl-lbl"><b>Verstanden.</b> Ich habe die Regeln gelesen und fliege auf eigene Verantwortung.</span>
+      </label>
+      <p class="rl-state" id="rl-state" aria-live="polite">
+        <svg class="rl-lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path class="rl-shackle" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span class="rl-off">Route-Knöpfe gesperrt, bis du den Haken setzt.</span><span class="rl-on">Route-Knöpfe sind frei. <a href="#karte">Zur Karte</a></span>
+      </p>
+    </div>
+    <p class="rl-note">Diese Hinweise ersetzen keine Rechtsberatung. Stand 2026, ohne Gewähr. Infos zu Drohnenregeln gibt es beim <a href="https://www.lba.de/DE/Drohnen/Drohnen_node.html" target="_blank" rel="noopener">Luftfahrt-Bundesamt</a>.</p>
   </div>
 </section>
 
-<!-- Karte -->
-<section class="sec sp-map" id="karte">
+<!-- 2 · Karte: Radar (ohne Klick) oder Straßenkarte (nach Klick) + Spot-Liste -->
+<section class="sec sp-sec sp-map" id="karte" data-toc="Karte" aria-labelledby="karte-h">
   <div class="wrap">
-    <div class="sec-head"><p class="kicker">Karte</p><h2 class="h2" data-split>Unsere Spots</h2><p class="lede" data-reveal>Der Radar zeigt alle freigegebenen Spots. Die echte Straßenkarte lädt erst nach deinem Klick, denn sie kommt von einem fremden Server.</p></div>
-    <div class="filters chips" id="filters" role="group" aria-label="Spots filtern"></div>
-    <div class="mapwrap">
-      <div class="radar-big" id="radar" aria-label="Radar mit allen Spots">
-        <canvas id="radar-cv" aria-hidden="true"></canvas>
-        <div id="radar-pins"></div>
-        <div class="radar-osd hud"><span>SAARLAND</span><span id="radar-read">SCAN …</span></div>
-        <button class="btn solid radar-load" type="button" id="map-load">Straßenkarte laden</button>
-      </div>
-      <div class="leaf" id="leaf" hidden></div>
-      <aside class="spotpanel panel" id="spotpanel" aria-live="polite"></aside>
+    <div class="mp-head">
+      <h2 class="h2 sp-h2" id="karte-h" data-split>Unsere Spots</h2>
+      <p class="mp-intro">Tipp auf einen Punkt oder einen Spot in der Liste, er wird auf der Karte markiert. Mit „Route“ führt dich Google Maps hin.</p>
     </div>
-    <p class="map-note mute">Straßenkarte: © OpenStreetMap-Mitwirkende, Kartenbild © CARTO. Lädt erst nach Klick.</p>
-    <div class="spotgrid grid g3" id="spotlist"></div>
-  </div>
-</section>
 
-<!-- Spot einsenden -->
-<section class="sec sp-send" id="einsenden">
-  <div class="wrap send-grid">
-    <div>
-      <p class="kicker">Neuer Spot</p>
-      <h2 class="h2" data-split>Spot einsenden</h2>
-      <p class="lede" data-reveal>Foto, Standort, ein paar Worte. Der Vorstand prüft jeden Vorschlag und schaltet ihn frei, in der Regel innerhalb von 24 Stunden. Lieber direkt schreiben? Melde dich bei Manuel oder Natan.</p>
-      <div class="btns" id="wa-btns" data-reveal></div>
-      <div class="steps-mini" data-reveal>
-        <div><b>1</b><span>Du schickst den Spot</span></div>
-        <div><b>2</b><span>Der Vorstand prüft ihn</span></div>
-        <div><b>3</b><span>Er erscheint auf der Karte</span></div>
+    <div class="mp-bar">
+      <div class="chips mp-filters" id="filters" role="group" aria-label="Spots nach Art filtern"></div>
+      <div class="mp-view" role="group" aria-label="Kartenansicht">
+        <button class="mp-vbtn" type="button" id="view-radar" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l6.4-6.4"/></svg>Radar</button>
+        <button class="mp-vbtn" type="button" id="map-load" aria-pressed="false" aria-describedby="map-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg><span id="map-load-t">Straßenkarte laden</span></button>
       </div>
     </div>
-    <form class="panel sendform" data-fcs-form id="spotform" novalidate>
-      <input type="hidden" name="_subject" value="Neuer Spot-Vorschlag (Flight Club Saar, Entwurf)">
-      <input type="hidden" name="Formular" value="Spot einsenden">
+
+    <div class="mp-grid">
+      <div class="mp-box" id="mapbox">
+        <!-- Radar: läuft ohne fremde Server -->
+        <div class="radar" id="radar" role="group" aria-label="Radar mit allen Spots">
+          <canvas id="radar-cv" aria-hidden="true"></canvas>
+          <div class="radar-pins" id="radar-pins"></div>
+          <div class="radar-osd hud" aria-hidden="true"><span>SAARLAND · <b id="radar-n">3</b> SPOTS</span><span id="radar-read">000°</span></div>
+          <div class="radar-scale hud" id="radar-scale" aria-hidden="true"><i></i><span></span></div>
+          <span class="radar-n hud" aria-hidden="true">N</span>
+        </div>
+        <!-- Straßenkarte: Leaflet, lädt erst nach Klick -->
+        <div class="leaf" id="leaf" hidden></div>
+        <div class="mp-load" id="map-wait" hidden><span class="mp-spin" aria-hidden="true"></span>Straßenkarte lädt …</div>
+        <div class="mp-fail" id="map-fail" role="alert" hidden>
+          <p><b>Karte konnte nicht laden.</b> Hier die Route bei Google Maps:</p>
+          <div class="mp-fail-b" id="map-fail-b"></div>
+          <button class="mp-fail-x" type="button" id="map-fail-radar">Zurück zum Radar</button>
+        </div>
+        <p class="mp-hint" id="map-hint" aria-hidden="true"></p>
+        <!-- Handy: der gewählte Spot direkt an der Karte -->
+        <div class="mp-sel" id="mp-sel" aria-live="polite"></div>
+      </div>
+      <ul class="sp-list" id="spotlist" aria-label="Alle Spots"></ul>
+    </div>
+    <p class="mp-note" id="map-note">Die Straßenkarte lädt erst, wenn du auf „Straßenkarte laden“ tippst. Dann kommen Kartenkacheln von CARTO auf Grundlage von OpenStreetMap, dabei wird deine IP-Adresse an diese Anbieter übertragen (<a href="datenschutz.html">Datenschutz</a>).</p>
+  </div>
+
+  <!-- Bewerten: ein Formular, das in den geöffneten Spot wandert. Veröffentlicht sofort (FCS.board), ohne Live-Anbindung per Mail an den Vorstand -->
+  <div hidden id="rate-home">
+    <form class="rateform" id="rateform" novalidate>
+      <input type="hidden" name="_subject" value="Spot-Bewertung (Flight Club Saar, Entwurf)">
+      <input type="hidden" name="Formular" value="Spot bewerten">
+      <input type="hidden" name="Spot" id="rate-spot">
       <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-      <div class="grid g2">
-        <div class="field"><label for="s-name">Spot-Name</label><input id="s-name" name="Spot" required placeholder="z. B. Alte Halle am Waldrand"><span class="err">Bitte einen Namen eingeben.</span></div>
-        <div class="field"><label for="s-von">Dein Name</label><input id="s-von" name="Name" required autocomplete="name"><span class="err">Bitte deinen Namen eingeben.</span></div>
+      <p class="rf-h" id="rf-h">Warst du dort? Tipp auf die Sterne.</p>
+      <div class="field rf-stars">
+        <span class="lbl" id="rf-st">Sterne</span>
+        <div class="stars" role="radiogroup" aria-labelledby="rf-h">
+          <label><input type="radio" name="Sterne" value="1" required><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">1 Stern</b></label>
+          <label><input type="radio" name="Sterne" value="2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">2 Sterne</b></label>
+          <label><input type="radio" name="Sterne" value="3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">3 Sterne</b></label>
+          <label><input type="radio" name="Sterne" value="4"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">4 Sterne</b></label>
+          <label><input type="radio" name="Sterne" value="5"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">5 Sterne</b></label>
+        </div>
+        <span class="rf-word" id="rf-word" aria-hidden="true"></span>
+        <span class="err">Bitte tipp auf die Sterne.</span>
       </div>
-      <div class="field"><span class="lbl">Art des Spots</span><div class="chips">
-        <label class="chip"><input type="radio" name="Art" value="Lost Place" checked><span>Lost Place</span></label>
-        <label class="chip"><input type="radio" name="Art" value="Industriekultur"><span>Industriekultur</span></label>
-        <label class="chip"><input type="radio" name="Art" value="Feld / Wiese"><span>Feld / Wiese</span></label>
-        <label class="chip"><input type="radio" name="Art" value="Bando / Ruine"><span>Bando / Ruine</span></label>
-        <label class="chip"><input type="radio" name="Art" value="Halle"><span>Halle</span></label>
-      </div></div>
-      <div class="field"><label for="s-loc">Standort</label>
-        <div class="locrow"><input id="s-loc" name="Standort" required placeholder="Google-Maps-Link oder Koordinaten"><button class="btn ghost" type="button" id="geo">Mein Standort</button></div>
-        <span class="hint">Tipp: In Google Maps lange auf den Ort drücken, „Teilen“, Link hier einfügen.</span><span class="err">Bitte einen Standort angeben.</span></div>
-      <div class="field"><label for="s-txt">Was ist dort besonders?</label><textarea id="s-txt" name="Beschreibung" placeholder="Zufahrt, Parken, Hindernisse, beste Tageszeit …"></textarea></div>
-      <div class="field"><span class="lbl">Erlaubnis vom Eigentümer?</span><div class="chips">
-        <label class="chip"><input type="radio" name="Erlaubnis" value="Ja" ><span>Ja</span></label>
-        <label class="chip"><input type="radio" name="Erlaubnis" value="Nein"><span>Nein</span></label>
-        <label class="chip"><input type="radio" name="Erlaubnis" value="Weiß ich nicht" checked><span>Weiß ich nicht</span></label>
-      </div></div>
-      <div class="field"><span class="lbl">Foto vom Spot</span>
-        <label class="drop" id="drop"><input type="file" name="attachment" accept="image/*" id="s-foto"><span class="drop-in"><b>Foto hierher ziehen</b><span>oder tippen zum Auswählen</span></span><img id="s-prev" alt="Vorschau des Fotos" hidden></label>
-      </div>
-      <div class="field"><label for="s-mail">E-Mail oder WhatsApp für Rückfragen</label><input id="s-mail" name="Kontakt" autocomplete="email"></div>
-      <label class="check"><input type="checkbox" name="Regeln akzeptiert" value="ja" required><span>Ich habe die Regeln oben gelesen. Wer dort fliegt, tut das auf eigene Verantwortung.</span></label>
-      <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Ich bin einverstanden, dass meine Angaben zur Prüfung des Spots verarbeitet werden (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-      <p class="draftnote">Entwurf: Vorschläge gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben.</p>
-      <button class="btn solid" type="submit">Spot einsenden <span class="arr">→</span></button>
-      <div class="form-ok" hidden><b>Danke!</b> Dein Spot ist unterwegs. Der Vorstand schaut ihn sich an.</div>
-      <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schreib uns per WhatsApp.</div>
+      <div class="field rf-more"><label for="r-txt">Kommentar <span class="opt">freiwillig</span></label><textarea id="r-txt" name="Kommentar" rows="2" maxlength="500" placeholder="Ein Tipp für andere Piloten: Parken, Hindernisse, beste Zeit"></textarea></div>
+      <div class="field rf-more"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required minlength="2" maxlength="40" autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
+      <label class="check rf-more"><input type="checkbox" name="Datenschutz" value="ja" required><span id="rf-dsgvo">Meine Angaben erscheinen öffentlich auf der Website (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+      <button class="btn solid rf-more rf-go" type="submit" id="rf-go">Bewertung veröffentlichen</button>
+      <div class="form-ok sp-ok rf-ok" id="rf-ok" hidden tabindex="-1"></div>
+      <div class="form-bad sp-bad" id="rf-bad" hidden><p><b>Das hat nicht geklappt.</b> <span id="rf-bad-t">Bitte versuch es noch einmal.</span></p></div>
     </form>
   </div>
 </section>
 
-<!-- Bewerten (Dialog) -->
-<dialog class="rate" id="rate" aria-labelledby="rate-h">
-  <form class="panel" data-fcs-form id="rateform" novalidate>
-    <button class="rate-x" type="button" id="rate-x" aria-label="Schließen">×</button>
-    <p class="kicker">Bewerten</p>
-    <h3 class="h3" id="rate-h">Spot bewerten</h3>
-    <input type="hidden" name="_subject" value="Spot-Bewertung (Flight Club Saar, Entwurf)">
-    <input type="hidden" name="Formular" value="Spot bewerten">
-    <input type="hidden" name="Spot" id="rate-spot">
-    <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-    <div class="stars" role="radiogroup" aria-label="Sterne">
-      <label><input type="radio" name="Sterne" value="1"><span aria-hidden="true">★</span><b class="sr">1 Stern</b></label>
-      <label><input type="radio" name="Sterne" value="2"><span aria-hidden="true">★</span><b class="sr">2 Sterne</b></label>
-      <label><input type="radio" name="Sterne" value="3"><span aria-hidden="true">★</span><b class="sr">3 Sterne</b></label>
-      <label><input type="radio" name="Sterne" value="4"><span aria-hidden="true">★</span><b class="sr">4 Sterne</b></label>
-      <label><input type="radio" name="Sterne" value="5" checked><span aria-hidden="true">★</span><b class="sr">5 Sterne</b></label>
+<!-- 3 · Spot melden: ein kurzes Formular auf einer Seite -->
+<section class="sec sp-sec sp-send" id="einsenden" data-toc="Spot melden" aria-labelledby="send-h">
+  <div class="wrap send-grid">
+    <div class="send-side">
+      <h2 class="h2 sp-h2" id="send-h" data-split>Spot melden</h2>
+      <p class="send-intro">Du kennst einen guten Platz? Schick ihn uns. Der Vorstand prüft jeden Vorschlag und nimmt ihn danach in die Karte auf.</p>
+      <ol class="send-flow" aria-label="So geht es nach dem Senden weiter">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg>Du schickst den Spot</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20M8.5 11l2 2 3.5-3.5"/></svg>Der Vorstand prüft ihn</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Er erscheint auf der Karte</li>
+      </ol>
+      <p class="send-wa">Lieber direkt schreiben? <span id="wa-btns"></span></p>
     </div>
-    <div class="field"><label for="r-name">Dein Name oder Pilotenname</label><input id="r-name" name="Name" required><span class="err">Bitte einen Namen eingeben.</span></div>
-    <div class="field"><label for="r-txt">Kommentar</label><textarea id="r-txt" name="Kommentar" required placeholder="Wie war es dort? Tipps für andere?"></textarea><span class="err">Bitte ein paar Worte schreiben.</span></div>
-    <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Mein Kommentar darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-    <button class="btn solid" type="submit">Bewertung senden</button>
-    <div class="form-ok" hidden><b>Danke!</b> Deine Bewertung erscheint nach der Freigabe durch den Vorstand.</div>
-    <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal.</div>
-  </form>
-</dialog>
+
+    <form class="panel sendform" data-fcs-form id="spotform" novalidate>
+      <input type="hidden" name="_subject" value="Neuer Spot-Vorschlag (Flight Club Saar, Entwurf)">
+      <input type="hidden" name="Formular" value="Spot melden">
+      <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
+
+      <fieldset class="sf-step">
+        <legend><b>1</b>Wo ist der Spot?</legend>
+        <div class="field"><label for="s-name">Name des Spots</label><input id="s-name" name="Spot" required placeholder="z. B. Alte Halle am Waldrand"><span class="err">Bitte gib dem Spot einen Namen.</span></div>
+        <div class="field"><label for="s-loc">Wo?</label>
+          <div class="locrow"><input id="s-loc" name="Standort" required placeholder="Ort, Adresse oder Google-Maps-Link"><button class="btn ghost" type="button" id="geo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Meinen Standort nehmen</button></div>
+          <span class="hint" id="geo-msg" aria-live="polite">Am Spot? Dann tipp auf „Meinen Standort nehmen“.</span>
+          <span class="err">Bitte sag uns, wo der Spot liegt.</span>
+        </div>
+      </fieldset>
+
+      <fieldset class="sf-step">
+        <legend><b>2</b>Was ist es? <span class="opt">freiwillig</span></legend>
+        <div class="field"><span class="lbl" id="s-art-l">Art</span><div class="chips" id="s-art" role="radiogroup" aria-labelledby="s-art-l"></div></div>
+        <div class="sf-two">
+          <div class="field"><span class="lbl">Foto</span>
+            <label class="drop" id="drop"><input type="file" name="attachment" accept="image/*" id="s-foto" aria-label="Foto vom Spot wählen">
+              <span class="drop-in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span><b>Foto wählen</b><small>oder hierher ziehen</small></span></span>
+            </label>
+            <button class="drop-x" type="button" id="s-foto-x" hidden>Foto entfernen</button>
+            <span class="hint geo-bad" id="foto-msg" aria-live="polite"></span>
+          </div>
+          <div class="field"><label for="s-txt">Ein Satz dazu</label><textarea id="s-txt" name="Beschreibung" rows="3" placeholder="Parken, Hindernisse, beste Tageszeit …"></textarea></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="sf-step">
+        <legend><b>3</b>Wer schickt ihn?</legend>
+        <div class="field"><label for="s-von">Name oder Pilotenname</label><input id="s-von" name="Name" required autocomplete="nickname"><span class="err">Bitte gib deinen Namen oder Pilotennamen ein.</span></div>
+        <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Angaben dürfen zur Prüfung des Spots verarbeitet werden (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+        <button class="btn solid sf-go" type="submit">Spot senden <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="sf-draft">Entwurf: Vorschläge gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben.</p>
+      </fieldset>
+
+      <div class="form-ok sp-ok sf-ok" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        <p><b>Danke, dein Spot ist unterwegs!</b> Der Vorstand schaut ihn sich an und schaltet ihn frei.</p>
+        <button class="btn ghost" type="button" id="sf-again">Noch einen Spot melden</button>
+      </div>
+      <div class="form-bad sp-bad" hidden><p><b>Das hat nicht geklappt.</b> Bitte versuch es gleich noch einmal oder schick den Spot per WhatsApp.</p></div>
+    </form>
+  </div>
+</section>

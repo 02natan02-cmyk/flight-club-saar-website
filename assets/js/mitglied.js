@@ -1,10 +1,13 @@
-/* Mitglied werden: Schritt-Antrag, U18, IBAN-Prüfung, Unterschrift, Mitgliedskarte */
+/* Mitglied werden: Schritt-Antrag mit Fortschritt und klaren Fehlern, U18, IBAN-Prüfung, Unterschrift,
+   Live-Mitgliedskarte beim Tippen und fertige Karte nach dem Absenden. */
 (function () {
   'use strict';
   const D = FCS.data, $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let step = 1; const N = 5; let sigDirty = false;
+  const N = 5, NAMES = ['Über dich', 'Mitgliedschaft und Fliegen', 'Erklärungen', 'Beitrag bezahlen', 'Prüfen und unterschreiben'];
+  let step = 1, reached = 1, sigDirty = false;
   const form = () => $('#antragform');
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   function age() { const v = $('#a-geb').value; if (!v) return null; const b = new Date(v), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a; }
   function u18() {
@@ -16,45 +19,84 @@
   function summary() {
     const jung = $$('input[name=Mitgliedschaft]')[1].checked, b = D.verein.beitrag;
     const jb = jung ? b.u18 : b.erwachsen;
-    $('#sum').innerHTML = `<div class="sum-row"><span>Aufnahmebeitrag (einmalig)</span><b>${b.aufnahme},00 €</b></div><div class="sum-row"><span>Jahresbeitrag ${jung ? 'unter 18' : ''}</span><b>${jb},00 €</b></div><div class="sum-row tot"><span>Zusammen</span><b>${b.aufnahme + jb},00 €</b></div>`;
+    $('#sum').innerHTML = `<div class="sum-row"><span>Aufnahmebeitrag (einmalig)</span><b>${b.aufnahme},00 €</b></div><div class="sum-row"><span>Jahresbeitrag${jung ? ' unter 18' : ''}</span><b>${jb},00 €</b></div><div class="sum-row tot"><span>Zusammen</span><b>${b.aufnahme + jb},00 €</b></div>`;
   }
   function pay() {
     const sepa = $$('input[name=Zahlungsart]')[0].checked;
     $('#sepa').hidden = !sepa; $('#ueber').hidden = sepa;
-    $$('[data-sepa]').forEach(i => { if (i.id === 'a-bank') return; sepa ? i.setAttribute('required', '') : i.removeAttribute('required'); });
+    $$('[data-sepa]').forEach(i => { if (i.id === 'a-bank') return; sepa ? i.setAttribute('required', '') : i.removeAttribute('required'); if (!sepa) { const f = i.closest('.field'); if (f) f.classList.remove('bad'); } });
   }
   function iban() {
     const i = $('#a-iban'), ok = $('#iban-ok');
     i.addEventListener('input', () => {
-      const raw = i.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase(), pos = i.selectionStart;
+      const raw = i.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
       i.value = raw.replace(/(.{4})/g, '$1 ').trim();
-      const good = raw.length >= 15 && FCS.checks.iban(raw);
-      ok.textContent = raw.length < 15 ? '' : good ? '✓ IBAN geprüft' : 'Prüfziffer passt nicht';
-      ok.className = 'iban-ok' + (good ? ' good' : '');
+      const de = raw.startsWith('DE'), len = de ? 22 : 15, good = raw.length >= 15 && FCS.checks.iban(raw);
+      ok.textContent = !raw ? '' : good ? '✓ IBAN geprüft' : raw.length < len ? `${raw.length} von ${de ? 22 : 'mind. 15'} Zeichen` : 'Prüfziffer passt nicht. Bitte noch einmal vergleichen.';
+      ok.className = 'iban-ok' + (good ? ' good' : raw.length >= len ? ' warn' : '');
       if (good) i.closest('.field').classList.remove('bad');
     });
   }
 
   /* ---------- Schritte ---------- */
+  const label = (el) => {
+    const fld = el.closest('.field'), chk = el.closest('.check');
+    if (chk) { const t = chk.querySelector('span').textContent; return /Satzung/.test(t) ? 'Satzung' : /Risiko/.test(t) ? 'eigenes Risiko' : /personenbezogen/.test(t) ? 'Datenschutz' : 'Angaben zu Führerschein und Versicherung'; }
+    const l = fld && (fld.querySelector('label') || fld.querySelector('.lbl'));
+    return l ? l.textContent.replace(/\s*\(.*\)\s*$/, '').trim() : el.name;
+  };
+  function check(scope) {
+    // Auch Felder im zugeklappten Bereich prüfen und den Bereich dann öffnen
+    $$('details', scope).forEach(d => { if ($$('[required]', d).some(i => !i.checkValidity() || !String(i.value).trim())) d.open = true; });
+    let ok = FCS.validate(scope);
+    $$('.check', scope).forEach(c => { const i = c.querySelector('input[required]'); if (i) c.classList.toggle('bad', !i.checked); });
+    if (+scope.dataset.step === 5 && !sigDirty) { $('#sig').classList.add('bad'); if (ok) { ok = false; FCS.scrollTo($('#sig'), -160); } }
+    const bad = [...new Set($$('.field.bad [required], .check.bad input', scope).map(label))];
+    if (+scope.dataset.step === 5 && !sigDirty) bad.push('Unterschrift');
+    const sum = $('#errsum');
+    if (bad.length) {
+      sum.innerHTML = `<b>Fast geschafft.</b> Bitte prüf noch ${bad.length === 1 ? 'dieses Feld' : `diese ${bad.length} Felder`}: ${bad.map(esc).join(', ')}.`;
+      sum.hidden = false; if (window.gsap && !RM) gsap.fromTo(sum, { x: -8 }, { x: 0, duration: .5, ease: 'elastic.out(1,.3)' });
+    } else sum.hidden = true;
+    return ok && !bad.length;
+  }
   function go(to) {
-    const cur = $(`.step[data-step="${step}"]`);
-    if (to > step && !FCS.validate(cur)) return;
-    if (to > step && step === 5) return;
-    step = Math.max(1, Math.min(N, to));
+    to = Math.max(1, Math.min(N, to));
+    // Vorwärts: jeden Schritt bis zum Ziel prüfen und beim ersten mit Lücken stehen bleiben
+    const quiet = (el) => $$('[required]', el).every(i => i.type === 'checkbox' ? i.checked : i.checkValidity() && String(i.value).trim() !== '' && (!i.dataset.check || FCS.checks[i.dataset.check](i.value)));
+    for (let s = step; s < to; s++) {
+      const el = $(`.step[data-step="${s}"]`);
+      if (s === step ? !check(el) : !quiet(el)) { if (s !== step) { show(s); check(el); } return; }
+    }
+    $('#errsum').hidden = true;
+    show(to);
+  }
+  function show(to) {
+    const from = step; step = to; reached = Math.max(reached, step);
     $$('.step').forEach(s => s.classList.toggle('on', +s.dataset.step === step));
-    $$('#steps li').forEach((l, i) => { l.classList.toggle('on', i + 1 === step); l.classList.toggle('ok', i + 1 < step); });
-    $('#prog').style.width = (step / N * 100) + '%';
+    $$('#steps li').forEach((l, i) => {
+      const b = $('button', l), n = i + 1;
+      l.classList.toggle('on', n === step); l.classList.toggle('ok', n < step || (n <= reached && n !== step));
+      b.disabled = n > reached; n === step ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current');
+    });
+    $('#prog').style.transform = `scaleX(${step / N})`;
+    $('#step-now').textContent = `Schritt ${step} von ${N} · ${NAMES[step - 1]}`;
     $('#prev').hidden = step === 1; $('#next').hidden = step === N; $('#submit').hidden = step !== N;
     if (step === 5) { review(); sizeSig(); }
     const nxt = $(`.step[data-step="${step}"]`);
-    if (window.gsap && !RM) gsap.fromTo(nxt, { x: to >= step ? 40 : -40, opacity: 0 }, { x: 0, opacity: 1, duration: .5, ease: 'expo.out' });
-    const top = $('#antrag'); FCS.lenis ? FCS.lenis.scrollTo(top, { offset: -60 }) : top.scrollIntoView();
+    if (window.gsap && !RM && from !== step) gsap.fromTo(nxt, { x: step > from ? 40 : -40, opacity: 0 }, { x: 0, opacity: 1, duration: .5, ease: 'expo.out', clearProps: 'transform' });
+    // Nur hochscrollen, wenn der Anfang des Antrags nicht zu sehen ist
+    const top = $('#steps'); if (from !== step && top.getBoundingClientRect().top < 60) FCS.scrollTo(top, -110);
+    const first = nxt.querySelector('input:not([type=hidden]):not([type=radio]):not([type=checkbox])');
+    if (from !== step && first && step < 5 && !first.value && matchMedia('(pointer:fine)').matches) setTimeout(() => first.focus({ preventScroll: true }), 300);
   }
   function review() {
     const f = form(), fd = new FormData(f), skip = ['_subject', '_honey', 'Formular'];
     const rows = []; const seen = {};
-    for (const [k, v] of fd.entries()) { if (skip.includes(k) || v instanceof Blob || !String(v).trim()) continue; if (k === 'IBAN') { rows.push([k, v.slice(0, 4) + ' •••• •••• ' + v.slice(-4)]); continue; } if (seen[k]) { seen[k][1] += ', ' + v; continue; } const r = [k, String(v)]; seen[k] = r; rows.push(r); }
-    $('#review').innerHTML = rows.filter(r => !/einverstanden|anerkannt|Risiko|richtig|Datenschutz/.test(r[0])).map(([k, v]) => `<div><span>${k}</span><b>${v.replace(/</g, '&lt;')}</b></div>`).join('');
+    for (const [k, v] of fd.entries()) { if (skip.includes(k) || v instanceof Blob || !String(v).trim()) continue; if (/Unterschrift/.test(k)) continue; if (k === 'IBAN') { rows.push([k, v.slice(0, 4) + ' •••• •••• ' + v.slice(-4)]); continue; } if (seen[k]) { seen[k][1] += ', ' + v; continue; } const r = [k, String(v)]; seen[k] = r; rows.push(r); }
+    const fmtD = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v) ? v.split('-').reverse().join('.') : v;
+    $('#review').innerHTML = rows.filter(r => !/einverstanden|anerkannt|Risiko|richtig|Datenschutz/.test(r[0])).map(([k, v]) => `<div><span>${esc(k)}</span><b>${esc(fmtD(v))}</b></div>`).join('') +
+      '<p class="rv-edit">Etwas falsch? Tipp oben auf einen Schritt, um ihn zu ändern.</p>';
   }
 
   /* ---------- Unterschrift ---------- */
@@ -71,7 +113,7 @@
     const line = document.createElement('i'); line.className = 'sig-line'; box.appendChild(line);
     const p = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     cv.addEventListener('pointerdown', e => { drawing = true; last = p(e); cv.setPointerCapture(e.pointerId); $('#sig-hint').style.opacity = 0; });
-    cv.addEventListener('pointermove', e => { if (!drawing) return; const q = p(e); cx.beginPath(); cx.moveTo(last.x, last.y); const mx = (last.x + q.x) / 2, my = (last.y + q.y) / 2; cx.quadraticCurveTo(last.x, last.y, mx, my); cx.lineTo(q.x, q.y); cx.stroke(); last = q; sigDirty = true; box.classList.remove('bad'); });
+    cv.addEventListener('pointermove', e => { if (!drawing) return; const q = p(e); cx.beginPath(); cx.moveTo(last.x, last.y); const mx = (last.x + q.x) / 2, my = (last.y + q.y) / 2; cx.quadraticCurveTo(last.x, last.y, mx, my); cx.lineTo(q.x, q.y); cx.stroke(); last = q; if (!sigDirty) { sigDirty = true; box.classList.remove('bad'); } });
     ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => cv.addEventListener(t, () => drawing = false));
     $('#sig-x').addEventListener('click', () => { cx.clearRect(0, 0, cv.width, cv.height); sigDirty = false; $('#sig-hint').style.opacity = 1; });
     addEventListener('resize', sizeSig);
@@ -85,48 +127,74 @@
     return new Blob([arr], { type: 'image/png' });
   };
 
-  /* ---------- Mitgliedskarte ---------- */
-  function card(name, alias) {
-    const c = $('#mycard'), x = c.getContext('2d'), W = c.width, H = c.height;
+  /* ---------- Mitgliedskarte (Vorschau beim Tippen und fertige Karte) ---------- */
+  const LOGO = new Image(); let logoOk = false; const waitLogo = new Promise(r => { LOGO.onload = () => { logoOk = true; r(); }; LOGO.onerror = r; }); LOGO.src = 'assets/img/logo-mark.svg';
+  function draw(c, name, alias, ph) {
+    const x = c.getContext('2d'), W = c.width, H = c.height;
+    x.clearRect(0, 0, W, H); x.save();
+    x.beginPath(); x.roundRect ? x.roundRect(0, 0, W, H, 40) : x.rect(0, 0, W, H); x.clip();
     const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#24569a'); g.addColorStop(.6, '#0b1f40'); g.addColorStop(1, '#071225');
-    x.fillStyle = g; x.beginPath(); x.roundRect ? x.roundRect(0, 0, W, H, 40) : x.rect(0, 0, W, H); x.fill();
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
     const r1 = x.createRadialGradient(W, 0, 0, W, 0, W * .7); r1.addColorStop(0, 'rgba(63,224,255,.38)'); r1.addColorStop(1, 'rgba(63,224,255,0)'); x.fillStyle = r1; x.fillRect(0, 0, W, H);
     x.strokeStyle = 'rgba(255,255,255,.05)'; x.lineWidth = 3; for (let i = -H; i < W; i += 22) { x.beginPath(); x.moveTo(i, H); x.lineTo(i + H * .5, 0); x.stroke(); }
-    const logo = new Image(); logo.onload = () => {
-      x.drawImage(logo, 60, 50, 120, 120);
-      x.fillStyle = '#cfe5ff'; x.font = '600 26px "Chakra Petch"'; x.textAlign = 'right'; x.fillText('MITGLIEDSKARTE', W - 60, 90); x.fillStyle = '#fff'; x.font = '700 54px "Chakra Petch"'; x.fillText('2026', W - 60, 150);
-      x.textAlign = 'left'; x.fillStyle = '#fff'; x.font = '700 64px "Chakra Petch"'; x.fillText(name.toUpperCase().slice(0, 26), 60, H - 190);
-      x.fillStyle = '#3fe0ff'; x.font = '500 36px "Chakra Petch"'; x.fillText(alias || 'Pilot im Flight Club Saar', 60, H - 135);
-      x.fillStyle = '#a9c3e4'; x.font = '600 24px "Chakra Petch"'; x.fillText('FLIGHT CLUB SAAR E. V.', 60, H - 60); x.textAlign = 'right'; x.fillText('NR. FOLGT', W - 60, H - 60);
-    };
-    logo.src = 'assets/img/logo-mark.svg';
+    if (logoOk) x.drawImage(LOGO, 60, 50, 120, 120);
+    x.fillStyle = '#cfe5ff'; x.font = '600 26px "Chakra Petch"'; x.textAlign = 'right'; x.fillText('MITGLIEDSKARTE', W - 60, 90); x.fillStyle = '#fff'; x.font = '700 54px "Chakra Petch"'; x.fillText(String(new Date().getFullYear()), W - 60, 150);
+    x.textAlign = 'left'; x.globalAlpha = ph && ph.n ? .45 : 1; x.fillStyle = '#fff'; x.font = '700 64px "Chakra Petch"'; x.fillText(name.toUpperCase().slice(0, 26), 60, H - 190);
+    x.globalAlpha = ph && ph.a ? .45 : 1; x.fillStyle = '#3fe0ff'; x.font = '500 36px "Chakra Petch"'; x.fillText((alias || 'Pilot im Flight Club Saar').slice(0, 34), 60, H - 135);
+    x.globalAlpha = 1; x.fillStyle = '#a9c3e4'; x.font = '600 24px "Chakra Petch"'; x.fillText('FLIGHT CLUB SAAR E. V.', 60, H - 60); x.textAlign = 'right'; x.fillText('NR. FOLGT', W - 60, H - 60);
+    x.restore();
+  }
+  function live() {
+    const c = $('#livecard'); if (!c) return;
+    const vn = $('#a-vn'), nn = $('#a-nn'), al = $('#a-alias');
+    let raf = 0;
+    const upd = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const n = `${vn.value} ${nn.value}`.trim(); draw(c, n || 'Dein Name', al.value.trim() || (n ? '' : 'Dein Pilotenname'), { n: !n, a: !al.value.trim() && !n }); }); };
+    [vn, nn, al].forEach(i => i.addEventListener('input', upd));
+    Promise.all([waitLogo, document.fonts ? document.fonts.ready : null]).then(upd);
+    // Selbst-Impuls: die Karte schwebt leicht, bis jemand den Antrag beginnt; läuft nur, solange sie zu sehen ist
+    const box = $('#mg-live');
+    if (!RM && 'IntersectionObserver' in window) new IntersectionObserver(es => box.classList.toggle('float', es[0].isIntersecting)).observe(box);
+    if (!RM && matchMedia('(hover:hover) and (pointer:fine)').matches) {
+      box.addEventListener('pointermove', e => { const r = box.getBoundingClientRect(); box.style.setProperty('--ry', ((e.clientX - r.left) / r.width - .5) * 16 + 'deg'); box.style.setProperty('--rx', -((e.clientY - r.top) / r.height - .5) * 12 + 'deg'); box.classList.add('hold'); });
+      box.addEventListener('pointerleave', () => { box.style.setProperty('--ry', '0deg'); box.style.setProperty('--rx', '0deg'); box.classList.remove('hold'); });
+    }
+  }
+  function card(name, alias) {
+    const c = $('#mycard');
+    const run = () => draw(c, name, alias);
+    Promise.all([waitLogo, document.fonts ? document.fonts.ready : null]).then(run); run();
     $('#dl-card').onclick = () => { const a = document.createElement('a'); a.download = 'Mitgliedskarte_Flight_Club_Saar.png'; a.href = c.toDataURL('image/png'); a.click(); };
     if (window.gsap && !RM) gsap.fromTo(c, { rotateY: -70, rotateX: 20, opacity: 0, scale: .8 }, { rotateY: 0, rotateX: 0, opacity: 1, scale: 1, duration: 1.6, ease: 'expo.out' });
   }
 
   function init() {
     const f = form(); if (!f) return;
-    const today = new Date().toISOString().slice(0, 10);
+    const d = new Date(), today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     $('#a-udat').value = today;
     $('#a-ein').value = today;
     $('#glid').textContent = D.verein.glaeubigerId;
     $('#a-geb').addEventListener('change', u18);
     $$('input[name=Mitgliedschaft]').forEach(i => i.addEventListener('change', summary));
     $$('input[name=Zahlungsart]').forEach(i => i.addEventListener('change', pay));
-    $$('input[name=Drohnenführerschein]').forEach(i => i.addEventListener('change', () => $('#a-fs-s').hidden = i.value !== 'Sonstige' || !i.checked));
+    $$('input[name=Drohnenführerschein]').forEach(i => i.addEventListener('change', () => $('#a-fs-s').hidden = !$('input[name=Drohnenführerschein][value=Sonstige]').checked));
     $$('input[name=Haftpflicht]').forEach(i => i.addEventListener('change', () => { const ja = $$('input[name=Haftpflicht]')[1].checked; $('#a-vers').hidden = !ja; $('#a-novers').hidden = ja; }));
     $('#next').addEventListener('click', () => go(step + 1));
     $('#prev').addEventListener('click', () => go(step - 1));
-    summary(); pay(); iban(); sig();
-    // Ohne Unterschrift bei Lastschrift kein Absenden
+    $$('#steps button').forEach(b => b.addEventListener('click', () => { const n = +b.dataset.go; if (n < step) go(n); else if (n > step) go(n); }));
+    // Fehler verschwinden, sobald das Feld stimmt
+    f.addEventListener('input', e => { const fl = e.target.closest('.field'); if (fl && fl.classList.contains('bad') && e.target.checkValidity() && String(e.target.value).trim() && (!e.target.dataset.check || FCS.checks[e.target.dataset.check](e.target.value))) fl.classList.remove('bad'); });
+    f.addEventListener('change', e => { const c = e.target.closest('.check'); if (c && e.target.checked) c.classList.remove('bad'); });
+    summary(); pay(); iban(); sig(); live();
+    // Enter in einem Feld blättert weiter statt den ganzen Antrag abzuschicken; im letzten Schritt alles prüfen
     f.addEventListener('submit', e => {
-      if (!sigDirty) { e.stopImmediatePropagation(); e.preventDefault(); $('#sig').classList.add('bad'); return; }
+      if (step < N) { e.stopImmediatePropagation(); e.preventDefault(); go(step + 1); return; }
+      if (!check($('.step[data-step="5"]'))) { e.stopImmediatePropagation(); e.preventDefault(); }
     }, true);
     f._extra = () => (sigDirty ? { Unterschrift: sigBlob() } : {});
     f.addEventListener('fcs:sent', () => {
       const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), alias = $('#a-alias').value.trim();
-      f.hidden = true; $('#steps').hidden = true; $('.progress').hidden = true; $('#welcome').hidden = false; card(name, alias);
-      FCS.lenis ? FCS.lenis.scrollTo('#antrag', { offset: -60 }) : $('#antrag').scrollIntoView();
+      $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias);
+      FCS.scrollTo('#antrag');
     });
   }
   document.addEventListener('fcs:ready', init, { once: true });

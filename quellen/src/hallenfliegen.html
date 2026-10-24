@@ -6,60 +6,58 @@
   <div class="osd hp-osd-tr">1S · <b>4.20V</b></div>
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / Hallenfliegen</p>
-    <p class="kicker">Wintersaison 2026</p>
     <h1 class="h1" data-split>Hallenfliegen</h1>
-    <p class="lede hp-come">Tiny Whoops, Brille auf, Licht aus. Samstags von 18 bis 21 Uhr in Eiweiler und Holz. <b>Kommt einfach vorbei!</b></p>
-    <div class="btns"><a class="btn amber solid" href="#termine">Alle Termine</a><a class="btn" href="#mitbringen">Was ich mitbringe</a></div>
+    <p class="lede hp-come">Hier findest du alle Hallenabende der Wintersaison, den Weg zur Halle und was du einpacken solltest. Samstags 18 bis 21 Uhr. <b>Kommt einfach vorbei!</b></p>
+    <div class="btns"><a class="btn amber solid" href="#termine">Nächster Termin <span class="arr">→</span></a><a class="btn" href="#mitbringen">Was ich mitbringe</a><a class="btn ghost" href="#hallen">Hallen und Route</a></div>
   </div>
 </section>
 
-<section class="sec hp-next" id="next">
+<section class="sec hp-sec hp-dates" id="termine" data-toc="Termine">
   <div class="wrap">
-    <div class="hp-big panel" data-reveal>
-      <div class="hp-big-l">
-        <p class="kicker">Nächster Abend</p>
-        <h2 class="h2" id="n-datum">Samstag, 14. November</h2>
-        <p class="lede" id="n-ort">Großwaldhalle Eiweiler</p>
-        <div class="btns"><button class="btn solid" type="button" id="n-ics">In meinen Kalender</button><a class="btn" id="n-route" href="#" target="_blank" rel="noopener">Route planen ↗</a></div>
+    <div class="sec-head hp-sh"><h2 class="h2" data-split>Fünf Abende bis Weihnachten</h2><p class="lede" id="termine-lede" data-reveal>Jeweils 18 bis 21 Uhr, die Hallen sind für uns fest reserviert. Sag mit „Ich bin dabei“ Bescheid, dass du kommst, und leg den Termin in deinen Kalender.</p></div>
+    <div class="hp-dates-grid">
+      <div class="hp-big panel" id="next" data-reveal>
+        <div class="hp-big-l">
+          <p class="hp-big-k hud"><span class="dot" aria-hidden="true"></span>Nächster Abend</p>
+          <h3 class="hp-big-d" id="n-datum">Samstag, 14. November</h3>
+          <p class="hp-big-o" id="n-ort">Großwaldhalle Eiweiler</p>
+          <div class="btns"><button class="btn solid" type="button" id="n-ics">In meinen Kalender</button><a class="btn" id="n-route" href="#" target="_blank" rel="noopener">Route planen ↗</a></div>
+        </div>
+        <div class="hp-ring" id="n-ring" role="timer" aria-label="Zeit bis zum nächsten Hallenfliegen">
+          <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="r-bg" cx="100" cy="100" r="88"/><circle class="r-fg" cx="100" cy="100" r="88" pathLength="1"/></svg>
+          <div class="hp-ring-in"><b data-cd="d">00</b><span>Tage</span><small><span data-cd="h">00</span>:<span data-cd="m">00</span>:<span data-cd="s">00</span></small></div>
+        </div>
+        <div class="zu zu-big" id="n-zu" hidden></div>
       </div>
-      <div class="hp-ring" id="n-ring" role="timer" aria-label="Zeit bis zum nächsten Hallenfliegen">
-        <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="r-bg" cx="100" cy="100" r="88"/><circle class="r-fg" cx="100" cy="100" r="88" pathLength="1"/></svg>
-        <div class="hp-ring-in"><b data-cd="d">00</b><span>Tage</span><small><span data-cd="h">00</span>:<span data-cd="m">00</span>:<span data-cd="s">00</span></small></div>
-      </div>
+      <div class="tickets" id="tickets"></div>
     </div>
   </div>
 </section>
 
-<section class="sec hp-tickets" id="termine">
-  <div class="wrap">
-    <div class="sec-head"><p class="kicker">Termine</p><h2 class="h2" data-split>Fünf Abende bis Weihnachten</h2><p class="lede" data-reveal>Jeweils 18 bis 21 Uhr. Für jeden Termin gibt es den Kalendereintrag und die Route per Klick. Die Termine sind für uns in den Hallen fest reserviert.</p></div>
-    <div class="tickets" id="tickets"></div>
+<section class="sec hp-sec hp-fotos" id="fotos" data-toc="Fotos" aria-label="Bilder aus der Halle">
+  <div class="wrap hp-fotos-head">
+    <div class="sec-head hp-sh"><h2 class="h2" data-split>Licht aus, Gates an</h2><p class="lede" data-reveal>So sehen unsere Hallenabende aus: ein Parcours aus Gates und Absperrband, Tiny Whoops mit LED-Beleuchtung und das Licht so weit runter, wie es geht.</p></div>
+    <div class="hf-nav"><button class="hf-btn" type="button" id="hf-prev" aria-label="Bilder zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="hf-btn" type="button" id="hf-next" aria-label="Bilder weiter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
   </div>
-</section>
-
-<section class="sec hp-fotos" id="fotos" aria-label="Bilder aus der Halle">
-  <div class="wrap"><div class="sec-head"><p class="kicker">So sieht's aus</p><h2 class="h2" data-split>Licht aus, Gates an</h2><p class="lede" data-reveal>Bilder aus unseren Hallenabenden: ein Parcours aus Gates und Absperrband, Tiny Whoops mit LED-Beleuchtung und das Licht so weit runter, wie es geht.</p></div></div>
   <div class="hf-rail" id="hf-rail"><div class="hf-track" id="hf-track"></div></div>
-  <div class="wrap"><p class="hud hf-hint" id="hf-hint">← ziehen →</p></div>
+  <div class="wrap"><p class="hp-hint hf-hint" id="hf-hint"><span class="dot" aria-hidden="true"></span>Zieh die Bilder zur Seite oder nimm die Pfeile.</p></div>
 </section>
 
-<section class="sec hp-hallen" id="hallen">
+<section class="sec hp-sec hp-hallen" id="hallen" data-toc="Hallen">
   <div class="wrap">
-    <div class="sec-head"><p class="kicker">Die Hallen</p><h2 class="h2" data-split>Hier fliegen wir</h2></div>
+    <div class="sec-head hp-sh"><h2 class="h2" data-split>Hier fliegen wir</h2><p class="lede" data-reveal>Zwei Hallen in Heusweiler. Welche an welchem Abend dran ist, steht bei jedem Termin.</p></div>
     <div class="grid g2" id="hallen-cards"></div>
   </div>
 </section>
 
-<section class="sec hp-how" id="mitbringen">
+<section class="sec hp-sec hp-how" id="mitbringen" data-toc="Mitbringen">
   <div class="wrap hp-how-grid">
-    <div>
-      <p class="kicker">Checkliste</p>
-      <h2 class="h2" data-split>Das kommt in die Tasche</h2>
-      <p class="lede" data-reveal>Hak ab, was du schon eingepackt hast. Ohne eigenen Whoop? Komm trotzdem vorbei, schau zu und frag die anderen.</p>
+    <div class="hp-how-txt">
+      <div class="sec-head hp-sh"><h2 class="h2" data-split>Das kommt in die Tasche</h2><p class="lede" data-reveal>Hak ab, was du schon eingepackt hast. Ohne eigenen Whoop? Komm trotzdem vorbei, schau zu und frag die anderen.</p></div>
       <div class="hp-cost panel" data-reveal><span class="tag amber"><span class="dot"></span>Hallenbeitrag</span><p><b>Bisher 10 € pro Abend.</b> Aktuelle Infos stehen in der Gruppe „Spots / Treffen“.</p></div>
     </div>
     <div class="bag panel" data-reveal>
-      <div class="bag-head"><svg class="bag-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" class="r-bg"/><circle cx="60" cy="60" r="50" class="r-fg" pathLength="1"/></svg><div><b id="bag-n">0/8</b><span class="hud">eingepackt</span></div></div>
+      <div class="bag-head"><svg class="bag-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" class="r-bg"/><circle cx="60" cy="60" r="50" class="r-fg" pathLength="1"/></svg><div><b id="bag-n" aria-live="polite">0/8</b><span class="hud">eingepackt</span></div><button class="bag-reset" type="button" id="bag-reset" hidden>Neu packen</button></div>
       <div class="bag-list" id="bag-list">
         <label class="check"><input type="checkbox"><span>Tiny Whoop mit Propellerschutz</span></label>
         <label class="check"><input type="checkbox"><span>FPV-Brille, geladen</span></label>
@@ -70,31 +68,32 @@
         <label class="check"><input type="checkbox"><span>Kanal-Wunsch notieren (vor Ort absprechen)</span></label>
         <label class="check"><input type="checkbox"><span>Gute Laune und 10 € für die Halle</span></label>
       </div>
+      <p class="hp-hint bag-hint" id="bag-hint"><span class="dot" aria-hidden="true"></span>Dein Stand bleibt auf diesem Gerät gespeichert.</p>
       <p class="bag-done hud" id="bag-done" hidden>Alles drin. Bis Samstag!</p>
     </div>
   </div>
 </section>
 
-<section class="sec hp-akku" id="akkus">
+<section class="sec hp-sec hp-akku" id="akkus" data-toc="Akkus">
   <div class="wrap">
-    <div class="sec-head center"><p class="kicker">Akku-Rechner</p><h2 class="h2" data-split>Wie viele Akkus brauche ich?</h2><p class="lede" data-reveal>Stell ein, wie lange ein Akku bei dir hält und wie lange du fliegen willst. Der Rechner sagt dir, wie viele Akkus du laden solltest.</p></div>
     <div class="akku panel" data-reveal>
       <div class="akku-ctrl">
+        <h2 class="h2 akku-h" data-split>Wie viele Akkus brauche ich?</h2>
         <div class="field"><label for="a-min">Flugzeit pro Akku: <b id="a-min-v">3</b> Minuten</label><input id="a-min" type="range" min="2" max="6" step="0.5" value="3"></div>
         <div class="field"><label for="a-ges">So lange willst du fliegen: <b id="a-ges-v">60</b> Minuten</label><input id="a-ges" type="range" min="15" max="150" step="5" value="60"></div>
-        <div class="field"><label for="a-lade">Laden vor Ort möglich?</label><div class="chips"><label class="chip"><input type="radio" name="lade" value="1" checked><span>Ja, ich lade nach</span></label><label class="chip"><input type="radio" name="lade" value="0"><span>Nein</span></label></div></div>
-        <p class="akku-hint hud" id="akku-hint">← Regler ziehen →</p>
+        <div class="field"><span class="lbl" id="a-lade-l">Laden vor Ort möglich?</span><div class="chips" role="radiogroup" aria-labelledby="a-lade-l"><label class="chip"><input type="radio" name="lade" value="1" checked><span>Ja, ich lade nach</span></label><label class="chip"><input type="radio" name="lade" value="0"><span>Nein</span></label></div></div>
+        <p class="hp-hint akku-hint" id="akku-hint"><span class="dot" aria-hidden="true"></span>Schieb die Regler, die Zahl rechnet mit.</p>
       </div>
       <div class="akku-out">
         <div class="cells" id="cells" aria-hidden="true"></div>
-        <p class="akku-n"><b id="a-n">12</b><span>Akkus</span></p>
-        <p class="mute" id="a-txt">Mit Nachladen vor Ort reichen dir etwa 12 Akkus.</p>
+        <p class="akku-n"><b id="a-n">13</b><span>Akkus</span></p>
+        <p class="mute" id="a-txt" aria-live="polite">Für 20 Flüge reichen dir mit Nachladen vor Ort etwa 13 Akkus.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="sec hp-cta">
+<section class="sec hp-sec hp-cta">
   <div class="wrap">
     <div class="grid g2">
       <a class="panel cta-card" href="spots.html" data-reveal><span class="tag sig"><span class="dot"></span>Frühjahr</span><h3 class="h3">Draußen fliegen</h3><p class="mute">Im Frühjahr geht es wieder raus. Alle freigegebenen Spots findest du auf der Karte.</p><span class="tri-go">Spot-Karte →</span></a>

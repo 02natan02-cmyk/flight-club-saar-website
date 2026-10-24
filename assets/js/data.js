@@ -55,12 +55,13 @@ FCS.data = {
   // Spots: nur, was der Vorstand freigegeben hat. Neue Spots kommen über das Formular und werden geprüft.
   spots: [
     { id: 'eiweiler', n: 'Großwaldhalle Eiweiler', typ: 'halle', lat: 49.3640113, lng: 6.935687, adr: 'Hambacher Weg 12, 66265 Heusweiler-Eiweiler',
-      t: 'Unsere Winterhalle: Tiny Whoops, Gates, Licht aus und Brille auf. Nur an den Hallenterminen.', regel: 'Nur zu Vereinsterminen', stern: null, k: [] },
+      t: 'Unsere Winterhalle: Tiny Whoops, Gates, Licht aus und Brille auf. Nur an den Hallenterminen.', regel: 'Nur zu Vereinsterminen', stern: null, k: [],
+      foto: 'media/chronik/2026-10-17.webp', fotoAlt: 'Leuchtende Tiny Whoops beim Saisonstart in Eiweiler' },
     { id: 'holz', n: 'Glück-Auf-Halle Holz', typ: 'halle', lat: 49.330219, lng: 6.987745, adr: 'Glück-Auf-Weg 5, 66265 Heusweiler-Holz',
       t: 'Zweite Winterhalle im Dezember. Gleiche Regeln wie in Eiweiler.', regel: 'Nur zu Vereinsterminen', stern: null, k: [] },
     { id: 'goettelborn', n: 'Förderturm Göttelborn', typ: 'industrie', lat: 49.3435266, lng: 7.0386915, adr: 'Göttelborn, 66287 Quierschied',
-      t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben – nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [],
-      foto: 'media/spots/goettelborn.webp' }
+      t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben, nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [],
+      foto: 'media/spots/goettelborn.webp', fotoAlt: 'Stahlgerüst am Förderturm Göttelborn' }
   ],
   spotTypen: {
     halle: { n: 'Halle', c: '#3fe0ff' },
@@ -72,8 +73,8 @@ FCS.data = {
   // WhatsApp-Community „Flight Club Saar e.V.“ (gegründet 27.05.2023, Stand 24.10.2026)
   gruppen: [
     { n: 'Flight Club Saar Chat', m: 69, t: 'Der Hauptkanal: Fragen, Fotos, Verabredungen.' },
-    { n: 'Spots / Treffen', m: 60, t: '„Ich geh morgen da hin.“ – „Samstag was los?“' },
-    { n: 'Technischer Support', m: 55, t: 'Löten, Betaflight, VTX, ELRS – hier wird geholfen.' },
+    { n: 'Spots / Treffen', m: 60, t: '„Ich geh morgen da hin.“ „Samstag was los?“' },
+    { n: 'Technischer Support', m: 55, t: 'Löten, Betaflight, VTX, ELRS: Hier wird geholfen.' },
     { n: 'Videos & Fotos', m: 55, t: 'Die besten Clips der Woche.' },
     { n: 'Hab ich neu', m: 44, t: 'Neue Kopter, neue Brillen, neue Teile.' },
     { n: 'Marktplatz intern', m: null, t: 'Kaufen, verkaufen, tauschen unter Mitgliedern.' },
@@ -88,6 +89,10 @@ FCS.data = {
     { ch: 5, a: 'OrcaFPV', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
     { ch: 6, a: 'Booyaka FPV', o: 'Grube Göttelborn', clip: 'media/kanal/booyaka.mp4', ig: 'wojtasczyk_natan' }
   ],
+  // Bestenliste „Kannst du fliegen?“: Make-Szenario 8156727 (Webhook → Datenspeicher „FCS Whoop Bestenliste“)
+  highscore: { url: 'https://hook.eu1.make.com/gq3bv9u25ybq6tzu5o2l9ecf4tcnuovk' },
+  // Live-Beiträge (Markt, Pinnwand, Spot-Bewertungen, Termin-Zusagen): Make-Szenario 8157184 → Datenspeicher „FCS Website-Beiträge“ + „FCS Website-Fotos“. Zugriff nur über FCS.board (fcs.js).
+  api: { beitraege: 'https://hook.eu1.make.com/q8ldn199ovql1h99k95oedbgf4ko5ktl' },
   // Instagram @flightclubsaar, Aufrufe Stand 24.10.2026
   reels: [
     { id: 'DdRQZOsI0vS', v: 6203, d: '2026-09-14', t: 'Addicted to Dance 2026', c: 'mit @addicted2dancecontest', clip: 1 },
@@ -161,10 +166,10 @@ FCS.data = {
   pinnwand: [],
   // clips: { d, n:'Pilotenname', src:'media/clips/xyz.mp4', poster:'media/clips/xyz.webp', ig:'' }
   clips: [],
-  // markt: { id, art:'biete'|'suche', titel, kat, preis, zustand, t, img:[], kontakt, link, n, d:'2026-10-24' } läuft 30 Tage ab d
+  // markt: { id, art:'biete'|'suche', titel, kat, preis, zustand, ort, t, img:[], kontakt, link, n, d:'2026-10-24' }. Nur vom Vorstand eingetragene Anzeigen: Sie stehen vor den Live-Anzeigen (FCS.board) und bleiben, bis sie hier gelöscht werden
   markt: [],
   partner: [
     { n: 'Ayedo', u: 'https://ayedo.de/', ig: 'weareayedo', t: 'Sponsor und Partner seit Februar 2025. Cloud-Anbieter aus Schwalbach-Hülzweiler im Saarland.' },
-    { n: 'Falcon Eye', u: 'https://falcon-eye.de/', t: 'FPV-Filme und Webdesign aus dem Verein heraus – die Filme auf dieser Seite stammen von hier.' }
+    { n: 'Falcon Eye', u: 'https://falcon-eye.de/', t: 'FPV-Filme und Webdesign aus dem Verein heraus. Die Filme auf dieser Seite stammen von hier.' }
   ]
 };

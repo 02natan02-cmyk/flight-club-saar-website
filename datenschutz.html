@@ -16,99 +16,191 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fcs.css?v=922dd0d8">
-<link rel="stylesheet" href="assets/css/recht.css?v=d6bd65d1">
+<link rel="stylesheet" href="assets/css/fcs.css?v=84f45c46">
+<link rel="stylesheet" href="assets/css/recht.css?v=944f7d4f">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
 <header class="nav">
   <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
-  <nav class="nav-links" aria-label="Hauptmenü"><a href="index.html">Start</a><a href="hallenfliegen.html">Hallenfliegen</a><a href="spots.html">Spots</a><a href="wissen.html">FPV-Wissen</a><a href="hilfe.html">Technik-Hilfe</a><a href="filmen.html">Filmen</a><a href="crew.html">Crew</a></nav>
+  <nav class="nav-links" aria-label="Hauptmenü"><a href="hallenfliegen.html">Hallenfliegen</a><a href="spots.html">Spots</a><a href="wissen.html">FPV-Wissen</a><a href="hilfe.html">Technik-Hilfe</a><a href="filmen.html">Clip-Studio</a><a href="crew.html">Crew</a></nav>
   <a class="btn solid nav-cta" href="mitglied.html">Mitglied werden</a>
-  <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><i></i><i></i><i></i><span class="sr">Menü</span></button>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Übersicht</span></button>
 </header>
-<div class="menu" id="menu"><a href="index.html"><b>01</b>Start</a><a href="hallenfliegen.html"><b>02</b>Hallenfliegen</a><a href="spots.html"><b>03</b>Spots</a><a href="wissen.html"><b>04</b>FPV-Wissen</a><a href="hilfe.html"><b>05</b>Technik-Hilfe</a><a href="filmen.html"><b>06</b>Filmen</a><a href="crew.html"><b>07</b>Crew</a><a href="mitglied.html"><b>08</b>Mitglied werden</a><p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V.</p></div>
+<div class="menu" id="menu" aria-label="Übersicht aller Seiten"><div class="menu-in wrap"><div class="mg"><p class="mg-h">Fliegen</p><div class="mg-t"><a class="mt" href="hallenfliegen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V10l9-6 9 6v10"/><path d="M8 20v-6h8v6"/><circle cx="12" cy="9.5" r="1.4"/></svg><b>Hallenfliegen</b><span>Tiny Whoops im Winter. Nächster Termin: <span data-next>bald</span></span></a><a class="mt" href="spots.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg><b>Spot-Karte</b><span>Wo wir draußen fliegen, mit Route, Regeln und Bewertungen</span></a><a class="mt" href="simulator.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="11" rx="3"/><circle cx="8.5" cy="14.5" r="2.2"/><circle cx="15.5" cy="14.5" r="2.2"/><path d="M6.5 9V4M17.5 9V4"/></svg><b>FPV-Simulator</b><span>Mit Funke, Controller oder Handy im Browser fliegen</span></a></div></div><div class="mg"><p class="mg-h">Lernen & Filmen</p><div class="mg-t"><a class="mt" href="wissen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M7 10.5V15c0 1.7 2.2 3 5 3s5-1.3 5-3v-4.5"/></svg><b>FPV-Wissen</b><span>Drohne in 3D, Schaltplan, Kanäle, erster Flug</span></a><a class="mt" href="hilfe.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3.5 17.5 6.5 20.5l5.7-5.7a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.6-.6-2.6 2.6-2.2z"/></svg><b>Technik-Hilfe</b><span>Kopter armt nicht? Der FPV-Doktor hilft</span></a><a class="mt" href="filmen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/><circle cx="9.5" cy="12" r="2.4"/></svg><b>Clip-Studio & Filmen</b><span>Video hochladen, Logo drauf, runterladen. Plus Film-Ratgeber</span></a></div></div><div class="mg"><p class="mg-h">Verein</p><div class="mg-t"><a class="mt" href="mitglied.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.8-1.7 2-2.4 3.2-2.4s2.4.7 3.2 2.4M14.5 10h4M14.5 13.5h3"/></svg><b>Mitglied werden</b><span>Antrag online in wenigen Minuten</span></a><a class="mt" href="crew.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M2.8 19c.9-3 2.9-4.5 5.2-4.5s4.3 1.5 5.2 4.5M13.6 15.2c.8-.6 1.8-1 2.9-1 2 0 3.6 1.3 4.3 3.8"/></svg><b>Crew</b><span>Unsere Piloten, dein Profil, die Pinnwand</span></a><a class="mt" href="markt.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/></svg><b>Biete/Suche</b><span>Kopter, Brillen und Teile von Pilot zu Pilot</span></a></div></div><p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V. · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p></div></div>
 <main id="inhalt">
 <section class="pagehead rhead">
   <img class="bgimg" src="media/g/lp3.webp" alt="" width="1280" height="720">
   <div class="scanlines"></div>
-  <div class="osd-frame"><i></i></div>
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / Datenschutz</p>
-    <p class="kicker">Kurz gesagt: keine Cookies, kein Tracking</p>
     <h1 class="h1" data-split>Datenschutz</h1>
+    <p class="lede">Kurz gesagt: keine Cookies, kein Tracking. Hier steht genau, welche Daten wo landen und welche Rechte du hast.</p>
+    <div class="btns rquick"><a class="btn amber solid" href="#kurz">Auf einen Blick</a><a class="btn" href="#rechte">Deine Rechte</a><a class="btn ghost" href="impressum.html">Impressum</a></div>
   </div>
 </section>
 
-<section class="sec">
+<section class="sec rbody">
   <div class="wrap recht">
-    <nav aria-label="Abschnitte"><a href="#wer">Verantwortlich</a><a href="#kurz">Auf einen Blick</a><a href="#hosting">Hosting</a><a href="#formulare">Formulare</a><a href="#antrag">Mitgliedsantrag</a><a href="#einsendungen">Einsendungen</a><a href="#extern">Externe Inhalte</a><a href="#geraet">Auf deinem Gerät</a><a href="#rechte">Deine Rechte</a></nav>
+    <nav class="rnav" aria-label="Abschnitte">
+      <p class="rnav-h">Kapitel</p>
+      <a href="#wer">Verantwortlich</a><a href="#kurz">Auf einen Blick</a><a href="#hosting">Hosting</a><a href="#formulare">Formulare</a><a href="#antrag">Mitgliedsantrag</a><a href="#einsendungen">Einsendungen</a><a href="#bestenliste">Bestenliste &amp; Beiträge</a><a href="#extern">Externe Inhalte</a><a href="#geraet">Auf deinem Gerät</a><a href="#rechte">Deine Rechte</a>
+      <a class="rnav-alt" href="impressum.html">Zum Impressum <span aria-hidden="true">→</span></a>
+    </nav>
     <div class="rtext">
-      <h2 id="wer">Verantwortlich</h2>
-      <div class="rcard" data-reveal>
-        <b>Flight Club Saar e. V.</b>
-        <span>Hedwigstraße 16, 66763 Dillingen</span>
-        <span>vertreten durch den Vorstand, siehe <a href="impressum.html">Impressum</a></span>
-        <span>E-Mail: <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></span>
-      </div>
+      <div class="rtools"><span class="rtools-t">10 Kapitel · antippen</span><button class="rall" type="button" aria-pressed="false">Alle öffnen</button></div>
 
-      <h2 id="kurz">Auf einen Blick</h2>
-      <ul>
-        <li>Diese Seite setzt keine Cookies und nutzt keine Analyse- oder Werbedienste.</li>
-        <li>Schriften und Programmbibliotheken liegen auf unserem eigenen Server. Beim Aufruf werden dafür keine fremden Server angefragt.</li>
-        <li>Inhalte von Instagram, Kartenkacheln und ähnliche fremde Inhalte laden erst, wenn du sie mit einem Klick aktivierst.</li>
-        <li>Daten aus Formularen bekommen nur wir, und zwar per E-Mail.</li>
-      </ul>
+      <details class="rch" id="wer" open>
+        <summary><h2>Verantwortlich</h2></summary>
+        <div class="rch-in">
+          <div class="rcard">
+            <b>Flight Club Saar e. V.</b>
+            <span>Hedwigstraße 16, 66763 Dillingen</span>
+            <span>vertreten durch den Vorstand, siehe <a href="impressum.html">Impressum</a></span>
+            <span>E-Mail: <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></span>
+          </div>
+        </div>
+      </details>
 
-      <h2 id="hosting">Hosting</h2>
-      <p>Die Seite wird bei GitHub Pages bereitgestellt (GitHub, Inc., USA). Beim Aufruf verarbeitet der Anbieter technisch notwendige Daten wie IP-Adresse, Zeitpunkt und aufgerufene Seite, um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren und erreichbaren Website (Art. 6 Abs. 1 lit. f DSGVO). Für Übermittlungen in die USA beruft sich der Anbieter auf das EU-US Data Privacy Framework beziehungsweise Standardvertragsklauseln. Wechseln wir den Anbieter, passen wir diesen Abschnitt an.</p>
+      <details class="rch" id="kurz" open>
+        <summary><h2>Auf einen Blick</h2></summary>
+        <div class="rch-in">
+          <ul class="rblick">
+            <li>Diese Seite setzt keine Cookies und nutzt keine Analyse- oder Werbedienste.</li>
+            <li>Schriften und Programmbibliotheken liegen auf unserem eigenen Server. Beim Aufruf werden dafür keine fremden Server angefragt.</li>
+            <li>Inhalte von Instagram und Kartenkacheln laden erst, wenn du sie mit einem Klick aktivierst. Die Live-Beiträge (Anzeigen, Bewertungen, Pinnwand, Zusagen) kommen von Make, sobald du den jeweiligen Bereich aufrufst.</li>
+            <li>Daten aus Formularen bekommen nur wir, und zwar per E-Mail.</li>
+            <li>In der Bestenliste, auf der Biete/Suche-Wand, der Pinnwand und bei Bewertungen steht nur, was du selbst veröffentlichst. Mit deinem Löschcode nimmst du es jederzeit wieder heraus.</li>
+          </ul>
+        </div>
+      </details>
 
-      <h2 id="formulare">Formulare</h2>
-      <p>Wenn du ein Formular abschickst (Frage an den Verein, Spot-Vorschlag, Bewertung, Anzeige, Profil, Beitrag oder Clip), werden deine Eingaben und angehängte Dateien über den Dienst FormSubmit (formsubmit.co) als E-Mail an den Vorstand weitergeleitet. Dabei verarbeitet der Dienst die Daten auch auf Servern außerhalb der EU. Wir nutzen die Daten nur, um dein Anliegen zu bearbeiten (Art. 6 Abs. 1 lit. b und f DSGVO) und löschen sie, wenn sie dafür nicht mehr gebraucht werden.</p>
+      <details class="rch" id="hosting" open>
+        <summary><h2>Hosting</h2></summary>
+        <div class="rch-in">
+          <p>Die Seite wird bei GitHub Pages bereitgestellt (GitHub, Inc., USA). Beim Aufruf verarbeitet der Anbieter technisch notwendige Daten wie IP-Adresse, Zeitpunkt und aufgerufene Seite, um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren und erreichbaren Website (Art. 6 Abs. 1 lit. f DSGVO). Für Übermittlungen in die USA beruft sich der Anbieter auf das EU-US Data Privacy Framework beziehungsweise Standardvertragsklauseln. Wechseln wir den Anbieter, passen wir diesen Abschnitt an.</p>
+        </div>
+      </details>
 
-      <h2 id="antrag">Mitgliedsantrag und SEPA-Lastschrift</h2>
-      <p>Die Angaben im Mitgliedsantrag brauchen wir für die Mitgliederverwaltung und den Einzug der Beiträge (Art. 6 Abs. 1 lit. b DSGVO). Bankdaten nutzen wir nur für die Lastschrift. Unterlagen mit Bezug zu Zahlungen bewahren wir so lange auf, wie es gesetzlich vorgeschrieben ist. Endet die Mitgliedschaft, löschen wir die übrigen Daten, sobald keine Pflicht mehr zur Aufbewahrung besteht.</p>
+      <details class="rch" id="formulare" open>
+        <summary><h2>Formulare</h2></summary>
+        <div class="rch-in">
+          <p>Wenn du ein Formular abschickst (Frage an den Verein, Spot-Vorschlag, Bewertung, Anzeige, Profil, Beitrag oder Clip), werden deine Eingaben und angehängte Dateien über den Dienst FormSubmit (formsubmit.co) als E-Mail an den Vorstand weitergeleitet. Dabei verarbeitet der Dienst die Daten auch auf Servern außerhalb der EU. Wir nutzen die Daten nur, um dein Anliegen zu bearbeiten (Art. 6 Abs. 1 lit. b und f DSGVO) und löschen sie, wenn sie dafür nicht mehr gebraucht werden.</p>
+        </div>
+      </details>
 
-      <h2 id="einsendungen">Einsendungen, Profile und Pinnwand</h2>
-      <p>Was du für die Website einsendest, erscheint erst nach Prüfung durch den Vorstand und nur in dem Umfang, dem du im Formular zugestimmt hast (Art. 6 Abs. 1 lit. a DSGVO). Du kannst die Zustimmung jederzeit per E-Mail oder WhatsApp widerrufen, dann nehmen wir den Inhalt wieder heraus. Anzeigen auf der Biete/Suche-Wand verschwinden nach 30 Tagen automatisch.</p>
-      <p>Das Clip-Studio bearbeitet dein Video direkt in deinem Browser. Erst wenn du es selbst abschickst, verlässt es dein Gerät.</p>
+      <details class="rch" id="antrag" open>
+        <summary><h2>Mitgliedsantrag und SEPA-Lastschrift</h2></summary>
+        <div class="rch-in">
+          <p>Die Angaben im Mitgliedsantrag brauchen wir für die Mitgliederverwaltung und den Einzug der Beiträge (Art. 6 Abs. 1 lit. b DSGVO). Bankdaten nutzen wir nur für die Lastschrift. Unterlagen mit Bezug zu Zahlungen bewahren wir so lange auf, wie es gesetzlich vorgeschrieben ist. Endet die Mitgliedschaft, löschen wir die übrigen Daten, sobald keine Pflicht mehr zur Aufbewahrung besteht.</p>
+        </div>
+      </details>
 
-      <h2 id="extern">Externe Inhalte und Links</h2>
-      <h3>Instagram</h3>
-      <p>Reels von Instagram (Meta Platforms Ireland Ltd.) laden erst nach deinem Klick auf „Reel ansehen“. Ab dann gelten die Datenschutzbestimmungen von Meta.</p>
-      <h3>Karte</h3>
-      <p>Die Straßenkarte auf der Spot-Seite lädt Kartenkacheln von CARTO auf Grundlage von OpenStreetMap erst, wenn du auf „Straßenkarte laden“ tippst. Dabei wird deine IP-Adresse an diese Anbieter übertragen.</p>
-      <h3>Standort</h3>
-      <p>Beim Spot-Vorschlag kannst du deinen aktuellen Standort einsetzen. Dein Browser fragt dafür vorher um Erlaubnis. Der Standort landet nur im Formular und wird erst mit dem Absenden an uns geschickt.</p>
-      <h3>Links</h3>
-      <p>Knöpfe zu Google Maps, WhatsApp, Instagram, TikTok, YouTube oder Kleinanzeigen sind einfache Links. Erst wenn du sie antippst, verbindest du dich mit dem jeweiligen Anbieter.</p>
+      <details class="rch" id="einsendungen" open>
+        <summary><h2>Einsendungen, Profile und Pinnwand</h2></summary>
+        <div class="rch-in">
+          <p>Was du per Formular an uns einsendest (zum Beispiel Profil, Clip oder Spot-Vorschlag), erscheint erst nach Prüfung durch den Vorstand und nur in dem Umfang, dem du im Formular zugestimmt hast (Art. 6 Abs. 1 lit. a DSGVO). Du kannst die Zustimmung jederzeit per E-Mail oder WhatsApp widerrufen, dann nehmen wir den Inhalt wieder heraus.</p>
+          <p>Das Clip-Studio bearbeitet dein Video direkt in deinem Browser. Erst wenn du es selbst abschickst, verlässt es dein Gerät.</p>
+        </div>
+      </details>
 
-      <h2 id="geraet">Auf deinem Gerät</h2>
-      <p>Für ein paar Komfortfunktionen merkt sich die Seite Kleinigkeiten im Speicher deines Browsers (localStorage und sessionStorage), zum Beispiel ob du das Intro schon gesehen hast, abgehakte Punkte auf Checklisten oder deinen Bestwert im Whoop-Rennen. Diese Daten bleiben auf deinem Gerät und werden nicht an uns übertragen. Du kannst sie über die Einstellungen deines Browsers löschen.</p>
+      <details class="rch" id="bestenliste" open>
+        <summary><h2>Bestenliste und Live-Beiträge</h2></summary>
+        <div class="rch-in">
+          <p>Im Spiel „Kannst du fliegen?“ kannst du nach einer Runde freiwillig einen Namen eintragen und dein Ergebnis speichern. Dann übertragen wir diesen Namen zusammen mit Punkten, Gates, Combo, Flugzeit, Geräteart (Handy oder Computer) und Datum an den Dienst Make (make.com, Rechenzentrum in der EU). Dort wird der Eintrag gespeichert und auf dieser Website allen Besuchern in der Bestenliste angezeigt. Nimm deshalb gern einen Spitznamen statt deines echten Namens.</p>
+          <p>Rechtsgrundlage ist deine Einwilligung durch das Eintragen (Art. 6 Abs. 1 lit. a DSGVO). Möchtest du einen Eintrag löschen lassen, schreib uns an <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a>. Die Bestenliste lädt erst, wenn du das Spiel startest oder sie selbst öffnest. Dabei wird technisch deine IP-Adresse an Make übertragen, damit die Liste ausgeliefert werden kann.</p>
+          <h3>Anzeigen, Pinnwand, Spot-Bewertungen und Zusagen</h3>
+          <p>Auf der Biete/Suche-Wand, der Crew-Pinnwand, bei den Spot-Bewertungen und bei „Ich bin dabei“ für das Hallenfliegen kannst du selbst Beiträge veröffentlichen. Was du dort einträgst (Name oder Spitzname, Text, Fotos und bei Anzeigen deine Kontaktangabe), wird beim Dienst Make (make.com, Rechenzentrum in der EU) gespeichert und ist sofort für alle Besucher sichtbar. Rechtsgrundlage ist deine Einwilligung durch das Veröffentlichen (Art. 6 Abs. 1 lit. a DSGVO).</p>
+          <p>Zu jedem Beitrag gehört ein Löschcode. Damit löschst du ihn jederzeit selbst, der Code wird nur als Prüfwert gespeichert. Auf deinem Gerät merkt sich die Seite den Code, damit du ihn nicht abtippen musst. Hast du ihn vergessen, schreib uns, dann löscht der Vorstand den Beitrag. Beiträge, die gegen Recht oder unsere Regeln verstoßen, entfernen wir. Melde sie uns über „Melden“. Beim Laden dieser Bereiche wird technisch deine IP-Adresse an Make übertragen, damit die Beiträge ausgeliefert werden können.</p>
+          <p>Der FPV-Simulator läuft komplett in deinem Browser. Deine Funke oder dein Controller wird nur dort ausgelesen, nichts davon wird gesendet.</p>
+        </div>
+      </details>
 
-      <h2 id="rechte">Deine Rechte</h2>
-      <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht, eine Einwilligung zu widerrufen. Schreib uns einfach an <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a>.</p>
-      <p>Du kannst dich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel beim Unabhängigen Datenschutzzentrum Saarland.</p>
+      <details class="rch" id="extern" open>
+        <summary><h2>Externe Inhalte und Links</h2></summary>
+        <div class="rch-in">
+          <h3>Instagram</h3>
+          <p>Reels von Instagram (Meta Platforms Ireland Ltd.) laden erst nach deinem Klick auf „Reel ansehen“. Ab dann gelten die Datenschutzbestimmungen von Meta.</p>
+          <h3>Karte</h3>
+          <p>Die Straßenkarte auf der Spot-Seite lädt Kartenkacheln von CARTO auf Grundlage von OpenStreetMap erst, wenn du auf „Straßenkarte laden“ tippst. Dabei wird deine IP-Adresse an diese Anbieter übertragen.</p>
+          <h3>Standort</h3>
+          <p>Beim Spot-Vorschlag kannst du deinen aktuellen Standort einsetzen. Dein Browser fragt dafür vorher um Erlaubnis. Der Standort landet nur im Formular und wird erst mit dem Absenden an uns geschickt.</p>
+          <h3>Links</h3>
+          <p>Knöpfe zu Google Maps, WhatsApp, Instagram, TikTok, YouTube oder Kleinanzeigen sind einfache Links. Erst wenn du sie antippst, verbindest du dich mit dem jeweiligen Anbieter.</p>
+        </div>
+      </details>
+
+      <details class="rch" id="geraet" open>
+        <summary><h2>Auf deinem Gerät</h2></summary>
+        <div class="rch-in">
+          <p>Für ein paar Komfortfunktionen merkt sich die Seite Kleinigkeiten im Speicher deines Browsers (localStorage und sessionStorage), zum Beispiel ob du das Intro schon gesehen hast, abgehakte Punkte auf Checklisten deinen Bestwert im Whoop-Rennen oder die Einstellungen, Bestzeiten und die Tastenbelegung deiner Funke im Simulator. Diese Daten bleiben auf deinem Gerät und werden nicht an uns übertragen. Du kannst sie über die Einstellungen deines Browsers löschen.</p>
+        </div>
+      </details>
+
+      <details class="rch" id="rechte" open>
+        <summary><h2>Deine Rechte</h2></summary>
+        <div class="rch-in">
+          <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht, eine Einwilligung zu widerrufen. Schreib uns einfach an <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a>.</p>
+          <p>Du kannst dich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel beim Unabhängigen Datenschutzzentrum Saarland.</p>
+        </div>
+      </details>
 
       <p class="rnote">Stand: Oktober 2026. Entwurf, wird vor der Veröffentlichung vom Vorstand geprüft.</p>
+      <nav class="rend" aria-label="Weiter">
+        <a href="impressum.html"><span>Weiter lesen</span><b>Impressum</b></a>
+        <a href="mailto:info@flightclub-saar.de"><span>Auskunft oder Löschung</span><b>E-Mail schreiben</b></a>
+      </nav>
     </div>
   </div>
 </section>
+<script>
+/* Rechtsseiten: am PC alles offen mit klebender Kapitelliste, am Handy einklappbare Kapitel */
+(function () {
+  var R = document.querySelector('.recht'); if (!R) return;
+  var chs = [].slice.call(R.querySelectorAll('details.rch')), links = [].slice.call(R.querySelectorAll('.rnav a[href^="#"]'));
+  var all = R.querySelector('.rall'), mq = matchMedia('(min-width:861px)');
+  var hashEl = function () { try { return location.hash.length > 1 ? document.querySelector(decodeURIComponent(location.hash)) : null; } catch (e) { return null; } };
+  function label() { var open = chs.every(function (c) { return c.open; }); all.textContent = open ? 'Alle schließen' : 'Alle öffnen'; all.setAttribute('aria-pressed', open); }
+  function mode() {
+    var d = mq.matches, h = hashEl(); R.classList.toggle('desk', d);
+    chs.forEach(function (c, i) { c.open = d || i === 0 || (h && c.contains(h)) || c.dataset.u === '1'; c.querySelector('summary').tabIndex = d ? -1 : 0; });
+    label();
+  }
+  mode(); mq.addEventListener ? mq.addEventListener('change', mode) : mq.addListener(mode);
+  chs.forEach(function (c) {
+    c.querySelector('summary').addEventListener('click', function (e) { if (R.classList.contains('desk')) e.preventDefault(); });
+    c.addEventListener('toggle', function () { if (!R.classList.contains('desk')) { c.dataset.u = c.open ? '1' : ''; label(); } });
+  });
+  all.addEventListener('click', function () { var open = !chs.every(function (c) { return c.open; }); chs.forEach(function (c) { c.open = open; c.dataset.u = open ? '1' : ''; }); label(); });
+  var openFor = function (h) { if (h) chs.forEach(function (c) { if (c.contains(h)) { c.open = true; if (!R.classList.contains('desk')) c.dataset.u = '1'; } }); label(); };
+  addEventListener('hashchange', function () { openFor(hashEl()); });
+  // Sprungknöpfe öffnen das Kapitel, bevor die Seite hinscrollt
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return; var h = null; try { h = document.querySelector(a.getAttribute('href')); } catch (x) {} openFor(h); });
+  // Kapitelliste markiert, wo du gerade liest
+  var cur = -1;
+  function spy() {
+    var y = innerHeight * .3, k = 0; chs.forEach(function (c, i) { if (c.getBoundingClientRect().top < y) k = i; });
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) { var last = chs.length - 1; if (chs[last].getBoundingClientRect().top < innerHeight) k = last; }
+    if (k !== cur) { cur = k; links.forEach(function (a, i) { a.classList.toggle('on', i === k); if (i === k) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); }); }
+  }
+  addEventListener('scroll', spy, { passive: true }); addEventListener('resize', spy); spy();
+})();
+</script>
 
 </main>
 <footer class="foot">
   <div class="wrap">
     <div class="foot-grid">
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social"><a href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" aria-label="Instagram @flightclubsaar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="TikTok @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></a><a href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="YouTube @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a></div></div>
-      <div><h4>Fliegen</h4><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
-      <div><h4>Lernen</h4><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html">FPV filmen</a></li></ul></div>
-      <div><h4>Verein</h4><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="crew.html#studio">Clip einsenden</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+      <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="simulator.html">FPV-Simulator</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=5be4af03"></script>
+<script src="assets/js/data.js?v=d736006b"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -117,7 +209,6 @@
 <script src="assets/lib/InertiaPlugin.min.js"></script>
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
-<script src="assets/lib/lenis.min.js"></script>
-<script src="assets/js/fcs.js?v=260c3e35"></script>
+<script src="assets/js/fcs.js?v=27c61f1e"></script>
 </body>
 </html>

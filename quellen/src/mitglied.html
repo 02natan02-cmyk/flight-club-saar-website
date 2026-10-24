@@ -3,23 +3,22 @@
   <div class="scanlines"></div><div class="osd-frame"><i></i></div>
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / Mitglied werden</p>
-    <p class="kicker">Online-Antrag</p>
     <h1 class="h1" data-split>Mitglied werden</h1>
-    <p class="lede">In fünf kurzen Schritten zum Antrag, mit SEPA-Lastschrift oder Überweisung. Am Ende siehst du deine Mitgliedskarte.</p>
-    <div class="btns"><a class="btn amber solid" href="#antrag">Antrag starten</a><a class="btn" href="#vorteile">Was du bekommst</a></div>
+    <p class="lede">Hier stellst du in fünf kurzen Schritten deinen Antrag, zahlst per SEPA-Lastschrift oder Überweisung und bekommst gleich deine Mitgliedskarte.</p>
+    <div class="btns"><a class="btn amber solid" href="#antrag">Antrag starten <span class="arr">→</span></a><a class="btn" href="#beitrag">Beiträge</a><a class="btn ghost" href="#vorteile">Was du bekommst</a></div>
   </div>
 </section>
 
-<section class="sec mg-why" id="vorteile">
+<section class="sec mg-why" id="vorteile" data-toc="Vorteile">
   <div class="wrap">
-    <div class="sec-head center"><p class="kicker">Mitgliedschaft</p><h2 class="h2" data-split>Was du bekommst</h2></div>
+    <div class="sec-head mg-sh"><h2 class="h2" data-split>Was du bekommst</h2><p class="lede" data-reveal>Fliegen in der Halle, Hilfe beim Bauen und Leute, die genauso ticken wie du.</p></div>
     <div class="grid g4 perks">
       <div class="perk panel" data-reveal><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="11" width="38" height="26" rx="4"/><circle cx="16" cy="24" r="5"/><path d="M26 20h12M26 27h8"/></svg><h3 class="h3">Mitgliedskarte</h3><p class="mute">Deine eigene Karte mit Namen und Pilotennamen.</p></div>
       <div class="perk panel" data-reveal><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 40V18l18-10 18 10v22"/><path d="M14 40V26h20v14"/><circle cx="24" cy="18" r="3"/></svg><h3 class="h3">Hallenfliegen</h3><p class="mute">Im Winter Tiny Whoops in Eiweiler und Holz.</p></div>
       <div class="perk panel" data-reveal><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M30 6l12 12-20 20H10V26z"/><path d="M26 10l12 12"/></svg><h3 class="h3">Hilfe beim Bauen</h3><p class="mute">Löten, Betaflight, 3D-Druck: Die Gruppe hilft.</p></div>
       <div class="perk panel" data-reveal><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="16" cy="18" r="6"/><circle cx="34" cy="18" r="6"/><path d="M4 40c2-8 8-12 12-12s10 4 12 12M22 40c2-8 8-12 12-12s10 4 12 12"/></svg><h3 class="h3">Vereinsgruppen</h3><p class="mute">Infos und Gruppen nur für Vereinsmitglieder.</p></div>
     </div>
-    <div class="feebar" data-reveal>
+    <div class="feebar" id="beitrag" data-reveal>
       <div><b data-count="30" data-suf=" €">30 €</b><span>Jahresbeitrag</span></div>
       <div><b data-count="20" data-suf=" €">20 €</b><span>Jahresbeitrag unter 18</span></div>
       <div><b data-count="20" data-suf=" €">20 €</b><span>einmalige Aufnahme</span></div>
@@ -27,115 +26,140 @@
   </div>
 </section>
 
-<section class="sec mg-form" id="antrag">
+<section class="sec mg-form" id="antrag" data-toc="Antrag">
   <div class="wrap">
-    <div class="sec-head"><p class="kicker">Mitgliedsantrag</p><h2 class="h2" data-split>Dein Antrag</h2></div>
-    <ol class="steps" id="steps" aria-label="Schritte">
-      <li class="on"><b>1</b><span>Du</span></li><li><b>2</b><span>Fliegen</span></li><li><b>3</b><span>Erklärungen</span></li><li><b>4</b><span>Beitrag</span></li><li><b>5</b><span>Unterschrift</span></li>
-    </ol>
-    <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+    <div class="sec-head mg-sh"><h2 class="h2" data-split>Dein Antrag</h2><p class="lede" data-reveal>Fünf Schritte, alles auf einer Seite. Fehlt etwas, zeigen wir dir genau, was.</p></div>
+    <div class="mg-grid">
+      <div class="mg-main">
+        <ol class="steps" id="steps" aria-label="Schritte des Antrags">
+          <li class="on"><button type="button" data-go="1" aria-current="step"><b>1</b><span>Du</span></button></li>
+          <li><button type="button" data-go="2" disabled><b>2</b><span>Fliegen</span></button></li>
+          <li><button type="button" data-go="3" disabled><b>3</b><span>Erklärungen</span></button></li>
+          <li><button type="button" data-go="4" disabled><b>4</b><span>Beitrag</span></button></li>
+          <li><button type="button" data-go="5" disabled><b>5</b><span>Unterschrift</span></button></li>
+        </ol>
+        <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+        <p class="step-now hud" id="step-now" aria-live="polite">Schritt 1 von 5 · Über dich</p>
 
-    <form class="antrag panel" id="antragform" data-fcs-form novalidate>
-      <input type="hidden" name="_subject" value="Mitgliedsantrag (Flight Club Saar, Entwurf)">
-      <input type="hidden" name="Formular" value="Mitgliedsantrag">
-      <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
+        <form class="antrag panel" id="antragform" data-fcs-form novalidate>
+          <input type="hidden" name="_subject" value="Mitgliedsantrag (Flight Club Saar, Entwurf)">
+          <input type="hidden" name="Formular" value="Mitgliedsantrag">
+          <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
 
-      <fieldset class="step on" data-step="1">
-        <legend class="h3">Über dich</legend>
-        <div class="grid g2">
-          <div class="field"><label for="a-vn">Vorname</label><input id="a-vn" name="Vorname" required autocomplete="given-name"><span class="err">Bitte ausfüllen.</span></div>
-          <div class="field"><label for="a-nn">Nachname</label><input id="a-nn" name="Nachname" required autocomplete="family-name"><span class="err">Bitte ausfüllen.</span></div>
-          <div class="field"><label for="a-geb">Geburtsdatum</label><input id="a-geb" name="Geburtsdatum" type="date" required autocomplete="bday"><span class="err">Bitte ausfüllen.</span><span class="hint" id="a-u18" hidden>Unter 18: Jugendbeitrag 20 €. Ein Elternteil unterschreibt mit.</span></div>
-          <div class="field"><label for="a-alias">Pilotenname (optional)</label><input id="a-alias" name="Pilotenname" placeholder="z. B. Booyaka FPV"><span class="hint">Steht auf deiner Mitgliedskarte.</span></div>
-          <div class="field"><label for="a-str">Straße und Hausnummer</label><input id="a-str" name="Straße" required autocomplete="street-address"><span class="err">Bitte ausfüllen.</span></div>
-          <div class="field"><label for="a-ort">PLZ und Ort</label><input id="a-ort" name="PLZ Ort" required autocomplete="postal-code"><span class="err">Bitte ausfüllen.</span></div>
-          <div class="field"><label for="a-tel">Telefon</label><input id="a-tel" name="Telefon" type="tel" required autocomplete="tel"><span class="err">Bitte ausfüllen.</span></div>
-          <div class="field"><label for="a-mail">E-Mail</label><input id="a-mail" name="E-Mail" type="email" required autocomplete="email"><span class="err">Bitte eine gültige E-Mail eingeben.</span></div>
-          <div class="field"><label for="a-beruf">Beruf (optional)</label><input id="a-beruf" name="Beruf"></div>
-          <div class="field"><label for="a-ein">Eintritt zum</label><input id="a-ein" name="Eintritt zum" type="date" required><span class="err">Bitte ein Datum wählen.</span></div>
-        </div>
-      </fieldset>
+          <fieldset class="step on" data-step="1">
+            <legend class="h3">Über dich</legend>
+            <div class="grid g2">
+              <div class="field"><label for="a-vn">Vorname</label><input id="a-vn" name="Vorname" required autocomplete="given-name"><span class="err">Bitte deinen Vornamen eingeben.</span></div>
+              <div class="field"><label for="a-nn">Nachname</label><input id="a-nn" name="Nachname" required autocomplete="family-name"><span class="err">Bitte deinen Nachnamen eingeben.</span></div>
+              <div class="field"><label for="a-geb">Geburtsdatum</label><input id="a-geb" name="Geburtsdatum" type="date" required autocomplete="bday"><span class="err">Bitte dein Geburtsdatum eingeben.</span><span class="hint" id="a-u18" hidden>Unter 18: Jugendbeitrag 20 €. Ein Elternteil unterschreibt mit.</span></div>
+              <div class="field"><label for="a-alias">Pilotenname (freiwillig)</label><input id="a-alias" name="Pilotenname" placeholder="z. B. Booyaka FPV"><span class="hint">Steht auf deiner Mitgliedskarte.</span></div>
+              <div class="field"><label for="a-str">Straße und Hausnummer</label><input id="a-str" name="Straße" required autocomplete="street-address"><span class="err">Bitte Straße und Hausnummer eingeben.</span></div>
+              <div class="field"><label for="a-ort">PLZ und Ort</label><input id="a-ort" name="PLZ Ort" required autocomplete="postal-code"><span class="err">Bitte Postleitzahl und Ort eingeben.</span></div>
+              <div class="field"><label for="a-tel">Telefon</label><input id="a-tel" name="Telefon" type="tel" inputmode="tel" required autocomplete="tel"><span class="err">Bitte eine Telefonnummer für Rückfragen eingeben.</span></div>
+              <div class="field"><label for="a-mail">E-Mail</label><input id="a-mail" name="E-Mail" type="email" inputmode="email" required autocomplete="email"><span class="err">Bitte eine gültige E-Mail-Adresse eingeben, z. B. name@beispiel.de.</span></div>
+            </div>
+            <details class="fold mg-more" id="a-more">
+              <summary>Beruf und Eintrittsdatum</summary>
+              <div class="fold-in grid g2">
+                <div class="field"><label for="a-beruf">Beruf (freiwillig)</label><input id="a-beruf" name="Beruf"></div>
+                <div class="field"><label for="a-ein">Eintritt zum</label><input id="a-ein" name="Eintritt zum" type="date" required><span class="hint">Steht schon auf heute.</span><span class="err">Bitte ein Datum wählen.</span></div>
+              </div>
+            </details>
+          </fieldset>
 
-      <fieldset class="step" data-step="2">
-        <legend class="h3">Mitgliedschaft und Fliegen</legend>
-        <div class="field"><span class="lbl">Mitgliedschaft</span><div class="chips">
-          <label class="chip"><input type="radio" name="Mitgliedschaft" value="Aktives Mitglied" checked><span>Aktives Mitglied (30 €)</span></label>
-          <label class="chip"><input type="radio" name="Mitgliedschaft" value="Jugendmitglied (bis 18 Jahre)"><span>Jugendmitglied bis 18 (20 €)</span></label>
-        </div></div>
-        <div class="field"><span class="lbl">EU-Drohnenführerschein</span><div class="chips">
-          <label class="chip"><input type="radio" name="Drohnenführerschein" value="Nein" checked><span>Nein</span></label>
-          <label class="chip"><input type="radio" name="Drohnenführerschein" value="A1/A3"><span>A1/A3</span></label>
-          <label class="chip"><input type="radio" name="Drohnenführerschein" value="A2"><span>A2</span></label>
-          <label class="chip"><input type="radio" name="Drohnenführerschein" value="STS"><span>STS</span></label>
-          <label class="chip"><input type="radio" name="Drohnenführerschein" value="Sonstige"><span>Sonstige</span></label>
-        </div><input class="inp" name="Führerschein sonstige" id="a-fs-s" placeholder="Welcher?" hidden aria-label="Sonstiger Führerschein"></div>
-        <div class="field"><span class="lbl">Haftpflichtversicherung für Drohnen</span><div class="chips">
-          <label class="chip"><input type="radio" name="Haftpflicht" value="Nein"><span>Nein</span></label>
-          <label class="chip"><input type="radio" name="Haftpflicht" value="Ja" checked><span>Ja</span></label>
-        </div><input class="inp" name="Versicherer" id="a-vers" placeholder="Versicherer" aria-label="Versicherer"></div>
-        <div class="draftnote" id="a-novers" hidden>Ohne Haftpflicht für Drohnen darfst du nicht fliegen. Kümmere dich bitte vor dem ersten Flug darum.</div>
-      </fieldset>
+          <fieldset class="step" data-step="2">
+            <legend class="h3">Mitgliedschaft und Fliegen</legend>
+            <div class="field"><span class="lbl">Mitgliedschaft</span><div class="chips">
+              <label class="chip"><input type="radio" name="Mitgliedschaft" value="Aktives Mitglied" checked><span>Aktives Mitglied (30 €)</span></label>
+              <label class="chip"><input type="radio" name="Mitgliedschaft" value="Jugendmitglied (bis 18 Jahre)"><span>Jugendmitglied bis 18 (20 €)</span></label>
+            </div></div>
+            <div class="field"><span class="lbl">EU-Drohnenführerschein</span><div class="chips">
+              <label class="chip"><input type="radio" name="Drohnenführerschein" value="Nein" checked><span>Nein</span></label>
+              <label class="chip"><input type="radio" name="Drohnenführerschein" value="A1/A3"><span>A1/A3</span></label>
+              <label class="chip"><input type="radio" name="Drohnenführerschein" value="A2"><span>A2</span></label>
+              <label class="chip"><input type="radio" name="Drohnenführerschein" value="STS"><span>STS</span></label>
+              <label class="chip"><input type="radio" name="Drohnenführerschein" value="Sonstige"><span>Sonstige</span></label>
+            </div><input class="inp" name="Führerschein sonstige" id="a-fs-s" placeholder="Welcher?" hidden aria-label="Sonstiger Führerschein"></div>
+            <div class="field"><span class="lbl">Haftpflichtversicherung für Drohnen</span><div class="chips">
+              <label class="chip"><input type="radio" name="Haftpflicht" value="Nein"><span>Nein</span></label>
+              <label class="chip"><input type="radio" name="Haftpflicht" value="Ja" checked><span>Ja</span></label>
+            </div><input class="inp" name="Versicherer" id="a-vers" placeholder="Versicherer (freiwillig)" aria-label="Versicherer"></div>
+            <div class="draftnote" id="a-novers" hidden>Ohne Haftpflicht für Drohnen darfst du nicht fliegen. Kümmere dich bitte vor dem ersten Flug darum.</div>
+          </fieldset>
 
-      <fieldset class="step" data-step="3">
-        <legend class="h3">Erklärungen</legend>
-        <div class="checks">
-          <label class="check"><input type="checkbox" name="Angaben Führerschein/Versicherung richtig" value="ja" required><span>Ich bestätige, dass meine Angaben zum Drohnenführerschein und zur Haftpflichtversicherung vollständig und richtig sind. Der Flight Club Saar e. V. übernimmt keine Haftung für falsche oder unvollständige Angaben.</span></label>
-          <label class="check"><input type="checkbox" name="Satzung anerkannt" value="ja" required><span>Ich erkenne die Vereinssatzung an. <a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung als PDF lesen</a></span></label>
-          <label class="check"><input type="checkbox" name="Eigenes Risiko" value="ja" required><span>Ich nehme auf eigenes Risiko am Vereins- und Flugbetrieb teil.</span></label>
-          <label class="check"><input type="checkbox" name="Datenschutz Vereinsverwaltung" value="ja" required><span>Ich bin mit der Verarbeitung meiner personenbezogenen Daten zur Vereinsverwaltung einverstanden (<a href="datenschutz.html" target="_blank">Datenschutz</a>).</span></label>
-          <label class="check"><input type="checkbox" name="Foto/Video einverstanden" value="ja"><span>Ich bin mit Foto- und Videoaufnahmen bei Vereinsveranstaltungen für Vereinszwecke einverstanden. (freiwillig)</span></label>
-        </div>
-        <div class="field"><span class="lbl">Informationen erhalten per</span><div class="chips">
-          <label class="chip"><input type="checkbox" name="Infos per" value="E-Mail" checked><span>E-Mail</span></label>
-          <label class="chip"><input type="checkbox" name="Infos per" value="WhatsApp" checked><span>WhatsApp</span></label>
-          <label class="chip"><input type="checkbox" name="Infos per" value="Post"><span>Post</span></label>
-        </div></div>
-      </fieldset>
+          <fieldset class="step" data-step="3">
+            <legend class="h3">Erklärungen</legend>
+            <p class="mute mg-small">Die ersten vier brauchen wir für die Aufnahme, Fotos und Videos sind freiwillig.</p>
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="Angaben Führerschein/Versicherung richtig" value="ja" required><span>Ich bestätige, dass meine Angaben zum Drohnenführerschein und zur Haftpflichtversicherung vollständig und richtig sind. Der Flight Club Saar e. V. übernimmt keine Haftung für falsche oder unvollständige Angaben.</span></label>
+              <label class="check"><input type="checkbox" name="Satzung anerkannt" value="ja" required><span>Ich erkenne die Vereinssatzung an. <a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung als PDF lesen</a></span></label>
+              <label class="check"><input type="checkbox" name="Eigenes Risiko" value="ja" required><span>Ich nehme auf eigenes Risiko am Vereins- und Flugbetrieb teil.</span></label>
+              <label class="check"><input type="checkbox" name="Datenschutz Vereinsverwaltung" value="ja" required><span>Ich bin mit der Verarbeitung meiner personenbezogenen Daten zur Vereinsverwaltung einverstanden (<a href="datenschutz.html#antrag" target="_blank">Datenschutz</a>).</span></label>
+              <label class="check"><input type="checkbox" name="Foto/Video einverstanden" value="ja"><span>Ich bin mit Foto- und Videoaufnahmen bei Vereinsveranstaltungen für Vereinszwecke einverstanden. (freiwillig)</span></label>
+            </div>
+            <div class="field"><span class="lbl">Informationen erhalten per</span><div class="chips">
+              <label class="chip"><input type="checkbox" name="Infos per" value="E-Mail" checked><span>E-Mail</span></label>
+              <label class="chip"><input type="checkbox" name="Infos per" value="WhatsApp" checked><span>WhatsApp</span></label>
+              <label class="chip"><input type="checkbox" name="Infos per" value="Post"><span>Post</span></label>
+            </div></div>
+          </fieldset>
 
-      <fieldset class="step" data-step="4">
-        <legend class="h3">Beitrag bezahlen</legend>
-        <div class="sum" id="sum"></div>
-        <div class="field"><span class="lbl">Zahlungsart</span><div class="chips">
-          <label class="chip"><input type="radio" name="Zahlungsart" value="SEPA-Lastschrift" checked><span>SEPA-Lastschrift</span></label>
-          <label class="chip"><input type="radio" name="Zahlungsart" value="Überweisung"><span>Ich überweise selbst</span></label>
-        </div></div>
-        <div id="sepa">
-          <div class="mandate"><p class="kicker">SEPA-Lastschriftmandat</p><p>Gläubiger-ID des Vereins: <b id="glid">DE65ZZZ00002925192</b> · Mandatsreferenz: wird vom Verein vergeben</p><p>Ich ermächtige den Flight Club Saar e. V., den Aufnahmebeitrag sowie den jährlichen Mitgliedsbeitrag bis auf Widerruf per SEPA-Basislastschrift einzuziehen. Der Jahresbeitrag wird, sofern nichts anderes beschlossen wird, jeweils zum 01. Januar eines Jahres eingezogen. Die Kündigung der Mitgliedschaft richtet sich nach der gültigen Vereinssatzung und ist gegenüber dem Vorstand zu erklären.</p></div>
-          <div class="grid g2">
-            <div class="field"><label for="a-kinh">Kontoinhaber</label><input id="a-kinh" name="Kontoinhaber" data-sepa required autocomplete="cc-name"><span class="err">Bitte ausfüllen.</span></div>
-            <div class="field"><label for="a-bank">Kreditinstitut</label><input id="a-bank" name="Kreditinstitut" data-sepa></div>
+          <fieldset class="step" data-step="4">
+            <legend class="h3">Beitrag bezahlen</legend>
+            <div class="sum" id="sum"></div>
+            <div class="field"><span class="lbl">Zahlungsart</span><div class="chips">
+              <label class="chip"><input type="radio" name="Zahlungsart" value="SEPA-Lastschrift" checked><span>SEPA-Lastschrift</span></label>
+              <label class="chip"><input type="radio" name="Zahlungsart" value="Überweisung"><span>Ich überweise selbst</span></label>
+            </div></div>
+            <div id="sepa" class="mg-sepa">
+              <div class="grid g2">
+                <div class="field"><label for="a-kinh">Kontoinhaber</label><input id="a-kinh" name="Kontoinhaber" data-sepa required autocomplete="cc-name"><span class="err">Bitte den Namen des Kontoinhabers eingeben.</span></div>
+                <div class="field"><label for="a-bank">Kreditinstitut (freiwillig)</label><input id="a-bank" name="Kreditinstitut" data-sepa></div>
+              </div>
+              <div class="field iban-f"><label for="a-iban">IBAN</label><input id="a-iban" name="IBAN" data-sepa data-check="iban" required inputmode="text" autocomplete="off" spellcheck="false" placeholder="DE00 0000 0000 0000 0000 00" aria-describedby="iban-ok"><span class="iban-ok" id="iban-ok" aria-live="polite"></span><span class="err" id="iban-err">Diese IBAN stimmt nicht. Bitte Ziffer für Ziffer prüfen.</span></div>
+              <div class="mandate"><p class="lbl">SEPA-Lastschriftmandat</p><p>Gläubiger-ID des Vereins: <b id="glid">DE65ZZZ00002925192</b> · Mandatsreferenz: wird vom Verein vergeben</p><p>Ich ermächtige den Flight Club Saar e. V., den Aufnahmebeitrag sowie den jährlichen Mitgliedsbeitrag bis auf Widerruf per SEPA-Basislastschrift einzuziehen. Der Jahresbeitrag wird, sofern nichts anderes beschlossen wird, jeweils zum 01. Januar eines Jahres eingezogen. Die Kündigung der Mitgliedschaft richtet sich nach der gültigen Vereinssatzung und ist gegenüber dem Vorstand zu erklären.</p></div>
+            </div>
+            <div id="ueber" hidden class="mandate mg-ueber"><p class="lbl">Überweisung</p><p>Bitte überweise den Betrag nach der Bestätigung durch den Vorstand an: <b>Flight Club Saar e. V.</b> · IBAN <b>DE87 8306 5408 0007 0100 28</b> · BIC GENODEF1SLR · Verwendungszweck: Aufnahme und Jahresbeitrag, dein Name.</p></div>
+          </fieldset>
+
+          <fieldset class="step" data-step="5">
+            <legend class="h3">Prüfen und unterschreiben</legend>
+            <div class="review" id="review"></div>
+            <div class="grid g2">
+              <div class="field"><label for="a-uort">Ort</label><input id="a-uort" name="Ort Unterschrift" required><span class="err">Bitte den Ort eingeben.</span></div>
+              <div class="field"><label for="a-udat">Datum</label><input id="a-udat" name="Datum Unterschrift" type="date" required><span class="err">Bitte das Datum eingeben.</span></div>
+            </div>
+            <div class="field"><span class="lbl" id="sig-l">Unterschreib hier mit Finger oder Maus</span>
+              <div class="sig" id="sig"><canvas id="sig-cv" aria-labelledby="sig-l" role="img"></canvas><span class="sig-hint hud" id="sig-hint">Hier unterschreiben</span><button class="sig-x" type="button" id="sig-x">Löschen</button></div>
+              <span class="err" id="sig-err">Bitte im Feld unterschreiben.</span>
+            </div>
+            <p class="mute" id="u18-sig" hidden>Bei Mitgliedern unter 18 unterschreibt ein Elternteil.</p>
+            <p class="draftnote">Entwurf: Anträge gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben. Bankdaten werden nur zur Beitragszahlung verwendet.</p>
+          </fieldset>
+
+          <div class="mg-errsum" id="errsum" role="alert" hidden></div>
+          <div class="nav-steps">
+            <button class="btn ghost" type="button" id="prev" hidden>← Zurück</button>
+            <button class="btn solid" type="button" id="next">Weiter <span class="arr">→</span></button>
+            <button class="btn amber solid" type="submit" id="submit" hidden>Antrag absenden</button>
           </div>
-          <div class="field iban-f"><label for="a-iban">IBAN</label><input id="a-iban" name="IBAN" data-sepa data-check="iban" required inputmode="text" autocomplete="off" spellcheck="false" placeholder="DE00 0000 0000 0000 0000 00"><span class="iban-ok" id="iban-ok" aria-live="polite"></span><span class="err">Diese IBAN stimmt nicht. Bitte prüfen.</span></div>
-        </div>
-        <div id="ueber" hidden class="mandate"><p class="kicker">Überweisung</p><p>Bitte überweise den Betrag nach der Bestätigung durch den Vorstand an: <b>Flight Club Saar e. V.</b> · IBAN <b>DE87 8306 5408 0007 0100 28</b> · BIC GENODEF1SLR · Verwendungszweck: Aufnahme und Jahresbeitrag, dein Name.</p></div>
-      </fieldset>
-
-      <fieldset class="step" data-step="5">
-        <legend class="h3">Unterschrift</legend>
-        <div class="grid g2">
-          <div class="field"><label for="a-uort">Ort</label><input id="a-uort" name="Ort Unterschrift" required><span class="err">Bitte ausfüllen.</span></div>
-          <div class="field"><label for="a-udat">Datum</label><input id="a-udat" name="Datum Unterschrift" type="date" required><span class="err">Bitte ausfüllen.</span></div>
-        </div>
-        <div class="field"><span class="lbl" id="sig-l">Unterschreib hier mit Finger oder Maus</span>
-          <div class="sig" id="sig"><canvas id="sig-cv" aria-labelledby="sig-l" role="img"></canvas><span class="sig-hint hud" id="sig-hint">✎ hier unterschreiben</span><button class="sig-x" type="button" id="sig-x">Löschen</button></div>
-          <span class="err" id="sig-err">Bitte unterschreiben.</span>
-        </div>
-        <p class="mute" id="u18-sig" hidden>Bei Mitgliedern unter 18 unterschreibt ein Elternteil.</p>
-        <div class="review" id="review"></div>
-        <p class="draftnote">Entwurf: Anträge gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben. Bankdaten werden nur zur Beitragszahlung verwendet.</p>
-      </fieldset>
-
-      <div class="nav-steps">
-        <button class="btn ghost" type="button" id="prev" hidden>← Zurück</button>
-        <button class="btn solid" type="button" id="next">Weiter →</button>
-        <button class="btn amber solid" type="submit" id="submit" hidden>Antrag absenden</button>
+          <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schreib an info@flightclub-saar.de.</div>
+          <div class="form-ok" hidden></div>
+        </form>
       </div>
-      <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schreib an info@flightclub-saar.de.</div>
-      <div class="form-ok" hidden></div>
-    </form>
+
+      <aside class="mg-side" aria-label="Vorschau deiner Mitgliedskarte">
+        <div class="mg-live" id="mg-live"><canvas id="livecard" width="1012" height="638" role="img" aria-label="Vorschau deiner Mitgliedskarte"></canvas></div>
+        <p class="mg-hint"><span class="dot" aria-hidden="true"></span>Deine Karte füllt sich, während du tippst.</p>
+        <ul class="mg-need">
+          <li>Deine IBAN, wenn du per Lastschrift zahlst</li>
+          <li>Unter 18: ein Elternteil, das mit unterschreibt</li>
+          <li>Fragen? <a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li>
+        </ul>
+      </aside>
+    </div>
 
     <div class="welcome" id="welcome" hidden>
-      <p class="kicker">Antrag ist raus</p>
       <h2 class="h2">Willkommen in der Crew!</h2>
       <p class="lede">Der Vorstand prüft deinen Antrag und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte. Die echte Nummer vergibt der Vorstand.</p>
       <div class="welcome-card"><canvas id="mycard" width="1012" height="638" aria-label="Deine Mitgliedskarte" role="img"></canvas></div>

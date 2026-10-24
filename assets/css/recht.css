@@ -1,18 +1,85 @@
-/* Impressum und Datenschutz */
-.rhead{min-height:46svh}
-.rhead .bgimg{opacity:.5}
-.recht{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:48px;align-items:start}
-.recht nav{position:sticky;top:96px;display:grid;gap:6px}
-.recht nav a{font:600 12px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);text-decoration:none;padding:6px 0;border-left:2px solid var(--line);padding-left:12px;transition:color .2s,border-color .2s}
-.recht nav a:hover,.recht nav a.on{color:#fff;border-color:var(--sig)}
-.rtext{max-width:76ch;display:grid;gap:8px}
-.rtext h2{font:400 clamp(30px,4vw,44px)/1 var(--big);letter-spacing:.02em;margin:40px 0 6px;scroll-margin-top:100px}
-.rtext h2:first-child{margin-top:0}
-.rtext h3{font:600 15px var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--sig);margin:20px 0 2px}
-.rtext p,.rtext li{color:#cfdcec;line-height:1.7}
-.rtext ul{margin:4px 0 8px;padding-left:20px}
-.rtext a{color:var(--sig)}
-.rcard{padding:22px 24px;border-radius:18px;border:1px solid var(--line-hi);background:rgba(4,12,28,.6);display:grid;gap:4px}
-.rcard b{color:#fff}
-.rnote{font-size:13px;color:var(--mute);border-top:1px dashed var(--line-hi);padding-top:14px;margin-top:30px}
-@media (max-width:860px){.recht{grid-template-columns:minmax(0,1fr)}.recht nav{position:static;display:flex;flex-wrap:wrap;gap:6px 14px}.recht nav a{border-left:0;padding-left:0}}
+/* Impressum und Datenschutz: kompakter Kopf, klebende Kapitelliste am PC, einklappbare Kapitel am Handy */
+.rhead{min-height:0;padding:128px 0 38px}
+.rhead .bgimg{opacity:.38}
+.rhead .h1{font-size:clamp(52px,7.4vw,108px)}
+.rhead .lede{max-width:56ch;margin:12px 0 0}
+.rquick{margin-top:22px}
+.rquick .btn{padding:12px 18px;font-size:12.5px}
+
+.rbody.sec{padding:clamp(26px,5vh,54px) 0 clamp(96px,14vh,150px)}
+.recht{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
+
+/* Kapitelliste (PC) */
+.rnav{position:sticky;top:100px;display:flex;flex-direction:column;padding:4px 0}
+.rnav-h{margin:0 0 10px;font:600 10.5px var(--hud);letter-spacing:.26em;text-transform:uppercase;color:var(--mute)}
+.rnav a{position:relative;display:block;padding:9px 0 9px 18px;border-left:2px solid var(--line);font:600 12.5px/1.3 var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-decoration:none;transition:color .25s,border-color .25s}
+.rnav a::before{content:"";position:absolute;left:-2px;top:0;bottom:0;width:2px;background:var(--sig);box-shadow:0 0 12px var(--sig);transform:scaleY(0);transition:transform .4s var(--ease)}
+.rnav a:hover{color:#fff}
+.rnav a.on{color:#fff}
+.rnav a.on::before{transform:none}
+.rnav .rnav-alt{margin-top:18px;border-left:0;padding-left:0;color:var(--sig)}
+.rnav .rnav-alt::before{display:none}
+
+/* Text */
+.rtext{min-width:0;max-width:68ch;font-size:16.5px}
+.rtext p,.rtext li{color:#d2deee;line-height:1.72;margin:0 0 12px}
+.rtext ul{margin:0 0 12px;padding-left:20px}
+.rtext li{margin-bottom:6px}
+.rtext li::marker{color:var(--sig)}
+.rtext a{color:var(--sig);text-underline-offset:3px;text-decoration-thickness:1px}
+.rtext a:hover{color:#fff}
+.rtext h3{font:600 14px/1.3 var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--sig);margin:22px 0 6px}
+.rch-in>h3:first-child{margin-top:4px}
+.rcard{padding:20px 22px;border-radius:16px;border:1px solid var(--line-hi);background:linear-gradient(180deg,rgba(16,36,74,.55),rgba(4,12,28,.7));display:grid;gap:4px;line-height:1.6;color:#d2deee}
+.rcard b{color:#fff;font-size:17px}
+.rblick{list-style:none;padding:0!important;display:grid;gap:10px}
+.rblick li{position:relative;margin:0!important;padding:12px 14px 12px 44px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
+.rblick li::before{content:"";position:absolute;left:16px;top:19px;width:7px;height:12px;border:solid var(--green);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+
+/* Kapitel */
+details.rch{border-top:1px solid var(--line)}
+details.rch:first-of-type{border-top:0}
+details.rch>summary{list-style:none;cursor:pointer}
+details.rch>summary::-webkit-details-marker{display:none}
+details.rch h2{margin:0;font:400 clamp(30px,3.4vw,44px)/1 var(--big);letter-spacing:.02em;text-transform:uppercase}
+.desk details.rch>summary{cursor:default;padding:30px 0 14px}
+.desk details.rch:first-of-type>summary{padding-top:0}
+.rch-in{padding-bottom:22px}
+.rtools{display:none}
+
+.rnote{font-size:13.5px!important;color:var(--mute)!important;border-top:1px dashed var(--line-hi);padding-top:14px;margin-top:18px!important}
+.rend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.rend a{display:grid;gap:4px;padding:16px 18px;border-radius:14px;border:1px solid var(--line-hi);background:rgba(4,12,28,.6);text-decoration:none;transition:border-color .25s,transform .35s var(--ease)}
+.rend a:hover{border-color:var(--sig);transform:translateY(-2px);color:inherit}
+.rend span{font:600 10.5px var(--hud);letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.rend b{font:700 16px var(--hud);letter-spacing:.06em;text-transform:uppercase;color:#fff}
+
+/* Handy: Kapitel zum Aufklappen */
+@media (max-width:860px){
+  .rhead{padding:104px 0 26px}
+  .rquick .btn{padding:12px 15px}
+  .recht{grid-template-columns:minmax(0,1fr);gap:0}
+  .rnav{display:none}
+  .rtext{font-size:16px}
+  .rtools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
+  .rtools-t{font:600 11px var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+  .rall{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line-hi);background:rgba(4,12,28,.6);color:var(--osd);font:600 12px var(--hud);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;cursor:pointer}
+  .rall:hover{border-color:var(--sig)}
+  details.rch{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(16,36,74,.45),rgba(8,18,38,.55));margin-bottom:10px;scroll-margin-top:90px}
+  details.rch:first-of-type{border-top:1px solid var(--line)}
+  details.rch[open]{border-color:var(--line-hi)}
+  details.rch>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:58px;padding:12px 16px}
+  details.rch h2{font:700 16px/1.25 var(--hud);letter-spacing:.06em}
+  details.rch>summary::after{content:"";flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-hi);background:linear-gradient(var(--sig),var(--sig)) center/12px 2px no-repeat,linear-gradient(var(--sig),var(--sig)) center/2px 12px no-repeat;transition:transform .35s var(--ease)}
+  details.rch[open]>summary::after{transform:rotate(45deg)}
+  .rch-in{padding:0 16px 16px}
+  .rcard{padding:16px}
+  .rend{grid-template-columns:minmax(0,1fr)}
+}
+@supports (interpolate-size:allow-keywords){
+  .recht{interpolate-size:allow-keywords}
+  @media (max-width:860px) and (prefers-reduced-motion:no-preference){
+    details.rch::details-content{height:0;overflow:clip;transition:height .4s var(--ease),content-visibility .4s allow-discrete}
+    details.rch[open]::details-content{height:auto}
+  }
+}

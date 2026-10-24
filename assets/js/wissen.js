@@ -1,6 +1,8 @@
 /* Flight Club Saar – FPV-Wissen
    3D-Drohne (three.js), Schaltplan, Videosysteme, Kanäle, Weg zum ersten Flug, Checkliste, Glossar.
-   Läuft als Modul. GSAP und Plugins kommen global aus fcs.js; wir warten auf „fcs:ready“. */
+   Läuft als Modul. GSAP und Plugins kommen global aus fcs.js; wir warten auf „fcs:ready“.
+   Stand 24.10.2026: kein Festkleben mehr beim Scrollen. Die Drohne wird per Regler zerlegt
+   (und zerlegt sich beim ersten Sichtkontakt einmal von selbst). */
 import * as THREE from '../lib/three.module.min.js';
 
 const D = document, W = window;
@@ -17,7 +19,7 @@ const GS = () => has('gsap');
 const el = (tag, attrs = {}, parent) => { const n = D.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
 const run = (name, fn) => { try { fn(); } catch (e) { console.warn('FPV-Wissen: ' + name, e); } };
 
-/* Wartet auf fcs.js (Plugins registriert, Lenis da). Fallback: nach „load“. */
+/* Wartet auf fcs.js (Plugins registriert). Fallback: nach „load“. */
 function whenReady(fn) {
   let done = false;
   const go = () => {
@@ -44,7 +46,13 @@ function makeHint(node) {
     get gone() { return gone; }
   };
 }
-const scrollToY = (y) => { if (W.FCS && FCS.lenis) FCS.lenis.scrollTo(y, { duration: 1.4 }); else W.scrollTo({ top: y, behavior: RM ? 'auto' : 'smooth' }); };
+const scrollToY = (y) => { if (W.FCS && FCS.scrollTo) FCS.scrollTo(Math.round(y)); else W.scrollTo({ top: y, behavior: RM ? 'auto' : 'smooth' }); };
+/* CSS-Endlosanimationen anhalten, solange ein Abschnitt nicht zu sehen ist */
+function pauseOffscreen() {
+  const secs = $$('main > section'); if (!secs.length || !('IntersectionObserver' in W)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '80px 0px' });
+  secs.forEach(s => io.observe(s));
+}
 
 /* =====================================================================
    01 · Drohne in 3D
@@ -66,7 +74,7 @@ function webgl2() { try { const c = D.createElement('canvas'); return !!(W.WebGL
 
 function drone() {
   const sec = $('#drohne'); if (!sec) return;
-  const stage = $('.wi-stage', sec), track = $('.wi-track', sec), canvas = $('.wi-canvas', sec);
+  const stage = $('.wi-stage', sec), canvas = $('.wi-canvas', sec);
   const labs = $$('.wi-lab', sec), card = $('.wi-card', sec);
   const hint = makeHint($('.wi-hint-drag', sec));
   const ids = PARTS.map(p => p.id);
@@ -96,19 +104,19 @@ function drone() {
   sec.addEventListener('keydown', e => { if (e.key === 'Escape' && !card.hidden) close(); });
 
   const lede = $('.wi-stage-lede', sec);
-  const flat = () => { if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne. Tipp auf ein Bauteil, um zu sehen, was es macht und worauf du achten musst.'; };
+  const flat = () => { if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne. Tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.'; };
   if (!webgl2()) { sec.classList.add('no-3d'); flat(); return; }
-  sec.classList.add('is-3d'); if (RM) { sec.classList.add('rm'); if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne, schon in ihre Teile zerlegt. Mit den Knöpfen unten baust du sie zusammen. Tipp auf ein Bauteil, um zu sehen, was es macht und worauf du achten musst.'; }
-  api = drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
+  sec.classList.add('is-3d'); if (RM) sec.classList.add('rm');
+  api = drone3d({ sec, stage, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
   if (!api) { sec.classList.remove('is-3d', 'rm'); sec.classList.add('no-3d'); flat(); }
 }
 
-function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
+function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
   } catch (e) { return null; }
-  renderer.setPixelRatio(Math.min(W.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(W.devicePixelRatio || 1, FINE ? 2 : 1.5));
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.08;
   renderer.setClearColor(0x000000, 0);
 
@@ -352,7 +360,8 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
   const ray = new THREE.Raycaster(); const ndc = new THREE.Vector2();
   const labMap = {}; labs.forEach(b => { labMap[b.dataset.part] = b; });
   const labW = {}, labH = {}; const measure = () => labs.forEach(b => { labW[b.dataset.part] = b.offsetWidth || 100; labH[b.dataset.part] = b.offsetHeight || 28; });
-  const roYaw = $('[data-wi-yaw]', sec), roEx = $('[data-wi-ex]', sec), exBar = $('.wi-ex-bar i', sec), exBtns = $$('.wi-explode button', sec);
+  const roYaw = $('[data-wi-yaw]', sec), roEx = $('[data-wi-ex]', sec), exRange = $('.wi-ex-range', sec), exBtns = $$('.wi-explode button', sec);
+  let rangeHeld = false, rangeT = 0;
 
   function size() {
     Wd = stage.clientWidth || 1; Hd = stage.clientHeight || 1;
@@ -362,8 +371,10 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
     measure(); kick();
   }
 
+  let camMoving = false;
   function layoutCamera() {
     const g = goalRegion(), k = RM ? 1 : .12;
+    camMoving = Math.abs(g.cx - region.cx) + Math.abs(g.cy - region.cy) + Math.abs(g.rw - region.rw) + Math.abs(g.rh - region.rh) > .002;
     region.cx += (g.cx - region.cx) * k; region.cy += (g.cy - region.cy) * k; region.rw += (g.rw - region.rw) * k; region.rh += (g.rh - region.rh) * k;
     const tanV = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
     const halfW = lerp(17.6, 19.6, e), halfH = lerp(6.5, 14.2, e);
@@ -430,7 +441,14 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
   function readouts() {
     const deg = Math.round(((root.rotation.y * 180 / Math.PI) % 360 + 360) % 360), ex = Math.round(e * 100);
     if (deg !== lastYaw && roYaw) { roYaw.textContent = String(deg).padStart(3, '0'); lastYaw = deg; }
-    if (ex !== lastEx) { if (roEx) roEx.textContent = ex; if (exBar) exBar.style.transform = `scaleX(${e})`; exBtns.forEach(b => b.classList.toggle('on', (+b.dataset.go === 1) === (e > .5))); lastEx = ex; }
+    if (ex !== lastEx) {
+      if (roEx) roEx.textContent = ex;
+      // Regler folgt der Animation, außer jemand hält ihn gerade fest
+      if (exRange && !rangeHeld && performance.now() - rangeT > 500) { exRange.value = ex; }
+      if (exRange) exRange.style.setProperty('--p', ex + '%');
+      exBtns.forEach(b => b.classList.toggle('on', (+b.dataset.go === 1) === (e > .5)));
+      lastEx = ex;
+    }
   }
 
   function frame(now) {
@@ -442,15 +460,20 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
     applyExplode(dt); layoutCamera(); glow();
     renderer.render(scene, cam);
     placeLabels(); readouts();
+    // Leerlauf: zerlegt, nichts bewegt sich, nichts gewählt. Dann ruht die Schleife (spart Akku, nichts ruckelt beim Scrollen)
+    const busy = drag || rangeHeld || camMoving || target < .5 || Math.abs(target - e) > .002 || Math.abs(vel) > 1e-5 || selected || hovered || (GS() && gsap.isTweening(impulse));
+    idleN = busy ? 0 : idleN + 1;
+    if (idleN > 20) { idleN = 0; return; }
     raf = requestAnimationFrame(frame);
   }
+  let idleN = 0;
   function kick() { if (running && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
   function renderOnce() { applyExplode(0); layoutCamera(); renderer.render(scene, cam); placeLabels(); readouts(); }
 
   /* Nur rendern, wenn sichtbar */
   const io = new IntersectionObserver(es => { running = es.some(x => x.isIntersecting) && D.visibilityState !== 'hidden'; if (running) kick(); }, { rootMargin: '120px 0px' });
-  io.observe(track);
-  D.addEventListener('visibilitychange', () => { if (D.visibilityState === 'hidden') running = false; else { const r = track.getBoundingClientRect(); running = r.bottom > 0 && r.top < innerHeight; kick(); } });
+  io.observe(stage);
+  D.addEventListener('visibilitychange', () => { if (D.visibilityState === 'hidden') running = false; else { const r = stage.getBoundingClientRect(); running = r.bottom > 0 && r.top < innerHeight; kick(); } });
   new ResizeObserver(size).observe(stage);
   if (D.fonts && D.fonts.ready) D.fonts.ready.then(() => { battT.image.getContext('2d') && redrawBatt(); measure(); });
   function redrawBatt() {
@@ -480,7 +503,7 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
       if (drag.moved > 10) { hint.done(); canvas.classList.add('grab'); }
       kick(); return;
     }
-    if (FINE && ev.pointerType === 'mouse') { const id = pickAt(ev); if (id !== hovered) { hovered = id; canvas.classList.toggle('over', !!id); } }
+    if (FINE && ev.pointerType === 'mouse') { const id = pickAt(ev); if (id !== hovered) { hovered = id; canvas.classList.toggle('over', !!id); kick(); } }
   });
   const end = (ev) => {
     if (!drag || ev.pointerId !== drag.id) return;
@@ -490,7 +513,7 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
   };
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);
-  canvas.addEventListener('pointerleave', () => { if (hovered) { hovered = null; canvas.classList.remove('over'); } });
+  canvas.addEventListener('pointerleave', () => { if (hovered) { hovered = null; canvas.classList.remove('over'); kick(); } });
   function pickAt(ev) {
     const r = canvas.getBoundingClientRect();
     ndc.set((ev.clientX - r.left) / r.width * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
@@ -499,22 +522,30 @@ function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
     return hit ? hit.object.userData.part : null;
   }
 
-  /* ---------- Scrollen: auseinanderfliegen ---------- */
-  let st = null;
-  if (!RM && has('ScrollTrigger')) {
-    st = ScrollTrigger.create({ trigger: track, start: 'top top', end: 'bottom bottom', onUpdate: s => { const p = s.progress; target = p < .08 ? 0 : p > .72 ? 1 : (p - .08) / .64; kick(); } });
-  }
+  /* ---------- Zerlegen: Regler und Knöpfe (kein Festkleben beim Scrollen) ---------- */
+  let touched = false, autoT = null;
+  const user = () => { touched = true; if (autoT) { autoT.kill(); autoT = null; } };
   exBtns.forEach(b => b.addEventListener('click', () => {
-    const v = +b.dataset.go; hint.done();
-    if (st) scrollToY(st.start + (st.end - st.start) * (v ? .78 : 0) + (v ? 0 : -2)); else { target = v; kick(); }
+    user(); target = +b.dataset.go; rangeT = 0; kick();
   }));
+  if (exRange) {
+    exRange.value = Math.round(target * 100);
+    const set = () => { user(); rangeT = performance.now(); target = clamp(exRange.value / 100); exRange.style.setProperty('--p', exRange.value + '%'); kick(); };
+    exRange.addEventListener('input', set);
+    exRange.addEventListener('pointerdown', () => { rangeHeld = true; user(); });
+    const rel = () => { rangeHeld = false; rangeT = performance.now(); };
+    exRange.addEventListener('pointerup', rel); exRange.addEventListener('pointercancel', rel); exRange.addEventListener('change', rel);
+  }
 
-  /* ---------- Selbst-Impuls ---------- */
+  /* ---------- Selbst-Impuls: dreht sich einmal und zerlegt sich von allein ---------- */
   firstSight(stage, () => {
-    hint.show();
-    if (RM || !GS()) return;
-    gsap.timeline().to(impulse, { v: 1.05, duration: 1.5, ease: 'power2.inOut', onUpdate: kick }).to(impulse, { v: .45, duration: 1.2, ease: 'power2.inOut', onUpdate: kick });
-  }, .45);
+    if (RM || !GS()) { if (!touched) { target = 1; kick(); } hint.show(); return; }
+    autoT = gsap.timeline()
+      .to(impulse, { v: 1.05, duration: 1.5, ease: 'power2.inOut', onUpdate: kick, onStart: kick })
+      .add(() => { if (!touched) { target = 1; kick(); } }, .5)
+      .to(impulse, { v: .45, duration: 1.2, ease: 'power2.inOut', onUpdate: kick })
+      .add(() => hint.show(), 1.4);
+  }, .4);
 
   size(); renderOnce();
   return { select(id) { selected = id; region && kick(); } };
@@ -830,6 +861,14 @@ function schaltplan() {
   }
   new ResizeObserver(relayout).observe(board);
   relayout();
+  // Selbst-Impuls: nach dem Zeichnen zeigt der Plan von allein drei Leitungen nacheinander
+  const tour = ['bat_p', 'harn', 'rx_tx'];
+  let tourT = 0;
+  function runTour(i) {
+    if (hint.gone || i >= tour.length) return;
+    show({ kind: 'w', id: tour[i] }, false);
+    if (i + 1 < tour.length) tourT = setTimeout(() => runTour(i + 1), 1900);
+  }
   // Vor dem ersten Sichtkontakt unsichtbar, dann wird gezeichnet
   if (GS() && !RM && has('DrawSVGPlugin')) gsap.set($$('.sp-line', svg), { drawSVG: '0%' });
   firstSight(board, () => {
@@ -837,8 +876,8 @@ function schaltplan() {
     if (GS() && !RM && has('DrawSVGPlugin')) {
       const lines = $$('.sp-line', svg);
       gsap.fromTo($$('.sp-c', svg), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .6, stagger: .05, ease: 'expo.out', clearProps: 'transform,opacity' });
-      gsap.fromTo(lines, { drawSVG: '0%' }, { drawSVG: '100%', duration: .7, ease: 'power2.inOut', stagger: .04, delay: .3, onComplete: () => { drawn = true; } });
-      gsap.delayedCall(.3 + lines.length * .04 + .5, () => { show({ kind: 'w', id: 'bat_p' }, false); hint.show(); drawn = true; });
+      gsap.fromTo(lines, { drawSVG: '0%' }, { drawSVG: '100%', duration: .7, ease: 'power2.inOut', stagger: .03, delay: .3, onComplete: () => { drawn = true; } });
+      gsap.delayedCall(.3 + lines.length * .03 + .5, () => { hint.show(); drawn = true; runTour(0); });
     } else { drawn = true; show({ kind: 'w', id: 'bat_p' }, false); hint.show(); }
   }, .3);
 }
@@ -857,7 +896,8 @@ function videosysteme() {
   const view = $('.wi-viewer', sec), vid = $('.wi-vid', sec), cv = $('.wi-vfx', sec), ctx = cv.getContext('2d');
   const range = $('#wi-sig'), valEl = $('[data-v-val]', sec), bars = $$('[data-v-bars] i', sec), barsBox = $('[data-v-bars]', sec);
   const warn = $('.wi-v-warn', sec), nameEl = $('[data-v-name]', sec), latEl = $('[data-v-lat]', sec);
-  const cards = $$('.wi-vcard', sec), dTag = $('[data-d-tag]', sec), dName = $('[data-d-name]', sec), dRows = $('[data-d-rows]', sec);
+  const cards = $$('.wi-vcard', sec), dTag = $('[data-d-tag]', sec), dName = $('[data-d-name]', sec), dRows = $('[data-d-rows]', sec), fold = $('.wi-vs-detail', sec);
+  if (fold && innerWidth >= 900) fold.open = true;
   const hint = makeHint($('.wi-hint-sig', sec));
   let sys = 'analog', sig = 1, visible = false, raf = 0, frozen = false, lastDraw = 0, flash = 0;
   const small = D.createElement('canvas'), sctx = small.getContext('2d');
@@ -867,7 +907,7 @@ function videosysteme() {
     const s = VS[sys];
     dTag.textContent = s.tag; dTag.className = 'tag ' + (s.tag === 'Analog' ? 'amber' : 'sig'); dName.textContent = s.name;
     dRows.innerHTML = ''; s.rows.forEach(([k, v]) => { const d = D.createElement('div'); const dt = D.createElement('dt'); dt.textContent = k; const dd = D.createElement('dd'); dd.textContent = v; d.append(dt, dd); dRows.appendChild(d); });
-    if (GS() && !RM) gsap.fromTo(dRows.children, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: .5, stagger: .05, ease: 'expo.out' });
+    if (GS() && !RM && (!fold || fold.open)) gsap.fromTo(dRows.children, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: .5, stagger: .05, ease: 'expo.out' });
   }
   function setSys(s) {
     sys = s; view.dataset.sys = s; frozen = false; flash = 1;
@@ -921,6 +961,8 @@ function videosysteme() {
       }
     }
     if (flash > 0) { ctx.globalAlpha = flash; ctx.drawImage(noise[(Math.random() * 4) | 0], 0, 0, cw, ch); ctx.globalAlpha = 1; flash = Math.max(0, flash - .06); }
+    // Digital bei gutem Signal: Bild ist sauber, nichts zu zeichnen. Schleife ruht bis zur nächsten Änderung.
+    if (sys !== 'analog' && sig >= .55 && flash <= 0) return;
     raf = requestAnimationFrame(draw);
   }
   function loop() { if (visible && !raf) raf = requestAnimationFrame(draw); }
@@ -1180,7 +1222,10 @@ function checkliste() {
    ===================================================================== */
 function glossar() {
   const sec = $('#glossar'); if (!sec) return;
-  const q = $('#wi-q'), terms = $$('.wi-term', sec), nEl = $('[data-gl-n]', sec), empty = $('.wi-gl-empty', sec);
+  const q = $('#wi-q'), terms = $$('.wi-term', sec), nEl = $('[data-gl-n]', sec), tEl = $('[data-gl-t]', sec), empty = $('.wi-gl-empty', sec);
+  const more = $('.wi-gl-more', sec), foot = $('.wi-gl-foot', sec), allN = $('[data-gl-all]', sec);
+  let full = false;
+  if (allN) allN.textContent = terms.length;
   const hint = makeHint($('.wi-hint-gl', sec));
   terms.sort((a, b) => $('dt', a).textContent.localeCompare($('dt', b).textContent, 'de')).forEach(t => t.parentNode.appendChild(t));
   const orig = new Map(terms.map(t => [t, { dt: $('dt', t).textContent, dd: $('dd', t).textContent }]));
@@ -1193,18 +1238,25 @@ function glossar() {
   };
   let cat = '';
   function apply(anim) {
-    const needle = norm(q.value.trim());
+    const needle = norm(q.value.trim()), filtered = !!(needle || cat), start = !filtered && !full;
     let n = 0; const vis = [];
     terms.forEach(t => {
       const o = orig.get(t), hay = norm(o.dt + ' ' + o.dd + ' ' + (t.dataset.alias || ''));
-      const ok = (!cat || t.dataset.cat === cat) && (!needle || hay.includes(needle));
+      const ok = start ? t.hasAttribute('data-start') : (!cat || t.dataset.cat === cat) && (!needle || hay.includes(needle));
       t.hidden = !ok; if (ok) { n++; vis.push(t); }
       $('dt', t).innerHTML = mark(o.dt, needle); $('dd', t).innerHTML = mark(o.dd, needle);
     });
     nEl.textContent = n; empty.hidden = n > 0;
+    if (tEl) tEl.textContent = start ? 'Begriffe für den Anfang' : filtered ? (n === 1 ? 'Treffer' : 'Treffer') + ' von ' + terms.length : 'Begriffe von A bis Z';
+    if (foot) foot.hidden = filtered;
+    if (more) { more.setAttribute('aria-expanded', String(full)); more.innerHTML = full ? 'Nur die wichtigsten zeigen <span class="arr">↑</span>' : `Alle ${terms.length} Begriffe zeigen <span class="arr">↓</span>`; }
     if (anim && GS() && !RM) gsap.fromTo(vis.slice(0, 18), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .4, stagger: .02, ease: 'expo.out', overwrite: true });
   }
   q.addEventListener('input', () => { stopDemo(); hint.done(); apply(false); });
+  if (more) more.addEventListener('click', () => {
+    stopDemo(); hint.done(); full = !full; apply(full);
+    if (!full) { const r = sec.getBoundingClientRect(); if (r.top < 0) scrollToY(scrollY + r.top - 60); }
+  });
   q.addEventListener('focus', () => { stopDemo(); hint.done(); });
   $$('input[name=wi-cat]', sec).forEach(r => r.addEventListener('change', () => { stopDemo(); hint.done(); cat = r.value; apply(true); }));
   apply(false);
@@ -1229,20 +1281,8 @@ function glossar() {
 }
 
 /* =====================================================================
-   Kapitelleiste, Kopf-OSD, Abschluss
+   Kopf-OSD, Abschluss
    ===================================================================== */
-function rail() {
-  const r = $('.wi-rail'); if (!r) return;
-  const links = $$('a', r), head = $('.wi-head');
-  const ids = links.map(a => a.dataset.wiRail);
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    links.forEach(a => a.classList.toggle('on', a.dataset.wiRail === e.target.id));
-  }), { rootMargin: '-45% 0px -50% 0px' });
-  ids.forEach(id => { const s = D.getElementById(id); if (s) io.observe(s); });
-  const ioH = new IntersectionObserver(es => { r.classList.toggle('on', !es[0].isIntersecting); }, { threshold: .05 });
-  if (head) ioH.observe(head);
-}
 function kopf() {
   const v = $('[data-wi-volt]'); if (!v) return;
   let t = 0;
@@ -1253,7 +1293,10 @@ function abschluss() {
   const s = $('.wi-cta'), h = $('.wi-horizon', s || D); if (!s || !h || RM) return;
   let tgt = 0;
   if (FINE) s.addEventListener('pointermove', ev => { const r = s.getBoundingClientRect(); tgt = ((ev.clientX - r.left) / r.width - .5) * 24; h.style.setProperty('--roll', tgt.toFixed(1) + 'deg'); });
-  else if (GS()) { const o = { v: -6 }; gsap.to(o, { v: 6, duration: 3, yoyo: true, repeat: -1, ease: 'sine.inOut', onUpdate: () => h.style.setProperty('--roll', o.v.toFixed(1) + 'deg') }); }
+  else if (GS() && getComputedStyle(h).display !== 'none') {
+    const o = { v: -6 }, tw = gsap.to(o, { v: 6, duration: 3, yoyo: true, repeat: -1, ease: 'sine.inOut', paused: true, onUpdate: () => h.style.setProperty('--roll', o.v.toFixed(1) + 'deg') });
+    new IntersectionObserver(es => { es[0].isIntersecting ? tw.play() : tw.pause(); }).observe(s);
+  }
 }
 
 whenReady(() => {
@@ -1264,7 +1307,7 @@ whenReady(() => {
   run('Weg', weg);
   run('Checkliste', checkliste);
   run('Glossar', glossar);
-  run('Kapitelleiste', rail);
+  run('Pausen', pauseOffscreen);
   run('Kopf', kopf);
   run('Abschluss', abschluss);
   if (has('ScrollTrigger')) { ScrollTrigger.refresh(); setTimeout(() => ScrollTrigger.refresh(), 600); }
