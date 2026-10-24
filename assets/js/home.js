@@ -322,6 +322,7 @@
       knob.style.setProperty('--k', (ch * 45 - 157.5) + 'deg'); knob.setAttribute('aria-valuenow', ch + 1);
       const kp = (D.kanal || []).find(k => k.ch === ch + 1);
       $('#zap-ch').textContent = `R${ch + 1} · ${f} MHz`; $('#zap-pilot').textContent = ok ? (kp ? kp.a.toUpperCase() : `PILOT ${ch + 1}`) : 'KEIN PILOT';
+      $('#zap-t').textContent = ok && kp && kp.o ? kp.o.toUpperCase() : 'FLIGHT CLUB SAAR';
       const lg = $('#zap-legal'); lg.textContent = ok ? '25 mW · DE OK' : 'IN DE NICHT ERLAUBT'; lg.classList.toggle('bad', !ok);
       noiseOn = true; nz.style.opacity = 1; noise();
       setTimeout(() => {

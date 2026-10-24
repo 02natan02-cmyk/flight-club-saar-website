@@ -59,7 +59,8 @@ FCS.data = {
     { id: 'holz', n: 'Glück-Auf-Halle Holz', typ: 'halle', lat: 49.330219, lng: 6.987745, adr: 'Glück-Auf-Weg 5, 66265 Heusweiler-Holz',
       t: 'Zweite Winterhalle im Dezember. Gleiche Regeln wie in Eiweiler.', regel: 'Nur zu Vereinsterminen', stern: null, k: [] },
     { id: 'goettelborn', n: 'Förderturm Göttelborn', typ: 'industrie', lat: 49.3435266, lng: 7.0386915, adr: 'Göttelborn, 66287 Quierschied',
-      t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben – nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [] }
+      t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben – nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [],
+      foto: 'media/spots/goettelborn.webp' }
   ],
   spotTypen: {
     halle: { n: 'Halle', c: '#3fe0ff' },
@@ -79,6 +80,13 @@ FCS.data = {
     { n: 'Ankündigungen', m: null, t: 'Termine und Infos vom Vorstand.' },
     { n: 'Verein', m: null, t: 'Für Vereinsmitglieder.' },
     { n: 'Ankündigungen Verein', m: null, t: 'Vereinsinterne Infos.' }
+  ],
+  // Kanal-Zapper: legale Kanäle R3–R6, Clips aus den Reels der Piloten (gemeinsame Beiträge mit @flightclubsaar)
+  kanal: [
+    { ch: 3, a: 'Stay Fly', o: 'Bando-Session', clip: 'media/kanal/stayfly.mp4', ig: 'stay_fly.sb' },
+    { ch: 4, a: 'GrobsFPV', o: 'Bando Time', clip: 'media/kanal/grobsfpv.mp4', ig: 'grobsfpv' },
+    { ch: 5, a: 'OrcaFPV', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
+    { ch: 6, a: 'Booyaka FPV', o: 'Grube Göttelborn', clip: 'media/kanal/booyaka.mp4', ig: 'wojtasczyk_natan' }
   ],
   // Instagram @flightclubsaar, Aufrufe Stand 24.10.2026
   reels: [
