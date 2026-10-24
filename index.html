@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="de" class="no-js">
+<head>
+<meta charset="utf-8">
+<script data-fe="intro">try{var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="back_forward")sessionStorage.removeItem("fcs-intro")}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!</title>
+<meta name="description" content="Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#040912">
+<link rel="canonical" href="https://02natan02-cmyk.github.io/flight-club-saar-website/">
+<meta property="og:type" content="website"><meta property="og:locale" content="de_DE"><meta property="og:site_name" content="Flight Club Saar e. V.">
+<meta property="og:title" content="Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!"><meta property="og:description" content="Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält.">
+<meta property="og:url" content="https://02natan02-cmyk.github.io/flight-club-saar-website/"><meta property="og:image" content="https://02natan02-cmyk.github.io/flight-club-saar-website/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fcs.css?v=922dd0d8">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsClub","name":"Flight Club Saar e. V.","alternateName":"Flight Club Saar","description":"FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und Programmieren.","sport":"FPV-Drohnenfliegen","foundingDate":"2022-12-10","email":"info@flightclub-saar.de","address":{"@type":"PostalAddress","streetAddress":"Hedwigstraße 16","postalCode":"66763","addressLocality":"Dillingen","addressRegion":"Saarland","addressCountry":"DE"},"sameAs":["https://www.instagram.com/flightclubsaar/","https://www.tiktok.com/@flightclubsaar","https://www.youtube.com/@flightclubsaar"],"sponsor":{"@type":"Organization","name":"Ayedo Cloud Solutions GmbH","url":"https://ayedo.de/"}}</script>
+<link rel="stylesheet" href="assets/css/home.css?v=cc406ef6">
+<link rel="stylesheet" href="assets/css/game.css?v=e1bb6698">
+</head>
+<body>
+<a class="sr" href="#inhalt">Zum Inhalt springen</a>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
+  <nav class="nav-links" aria-label="Hauptmenü"><a href="index.html" aria-current=page>Start</a><a href="hallenfliegen.html">Hallenfliegen</a><a href="spots.html">Spots</a><a href="wissen.html">FPV-Wissen</a><a href="hilfe.html">Technik-Hilfe</a><a href="filmen.html">Filmen</a><a href="crew.html">Crew</a></nav>
+  <a class="btn solid nav-cta" href="mitglied.html">Mitglied werden</a>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><i></i><i></i><i></i><span class="sr">Menü</span></button>
+</header>
+<div class="menu" id="menu"><a href="index.html"><b>01</b>Start</a><a href="hallenfliegen.html"><b>02</b>Hallenfliegen</a><a href="spots.html"><b>03</b>Spots</a><a href="wissen.html"><b>04</b>FPV-Wissen</a><a href="hilfe.html"><b>05</b>Technik-Hilfe</a><a href="filmen.html"><b>06</b>Filmen</a><a href="crew.html"><b>07</b>Crew</a><a href="mitglied.html"><b>08</b>Mitglied werden</a><p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V.</p></div>
+<main id="inhalt">
+<!-- INTRO: „Brille an“ – läuft bei jedem Öffnen, „Überspringen“ jederzeit -->
+<div class="intro" id="intro" aria-hidden="true">
+  <canvas class="intro-noise"></canvas>
+  <svg class="intro-lens" viewBox="0 0 100 60" preserveAspectRatio="xMidYMid slice"><defs><mask id="lensmask"><rect width="100" height="60" fill="#fff"/><g class="lens-holes"><ellipse class="lh l" cx="33" cy="30" rx="0" ry="0" fill="#000"/><ellipse class="lh r" cx="67" cy="30" rx="0" ry="0" fill="#000"/></g></mask></defs><rect width="100" height="60" fill="#02050b" mask="url(#lensmask)"/></svg>
+  <div class="intro-osd">
+    <p class="io-line" data-l="1">FLIGHT CLUB SAAR · OSD</p>
+    <p class="io-line" data-l="2">BAT <b>16.8V</b> · RSSI <b>99</b> · CH <b>R4 5769</b></p>
+    <svg class="io-logo" viewBox="217.8 5.6 312.0 312.0" aria-hidden="true"><path fill-rule="evenodd" d="M354.0 310.0C336.5 307.6 320.4 302.7 305.5 295.3C263.4 274.3 234.0 235.5 224.9 188.7C222.0 174.2 221.8 151.2 224.4 136.5C230.0 104.9 245.0 76.9 268.4 54.3C289.7 33.7 313.4 21.2 343.0 14.9C358.1 11.7 384.9 11.7 400.0 14.9C451.8 25.9 493.2 61.1 511.5 109.5C525.8 147.4 523.3 191.5 504.9 228.3C484.1 269.6 445.7 298.9 400.1 308.1C389.0 310.3 363.9 311.4 354.0 310.0ZM398.7 295.0C445.9 285.0 484.0 251.7 499.9 206.7C505.4 191.1 507.3 179.5 507.3 161.5C507.3 148.9 506.8 143.3 505.1 135.3C499.2 107.1 487.5 85.5 467.5 65.5C447.5 45.5 426.0 33.9 397.7 27.8C383.3 24.8 359.7 24.8 345.3 27.8C317.4 33.8 295.1 45.8 275.5 65.5C249.3 91.6 235.8 124.3 235.7 161.5C235.7 189.7 242.9 213.6 258.5 237.1C277.2 265.1 307.5 286.4 340.0 294.2C357.4 298.3 381.6 298.7 398.7 295.0ZM308.8 246.7C298.5 242.8 291.6 236.6 287.1 227.0C284.9 222.3 284.5 220.1 284.5 212.0C284.5 203.6 284.8 201.8 287.3 196.8C290.9 189.4 297.4 182.9 304.8 179.3C309.8 176.8 311.6 176.5 320.0 176.5C328.4 176.5 330.1 176.8 335.0 179.3L340.5 182.0L343.8 178.3C351.9 169.1 351.5 153.9 342.8 143.8L340.5 141.1L335.0 143.8C330.2 146.2 328.3 146.5 320.0 146.5C311.5 146.5 309.9 146.2 304.6 143.6C297.0 139.9 290.6 133.5 287.2 126.2C284.9 121.3 284.5 119.2 284.5 111.0C284.5 102.8 284.9 100.7 287.2 95.8C290.6 88.5 297.5 81.6 304.8 78.2C309.7 75.9 311.8 75.5 320.0 75.5C328.2 75.5 330.3 75.9 335.2 78.2C342.3 81.5 349.0 88.2 352.7 95.8C355.2 100.8 355.5 102.6 355.5 111.0C355.5 119.3 355.2 121.2 352.8 126.0L350.1 131.5L352.8 133.7C364.1 143.0 380.2 142.7 389.5 133.0L392.3 130.1L390.0 124.8C383.4 109.5 388.5 91.9 402.4 81.6C409.1 76.6 416.4 74.7 425.9 75.2C438.9 76.0 449.2 82.9 455.7 95.2C458.2 100.0 458.5 101.4 458.5 111.0C458.5 121.1 458.4 121.8 455.1 127.8C451.1 135.2 445.8 140.2 438.0 143.9C433.3 146.1 431.2 146.5 423.0 146.5C414.6 146.5 412.8 146.2 407.6 143.6L401.7 140.7L399.3 143.6C394.1 149.9 392.5 154.1 392.5 162.0C392.5 169.9 393.7 173.3 398.9 179.7L401.4 182.9L404.5 181.1C422.9 170.3 446.8 177.6 455.8 196.8C458.2 201.8 458.5 203.7 458.5 212.5C458.5 221.5 458.2 223.0 455.7 227.8C451.7 235.3 447.0 240.2 439.8 244.0C434.7 246.8 432.1 247.4 425.8 247.8C416.2 248.4 410.6 246.9 403.0 241.8C388.9 232.4 383.3 213.7 390.0 198.2L392.3 192.8L389.4 190.4C383.1 185.1 378.9 183.5 371.0 183.5C363.3 183.5 359.2 185.0 353.1 189.8L350.7 191.8L353.1 197.6C355.0 202.3 355.5 205.3 355.5 212.5C355.5 220.4 355.1 222.2 352.6 227.4C348.9 235.0 342.4 241.4 335.2 244.8C328.4 248.0 315.0 248.9 308.8 246.7ZM332.3 239.1C342.6 234.1 349.4 223.5 349.4 212.4C349.4 206.3 346.6 196.6 345.0 197.2C344.5 197.4 341.2 200.1 337.6 203.3C331.6 208.6 331.0 209.5 331.0 213.0C331.0 224.8 313.8 227.0 310.0 215.6C307.8 208.9 312.9 202.0 320.1 202.0C323.3 202.0 324.4 201.3 329.2 195.8C336.9 186.9 336.8 187.3 331.3 184.8C324.3 181.7 315.1 181.9 308.0 185.2C283.3 196.7 284.8 231.1 310.5 240.3C316.9 242.6 326.2 242.1 332.3 239.1ZM436.5 238.5C453.1 230.4 458.0 208.7 446.5 193.7C441.4 187.0 432.0 182.6 423.1 182.7C416.9 182.7 410.4 184.6 407.3 187.1C406.3 188.0 407.3 189.6 412.1 195.1C417.7 201.4 418.5 202.0 422.2 202.0C428.1 202.0 432.0 206.2 432.0 212.5C432.0 216.3 431.5 217.7 429.1 220.1C426.7 222.5 425.3 223.0 421.5 223.0C415.2 223.0 411.0 219.1 411.0 213.2C411.0 209.6 410.4 208.8 404.6 203.6C401.1 200.5 397.9 198.0 397.5 198.0C395.9 198.0 394.0 205.6 394.0 212.2C394.0 221.4 396.8 227.8 403.4 233.8C412.8 242.4 425.0 244.2 436.5 238.5ZM309.2 234.9C301.6 231.1 295.0 221.5 295.0 214.1C295.0 213.0 295.4 212.0 296.0 212.0C296.6 212.0 297.0 213.2 297.0 214.8C297.1 223.8 308.4 235.0 317.5 235.0C318.9 235.0 320.0 235.4 320.0 236.0C320.0 237.7 313.7 237.1 309.2 234.9ZM423.0 236.0C423.0 235.4 424.2 235.0 425.8 235.0C429.5 234.9 435.9 231.9 439.4 228.4C442.9 224.9 445.9 218.5 446.0 214.8C446.0 213.2 446.4 212.0 447.0 212.0C447.6 212.0 448.0 213.5 448.0 215.2C447.9 225.1 435.9 237.0 426.0 237.0C424.4 237.0 423.0 236.6 423.0 236.0ZM331.9 137.9L336.2 136.0L330.0 129.0C324.4 122.7 323.4 122.0 320.0 122.0C312.3 122.0 307.3 114.0 310.8 107.0C313.2 102.1 318.7 99.4 323.5 101.0C328.1 102.5 331.0 106.3 331.0 111.0C331.0 114.4 331.7 115.3 337.4 120.4C340.9 123.5 344.3 126.0 344.8 126.0C346.7 126.0 349.4 116.9 349.4 110.6C349.4 99.6 342.5 88.9 332.1 83.9C325.8 80.8 314.5 80.7 307.9 83.7C301.9 86.4 296.0 92.3 292.9 98.6C289.7 105.3 289.6 116.4 292.9 123.2C300.1 138.0 317.1 144.5 331.9 137.9ZM435.7 137.8C446.5 132.7 452.5 123.2 452.5 111.0C452.5 98.7 446.9 89.6 436.2 84.3C428.3 80.4 417.9 80.4 410.5 84.2C404.3 87.5 398.7 93.1 396.1 99.0C393.4 104.9 393.3 116.8 395.8 122.4L397.5 126.3L404.3 120.5C410.4 115.3 411.0 114.4 411.0 111.0C411.0 103.6 418.5 98.5 425.3 101.3C429.8 103.2 432.0 106.5 432.0 111.5C431.9 117.8 427.5 121.9 420.8 122.1C418.0 122.1 416.7 123.1 412.2 128.4C409.4 131.9 407.0 135.0 407.0 135.3C407.0 136.3 412.5 138.9 416.7 140.0C422.1 141.3 430.3 140.4 435.7 137.8ZM295.0 108.2C295.0 104.0 299.7 95.4 303.8 92.0C309.0 87.8 320.0 84.3 320.0 86.9C320.0 87.4 318.3 88.1 316.2 88.5C307.3 90.0 299.9 97.0 297.8 105.8C296.4 111.4 295.0 112.7 295.0 108.2ZM446.0 108.5C446.0 99.4 434.8 88.1 425.8 88.0C424.2 88.0 423.0 87.5 423.0 87.0C423.0 86.5 424.0 86.0 425.1 86.0C432.5 86.0 442.8 93.0 446.1 100.5C448.1 104.8 448.6 111.0 447.0 111.0C446.4 111.0 446.0 109.9 446.0 108.5Z"/></svg>
+    <p class="io-big">BRILLE AN</p>
+    <p class="io-line io-arm" data-l="3">ARMING <span class="io-count">3</span></p>
+  </div>
+  <button class="intro-skip" type="button">Überspringen ›</button>
+</div>
+
+<!-- 1 · HERO -->
+<section class="hero" id="start" aria-label="Flight Club Saar">
+  <video class="bgvid hero-vid" data-auto muted loop playsinline preload="metadata" poster="media/hero.webp" data-src-d="media/hero.mp4" data-src-m="media/hero-s.mp4"></video>
+  <div class="vignette"></div><div class="scanlines"></div>
+  <div class="osd-frame"><i></i></div>
+  <div class="osd o-tl"><span class="blink" style="color:var(--red)">●</span> REC · FLIGHT CLUB SAAR</div>
+  <div class="osd o-tc"><span data-osd="timer">00:00</span></div>
+  <div class="osd o-tr"><span data-osd="volt">16.8V</span> · <b data-osd="rssi">99</b> RSSI</div>
+  <div class="osd o-bl">ALT <b data-osd="alt">012</b>m · SPD <b data-osd="spd">00</b>km/h</div>
+  <div class="osd o-br">49.36°N 6.93°E · SAARLAND</div>
+  <div class="horizon" aria-hidden="true"><i class="hz-line"></i><i class="hz-cross"></i></div>
+  <div class="wrap hero-in">
+    <p class="kicker">FPV-Verein im Saarland · seit 2022</p>
+    <h1 class="h1 hero-h"><span class="hh">Brille an.</span><span class="hh o">Welt aus.</span></h1>
+    <p class="lede hero-l">Wir sind der Flight Club Saar e. V. Wir fliegen FPV-Drohnen, bauen sie selbst, crashen sie und reparieren sie zusammen. Im Frühjahr draußen an den Spots, im Winter in der Halle.</p>
+    <div class="btns hero-b">
+      <a class="btn amber solid" href="hallenfliegen.html"><span class="dot" style="color:var(--night)"></span>Hallenfliegen: <span data-next>Sa 14.11.</span></a>
+      <a class="btn" href="mitglied.html">Mitglied werden <span class="arr">→</span></a>
+    </div>
+  </div>
+  <a class="scrollhint" href="#termin" aria-label="Nach unten scrollen: Gas geben"><span>Gas geben</span><i></i></a>
+</section>
+
+<div class="marquee" aria-label="Build, Fly, Crash, Repair, Repeat"><div class="marquee-track"><span>Build</span><span class="o">Fly</span><span>Crash</span><span class="o">Repair</span><span>Repeat</span><span>Build</span><span class="o">Fly</span><span>Crash</span><span class="o">Repair</span><span>Repeat</span></div></div>
+
+<!-- 2 · NÄCHSTES HALLENFLIEGEN -->
+<section class="sec termin" id="termin">
+  <div class="wrap">
+    <div class="gate" data-reveal>
+      <svg class="gate-led" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><rect x="1" y="1" width="98" height="98" rx="3" ry="3" pathLength="1"/></svg>
+      <div class="gate-in">
+        <div>
+          <p class="kicker">Nächstes Hallenfliegen</p>
+          <h2 class="h2" id="t-datum">Samstag, 14. November</h2>
+          <p class="lede" id="t-ort">Großwaldhalle Eiweiler · 18 bis 21 Uhr</p>
+          <p class="t-come">Kommt einfach vorbei!</p>
+          <div class="btns">
+            <button class="btn solid" type="button" id="t-ics">In meinen Kalender</button>
+            <a class="btn" id="t-route" href="#" target="_blank" rel="noopener">Route planen <span class="arr">↗</span></a>
+            <a class="btn ghost" href="hallenfliegen.html">Alle Termine</a>
+          </div>
+        </div>
+        <div class="cd" id="t-cd" role="timer" aria-label="Zeit bis zum nächsten Hallenfliegen">
+          <div><b data-cd="d">00</b><span>Tage</span></div><div><b data-cd="h">00</b><span>Std</span></div><div><b data-cd="m">00</b><span>Min</span></div><div><b data-cd="s">00</b><span>Sek</span></div>
+        </div>
+      </div>
+      <ol class="t-list" id="t-list" aria-label="Weitere Termine"></ol>
+    </div>
+  </div>
+</section>
+
+
+<!-- DROHNENSHOW: Partikel-Drohnen formen Logo und Zahlen -->
+<section class="show" id="show" aria-label="Drohnenshow">
+  <div class="show-pin">
+    <canvas class="show-cv" id="show-cv" aria-hidden="true"></canvas>
+    <div class="show-cap wrap"><p class="kicker">Drohnenshow</p><p class="show-t" id="show-t" aria-live="polite">Flight Club Saar</p><p class="show-s mute" id="show-s">Scroll weiter. Fahr mit der Maus durch die Drohnen.</p></div>
+    <div class="show-osd hud"><span>SWARM <b id="show-n">0</b></span><span>FORMATION <b id="show-f">1</b>/5</span></div>
+  </div>
+</section>
+
+<!-- 3 · WER WIR SIND -->
+<section class="sec about" id="verein">
+  <video class="bgvid about-vid" data-auto muted loop playsinline preload="none" poster="media/natur.webp" data-src="media/natur.mp4" data-parallax="-12"></video>
+  <div class="about-shade"></div>
+  <div class="wrap about-in">
+    <div class="sec-head">
+      <p class="kicker">Der Verein</p>
+      <h2 class="h2" data-split>Zusammen fliegt es sich besser.</h2>
+      <p class="lede" data-reveal>Gegründet im Dezember 2022, heute der größte FPV-Verein im Saarland und drumherum. Bei uns treffen sich Anfänger und alte Hasen. Technische Probleme lösen wir in der Gruppe: Aufbau, Programmieren, 3D-Druck, Löten. Wer Hilfe braucht, bekommt sie.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · BUILD FLY CRASH REPAIR REPEAT (horizontal) -->
+<section class="loop" id="motto" aria-label="Build, Fly, Crash, Repair, Repeat">
+  <div class="loop-pin">
+    <div class="loop-head wrap"><p class="kicker">So läuft das bei uns</p><div class="loop-osd hud"><span data-loop-i>01</span>/05 · <span data-loop-n>BUILD</span></div></div>
+    <div class="loop-track">
+      <article class="lp">
+        <div class="lp-media"><video data-auto muted loop playsinline preload="none" poster="media/gang.webp" data-src="media/gang.mp4"></video></div>
+        <div class="lp-text"><span class="lp-n">01</span><h3 class="lp-h">Build</h3><p>Rahmen, Motoren, Flugcontroller, Kamera. Wer seinen ersten Kopter baut, ist bei uns richtig. In der Gruppe „Technischer Support“ helfen dir die anderen beim Löten, Programmieren und 3D-Drucken.</p><a class="btn ghost" href="wissen.html#schaltplan">Schaltplan ansehen <span class="arr">→</span></a></div>
+      </article>
+      <article class="lp">
+        <div class="lp-media"><video data-auto muted loop playsinline preload="none" poster="media/schiff.webp" data-src="media/schiff.mp4"></video></div>
+        <div class="lp-text"><span class="lp-n">02</span><h3 class="lp-h">Fly</h3><p>Im Frühjahr fliegen wir fast jedes Wochenende, an den unterschiedlichsten Spots: Industriekultur, Felder, alte Hallen. Wer wohin geht, steht in der Gruppe „Spots / Treffen“.</p><a class="btn ghost" href="spots.html">Zur Spot-Karte <span class="arr">→</span></a></div>
+      </article>
+      <article class="lp lp-crash">
+        <div class="lp-media"><canvas class="crash-noise" aria-hidden="true"></canvas><div class="crash-osd hud"><b>SIGNAL LOST</b><span>RXLOSS · 0 RSSI</span></div></div>
+        <div class="lp-text"><span class="lp-n">03</span><h3 class="lp-h glitch" data-text="Crash">Crash</h3><p>Passiert jedem. Propeller ab, Arm gebrochen, Akku im Gras. Danach steht keiner allein da: Ersatzteile, Werkzeug und Tipps gibt es in der Gruppe.</p><a class="btn ghost" href="hilfe.html">Zum FPV-Doktor <span class="arr">→</span></a></div>
+      </article>
+      <article class="lp">
+        <div class="lp-media"><video data-auto muted loop playsinline preload="none" poster="media/schacht.webp" data-src="media/schacht.mp4"></video></div>
+        <div class="lp-text"><span class="lp-n">04</span><h3 class="lp-h">Repair</h3><p>Beim Hallenfliegen ist immer ein Lötkolben dabei. Kabel neu verlöten, Motor tauschen, Betaflight neu einstellen: Das lernt man am schnellsten, wenn jemand daneben sitzt.</p><a class="btn ghost" href="wissen.html">FPV-Wissen <span class="arr">→</span></a></div>
+      </article>
+      <article class="lp">
+        <div class="lp-media"><video data-auto muted loop playsinline preload="none" poster="media/turm.webp" data-src="media/turm.mp4"></video></div>
+        <div class="lp-text"><span class="lp-n">05</span><h3 class="lp-h">Repeat</h3><p>Im Winter fliegen wir Tiny Whoops in der Halle, im Frühjahr geht es wieder raus. Und weil das nie langweilig wird, fängt alles wieder von vorne an.</p><a class="btn ghost" href="hallenfliegen.html">Hallentermine <span class="arr">→</span></a></div>
+      </article>
+    </div>
+    <div class="loop-bar" aria-hidden="true"><i></i></div>
+  </div>
+</section>
+
+
+<!-- FLUG PER SCROLL -->
+<section class="fly" id="fly" aria-label="Flug durch das alte Schiff, gesteuert mit dem Scrollen">
+  <div class="fly-pin">
+    <video class="fly-v" id="fly-v" muted playsinline preload="auto" src="media/scrub.mp4" poster="media/schiff.webp"></video>
+    <div class="vignette"></div><div class="scanlines"></div><div class="osd-frame"><i></i></div>
+    <div class="fly-cap wrap"><p class="kicker">Du hast die Funke</p><h2 class="h2">Scrollen ist Gas.</h2><p class="lede">Ein echter Flug aus dem Verein durch ein altes Schiff. Je schneller du scrollst, desto schneller fliegst du.</p></div>
+    <div class="throttle" aria-hidden="true"><span class="hud">THR</span><div class="thr-bar"><i id="thr"></i></div><b class="hud" id="thr-v">0%</b></div>
+    <div class="osd fly-osd hud">REC <b id="fly-d">00:00</b></div>
+  </div>
+</section>
+
+<!-- 5 · CREW 2026 -->
+<section class="sec crew" id="crew">
+  <div class="wrap">
+    <div class="sec-head center">
+      <p class="kicker">Mitglieder 2026</p>
+      <h2 class="h2" data-split>Die Crew 2026</h2>
+      <p class="lede" data-reveal>Das sind die Piloten, die 2026 dabei sind. Jedes Mitglied bekommt seine eigene Mitgliedskarte. Fahr mit der Maus über eine Karte oder tippe sie an.</p>
+    </div>
+    <div class="deck" id="deck" aria-label="Mitgliedskarten der Crew 2026"></div>
+    <p class="crew-hint hud" id="crew-hint">← wischen · antippen →</p>
+  </div>
+</section>
+
+
+<!-- KANAL-ZAPPER -->
+<section class="sec zap" id="kanal">
+  <div class="wrap zap-grid">
+    <div class="sec-head">
+      <p class="kicker">Brille auf</p>
+      <h2 class="h2" data-split>Wähl deinen Kanal.</h2>
+      <p class="lede" data-reveal>Bei uns fliegen mehrere Piloten gleichzeitig, jeder auf seinem Kanal. Schalte durch die Raceband-Kanäle und schau, was gerade fliegt. Alle Flüge stammen aus dem Verein.</p>
+      <div class="knob-wrap" data-reveal>
+        <div class="knob" id="knob" role="slider" tabindex="0" aria-label="Kanal" aria-valuemin="1" aria-valuemax="8" aria-valuenow="4"><i></i></div>
+        <div class="chbtns" id="chbtns" role="group" aria-label="Kanäle R1 bis R8"></div>
+      </div>
+      <p class="hud zap-hint" id="zap-hint">← Knopf drehen oder Kanal antippen →</p>
+    </div>
+    <div class="goggle" data-reveal>
+      <div class="goggle-in">
+        <video id="zap-v" muted playsinline loop preload="none"></video>
+        <canvas id="zap-noise" aria-hidden="true"></canvas>
+        <div class="osd z-tl hud" id="zap-ch">R4 · 5769 MHz</div>
+        <div class="osd z-tr hud"><span id="zap-pilot">PILOT 4</span></div>
+        <div class="osd z-bl hud" id="zap-t">FLIGHT CLUB SAAR</div>
+        <div class="osd z-br hud" id="zap-legal">25 mW · DE OK</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · SPIEL -->
+<section class="sec spiel" id="spiel">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="kicker">Mitmachen</p>
+      <h2 class="h2" data-split>Kannst du fliegen?</h2>
+      <p class="lede" data-reveal>Ein Tiny Whoop, eine dunkle Halle, leuchtende Gates. Flieg so viele Gates wie möglich, bevor der Akku leer ist. In echt geht das beim Hallenfliegen.</p>
+    </div>
+    <div class="game-box" data-reveal><div data-game="whoop"></div></div>
+  </div>
+</section>
+
+<!-- 7 · REELS -->
+<section class="sec reels" id="reels">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="kicker">Aus dem Verein</p>
+      <h2 class="h2" data-split>Unsere Reels</h2>
+      <p class="lede" data-reveal>Clips unserer Piloten auf Instagram @flightclubsaar. Die Videos laden erst, wenn du auf „Reel ansehen“ tippst, denn sie kommen von Instagram.</p>
+    </div>
+    <div class="chan" id="chan">
+      <a class="chan-t tt" href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" data-reveal><i class="chan-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></i><b data-count="3950" data-sep="1">3.950</b><span>Follower auf TikTok</span><em class="chan-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></em></a>
+      <a class="chan-t ig" href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" data-reveal><i class="chan-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></i><b data-count="360">360</b><span>Follower auf Instagram</span><em class="chan-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></em></a>
+      <a class="chan-t wa" href="mitglied.html" data-reveal><i class="chan-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2s-1 .3-3.4-.7a11.5 11.5 0 0 1-4.6-4.1 5.2 5.2 0 0 1-1.1-2.8 3 3 0 0 1 1-2.2 1 1 0 0 1 .7-.3h.5c.2 0 .4 0 .6.5l.9 2.1a.6.6 0 0 1 0 .5l-.3.5-.4.5c-.2.2-.3.3-.1.6a8 8 0 0 0 1.5 1.9 7.4 7.4 0 0 0 2.2 1.3c.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3a2.3 2.3 0 0 1-.2 1.4z"/></svg></i><b data-count="69">69</b><span>Leute im Vereins-Chat</span><em class="chan-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></em></a>
+      <a class="chan-t yt" href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" data-reveal><i class="chan-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></i><b data-count="36">36</b><span>Abos auf YouTube</span><em class="chan-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></em></a>
+    </div>
+    <p class="chan-stand hud" id="chan-stand">Stand 24.10.2026</p>
+  </div>
+  <div class="reel-rail" id="reel-rail"><div class="reel-track" id="reel-track"></div></div>
+  <div class="wrap"><p class="rail-hint hud" id="rail-hint">← ziehen →</p>
+    <div class="btns follow" data-reveal>
+      <a class="btn" href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener">Instagram folgen <span class="arr">↗</span></a>
+      <a class="btn ghost" href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener">TikTok <span class="arr">↗</span></a>
+      <a class="btn ghost" href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener">YouTube <span class="arr">↗</span></a>
+    </div>
+  </div>
+</section>
+
+
+<!-- GALERIE-RING -->
+<section class="sec ring" id="galerie">
+  <div class="wrap"><div class="sec-head center"><p class="kicker">Standbilder</p><h2 class="h2" data-split>Was wir von oben sehen</h2><p class="lede" data-reveal>Bilder aus Flügen unserer Piloten. Dreh den Ring mit der Maus oder dem Finger, tipp ein Bild an, um es groß zu sehen.</p></div></div>
+  <div class="ring-stage" id="ring-stage"><div class="ring-in" id="ring-in"></div></div>
+  <p class="hud ring-hint" id="ring-hint">← drehen →</p>
+  <dialog class="lb" id="lb"><button type="button" class="lb-x" id="lb-x" aria-label="Schließen">×</button><img id="lb-img" alt=""></dialog>
+</section>
+
+<!-- 8 · COMMUNITY -->
+<section class="sec community" id="community">
+  <div class="wrap comm-grid">
+    <div class="sec-head">
+      <p class="kicker">Zusammenhalt</p>
+      <h2 class="h2" data-split>Eine Community. Neun Gruppen.</h2>
+      <p class="lede" data-reveal>Seit Mai 2023 läuft bei uns alles über die WhatsApp-Community „Flight Club Saar e.V.“. Wer fliegen geht, sagt Bescheid. Wer ein Problem hat, fragt. Wer etwas Neues hat, zeigt es. Tippe einen Punkt an.</p>
+      <div class="comm-info panel" id="comm-info" aria-live="polite"><b>Flight Club Saar Chat</b><span>Der Hauptkanal: Fragen, Fotos, Verabredungen.</span></div>
+    </div>
+    <div class="net" id="net" role="group" aria-label="Gruppen der Community"></div>
+  </div>
+</section>
+
+<!-- 9 · SPOTS / WISSEN / HILFE -->
+<section class="sec chronik" id="chronik">
+  <div class="wrap">
+    <div class="sec-head center"><p class="kicker">Blackbox-Log</p><h2 class="h2" data-split>Unsere Flugaufzeichnung</h2><p class="lede" data-reveal>Was seit der Gründung passiert ist. Scroll durch das Log, die Drohne fliegt mit.</p></div>
+    <div class="bb" id="bb">
+      <canvas class="bb-trace" id="bb-trace" aria-hidden="true"></canvas>
+      <div class="bb-legend hud" aria-hidden="true"><span class="r">gyro roll</span><span class="g">gyro pitch</span><span class="b">gyro yaw</span></div>
+      <div class="bb-line" aria-hidden="true"><i class="bb-fill" id="bb-fill"></i><span class="bb-drone" id="bb-drone"><img src="assets/img/logo-mark.svg" alt="" width="46" height="46"></span></div>
+      <ol class="bb-list" id="bb-list"></ol>
+    </div>
+  </div>
+</section>
+
+<section class="sec tri" id="mehr">
+  <div class="wrap">
+    <div class="sec-head center"><p class="kicker">Mehr entdecken</p><h2 class="h2" data-split>Wohin als Nächstes?</h2></div>
+    <div class="grid g3 tri-grid">
+      <a class="tri-card panel" href="spots.html" data-reveal>
+        <div class="radar" aria-hidden="true"><i class="sweep"></i><i class="blip" style="--x:38%;--y:44%"></i><i class="blip" style="--x:58%;--y:62%"></i><i class="blip" style="--x:71%;--y:33%"></i></div>
+        <span class="tag amber"><span class="dot"></span>Spot-Karte</span><h3 class="h3">Wo wir fliegen</h3><p class="mute">Spots mit Route per Klick, Bewertungen und neuen Vorschlägen.</p><span class="tri-go">Karte öffnen →</span>
+      </a>
+      <a class="tri-card panel" href="wissen.html" data-reveal>
+        <div class="tri-media"><img src="media/hg_cinewhoop_v1.webp" alt="" loading="lazy" width="640" height="360"></div>
+        <span class="tag sig"><span class="dot"></span>FPV-Wissen</span><h3 class="h3">Wie FPV funktioniert</h3><p class="mute">Drohne in 3D zerlegen, Schaltplan anklicken, Kanäle verstehen.</p><span class="tri-go">Lernen →</span>
+      </a>
+      <a class="tri-card panel" href="hilfe.html" data-reveal>
+        <div class="tri-term hud" aria-hidden="true"><p>&gt; status</p><p class="warn">Arming disabled: RXLOSS</p><p>&gt; FPV-Doktor hilft …<span class="blink">_</span></p></div>
+        <span class="tag green"><span class="dot"></span>Technik-Hilfe</span><h3 class="h3">Kopter armt nicht?</h3><p class="mute">Der FPV-Doktor kennt die häufigsten Fehler und die Lösung.</p><span class="tri-go">Fragen →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · PARTNER -->
+<section class="ay" id="partner" aria-label="Unser Sponsor Ayedo">
+  <div class="ay-pin">
+    <canvas class="ay-sky" id="ay-sky" aria-hidden="true"></canvas>
+    <div class="ay-moon" aria-hidden="true"></div>
+    <img class="ay-hello" src="assets/img/partner/alien-hello.webp" alt="" width="279" height="460" aria-hidden="true">
+    <svg class="ay-land" viewBox="0 0 1600 260" preserveAspectRatio="none" aria-hidden="true"><path d="M0 200 L120 180 L210 196 L300 150 L380 172 L470 120 L520 128 L560 60 L572 60 L576 20 L600 20 L604 60 L618 60 L660 130 L760 150 L860 110 L960 160 L1080 140 L1180 176 L1300 150 L1420 186 L1600 170 L1600 260 L0 260Z"/></svg>
+    <div class="ay-stage" id="ay-stage" aria-hidden="true">
+      
+      <div class="ay-rock"><img class="ay-a ay-plat" src="assets/img/partner/alien-platform.webp" alt="" width="400" height="647"><i class="ay-thrust"></i></div>
+      <img class="ay-a ay-tools" src="assets/img/partner/alien-tools.webp" alt="" width="308" height="591">
+      <img class="ay-a ay-jug" src="assets/img/partner/alien-juggle.webp" alt="" width="394" height="574">
+      <img class="ay-a ay-fpv" src="assets/img/partner/fpv-alien.webp" alt="" width="252" height="354"><img class="ay-quad" src="assets/img/partner/fpv-alien-quad.webp" alt="" width="186" height="165">
+      <img class="ay-a ay-dir" src="assets/img/partner/alien-dirigent.webp" alt="" width="443" height="634">
+      <div class="ay-gear" id="ay-gear"></div>
+      <canvas class="ay-swarm" id="ay-swarm"></canvas>
+    </div>
+    <div class="ay-osd osd hud" aria-hidden="true"><span>MISSION <b id="ay-step">1</b>/6</span><span>SPONSOR · <b>AYEDO</b></span></div>
+    <div class="ay-copy wrap">
+      <p class="kicker">Unser Sponsor</p>
+      <h2 class="h2 ay-title" id="ay-title">Hallo Flight Club!</h2>
+      <p class="lede ay-sub" id="ay-sub">Seit Februar 2025 fliegt Ayedo mit uns.</p>
+    </div>
+    <div class="ay-end" id="ay-end">
+      <img class="ay-logo" src="assets/img/partner/ayedo-logo.webp" alt="ayedo" width="750" height="249">
+      <p>Danke an Ayedo für die Unterstützung des Vereins. Ayedo ist ein Cloud-Anbieter aus Schwalbach-Hülzweiler im Saarland und seit Februar 2025 Sponsor und Partner des Flight Club Saar.</p>
+      <div class="btns"><a class="btn solid" href="https://ayedo.de/" target="_blank" rel="noopener">ayedo.de <span class="arr">↗</span></a><a class="btn ghost" href="https://www.instagram.com/weareayedo/" target="_blank" rel="noopener">@weareayedo <span class="arr">↗</span></a></div>
+    </div>
+    <p class="ay-hint hud" id="ay-hint">Scroll weiter, die Mission läuft</p>
+  </div>
+</section>
+
+<section class="sec fe-note" aria-label="Partner Falcon Eye">
+  <div class="wrap">
+    <a class="fe-row" href="https://falcon-eye.de/" target="_blank" rel="noopener" data-reveal>
+      <span class="fe-tag hud">Partner</span>
+      <span class="fe-txt"><b>Falcon Eye</b> gehört einem unserer Mitglieder. Falcon Eye hat die Vereins-T-Shirts gespendet und baut und betreibt diese Website auf eigene Kosten für den Verein.</span>
+      <span class="fe-go">falcon-eye.de ↗</span>
+    </a>
+  </div>
+</section>
+
+<!-- 11 · MITGLIED WERDEN -->
+<section class="sec join" id="mitmachen">
+  <div class="wrap join-grid">
+    <div>
+      <p class="kicker">Dabei sein</p>
+      <h2 class="h2" data-split>Werde Teil der Crew.</h2>
+      <p class="lede" data-reveal>Der Antrag geht online in ein paar Minuten, mit SEPA-Lastschrift. Danach bekommst du deine Mitgliedskarte und Zugang zu den Vereinsgruppen.</p>
+      <div class="fees" data-reveal>
+        <div><b data-count="30" data-suf=" €">30 €</b><span>im Jahr</span></div>
+        <div><b data-count="20" data-suf=" €">20 €</b><span>unter 18 Jahren</span></div>
+        <div><b data-count="20" data-suf=" €">20 €</b><span>einmalig Aufnahme</span></div>
+      </div>
+      <div class="btns" data-reveal><a class="btn solid" href="mitglied.html">Mitgliedsantrag ausfüllen <span class="arr">→</span></a><a class="btn ghost" href="hallenfliegen.html">Erst mal reinschnuppern</a></div>
+    </div>
+    <div class="card3d" id="card3d" aria-hidden="true">
+      <div class="mcard">
+        <div class="mc-top"><img src="assets/img/logo-mark.svg" alt="" width="54" height="54"><span>Mitgliedskarte<br><b>2026</b></span></div>
+        <div class="mc-name">Dein Name</div>
+        <div class="mc-alias">Dein Pilotenname</div>
+        <div class="mc-bot"><span>Flight Club Saar e. V.</span><span>Nr. 0XX</span></div>
+        <i class="mc-shine"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social"><a href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" aria-label="Instagram @flightclubsaar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="TikTok @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></a><a href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="YouTube @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a></div></div>
+      <div><h4>Fliegen</h4><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><h4>Lernen</h4><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html">FPV filmen</a></li></ul></div>
+      <div><h4>Verein</h4><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="crew.html#studio">Clip einsenden</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+    </div>
+    <div class="foot-big" aria-hidden="true">Brille an</div>
+    <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
+  </div>
+</footer>
+<script src="assets/js/data.js?v=9ac81320"></script>
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/lib/ScrollTrigger.min.js"></script>
+<script src="assets/lib/SplitText.min.js"></script>
+<script src="assets/lib/ScrambleTextPlugin.min.js"></script>
+<script src="assets/lib/Draggable.min.js"></script>
+<script src="assets/lib/InertiaPlugin.min.js"></script>
+<script src="assets/lib/DrawSVGPlugin.min.js"></script>
+<script src="assets/lib/MotionPathPlugin.min.js"></script>
+<script src="assets/lib/lenis.min.js"></script>
+<script src="assets/js/fcs.js?v=260c3e35"></script>
+<script src="assets/js/home.js?v=bf668689"></script>
+<script src="assets/js/game.js?v=e2ad1172"></script>
+</body>
+</html>

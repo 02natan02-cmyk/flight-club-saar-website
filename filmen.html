@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="de" class="no-js">
+<head>
+<meta charset="utf-8">
+<script data-fe="intro">try{var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="back_forward")sessionStorage.removeItem("fcs-intro")}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FPV filmen · Flight Club Saar e. V.</title>
+<meta name="description" content="Der große Film-Ratgeber für FPV: Kameras, Bildraten, Shutter und ND-Filter, Linsen, Stabilisierung, Farbe, Schnitt, Musik und Posten.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#040912">
+<link rel="canonical" href="https://02natan02-cmyk.github.io/flight-club-saar-website/filmen.html">
+<meta property="og:type" content="website"><meta property="og:locale" content="de_DE"><meta property="og:site_name" content="Flight Club Saar e. V.">
+<meta property="og:title" content="FPV filmen · Flight Club Saar e. V."><meta property="og:description" content="Der große Film-Ratgeber für FPV: Kameras, Bildraten, Shutter und ND-Filter, Linsen, Stabilisierung, Farbe, Schnitt, Musik und Posten.">
+<meta property="og:url" content="https://02natan02-cmyk.github.io/flight-club-saar-website/filmen.html"><meta property="og:image" content="https://02natan02-cmyk.github.io/flight-club-saar-website/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fcs.css?v=922dd0d8">
+<link rel="stylesheet" href="assets/css/filmen.css?v=08aff12b">
+</head>
+<body>
+<a class="sr" href="#inhalt">Zum Inhalt springen</a>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
+  <nav class="nav-links" aria-label="Hauptmenü"><a href="index.html">Start</a><a href="hallenfliegen.html">Hallenfliegen</a><a href="spots.html">Spots</a><a href="wissen.html">FPV-Wissen</a><a href="hilfe.html">Technik-Hilfe</a><a href="filmen.html" aria-current=page>Filmen</a><a href="crew.html">Crew</a></nav>
+  <a class="btn solid nav-cta" href="mitglied.html">Mitglied werden</a>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><i></i><i></i><i></i><span class="sr">Menü</span></button>
+</header>
+<div class="menu" id="menu"><a href="index.html"><b>01</b>Start</a><a href="hallenfliegen.html"><b>02</b>Hallenfliegen</a><a href="spots.html"><b>03</b>Spots</a><a href="wissen.html"><b>04</b>FPV-Wissen</a><a href="hilfe.html"><b>05</b>Technik-Hilfe</a><a href="filmen.html"><b>06</b>Filmen</a><a href="crew.html"><b>07</b>Crew</a><a href="mitglied.html"><b>08</b>Mitglied werden</a><p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V.</p></div>
+<main id="inhalt">
+<!-- FPV FILMEN · der große Film-Ratgeber des Flight Club Saar (Stand Oktober 2026) -->
+
+<!-- SVG-Filter: Log-Look, LUTs und Weißabgleich (werden auf Standbilder angewendet) -->
+<svg class="fm-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="fm-f-log" color-interpolation-filters="sRGB">
+    <feColorMatrix type="saturate" values=".52"/>
+    <feComponentTransfer><feFuncR type="table" tableValues=".13 .3 .45 .58 .68 .76"/><feFuncG type="table" tableValues=".14 .31 .46 .59 .69 .77"/><feFuncB type="table" tableValues=".16 .33 .47 .6 .7 .78"/></feComponentTransfer>
+  </filter>
+  <filter id="fm-f-709" color-interpolation-filters="sRGB">
+    <feComponentTransfer><feFuncR type="table" tableValues="0 .08 .3 .62 .88 1"/><feFuncG type="table" tableValues="0 .08 .3 .62 .88 1"/><feFuncB type="table" tableValues="0 .08 .3 .62 .88 1"/></feComponentTransfer>
+    <feColorMatrix type="saturate" values="1.12"/>
+  </filter>
+  <filter id="fm-f-teal" color-interpolation-filters="sRGB">
+    <feColorMatrix type="saturate" values="1.08"/>
+    <feComponentTransfer><feFuncR type="table" tableValues="0 .05 .26 .62 .92 1"/><feFuncG type="table" tableValues=".02 .12 .33 .62 .86 .97"/><feFuncB type="table" tableValues=".1 .24 .4 .56 .72 .86"/></feComponentTransfer>
+  </filter>
+  <filter id="fm-f-warm" color-interpolation-filters="sRGB">
+    <feComponentTransfer><feFuncR type="table" tableValues=".02 .14 .4 .72 .94 1"/><feFuncG type="table" tableValues="0 .09 .3 .6 .84 .95"/><feFuncB type="table" tableValues="0 .05 .2 .45 .68 .8"/></feComponentTransfer>
+    <feColorMatrix type="saturate" values="1.18"/>
+  </filter>
+  <filter id="fm-f-cold" color-interpolation-filters="sRGB">
+    <feColorMatrix type="saturate" values=".78"/>
+    <feComponentTransfer><feFuncR type="table" tableValues="0 .06 .26 .56 .84 .96"/><feFuncG type="table" tableValues=".02 .1 .3 .6 .87 .98"/><feFuncB type="table" tableValues=".06 .16 .38 .68 .92 1"/></feComponentTransfer>
+  </filter>
+  <filter id="fm-f-wb" color-interpolation-filters="sRGB">
+    <feColorMatrix id="fm-wb-m" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+  </filter>
+</svg>
+
+<!-- KOPF: Blende öffnet sich, Kamera-Monitor läuft -->
+<section class="pagehead fm-head" aria-labelledby="fm-h1">
+  <video class="bgvid fm-head-v" data-auto data-src="media/cine.mp4" poster="media/cine.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="fm-thirds" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="fm-focus" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <svg class="fm-iris" viewBox="-160 -90 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><radialGradient id="fm-ir-g" cx="0" cy="0" r="190" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1a2740"/><stop offset=".45" stop-color="#0b1324"/><stop offset="1" stop-color="#02050b"/></radialGradient></defs>
+    <path class="fm-iris-p" fill="url(#fm-ir-g)" fill-rule="evenodd" d="M-400-300H400V300H-400Z"/>
+    <g class="fm-iris-l"></g>
+  </svg>
+  <div class="osd-frame" aria-hidden="true"><i></i></div>
+  <div class="osd fm-o-tl" aria-hidden="true"><span class="fm-rec"><i></i>REC</span> <span data-tc>00:00:00:00</span></div>
+  <div class="osd fm-o-tc" aria-hidden="true">BLENDE <b data-fstop>F22</b></div>
+  <div class="osd fm-o-tr" aria-hidden="true">4K · <b>25P</b> · 10 BIT<br>D-LOG M · 5600K</div>
+  <div class="osd fm-o-bl" aria-hidden="true"><canvas class="fm-histo" width="132" height="46"></canvas></div>
+  <div class="osd fm-o-br" aria-hidden="true">1/50 · <b>ND64</b> · ISO 100<br><span class="fm-o-bat">CAM 74% · SD 1:12 H</span></div>
+  <div class="wrap fm-head-in">
+    <p class="crumb"><a href="index.html">Start</a> / FPV filmen</p>
+    <p class="kicker">Der Film-Ratgeber des Vereins</p>
+    <h1 class="h1 fm-h1" id="fm-h1"><span class="fm-h1a">FPV</span> <span class="fm-h1b">filmen</span></h1>
+    <p class="lede fm-head-l">Kameras, Bildraten, Shutter, ND-Filter, Linsen, Stabilisierung, Farbe, Flugstil, Schnitt, Musik und Posten. Alles, was wir im Flight Club über gute FPV-Aufnahmen wissen, mit Werkzeugen zum Ausprobieren. Geprüft im Oktober 2026.</p>
+    <ul class="fm-stats hud" aria-label="Umfang des Ratgebers">
+      <li><b data-count="13">13</b><span>Kapitel</span></li>
+      <li><b data-count="21">21</b><span>Werkzeuge zum Ausprobieren</span></li>
+      <li><b data-count="17">17</b><span>Kameras im Vergleich</span></li>
+      <li><b data-count="110">110</b><span>Begriffe im Glossar</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- INHALT ALS FILMSTREIFEN -->
+<nav class="fm-strip wrap" aria-label="Kapitel des Film-Ratgebers">
+  <ol class="fm-strip-in">
+    <li><a href="#schnellstart"><img src="media/filmen/k01.webp" alt="" width="320" height="180" loading="lazy"><b>01</b><span>Schnellstart</span></a></li>
+    <li><a href="#kameras"><img src="media/filmen/k02.webp" alt="" width="320" height="180" loading="lazy"><b>02</b><span>Kameras</span></a></li>
+    <li><a href="#shutter"><img src="media/filmen/k03.webp" alt="" width="320" height="180" loading="lazy"><b>03</b><span>Bildrate und Shutter</span></a></li>
+    <li><a href="#nd"><img src="media/filmen/k04.webp" alt="" width="320" height="180" loading="lazy"><b>04</b><span>ND-Filter</span></a></li>
+    <li><a href="#linsen"><img src="media/filmen/k05.webp" alt="" width="320" height="180" loading="lazy"><b>05</b><span>Linsen und Sichtfeld</span></a></li>
+    <li><a href="#stabi"><img src="media/filmen/k06.webp" alt="" width="320" height="180" loading="lazy"><b>06</b><span>Stabilisierung</span></a></li>
+    <li><a href="#farbe"><img src="media/filmen/k07.webp" alt="" width="320" height="180" loading="lazy"><b>07</b><span>Farbe</span></a></li>
+    <li><a href="#flugstil"><img src="media/filmen/k08.webp" alt="" width="320" height="180" loading="lazy"><b>08</b><span>Flugstil</span></a></li>
+    <li><a href="#schnitt"><img src="media/filmen/k09.webp" alt="" width="320" height="180" loading="lazy"><b>09</b><span>Schnitt und Export</span></a></li>
+    <li><a href="#musik"><img src="media/filmen/k10.webp" alt="" width="320" height="180" loading="lazy"><b>10</b><span>Musik</span></a></li>
+    <li><a href="#posten"><img src="media/filmen/k11.webp" alt="" width="320" height="180" loading="lazy"><b>11</b><span>Posten und Collab</span></a></li>
+    <li><a href="#checkliste"><img src="media/filmen/k12.webp" alt="" width="320" height="180" loading="lazy"><b>12</b><span>Checkliste</span></a></li>
+    <li><a href="#glossar"><img src="media/filmen/k13.webp" alt="" width="320" height="180" loading="lazy"><b>13</b><span>Glossar</span></a></li>
+  </ol>
+</nav>
+
+<!-- KAPITEL-LEISTE = Schnitt-Timeline mit Abspielkopf -->
+<nav class="fm-tl" id="fm-tl" aria-label="Kapitelleiste">
+  <div class="fm-tl-in">
+    <span class="fm-tl-tc hud" aria-hidden="true">TC <b data-tl-tc>00:00:00:00</b></span>
+    <ol class="fm-tl-clips">
+      <li><a href="#schnellstart" data-tl="schnellstart"><b>01</b><span>Schnellstart</span></a></li>
+      <li><a href="#kameras" data-tl="kameras"><b>02</b><span>Kameras</span></a></li>
+      <li><a href="#shutter" data-tl="shutter"><b>03</b><span>Shutter</span></a></li>
+      <li><a href="#nd" data-tl="nd"><b>04</b><span>ND-Filter</span></a></li>
+      <li><a href="#linsen" data-tl="linsen"><b>05</b><span>Linsen</span></a></li>
+      <li><a href="#stabi" data-tl="stabi"><b>06</b><span>Stabi</span></a></li>
+      <li><a href="#farbe" data-tl="farbe"><b>07</b><span>Farbe</span></a></li>
+      <li><a href="#flugstil" data-tl="flugstil"><b>08</b><span>Flugstil</span></a></li>
+      <li><a href="#schnitt" data-tl="schnitt"><b>09</b><span>Schnitt</span></a></li>
+      <li><a href="#musik" data-tl="musik"><b>10</b><span>Musik</span></a></li>
+      <li><a href="#posten" data-tl="posten"><b>11</b><span>Posten</span></a></li>
+      <li><a href="#checkliste" data-tl="checkliste"><b>12</b><span>Checkliste</span></a></li>
+      <li><a href="#glossar" data-tl="glossar"><b>13</b><span>Glossar</span></a></li>
+    </ol>
+    <span class="fm-tl-now hud" aria-hidden="true"><b data-tl-n>01</b><span data-tl-name>Schnellstart</span></span>
+    <i class="fm-tl-head" aria-hidden="true"></i>
+  </div>
+</nav>
+
+<!-- 01 · SCHNELLSTART -->
+<section class="sec fm-sec fm-quick" id="schnellstart" aria-labelledby="quick-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 01 · Schnellstart</p>
+      <h2 class="h2" id="quick-h" data-split>Deine Einstellungen in zehn Sekunden</h2>
+      <p class="lede" data-reveal>Wähl aus, was du filmen willst, womit und wofür. Der Kamera-Monitor zeigt dir passende Startwerte und warum. Die Hintergründe zu jedem Wert stehen in den Kapiteln darunter.</p>
+    </header>
+    <div class="fm-q-grid">
+      <form class="fm-q-form panel" id="fm-q" data-reveal aria-label="Einstellungen auswählen">
+        <p class="fm-hint fm-hint-q" aria-hidden="true">Antippen und ausprobieren</p>
+        <fieldset><legend class="lbl">Was willst du filmen?</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="ziel" value="kino" checked><span>Kino-Look</span></label>
+            <label class="chip"><input type="radio" name="ziel" value="free"><span>Freestyle-Clip</span></label>
+            <label class="chip"><input type="radio" name="ziel" value="slow"><span>Zeitlupe</span></label>
+            <label class="chip"><input type="radio" name="ziel" value="halle"><span>Hallenfliegen</span></label>
+          </div>
+        </fieldset>
+        <fieldset><legend class="lbl">Womit?</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="cam" value="gopro" checked><span>GoPro</span></label>
+            <label class="chip"><input type="radio" name="cam" value="o4"><span>DJI O4 / O4 Pro</span></label>
+            <label class="chip"><input type="radio" name="cam" value="action"><span>DJI Osmo Action</span></label>
+            <label class="chip"><input type="radio" name="cam" value="thumb"><span>RunCam Thumb</span></label>
+            <label class="chip"><input type="radio" name="cam" value="x360"><span>360-Grad-Kamera</span></label>
+          </div>
+        </fieldset>
+        <fieldset><legend class="lbl">Stabilisierung</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="stab" value="cam" checked><span>In der Kamera</span></label>
+            <label class="chip"><input type="radio" name="stab" value="gyro"><span>Gyroflow danach</span></label>
+          </div>
+        </fieldset>
+        <fieldset><legend class="lbl">Wo kommt der Clip hin?</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="fmt" value="reel" checked><span>Reel / TikTok 9:16</span></label>
+            <label class="chip"><input type="radio" name="fmt" value="yt"><span>YouTube 16:9</span></label>
+            <label class="chip"><input type="radio" name="fmt" value="both"><span>Beides</span></label>
+          </div>
+        </fieldset>
+      </form>
+      <div class="fm-mon" data-reveal>
+        <div class="fm-mon-scr">
+          <div class="fm-mon-top hud" aria-hidden="true"><span class="fm-rec"><i></i>STBY</span><span data-q-sum>4K · 25P · 1/50</span></div>
+          <dl class="fm-mon-rows" id="fm-q-out" aria-live="polite"></dl>
+          <p class="fm-mon-note mute" data-q-note></p>
+        </div>
+        <div class="btns fm-mon-btns">
+          <button class="btn solid" type="button" id="fm-q-copy">Als Text kopieren</button>
+          <a class="btn ghost" href="#nd" id="fm-q-nd">ND-Rechner öffnen <span class="arr">→</span></a>
+        </div>
+        <p class="fm-copied hud" id="fm-q-ok" role="status"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 · KAMERAS -->
+<section class="sec fm-sec fm-cams" id="kameras" aria-labelledby="cams-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 02 · Kameras</p>
+      <h2 class="h2" id="cams-h" data-split>Welche Kamera?</h2>
+      <p class="lede" data-reveal>Fünf Wege führen zu guten Aufnahmen: eine Action-Cam obendrauf, eine entkernte GoPro, eine winzige HD-Kamera, die Aufnahme direkt im digitalen Videosystem oder eine 360-Grad-Kamera, aus der du den Bildausschnitt später wählst. Was passt, entscheidet vor allem das Gewicht, das dein Kopter tragen kann.</p>
+    </header>
+
+    <div class="fm-types">
+      <article class="fm-type panel" data-reveal>
+        <span class="fm-type-n hud">A</span>
+        <h3 class="h3">Action-Cams</h3>
+        <p>GoPro HERO13 Black, DJI Osmo Action 6 und 5 Pro, Insta360. Beste Bildqualität, 10 Bit, Log-Profile und starke eingebaute Stabilisierung. Dafür wiegen sie rund 150 Gramm. Neu seit Mai 2026 ist die GoPro Mission 1 mit 1-Zoll-Sensor.</p>
+        <p class="fm-fit"><span class="tag">5 Zoll</span><span class="tag">Long Range</span></p>
+      </article>
+      <article class="fm-type panel" data-reveal>
+        <span class="fm-type-n hud">B</span>
+        <h3 class="h3">Naked GoPro</h3>
+        <p>Eine GoPro ohne Originalgehäuse in einem leichten Case, Strom direkt vom Kopter-Akku. So ein Umbau wiegt nur rund ein Drittel, im Test 49 Gramm mit einer HERO9. Nicht mehr wasserdicht und empfindlicher bei Crashs.</p>
+        <p class="fm-fit"><span class="tag">Cinewhoop 3,5 Zoll</span><span class="tag">5 Zoll</span></p>
+      </article>
+      <article class="fm-type panel" data-reveal>
+        <span class="fm-type-n hud">C</span>
+        <h3 class="h3">Leichte HD-Kameras</h3>
+        <p>RunCam Thumb 2 mit 27 Gramm und Gyro-Daten, Insta360 GO 3S mit 39 Gramm, Insta360 GO Ultra mit 53 Gramm, Caddx Walnut. Die ältere Caddx Peanut ist laut Gyroflow-Doku baugleich mit der Insta360 GO 2.</p>
+        <p class="fm-fit"><span class="tag">Cinewhoop</span><span class="tag">leichte 5 Zoll</span></p>
+      </article>
+      <article class="fm-type panel" data-reveal>
+        <span class="fm-type-n hud">D</span>
+        <h3 class="h3">Digital mit Aufnahme</h3>
+        <p>DJI O4 Air Unit Pro nimmt bis 4K mit 120 Bildern pro Sekunde auf, die kleine O4 Air Unit bis 4K60 bei rund 8 Gramm. Walksnail Moonlight schafft 4K60. HDZero zeichnet nur in der Brille auf: für schöne Filme brauchst du dort eine zusätzliche Kamera.</p>
+        <p class="fm-fit"><span class="tag">Tiny Whoop</span><span class="tag">bis Long Range</span></p>
+      </article>
+      <article class="fm-type panel" data-reveal>
+        <span class="fm-type-n hud">E</span>
+        <h3 class="h3">360-Grad zum Reframen</h3>
+        <p>Insta360 X6 (seit August 2026) oder X5, GoPro Max 2. Du filmst alles rundherum und legst den Bildausschnitt erst in der App fest, sogar Kamerafahrten. Seit März 2026 gibt es mit der DJI Avata 360 eine komplette FPV-Drohne mit 360-Grad-Kamera.</p>
+        <p class="fm-fit"><span class="tag">5 Zoll und größer</span><span class="tag">Komplettdrohne</span></p>
+      </article>
+    </div>
+
+    <div class="fm-shelf panel" data-reveal>
+      <p class="fm-hint fm-hint-shelf" aria-hidden="true">Kopter-Klasse wählen</p>
+      <div class="fm-shelf-ctrl">
+        <div class="chips" role="radiogroup" aria-label="Kopter-Klasse">
+          <label class="chip"><input type="radio" name="klasse" value="alle" checked><span>Alle</span></label>
+          <label class="chip"><input type="radio" name="klasse" value="whoop"><span>Tiny Whoop</span></label>
+          <label class="chip"><input type="radio" name="klasse" value="cine"><span>Cinewhoop</span></label>
+          <label class="chip"><input type="radio" name="klasse" value="fuenf"><span>5 Zoll</span></label>
+          <label class="chip"><input type="radio" name="klasse" value="lr"><span>Long Range</span></label>
+        </div>
+        <div class="field fm-shelf-sort"><label for="fm-sort">Sortieren</label>
+          <select id="fm-sort"><option value="g">nach Gewicht</option><option value="t">nach Art</option><option value="n">nach Name</option></select>
+        </div>
+      </div>
+      <p class="fm-shelf-say" id="fm-shelf-say" aria-live="polite"></p>
+      <ul class="fm-shelf-list" id="fm-shelf" aria-label="Kameras im Vergleich"></ul>
+      <p class="fm-src mute">Gewichte nur, wo Hersteller, Händler oder Test sie belegen. Gyroflow-Unterstützung laut offizieller Gyroflow-Dokumentation. Stand: 24. Oktober 2026.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FILM-STREIFEN-DIVIDER -->
+<div class="fm-reel" aria-hidden="true"><div class="fm-reel-in" id="fm-reel"></div></div>
+
+<!-- 03 · BILDRATE UND SHUTTER -->
+<section class="sec fm-sec fm-shut" id="shutter" aria-labelledby="shut-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 03 · Bildrate und Shutter</p>
+      <h2 class="h2" id="shut-h" data-split>Bildrate und Shutter</h2>
+      <p class="lede" data-reveal>Die Bildrate bestimmt, wie flüssig dein Clip wirkt und wie stark du ihn verlangsamen kannst. Der Shutter, also die Verschlusszeit, entscheidet, wie viel Bewegungsunschärfe in jedem einzelnen Bild steckt. Zusammen machen die beiden den Look.</p>
+    </header>
+
+    <ol class="fm-fps" aria-label="Bildraten und wofür sie gut sind">
+      <li data-reveal><b>24p</b><span class="tag">Kino weltweit</span><p>Der klassische Kino-Takt. Wirkt filmisch, schnelle Schwenks ruckeln aber sichtbar.</p></li>
+      <li data-reveal class="good"><b>25p</b><span class="tag green">Kino in Deutschland</span><p>Passt zum 50-Hz-Stromnetz. Kein Flackern unter Kunstlicht, mit 1/50 der Kino-Look.</p></li>
+      <li data-reveal class="warn"><b>30p</b><span class="tag amber">60-Hz-Länder</span><p>Standard in den USA. Bei uns gibt es unter Lampen oft Streifen und Flackern.</p></li>
+      <li data-reveal class="good"><b>50p</b><span class="tag green">Flüssig</span><p>Ideal für Freestyle und Social Media. Flackerfrei, auf einer 25p-Timeline halb so schnell.</p></li>
+      <li data-reveal><b>60p</b><span class="tag">Flüssig</span><p>Draußen bei Tageslicht problemlos. In der Halle besser 50p wählen.</p></li>
+      <li data-reveal class="good"><b>100p</b><span class="tag green">Zeitlupe</span><p>Auf 25p viermal langsamer, auf 50p halb so schnell. Auch in der Halle flackerfrei.</p></li>
+      <li data-reveal><b>120p</b><span class="tag">Zeitlupe</span><p>Draußen top. Unter 50-Hz-Hallenlicht drohen Streifen, dort lieber 100p.</p></li>
+    </ol>
+
+    <div class="fm-rule panel" data-reveal>
+      <div class="fm-rule-disc" aria-hidden="true"><svg viewBox="-50 -50 100 100"><circle r="46" class="fm-rd-bg"/><path class="fm-rd-open" d="M0 0L0-46A46 46 0 0 1 0 46Z"/><circle r="5" class="fm-rd-hub"/></svg></div>
+      <div>
+        <h3 class="h3">Die 180-Grad-Regel</h3>
+        <p class="fm-formula hud">Shutter = 1 / (2 × Bildrate)</p>
+        <p>25p bekommt 1/50 s, 50p bekommt 1/100 s, 100p bekommt 1/200 s. Der Name stammt von der Sektorenblende alter Filmkameras, die sich pro Bild einmal dreht und dabei zur Hälfte offen ist. So entsteht die natürliche Bewegungsunschärfe, die unser Auge aus dem Kino kennt. Ohne ND-Filter wählt die Kamera bei Sonne Zeiten wie 1/2000 s: Jedes Bild ist knackscharf, die Bewegung wirkt abgehackt wie ein Daumenkino.</p>
+        <p class="fm-note"><b>Wichtig beim Stabilisieren:</b> Laut Gyroflow-Doku passt die 180-Grad-Regel nicht zu digitaler Stabilisierung, denn die Unschärfe im Bild wandert beim Stabilisieren nicht mit. Wer mit Gyroflow arbeitet, filmt besser mit 90 oder 45 Grad, also 1/100 bis 1/200 bei 25p, und fügt Bewegungsunschärfe bei Bedarf im Schnitt hinzu.</p>
+      </div>
+    </div>
+
+    <div class="fm-sim" data-reveal>
+      <div class="fm-sim-view">
+        <canvas id="fm-sim-cv" aria-hidden="true"></canvas>
+        <div class="osd fm-sim-osd" aria-hidden="true"><span data-sim-fps>25P</span> · <b data-sim-sh>1/50</b> · <span data-sim-ang>180°</span></div>
+        <div class="fm-sim-disc" aria-hidden="true"><svg viewBox="-50 -50 100 100"><circle r="46" class="fm-rd-bg"/><path class="fm-rd-open" id="fm-sim-sector" d="M0 0L0-46A46 46 0 0 1 0 46Z"/><circle r="5" class="fm-rd-hub"/></svg></div>
+        <p class="fm-hint fm-hint-sim" aria-hidden="true">Regler bewegen: Unschärfe live</p>
+      </div>
+      <div class="fm-sim-ctrl panel">
+        <h3 class="h3">Shutter-Simulator</h3>
+        <p class="mute">Ein Gate rauscht vorbei, gefilmt mit deiner Bildrate und deinem Shutter. Die Wiedergabe läuft wirklich mit der gewählten Bildrate.</p>
+        <fieldset><legend class="lbl">Bildrate</legend>
+          <div class="chips" id="fm-sim-fps">
+            <label class="chip"><input type="radio" name="simfps" value="24"><span>24</span></label>
+            <label class="chip"><input type="radio" name="simfps" value="25" checked><span>25</span></label>
+            <label class="chip"><input type="radio" name="simfps" value="30"><span>30</span></label>
+            <label class="chip"><input type="radio" name="simfps" value="50"><span>50</span></label>
+            <label class="chip"><input type="radio" name="simfps" value="60"><span>60</span></label>
+            <label class="chip"><input type="radio" name="simfps" value="100"><span>100</span></label>
+            <label class="chip"><input type="radio" name="simfps" value="120"><span>120</span></label>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="fm-sim-ang">Shutter-Winkel: <b data-sim-ang2>180°</b> = <b data-sim-sh2>1/50 s</b></label>
+          <input type="range" id="fm-sim-ang" min="-0.4" max="5" step="0.01" value="4">
+          <p class="hint fm-ticks" id="fm-sim-ah" aria-hidden="true"></p>
+        </div>
+        <div class="btns fm-presets" id="fm-sim-pre">
+          <button type="button" class="btn ghost" data-p="25,180">Kino 25p · 1/50</button>
+          <button type="button" class="btn ghost" data-p="50,180">Flüssig 50p · 1/100</button>
+          <button type="button" class="btn ghost" data-p="50,90">Gyroflow 50p · 1/200</button>
+          <button type="button" class="btn ghost" data-p="50,9">Ohne ND · 1/2000</button>
+        </div>
+        <p class="fm-verdict" id="fm-sim-say" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <div class="grid g2 fm-two">
+      <div class="panel fm-slow" data-reveal>
+        <h3 class="h3">Zeitlupen-Rechner</h3>
+        <p class="mute">Wie langsam wird dein Clip, wenn du ihn auf der Timeline ausspielst?</p>
+        <div class="fm-slow-ctrl">
+          <div class="field"><label for="fm-slow-a">Aufnahme</label><select id="fm-slow-a"><option>50</option><option selected>100</option><option>120</option><option>200</option><option>240</option></select></div>
+          <span class="fm-slow-x hud" aria-hidden="true">→</span>
+          <div class="field"><label for="fm-slow-b">Timeline</label><select id="fm-slow-b"><option>24</option><option selected>25</option><option>30</option><option>50</option><option>60</option></select></div>
+        </div>
+        <div class="fm-slow-out" aria-live="polite"><b id="fm-slow-f">4×</b><span id="fm-slow-t">langsamer, 25 % Tempo. Aus 1 Sekunde Flug werden 4 Sekunden.</span></div>
+        <div class="fm-slow-bars" aria-hidden="true"><div><span>Echt</span><i class="fm-sb-r"><em></em></i></div><div><span>Clip</span><i class="fm-sb-c"><em id="fm-slow-bar"></em></i></div></div>
+        <p class="lbl fm-slow-lbl">Häufige Kombinationen</p>
+        <ul class="fm-slow-list">
+          <li><b>50 → 25</b><span>2× langsamer, wirkt noch natürlich</span></li>
+          <li><b>100 → 25</b><span>4×, die klassische FPV-Zeitlupe</span></li>
+          <li><b>120 → 24</b><span>5×, im 60-Hz-Raster</span></li>
+          <li><b>240 → 24</b><span>10×, braucht viel Licht</span></li>
+        </ul>
+      </div>
+      <div class="panel fm-flick" data-reveal>
+        <h3 class="h3">Hallenlicht-Test</h3>
+        <p class="mute">Unser Stromnetz hat 50 Hz, viele Lampen flackern deshalb 100-mal pro Sekunde. Passen Bildrate und Shutter nicht dazu, laufen Streifen durchs Bild. Gerade beim Hallenfliegen wichtig.</p>
+        <div class="fm-flick-view"><canvas id="fm-flick-cv" aria-hidden="true"></canvas><div class="osd fm-flick-osd" aria-hidden="true" data-fl-osd>30P · 1/120</div><p class="fm-hint fm-hint-fl" aria-hidden="true">Werte wechseln</p></div>
+        <div class="fm-flick-ctrl">
+          <div class="field"><label for="fm-fl-fps">Bildrate</label><select id="fm-fl-fps"><option>25</option><option selected>30</option><option>50</option><option>60</option><option>100</option><option>120</option></select></div>
+          <div class="field"><label for="fm-fl-sh">Shutter</label><select id="fm-fl-sh"><option value="50">1/50</option><option value="60">1/60</option><option value="100">1/100</option><option value="120" selected>1/120</option><option value="200">1/200</option><option value="500">1/500</option></select></div>
+        </div>
+        <p class="fm-verdict" id="fm-fl-say" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · ND-FILTER -->
+<section class="sec fm-sec fm-nd" id="nd" aria-labelledby="nd-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 04 · ND-Filter</p>
+      <h2 class="h2" id="nd-h" data-split>Sonnenbrille für die Kamera</h2>
+      <p class="lede" data-reveal>Ein ND-Filter ist ein neutralgraues Glas vor der Linse. Er schluckt Licht, ohne die Farben zu verändern. Weil Action-Cams eine feste Blende haben, ist er der einzige Weg zu langen Verschlusszeiten bei Sonne und damit zu weicher Bewegung.</p>
+    </header>
+
+    <ul class="fm-ndscale" aria-label="ND-Stärken">
+      <li data-reveal><b>ND4</b><span>2 Blendenstufen</span><i style="--d:.25"></i><em>¼ Licht</em></li>
+      <li data-reveal><b>ND8</b><span>3 Blendenstufen</span><i style="--d:.4"></i><em>⅛ Licht</em></li>
+      <li data-reveal><b>ND16</b><span>4 Blendenstufen</span><i style="--d:.55"></i><em>1/16 Licht</em></li>
+      <li data-reveal><b>ND32</b><span>5 Blendenstufen</span><i style="--d:.68"></i><em>1/32 Licht</em></li>
+      <li data-reveal><b>ND64</b><span>6 Blendenstufen</span><i style="--d:.8"></i><em>1/64 Licht</em></li>
+      <li data-reveal><b>ND128</b><span>7 Blendenstufen</span><i style="--d:.88"></i><em>1/128 Licht</em></li>
+    </ul>
+
+    <div class="fm-ndcalc" data-reveal>
+      <div class="fm-nd-view">
+        <canvas id="fm-nd-cv" aria-hidden="true"></canvas>
+        <canvas class="fm-nd-histo" id="fm-nd-h" width="160" height="56" aria-hidden="true"></canvas>
+        <div class="osd fm-nd-osd" aria-hidden="true"><span data-nd-osd>1/100 · ND32 · ISO 100</span><br><b data-nd-exp>BELICHTUNG OK</b></div>
+        <p class="fm-nd-zeb hud" aria-hidden="true">ZEBRA 100 %</p>
+        <p class="fm-hint fm-hint-nd" aria-hidden="true">Filter drehen oder Licht wählen</p>
+      </div>
+      <div class="fm-nd-side panel">
+        <h3 class="h3">ND-Rechner</h3>
+        <fieldset><legend class="lbl">Licht</legend>
+          <div class="chips" id="fm-nd-light">
+            <label class="chip"><input type="radio" name="ndl" value="16"><span>Sonne + Schnee/Wasser</span></label>
+            <label class="chip"><input type="radio" name="ndl" value="15" checked><span>Sonne</span></label>
+            <label class="chip"><input type="radio" name="ndl" value="14"><span>Leicht bewölkt</span></label>
+            <label class="chip"><input type="radio" name="ndl" value="13"><span>Bewölkt</span></label>
+            <label class="chip"><input type="radio" name="ndl" value="12"><span>Abendsonne</span></label>
+            <label class="chip"><input type="radio" name="ndl" value="10"><span>Dämmerung</span></label>
+          </div>
+        </fieldset>
+        <div class="fm-nd-row">
+          <div class="field"><label for="fm-nd-fps">Bildrate</label><select id="fm-nd-fps"><option>24</option><option>25</option><option>30</option><option selected>50</option><option>60</option><option>100</option><option>120</option></select></div>
+          <div class="field"><label for="fm-nd-sty">Shutter-Ziel</label><select id="fm-nd-sty"><option value="180" selected>180° Kino-Look</option><option value="90">90° für Gyroflow</option></select></div>
+          <div class="field"><label for="fm-nd-ap">Blende</label><select id="fm-nd-ap"><option value="2">f/2,0</option><option value="2.5" selected>f/2,5 (GoPro HERO13)</option><option value="2.8">f/2,8 (DJI O4 Pro)</option></select></div>
+        </div>
+        <div class="fm-wheel-wrap">
+          <div class="fm-wheel" id="fm-wheel" role="slider" tabindex="0" aria-label="ND-Filter im Halter" aria-valuemin="0" aria-valuemax="7" aria-valuenow="5" aria-valuetext="ND32"></div>
+          <div class="fm-nd-res" aria-live="polite">
+            <p class="lbl">Empfehlung</p>
+            <b id="fm-nd-rec">ND32</b>
+            <p id="fm-nd-txt">Shutter 1/100 s bei ISO 100</p>
+          </div>
+        </div>
+        <p class="fm-src mute">Richtwert für ISO 100 nach Lichtwert-Tabelle. Echte Szenen schwanken: Kontrollier die Belichtung im Histogramm oder mit Zebra. Filter-Sets gibt es zum Beispiel von GoPro für die HERO13 (ND4 bis ND32) und von DJI für Avata 2 und O4 Pro (ND8 bis ND32).</p>
+      </div>
+    </div>
+
+    <div class="grid g3 fm-ndtips">
+      <div class="panel" data-reveal><h3 class="h3">Wann kein ND?</h3><p>In der Dämmerung, im Wald, in der Halle und immer dann, wenn du maximal scharfe Einzelbilder willst. Laut Gyroflow-Doku gilt beim späteren Stabilisieren: ND nur so stark wie nötig, weil lange Belichtung Unschärfe erzeugt, die beim Stabilisieren nicht mitwandert.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">ND/PL</h3><p>ND mit eingebautem Polfilter. Er nimmt Spiegelungen von Wasser und Glas und macht den Himmel satter. Bei sehr weitem Sichtfeld wird der Himmel aber oft fleckig, weil der Poleffekt vom Winkel zur Sonne abhängt.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">Belichtung sperren</h3><p>Stell Shutter und ISO fest ein, statt die Automatik machen zu lassen. Sonst wechselt die Kamera bei jedem Schwenk von der Sonne in den Schatten die Verschlusszeit, und der Look springt mitten im Clip.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · LINSEN UND SICHTFELD -->
+<section class="sec fm-sec fm-lens" id="linsen" aria-labelledby="lens-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 05 · Linsen und Sichtfeld</p>
+      <h2 class="h2" id="lens-h" data-split>Linsen und Sichtfeld</h2>
+      <p class="lede" data-reveal>FPV-Kameras sehen extrem weit. Das gibt Tempo und Nähe, biegt aber gerade Linien krumm. Welches Sichtfeld du wählst und ob du später entzerrst, ist eine Stilfrage. Probier es am echten Standbild aus.</p>
+    </header>
+
+    <div class="fm-fov" data-reveal>
+      <div class="fm-fov-view">
+        <canvas id="fm-fov-cv" aria-hidden="true"></canvas>
+        <div class="fm-fov-hz" aria-hidden="true"><i></i></div>
+        <div class="osd fm-fov-osd" aria-hidden="true">FOV <b data-fov-v>150°</b> · <span data-fov-m>FISCHAUGE</span></div>
+        <p class="fm-hint fm-hint-fov" aria-hidden="true">Regler schieben oder Modus wählen</p>
+      </div>
+      <div class="fm-fov-ctrl panel">
+        <fieldset><legend class="lbl">Objektiv-Modus</legend>
+          <div class="chips" id="fm-fov-pre">
+            <label class="chip"><input type="radio" name="fovm" value="fish" checked><span>Fischauge</span></label>
+            <label class="chip"><input type="radio" name="fovm" value="wide"><span>Wide</span></label>
+            <label class="chip"><input type="radio" name="fovm" value="super"><span>SuperView-Stil</span></label>
+            <label class="chip"><input type="radio" name="fovm" value="lin"><span>Linear</span></label>
+          </div>
+        </fieldset>
+        <div class="field"><label for="fm-fov-f">Sichtfeld: <b data-fov-v2>150°</b></label><input type="range" id="fm-fov-f" min="70" max="165" value="150"></div>
+        <div class="field"><label for="fm-fov-d">Krümmung: <b data-fov-d>100 %</b></label><input type="range" id="fm-fov-d" min="0" max="100" value="100"></div>
+        <div class="fm-fov-row">
+          <label class="check"><input type="checkbox" id="fm-fov-roll"><span>Kopter legt sich in die Kurve</span></label>
+          <label class="check"><input type="checkbox" id="fm-fov-lock"><span>Horizont-Lock</span></label>
+        </div>
+        <div class="chips fm-fov-img" role="radiogroup" aria-label="Standbild">
+          <label class="chip"><input type="radio" name="fovi" value="media/gang.webp" checked><span>Gang mit Linien</span></label>
+          <label class="chip"><input type="radio" name="fovi" value="media/turm.webp"><span>Förderturm</span></label>
+        </div>
+        <p class="fm-src mute">Vereinfachte Darstellung: Ein echtes Objektiv kann nicht mehr zeigen, als der Sensor gesehen hat. Deshalb wird beim Entzerren immer Rand abgeschnitten.</p>
+      </div>
+    </div>
+
+    <div class="grid g3 fm-lenscards">
+      <div class="panel" data-reveal><h3 class="h3">Fischauge und Wide</h3><p>Maximale Übersicht, starke Krümmung an den Rändern, viel Gefühl für Tempo. Ideal für Gyroflow, weil Rand zum Zuschneiden übrig bleibt. Gyroflow empfiehlt bei GoPro „Wide“, bei DJI ist „Wide“ Pflicht.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">SuperView und HyperView</h3><p>GoPro nimmt den hohen Sensor (4:3 oder 8:7) und dehnt ihn auf 16:9, vor allem an den Rändern. Sehr immersiv, aber alles am Bildrand wird breit gezogen. Ab HERO11 stabilisiert Gyroflow diese Modi genau, bei älteren Modellen rät die Doku ab.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">Linear</h3><p>Die Kamera entzerrt selbst, gerade Linien bleiben gerade. Wirkt ruhiger und hochwertiger, ist aber enger. Bei der HERO13 auch als „Linear + Horizont-Lock“, bei DJI hält HorizonSteady den Horizont.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">Später entzerren</h3><p>Mit dem Objektivprofil in Gyroflow, der Linsenkorrektur im Schnittprogramm oder in GoPro Player + ReelSteady. Vorteil: Du entscheidest erst im Schnitt, wie viel Krümmung bleiben darf.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">Horizont gerade</h3><p>Ein schiefer Horizont wirkt unruhig, ein bewusst gekippter dynamisch. Horizont-Lock kostet Bildausschnitt, weil das Bild beim Drehen in ein kleineres Rechteck passen muss. Teste es oben mit dem Kurven-Schalter.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">Volle Sensorfläche</h3><p>Nimm in 4:3 oder 8:7 auf, wenn deine Kamera das kann. Dann bleibt oben und unten Reserve für Stabilisierung und für 9:16-Ausschnitte. Gyroflow nennt 16:9 nur dann sinnvoll, wenn du die höchste Bildrate brauchst.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 · STABILISIERUNG -->
+<section class="sec fm-sec fm-stab" id="stabi" aria-labelledby="stab-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 06 · Stabilisierung</p>
+      <h2 class="h2" id="stab-h" data-split>Ruhig wie auf Schienen</h2>
+      <p class="lede" data-reveal>Propeller, Wind und schnelle Richtungswechsel schütteln die Kamera. Entweder glättet die Kamera das sofort beim Filmen, oder du stabilisierst später mit Gyroflow anhand der Gyro-Daten. Beides schneidet Rand ab, beides hat Regeln.</p>
+    </header>
+
+    <div class="fm-shake" data-reveal>
+      <div class="fm-shake-view">
+        <canvas id="fm-sh-cv" aria-hidden="true"></canvas>
+        <canvas class="fm-sh-sensor" id="fm-sh-sensor" aria-hidden="true"></canvas>
+        <canvas class="fm-sh-gyro" id="fm-sh-gyro" aria-hidden="true"></canvas>
+        <div class="osd fm-sh-osd" aria-hidden="true"><b data-sh-mode>ROH</b> · CROP <span data-sh-crop>0 %</span></div>
+        <p class="fm-hint fm-hint-sh" aria-hidden="true">Modus wechseln</p>
+      </div>
+      <div class="fm-shake-ctrl panel">
+        <fieldset><legend class="lbl">Stabilisierung</legend>
+          <div class="chips" id="fm-sh-mode">
+            <label class="chip"><input type="radio" name="shm" value="raw" checked><span>Roh</span></label>
+            <label class="chip"><input type="radio" name="shm" value="cam"><span>In der Kamera</span></label>
+            <label class="chip"><input type="radio" name="shm" value="gyro"><span>Gyroflow</span></label>
+          </div>
+        </fieldset>
+        <div class="field"><label for="fm-sh-s">Glättung: <b data-sh-s>50 %</b></label><input type="range" id="fm-sh-s" min="0" max="100" value="50"></div>
+        <label class="check"><input type="checkbox" id="fm-sh-h"><span>Horizont sperren</span></label>
+        <label class="check"><input type="checkbox" id="fm-sh-b"><span>Lange Belichtung (1/50 s statt 1/200 s)</span></label>
+        <p class="fm-verdict" id="fm-sh-say" aria-live="polite"></p>
+        <p class="fm-src mute">Kleines Bild unten: was der Sensor sieht, mit dem Ausschnitt, den die Stabilisierung behält. Linien: Drehraten des Gyros, wie Gyroflow sie liest.</p>
+      </div>
+    </div>
+
+    <div class="grid g2 fm-vs">
+      <div class="panel" data-reveal>
+        <span class="tag sig">Sofort fertig</span>
+        <h3 class="h3">In der Kamera</h3>
+        <p>GoPro HyperSmooth, DJI RockSteady und HorizonSteady, Insta360 FlowState. Der Clip ist direkt nach dem Flug fertig zum Posten. Grenzen: harte Flips und Rollen, Horizont-Lock nur in bestimmten Modi, und was die Kamera abschneidet, ist weg. Bei der O4 Air Unit Pro funktioniert RockSteady laut Händlerangaben nur im Standard-Bildwinkel.</p>
+      </div>
+      <div class="panel" data-reveal>
+        <span class="tag green">Kostenlos · Open Source</span>
+        <h3 class="h3">Gyroflow danach</h3>
+        <p>Gyroflow liest die Bewegungsdaten des Gyros und rechnet das Wackeln Bild für Bild heraus. Glättung, Zuschnitt und Horizont wählst du erst am Rechner. Gibt es als App für Windows, Mac und Linux und als Plugin für DaVinci Resolve (auch in der kostenlosen Version), Premiere Pro, After Effects und Final Cut Pro.</p>
+        <a class="btn ghost" href="https://gyroflow.xyz/" target="_blank" rel="noopener">gyroflow.xyz <span class="arr">↗</span></a>
+      </div>
+    </div>
+
+    <h3 class="h3 fm-subh" data-reveal>Woher kommen die Gyro-Daten?</h3>
+    <div class="fm-src-grid">
+      <div class="panel" data-reveal><b class="fm-k">GoPro</b><p>Ab HERO8 Black ohne Synchronisation. HyperSmooth darf ab HERO8 sogar an bleiben. Objektiv „Wide“, Sensor 4:3 oder 8:7. Ab HERO11 stecken die Objektivdaten in jeder Datei.</p></div>
+      <div class="panel" data-reveal><b class="fm-k">DJI</b><p>O3 und O4 Air Unit, Avata und Avata 2, Osmo Action 2, 4, 5 und 6. Die Action 3 wird nicht unterstützt. Stabilisierung muss aus sein, sonst speichert die Kamera keine Gyro-Daten. Sichtfeld „Wide“. Bei einigen O4-Pro-Einheiten von 2026 meldet die Doku Probleme mit dem Gyro-Chip.</p></div>
+      <div class="panel" data-reveal><b class="fm-k">RunCam</b><p>Thumb, Thumb Pro, Thumb Pro-W und Thumb 2 speichern eine .gcsv-Datei neben dem Video. Gyroflow rät: Bildstabilisierung und Verzerrungskorrektur aus, Shutter 45 bis 90 Grad, ISO so niedrig wie möglich, Weißabgleich „Sunny“.</p></div>
+      <div class="panel" data-reveal><b class="fm-k">Insta360 und Caddx</b><p>Insta360 GO 2, GO 3, GO 3S, Ace Pro und ONE RS, manche nur im FreeFrame-Modus. Caddx Peanut und Walnut (Walnut mit Synchronisation, interne Verzerrungskorrektur aus). Neuere Modelle vor dem Kauf in der Doku prüfen.</p></div>
+      <div class="panel" data-reveal><b class="fm-k">Walksnail Moonlight</b><p>Speichert eine Gyro-Datei für Gyroflow, wenn die eingebaute Stabilisierung aus ist. Die eingebaute Stabilisierung gibt es nur in 2.7K und dann ohne Gyro-Daten.</p></div>
+      <div class="panel" data-reveal><b class="fm-k">Blackbox</b><p>Für jede Kamera ohne eigenen Gyro: Gyroflow liest Betaflight-Logs (.bbl, .bfl oder als .csv aus dem Blackbox Explorer), auch von INAV und Emuflight. Den Kamera-Uptilt trägst du unter „Motion data → Rotation → Pitch“ ein, Log und Video musst du synchronisieren.</p></div>
+    </div>
+
+    <div class="grid g3 fm-stabtips">
+      <div class="panel" data-reveal><h3 class="h3">Vibrationen zuerst</h3><p>Gyroflow sagt es deutlich: Behebe Vibrationen erst mechanisch, saubere Bewegungsdaten bringen immer das beste Ergebnis. Krumme Props, lockere Schrauben und ein harter Kamerahalter machen Jello, das keine Software ganz rettet.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">Kurze Belichtung</h3><p>Für Gyroflow 45 bis 90 Grad Shutter. Unschärfe aus einer langen Belichtung zeigt die alte Wackelrichtung, auch wenn das Bild schon ruhig ist. Zum Ausprobieren: Schalter „Lange Belichtung“ oben.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">ReelSteady</h3><p>GoPro Player + ReelSteady ist GoPros Desktop-App für Mac und Windows, 2022 vorgestellt, zum Stabilisieren von GoPro-Material und Korrigieren der Linse. Prüf vor dem Kauf, ob sie für dein Modell noch angeboten wird. Gyroflow kann dasselbe kostenlos.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 · FARBE UND BELICHTUNG -->
+<section class="sec fm-sec fm-color" id="farbe" aria-labelledby="color-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 07 · Farbe und Belichtung</p>
+      <h2 class="h2" id="color-h" data-split>Flach filmen, satt zeigen</h2>
+      <p class="lede" data-reveal>Wer im flachen Log-Profil filmt, holt im Schnitt mehr aus Himmel und Schatten heraus. Das Rohmaterial sieht grau und blass aus, mit einer LUT und etwas Feinschliff wird es zum Bild, das du im Kopf hattest. Wer keine Zeit zum Graden hat, bleibt beim Standard-Profil, aber mit festen Werten.</p>
+    </header>
+
+    <div class="fm-ba" data-reveal>
+      <div class="fm-ba-view" id="fm-ba">
+        <img class="fm-ba-a" src="media/filmen/cine-ba.webp" alt="Sonnenuntergang über grünen Hügeln, rechts im flachen Log-Profil, links fertig farbkorrigiert" width="1280" height="720" loading="lazy">
+        <div class="fm-ba-clip" id="fm-ba-clip"><img class="fm-ba-b" src="media/filmen/cine-ba.webp" alt="" width="1280" height="720" loading="lazy"></div>
+        <span class="fm-ba-lab l hud" aria-hidden="true">GRADED · <b data-ba-lut>REC.709</b></span>
+        <span class="fm-ba-lab r hud" aria-hidden="true">LOG · ROH</span>
+        <div class="fm-ba-line" id="fm-ba-line"><button type="button" class="fm-ba-knob" id="fm-ba-knob" role="slider" aria-label="Vergleich Log und fertig" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span aria-hidden="true">‹ ›</span></button></div>
+        <p class="fm-hint fm-hint-ba" aria-hidden="true">Schieber ziehen</p>
+      </div>
+      <div class="chips fm-ba-luts" role="radiogroup" aria-label="Look wählen">
+        <label class="chip"><input type="radio" name="lut" value="709" checked><span>Rec.709 neutral</span></label>
+        <label class="chip"><input type="radio" name="lut" value="teal"><span>Teal und Orange</span></label>
+        <label class="chip"><input type="radio" name="lut" value="warm"><span>Warmer Abend</span></label>
+        <label class="chip"><input type="radio" name="lut" value="cold"><span>Kühl, Industrie</span></label>
+      </div>
+      <p class="fm-src mute">Nachgestellt mit Filtern auf einem Standbild aus einem Falcon-Eye-Flug, kein echtes Log-Material.</p>
+    </div>
+
+    <div class="fm-colgrid">
+      <article class="panel" data-reveal><h3 class="h3">Log-Profile</h3><p>Jeder Hersteller hat sein eigenes: GP-Log bei GoPro (seit HERO12, mit LUT zum Download), D-Log M bei DJI (z. B. Osmo Action 6 mit 10 Bit, O4 Air Unit Pro), I-Log bei Insta360. Log lohnt sich nur, wenn du danach gradest, und am besten in 10 Bit.</p></article>
+      <article class="panel" data-reveal><h3 class="h3">LUT</h3><p>Eine Umrechnungstabelle, die das flache Log in normale Farben übersetzt (meist Rec.709). Erst die Hersteller-LUT, dann Belichtung und Weißabgleich korrigieren, danach der eigene Look. Kauf-LUTs sind kein Muss.</p></article>
+      <article class="panel" data-reveal><h3 class="h3">ISO tief</h3><p>So niedrig wie möglich, draußen meist 100. Hohe ISO bringt Rauschen, das bei Log nach dem Graden noch stärker auffällt. Wenn die Automatik an bleiben soll, setz ein Maximum.</p></article>
+      <article class="panel" data-reveal><h3 class="h3">Bitrate hoch</h3><p>Immer die höchste Stufe, FPV-Bilder mit Gras, Bäumen und Wasser fressen Daten. Die HERO13 schafft bis 120 Mbit/s, die O4 Air Unit Pro bis 130 Mbit/s, Walksnail Moonlight bis 150 Mbit/s. Schnelle Speicherkarte nicht vergessen.</p></article>
+      <article class="panel" data-reveal><h3 class="h3">Schärfe runter</h3><p>Kamera-Schärfe auf niedrig, nachschärfen kannst du im Schnitt. Zu viel Schärfe macht Kanten hart und Kompressions-Artefakte sichtbar. Gyroflow empfiehlt bei RunCam: Kontrast niedrig, Schärfe niedrig, Sättigung mittel.</p></article>
+      <article class="panel" data-reveal><h3 class="h3">Highlights schützen</h3><p>Ausgefressener Himmel ist für immer weiß, in Schatten steckt bei Log noch Zeichnung. Belichte so, dass der Himmel nicht anstößt, und nutze Histogramm oder Zebra, wenn deine Kamera sie anzeigt.</p></article>
+    </div>
+
+    <div class="grid g2 fm-two">
+      <div class="panel fm-wb" data-reveal>
+        <h3 class="h3">Weißabgleich fest</h3>
+        <p class="mute">Im Auto-Modus springt die Farbe, sobald Wiese, Himmel oder Beton das Bild füllen. Stell ihn fest ein, bei Tageslicht etwa 5500 Kelvin.</p>
+        <div class="fm-wb-view"><img src="media/natur.webp" alt="Hügel mit Wald im Abendlicht, Farbtemperatur veränderbar" width="1280" height="720" loading="lazy" id="fm-wb-img"><div class="osd fm-wb-osd" aria-hidden="true">WB <b data-wb-v>5500K</b> <span data-wb-auto></span></div><p class="fm-hint fm-hint-wb" aria-hidden="true">Kelvin einstellen</p></div>
+        <div class="field"><label for="fm-wb-k">Farbtemperatur: <b data-wb-v2>5500 K</b></label><input type="range" id="fm-wb-k" min="2800" max="9000" step="100" value="5500"></div>
+        <label class="check"><input type="checkbox" id="fm-wb-a"><span>Auto-Weißabgleich im Flug simulieren</span></label>
+      </div>
+      <div class="panel fm-bits" data-reveal>
+        <h3 class="h3">8 Bit gegen 10 Bit</h3>
+        <p class="mute">8 Bit kennen 256 Stufen pro Farbkanal, 10 Bit 1024. Erst beim Graden wird das sichtbar: Ein sanfter Himmel bekommt in 8 Bit Stufen, das nennt man Banding.</p>
+        <div class="fm-bits-view"><canvas id="fm-bits-cv" aria-hidden="true"></canvas><span class="fm-bits-l hud" aria-hidden="true">8 BIT</span><span class="fm-bits-r hud" aria-hidden="true">10 BIT</span><p class="fm-hint fm-hint-bits" aria-hidden="true">Grading verstärken</p></div>
+        <div class="field"><label for="fm-bits-k">Grading-Stärke: <b data-bits-v>×4</b></label><input type="range" id="fm-bits-k" min="1" max="12" step="0.1" value="4"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 · FLUGSTIL -->
+<section class="sec fm-sec fm-fly" id="flugstil" aria-labelledby="fly-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 08 · Flugstil</p>
+      <h2 class="h2" id="fly-h" data-split>Fliegen für die Kamera</h2>
+      <p class="lede" data-reveal>Die beste Kamera rettet keinen hektischen Flug. Für Filmaufnahmen fliegst du weicher, mit Plan und mit einer Linie, die eine kleine Geschichte erzählt: Anfang, Höhepunkt, Ende.</p>
+    </header>
+
+    <div class="grid g2 fm-styles">
+      <div class="panel" data-reveal><span class="tag sig">Cinematic</span><h3 class="h3">Ruhig und weich</h3><ul class="fm-list"><li>Lange, fließende Bewegungen, wenig Rollen</li><li>Gas gleichmäßig, Richtungswechsel früh einleiten</li><li>Nah an Strukturen, aber kontrolliert</li><li>Ziel: ein Bild, das wie von einer Kamerafahrt aussieht</li></ul></div>
+      <div class="panel" data-reveal><span class="tag amber">Freestyle</span><h3 class="h3">Tricks und Energie</h3><ul class="fm-list"><li>Flips, Rolls, Power Loops, Dives</li><li>Mehr Uptilt, mehr Tempo, höhere Rates</li><li>Schnitt auf den Beat, kurze Clips</li><li>Ziel: Puls hoch beim Zuschauen</li></ul></div>
+    </div>
+
+    <div class="fm-moves" data-reveal>
+      <div class="fm-moves-view">
+        <svg id="fm-mv-svg" viewBox="0 0 800 420" role="img" aria-labelledby="fm-mv-t">
+          <title id="fm-mv-t">Schema einer Flugszene mit Turm, Mauer, Bäumen und Halle, darauf die Flugbahn des gewählten Manövers</title>
+          <defs>
+            <linearGradient id="fm-mv-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d2550"/><stop offset="1" stop-color="#1a3c6e"/></linearGradient>
+            <linearGradient id="fm-mv-gnd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f2a22"/><stop offset="1" stop-color="#06120f"/></linearGradient>
+          </defs>
+          <rect width="800" height="420" fill="url(#fm-mv-sky)"/>
+          <path d="M0 300 Q120 270 240 290 T480 285 T800 292 V420 H0Z" fill="#12243f" opacity=".7"/>
+          <rect y="330" width="800" height="90" fill="url(#fm-mv-gnd)"/>
+          <g class="fm-mv-scene">
+            <g class="fm-mv-tower"><path d="M520 330 L540 120 L600 120 L620 330 Z" fill="none" stroke="#9db1cc" stroke-width="3"/><path d="M530 230 L610 230 M535 175 L605 175 M526 280 L614 280 M540 120 L600 175 M600 120 L540 175 M535 175 L605 230 M605 175 L535 230" stroke="#9db1cc" stroke-width="1.6" opacity=".7"/><rect x="528" y="98" width="84" height="22" fill="#9db1cc" opacity=".8"/><circle cx="548" cy="92" r="11" fill="none" stroke="#9db1cc" stroke-width="2.5"/><circle cx="592" cy="92" r="11" fill="none" stroke="#9db1cc" stroke-width="2.5"/></g>
+            <rect class="fm-mv-wall" x="150" y="262" width="26" height="68" fill="#3a4c66"/>
+            <g class="fm-mv-trees"><path d="M300 330 V250 M300 250 l-26 30 h52Z M300 230 l-22 28 h44Z M300 212 l-16 22 h32Z" fill="#1e5b44" stroke="#2c7a5b" stroke-width="2"/><path d="M372 330 V246 M372 246 l-26 30 h52Z M372 226 l-22 28 h44Z M372 208 l-16 22 h32Z" fill="#1e5b44" stroke="#2c7a5b" stroke-width="2"/></g>
+            <g class="fm-mv-hall"><path d="M660 330 V250 L720 222 L780 250 V330 Z" fill="#1b2d4a" stroke="#5aa2ff" stroke-width="1.5"/><rect x="694" y="282" width="52" height="48" fill="#02050b" stroke="#5aa2ff" stroke-width="1.5"/></g>
+            <text x="18" y="404" class="fm-mv-lbl">Seitenansicht · Schema</text>
+          </g>
+          <path id="fm-mv-path" class="fm-mv-path" d="M40 300 C120 300 140 300 150 250 S200 160 360 150"/>
+          <g id="fm-mv-drone" class="fm-mv-drone"><path class="fm-mv-cone" d="M0 0 L70 -24 L70 24 Z"/><rect x="-10" y="-5" width="20" height="10" rx="3"/><circle cx="-12" cy="-7" r="5"/><circle cx="12" cy="-7" r="5"/></g>
+        </svg>
+        <p class="fm-hint fm-hint-mv" aria-hidden="true">Manöver antippen</p>
+      </div>
+      <div class="fm-moves-side panel">
+        <div class="fm-mv-btns" role="tablist" aria-label="Manöver">
+          <button type="button" role="tab" aria-selected="true" data-mv="reveal">Reveal</button>
+          <button type="button" role="tab" aria-selected="false" data-mv="orbit">Orbit</button>
+          <button type="button" role="tab" aria-selected="false" data-mv="dive">Dive</button>
+          <button type="button" role="tab" aria-selected="false" data-mv="gap">Gap</button>
+          <button type="button" role="tab" aria-selected="false" data-mv="prox">Proximity</button>
+          <button type="button" role="tab" aria-selected="false" data-mv="through">Fly-Through</button>
+        </div>
+        <div class="fm-mv-info" role="tabpanel" aria-live="polite">
+          <h3 class="h3" id="fm-mv-name">Reveal</h3>
+          <p id="fm-mv-what"></p>
+          <p class="fm-mv-tip"><b>Kamera-Tipp:</b> <span id="fm-mv-tip"></span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g2 fm-two">
+      <div class="panel fm-up" data-reveal>
+        <h3 class="h3">Uptilt-Simulator</h3>
+        <p class="mute">Je schneller du fliegst, desto stärker neigt sich der Kopter nach vorn. Der Kamerawinkel (Uptilt) gleicht das aus. Zu viel Uptilt bei langsamem Flug zeigt nur Himmel, zu wenig bei schnellem Flug nur Boden.</p>
+        <div class="fm-up-view">
+          <svg viewBox="0 0 300 170" aria-hidden="true" class="fm-up-side"><line x1="0" y1="140" x2="300" y2="140" class="fm-up-g"/><g id="fm-up-q" transform="translate(110 92)"><g id="fm-up-body"><rect x="-46" y="-6" width="92" height="12" rx="5" class="fm-up-b"/><circle cx="-40" cy="-14" r="14" class="fm-up-p"/><circle cx="40" cy="-14" r="14" class="fm-up-p"/><g id="fm-up-cam" transform="translate(44 0)"><rect x="-6" y="-8" width="16" height="16" rx="3" class="fm-up-c"/><path id="fm-up-ray" d="M10 0 L170 0" class="fm-up-r"/></g></g></g><text x="10" y="162" class="fm-mv-lbl">Seitenansicht · Flugrichtung →</text></svg>
+          <div class="fm-up-cam" aria-hidden="true"><div class="fm-up-sky" id="fm-up-sky"></div><div class="fm-up-hz" id="fm-up-hz"></div><span class="hud">KAMERABILD</span></div>
+          <p class="fm-hint fm-hint-up" aria-hidden="true">Regler bewegen</p>
+        </div>
+        <div class="field"><label for="fm-up-u">Uptilt: <b data-up-u>25°</b></label><input type="range" id="fm-up-u" min="0" max="50" value="25"></div>
+        <div class="field"><label for="fm-up-s">Tempo (Neigung des Kopters): <b data-up-s>20°</b></label><input type="range" id="fm-up-s" min="0" max="60" value="20"></div>
+        <p class="fm-verdict" id="fm-up-say" aria-live="polite"></p>
+        <p class="fm-src mute">Den Uptilt stellst du am Kamerahalter ein. Viele Halter haben Winkelmarken, gedruckte TPU-Halter gibt es in festen Winkeln. Tipp: Für ruhiges Cruisen flacher, für schnelle Freestyle-Linien steiler.</p>
+      </div>
+      <div class="panel fm-rates" data-reveal>
+        <h3 class="h3">Rates und Expo</h3>
+        <p class="mute">Rates bestimmen, wie schnell der Kopter bei vollem Knüppelausschlag dreht. Expo macht die Mitte weicher, damit kleine Korrekturen sanft bleiben. Kurve nach dem Betaflight-Modell „Actual“.</p>
+        <div class="fm-rates-view"><svg viewBox="0 0 300 180" aria-hidden="true" id="fm-rt-svg"><g class="fm-rt-grid"></g><path id="fm-rt-path" class="fm-rt-path"/><circle id="fm-rt-dot" r="5" class="fm-rt-dot"/></svg><p class="osd fm-rt-osd" aria-hidden="true">KNÜPPEL <b data-rt-x>0 %</b> · <b data-rt-y>0</b> °/s</p></div>
+        <div class="field"><label for="fm-rt-c">Mitte (Center Sensitivity): <b data-rt-c>70</b> °/s</label><input type="range" id="fm-rt-c" min="20" max="300" value="70"></div>
+        <div class="field"><label for="fm-rt-m">Maximum (Max Rate): <b data-rt-m>670</b> °/s</label><input type="range" id="fm-rt-m" min="200" max="1200" step="10" value="670"></div>
+        <div class="field"><label for="fm-rt-e">Expo: <b data-rt-e>0,00</b></label><input type="range" id="fm-rt-e" min="0" max="1" step="0.01" value="0"></div>
+        <div class="btns fm-presets"><button type="button" class="btn ghost" data-rt="60,450,0.4">Beispiel ruhig</button><button type="button" class="btn ghost" data-rt="120,850,0.3">Beispiel Freestyle</button></div>
+        <p class="fm-src mute">Die Beispielwerte sind Startpunkte zum Ausprobieren, keine Vorgabe. Rates sind Geschmackssache: Ändere sie in kleinen Schritten.</p>
+      </div>
+    </div>
+
+    <h3 class="h3 fm-subh" data-reveal>Plane deine Linie</h3>
+    <ol class="fm-steps">
+      <li data-reveal><b>01</b><h4>Spot ansehen</h4><p>Erst ohne Kopter: Wo ist der schönste Blick, wo sind Hindernisse, Menschen, Leitungen? Ist das Fliegen hier erlaubt?</p></li>
+      <li data-reveal><b>02</b><h4>Geschichte festlegen</h4><p>Ruhiger Anfang, ein Höhepunkt wie Reveal, Gap oder Dive, ein klares Ende. Lieber eine starke Idee als zehn halbe.</p></li>
+      <li data-reveal><b>03</b><h4>Licht abwarten</h4><p>Tiefe Sonne gibt lange Schatten und Farbe. Plane die Richtung so, dass du nicht dauernd gegen die Sonne fliegst.</p></li>
+      <li data-reveal><b>04</b><h4>Probeflug</h4><p>Eine Runde ohne Druck: Passen Uptilt, Belichtung und Linie? Danach am Handy kurz die Aufnahme prüfen.</p></li>
+      <li data-reveal><b>05</b><h4>Mehrere Takes</h4><p>Dieselbe Linie drei- bis fünfmal fliegen. Der beste Take landet im Clip, die anderen geben Schnittmaterial.</p></li>
+      <li data-reveal><b>06</b><h4>Spotter dabei</h4><p>Wer mit Brille fliegt, braucht jemanden, der den Luftraum im Blick behält. Bei uns im Verein findest du immer einen.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 09 · SCHNITT UND EXPORT -->
+<section class="sec fm-sec fm-cut" id="schnitt" aria-labelledby="cut-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 09 · Schnitt und Export</p>
+      <h2 class="h2" id="cut-h" data-split>Schnitt und Export</h2>
+      <p class="lede" data-reveal>Vom Rohmaterial zum fertigen Clip brauchst du kein teures Programm. Wichtig sind ein sauberer Ablauf, das richtige Format für die Plattform und Export-Einstellungen, bei denen nach dem Hochladen noch etwas übrig bleibt.</p>
+    </header>
+
+    <ol class="fm-flow" aria-label="Ablauf vom Flug zum Post">
+      <li data-reveal><b>1</b><span>Sichern</span><p>Karte sofort auf Rechner und zweite Platte kopieren.</p></li>
+      <li data-reveal><b>2</b><span>Sichten</span><p>Beste Takes markieren, Rest ins Archiv.</p></li>
+      <li data-reveal><b>3</b><span>Stabilisieren</span><p>Gyroflow, falls in der Kamera aus war.</p></li>
+      <li data-reveal><b>4</b><span>Schneiden</span><p>Auf den Beat, starker Anfang in den ersten Sekunden.</p></li>
+      <li data-reveal><b>5</b><span>Farbe</span><p>LUT, dann Belichtung, dann Look.</p></li>
+      <li data-reveal><b>6</b><span>Ton</span><p>Musik, dazu leise Motorsound für Echtheit.</p></li>
+      <li data-reveal><b>7</b><span>Export</span><p>Format und Werte aus der Tabelle unten.</p></li>
+    </ol>
+
+    <div class="fm-tools">
+      <a class="fm-tool panel" href="https://www.capcut.com/" target="_blank" rel="noopener" data-reveal><span class="tag">Kostenlos + Pro-Abo</span><h3 class="h3">CapCut</h3><p>Schnell am Handy und Desktop, stark für Reels, Untertitel und Beat-Schnitt. Laut CapCut-Hilfe ist der Export in 4K oder 60 fps am Desktop eine Pro-Funktion, und Pro-Effekte im Projekt verlangen ein Abo.</p><span class="tri-go">capcut.com ↗</span></a>
+      <a class="fm-tool panel" href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank" rel="noopener" data-reveal><span class="tag green">Kostenlos</span><h3 class="h3">DaVinci Resolve</h3><p>Profi-Schnitt und die beste Farbkorrektur, kostenlos für Windows, Mac und Linux. Aktuell Version 21.1 (September 2026). Die kostenpflichtige Studio-Version bringt Extras, das Gyroflow-Plugin läuft auch in der freien Version.</p><span class="tri-go">blackmagicdesign.com ↗</span></a>
+      <a class="fm-tool panel" href="https://www.adobe.com/products/premiere.html" target="_blank" rel="noopener" data-reveal><span class="tag">Abo</span><h3 class="h3">Premiere Pro</h3><p>Branchen-Standard von Adobe, gut mit After Effects kombinierbar. Gyroflow gibt es als Plugin für Premiere und After Effects.</p><span class="tri-go">adobe.com ↗</span></a>
+      <a class="fm-tool panel" href="https://www.apple.com/final-cut-pro/" target="_blank" rel="noopener" data-reveal><span class="tag">nur Mac</span><h3 class="h3">Final Cut Pro</h3><p>Schnell und flüssig auf Apple-Rechnern. Gyroflow bietet ein eigenes Plugin für Final Cut Pro.</p><span class="tri-go">apple.com ↗</span></a>
+      <a class="fm-tool panel" href="https://gyroflow.xyz/" target="_blank" rel="noopener" data-reveal><span class="tag green">Kostenlos · Open Source</span><h3 class="h3">Gyroflow</h3><p>Stabilisierung mit Gyro-Daten, Objektivprofile, Horizont-Lock. Als eigene App oder Plugin. Unverzichtbar, wenn du in der Kamera ohne Stabi filmst.</p><span class="tri-go">gyroflow.xyz ↗</span></a>
+      <a class="fm-tool panel" href="https://www.insta360.com/download" target="_blank" rel="noopener" data-reveal><span class="tag">Kostenlos</span><h3 class="h3">Insta360 Studio und App</h3><p>Zum Reframen von 360-Grad-Material: Blickrichtung und Kamerafahrten nachträglich setzen. Für die DJI Avata 360 übernehmen das DJI Fly und DJI Studio.</p><span class="tri-go">insta360.com ↗</span></a>
+    </div>
+
+    <div class="fm-frame" data-reveal>
+      <div class="fm-frame-src">
+        <div class="fm-frame-img" id="fm-fr-img"><div class="fm-fr-win" id="fm-fr-win" tabindex="0" role="slider" aria-label="Bildausschnitt verschieben" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span class="hud">9:16</span></div></div>
+        <p class="hud fm-frame-cap">Aufnahme 16:9 · Ausschnitt ziehen</p>
+        <p class="fm-hint fm-hint-fr" aria-hidden="true">Ausschnitt verschieben</p>
+      </div>
+      <div class="fm-phone" aria-hidden="true">
+        <div class="fm-phone-scr" id="fm-fr-out"><div class="fm-safe-top"></div><div class="fm-safe-right"><i></i><i></i><i></i><i></i></div><div class="fm-safe-bot"><b>@flightclubsaar</b><span>Abendflug am Turm #flightclubsaar</span></div></div>
+      </div>
+      <div class="fm-frame-side">
+        <h3 class="h3">Format-Studio</h3>
+        <p>Aus einer 16:9-Aufnahme schneidest du für Reels, TikTok und Shorts einen hohen Ausschnitt. Im Handy siehst du, wo die App ihre Knöpfe und den Text drüberlegt: Wichtiges gehört in die Mitte.</p>
+        <div class="chips" role="radiogroup" aria-label="Seitenverhältnis" id="fm-fr-ratio">
+          <label class="chip"><input type="radio" name="ratio" value="0.5625" checked><span>9:16</span></label>
+          <label class="chip"><input type="radio" name="ratio" value="0.8"><span>4:5</span></label>
+          <label class="chip"><input type="radio" name="ratio" value="1"><span>1:1</span></label>
+        </div>
+        <label class="check"><input type="checkbox" id="fm-fr-safe" checked><span>App-Oberfläche einblenden</span></label>
+        <p class="fm-src mute">Tipp: Wer in 4:3 oder 8:7 filmt, hat für den hohen Ausschnitt mehr Bild übrig als hier im 16:9-Beispiel.</p>
+      </div>
+    </div>
+
+    <div class="fm-exp" data-reveal>
+      <h3 class="h3">Export-Spickzettel</h3>
+      <div class="fm-exp-grid" role="table" aria-label="Export-Einstellungen pro Plattform">
+        <div class="fm-exp-row fm-exp-head" role="row"><span role="columnheader">Plattform</span><span role="columnheader">Format</span><span role="columnheader">Auflösung</span><span role="columnheader">Bildrate und Codec</span><span role="columnheader">Gut zu wissen</span></div>
+        <div class="fm-exp-row" role="row"><span role="cell"><b>Instagram Reels</b></span><span role="cell">9:16</span><span role="cell">1080 × 1920</span><span role="cell">wie aufgenommen, H.264, AAC</span><span role="cell">Reels bis 3 Minuten (seit Januar 2025). Instagram komprimiert stark, hochladen in höchster Qualität in den App-Einstellungen aktivieren.</span></div>
+        <div class="fm-exp-row" role="row"><span role="cell"><b>TikTok</b></span><span role="cell">9:16</span><span role="cell">1080 × 1920</span><span role="cell">wie aufgenommen, H.264, AAC</span><span role="cell">Untere und rechte Bildkante sind von der Oberfläche verdeckt. Text und Logo mittig halten.</span></div>
+        <div class="fm-exp-row" role="row"><span role="cell"><b>YouTube Shorts</b></span><span role="cell">9:16 oder 1:1</span><span role="cell">1080 × 1920</span><span role="cell">wie aufgenommen, H.264</span><span role="cell">Bis 3 Minuten. Shorts über 1 Minute mit Content-ID-Anspruch werden laut YouTube weltweit gesperrt: Musik klären!</span></div>
+        <div class="fm-exp-row" role="row"><span role="cell"><b>YouTube</b></span><span role="cell">16:9</span><span role="cell">1080p bis 4K</span><span role="cell">wie aufgenommen, H.264, MP4</span><span role="cell">YouTube empfiehlt: 1080p 8 Mbit/s (25p) und 12 Mbit/s (50p), 4K 35 bis 45 Mbit/s (25p) und 53 bis 68 Mbit/s (50p), Ton AAC 48 kHz.</span></div>
+      </div>
+      <p class="fm-src mute">Quellen: YouTube-Hilfe (Upload-Einstellungen, Shorts), Instagram-Ankündigung vom Januar 2025. Plattformen ändern ihre Werte, im Zweifel lieber etwas höhere Bitrate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · MUSIK -->
+<section class="sec fm-sec fm-music" id="musik" aria-labelledby="music-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 10 · Musik</p>
+      <h2 class="h2" id="music-h" data-split>Musik ohne Ärger</h2>
+      <p class="lede" data-reveal>Ein Chart-Song unter deinem Clip klingt verlockend, endet aber oft mit Stummschaltung, Sperre oder einem Anspruch auf deine Einnahmen. Besser: eigene Songs mit Suno, freie Musik aus Bibliotheken oder die Musik direkt in der App.</p>
+    </header>
+
+    <div class="fm-suno">
+      <div class="panel fm-suno-info" data-reveal>
+        <span class="tag sig">Eigene Songs</span>
+        <h3 class="h3">Mit Suno und aktivem Abo</h3>
+        <p>Suno erzeugt aus einer Beschreibung komplette Songs, auch rein instrumental. Was du darfst, hängt am Abo. Laut Suno, Stand Oktober 2026:</p>
+        <ul class="fm-list">
+          <li><b>Pro und Premier:</b> Für Songs, die du mit aktivem Abo erstellst und herunterlädst, bekommst du kommerzielle Nutzungsrechte. Laut Suno-Hilfe behältst du diese Rechte auch nach einer Kündigung.</li>
+          <li><b>Downloads sind begrenzt:</b> Pro bietet 20, Premier 60 Song-Downloads pro Monat, nicht genutzte verfallen.</li>
+          <li><b>Kostenloser Plan:</b> Nur für private, nicht kommerzielle Nutzung, keine Downloads. Ein späteres Abo macht alte Songs nicht nachträglich frei.</li>
+          <li><b>Eigene Songtexte</b> gehören dir. Fremde Texte nur mit Erlaubnis, keine Namen echter Künstler im Prompt.</li>
+        </ul>
+        <p class="fm-note">Kein Rechtsrat: Rein KI-erzeugte Musik ist je nach Land urheberrechtlich nicht geschützt, und um Suno laufen Klagen großer Labels. Lies vor wichtigen Projekten die aktuellen Bedingungen unter suno.com.</p>
+        <a class="btn ghost" href="https://suno.com/pricing" target="_blank" rel="noopener">Suno-Pläne ansehen <span class="arr">↗</span></a>
+      </div>
+      <div class="panel fm-prompt" data-reveal>
+        <h3 class="h3">Prompt-Baukasten</h3>
+        <p class="mute">Klick dir einen Song zusammen und kopier die Beschreibung nach Suno.</p>
+        <fieldset><legend class="lbl">Stil</legend><div class="chips" id="fm-pr-g">
+          <label class="chip"><input type="radio" name="gen" value="synthwave" checked><span>Synthwave</span></label>
+          <label class="chip"><input type="radio" name="gen" value="drum and bass"><span>Drum and Bass</span></label>
+          <label class="chip"><input type="radio" name="gen" value="cinematic orchestral"><span>Orchester</span></label>
+          <label class="chip"><input type="radio" name="gen" value="lo-fi hip hop"><span>Lo-Fi</span></label>
+          <label class="chip"><input type="radio" name="gen" value="post-rock"><span>Post-Rock</span></label>
+          <label class="chip"><input type="radio" name="gen" value="ambient electronic"><span>Ambient</span></label>
+          <label class="chip"><input type="radio" name="gen" value="techno"><span>Techno</span></label>
+        </div></fieldset>
+        <fieldset><legend class="lbl">Stimmung</legend><div class="chips" id="fm-pr-m">
+          <label class="chip"><input type="radio" name="moo" value="epic, uplifting" checked><span>episch</span></label>
+          <label class="chip"><input type="radio" name="moo" value="calm, dreamy"><span>ruhig</span></label>
+          <label class="chip"><input type="radio" name="moo" value="dark, tense"><span>düster</span></label>
+          <label class="chip"><input type="radio" name="moo" value="euphoric, energetic"><span>euphorisch</span></label>
+        </div></fieldset>
+        <div class="field"><label for="fm-pr-bpm">Tempo: <b data-pr-bpm>120</b> BPM</label><input type="range" id="fm-pr-bpm" min="70" max="180" value="120"></div>
+        <label class="check"><input type="checkbox" id="fm-pr-inst" checked><span>Instrumental, ohne Gesang</span></label>
+        <output class="fm-pr-out hud" id="fm-pr-out" for="fm-pr-bpm"></output>
+        <div class="btns"><button type="button" class="btn solid" id="fm-pr-copy">Prompt kopieren</button></div>
+        <p class="fm-copied hud" id="fm-pr-ok" role="status"></p>
+      </div>
+    </div>
+
+    <div class="fm-beat panel" data-reveal>
+      <div class="fm-beat-vis" aria-hidden="true"><div class="fm-beat-ring" id="fm-beat-ring"></div><div class="fm-beat-bars" id="fm-beat-bars"></div></div>
+      <div>
+        <h3 class="h3">Beat-Rechner für den Schnitt</h3>
+        <p class="mute">Schnitte auf dem Beat fühlen sich richtig an. Das Tempo kommt vom Prompt-Baukasten oder stell es hier ein.</p>
+        <div class="field"><label for="fm-bt-bpm">Tempo: <b data-bt-bpm>120</b> BPM</label><input type="range" id="fm-bt-bpm" min="60" max="200" value="120"></div>
+        <dl class="fm-beat-out" id="fm-beat-out" aria-live="polite"></dl>
+      </div>
+    </div>
+
+    <div class="grid g3 fm-alt">
+      <div class="panel" data-reveal><h3 class="h3">Musik in der App</h3><p>Wählst du die Musik direkt in Instagram oder TikTok aus, regelt die Plattform die Lizenz für diesen Post. Bei Business-Konten ist die Auswahl meist kleiner. Die Musik bleibt an die App gebunden, also nicht ins Video einbauen und woanders hochladen.</p></div>
+      <div class="panel" data-reveal><h3 class="h3">YouTube-Audiomediathek</h3><p>Kostenlose Musik für YouTube-Videos, laut YouTube auch in monetarisierten Videos nutzbar und ohne Content-ID-Ansprüche. Creative-Commons-Titel brauchen eine Nennung in der Beschreibung. Für andere Plattformen gibt YouTube keine Auskunft.</p><a class="tri-go" href="https://studio.youtube.com/" target="_blank" rel="noopener">YouTube Studio ↗</a></div>
+      <div class="panel" data-reveal><h3 class="h3">Finger weg</h3><p>Chart-Songs, die du aus dem Netz ins Schnittprogramm ziehst, führen zu Stummschaltung, Sperre oder Ansprüchen. Auch „No Copyright“-Kanäle sind oft nicht sauber. Und lade KI-Songs nicht bei Diensten mit Content ID hoch, sonst blockierst du am Ende deine eigenen Clips.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · POSTEN UND COLLAB -->
+<section class="sec fm-sec fm-post" id="posten" aria-labelledby="post-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 11 · Posten und Collab</p>
+      <h2 class="h2" id="post-h" data-split>Poste selbst, wir feiern mit</h2>
+      <p class="lede" data-reveal>Du darfst deine Clips ausdrücklich selbst posten. Lade den Flight Club auf Instagram als Mitwirkenden ein: Dann erscheint dein Reel auch auf unserem Profil und erreicht beide Communitys. Mit Vereinslogo aus dem Clip-Studio sieht jeder, wo du fliegst.</p>
+    </header>
+
+    <div class="fm-collab" data-reveal>
+      <div class="fm-phone fm-phone-ig" aria-hidden="true">
+        <div class="fm-phone-scr fm-ig" id="fm-ig">
+          <div class="fm-ig-s" data-s="0"><div class="fm-ig-prev" style="background-image:url(media/g/sch9.webp)"></div><p class="fm-ig-bar">Neues Reel · Weiter ›</p></div>
+          <div class="fm-ig-s" data-s="1"><div class="fm-ig-prev" style="background-image:url(media/g/sch9.webp)"><img src="assets/img/logo-mark.svg" alt="" class="fm-ig-logo"></div><p class="fm-ig-bar">Logo aus dem Clip-Studio</p></div>
+          <div class="fm-ig-s" data-s="2"><div class="fm-ig-list"><p class="fm-ig-h">Personen markieren</p><p class="fm-ig-row on">Mitwirkende einladen ›</p><div class="fm-ig-search"><span>flightclubsaar</span></div><p class="fm-ig-acc"><img src="assets/img/logo-mark.svg" alt=""><b>flightclubsaar</b><i>✓</i></p></div></div>
+          <div class="fm-ig-s" data-s="3"><div class="fm-ig-list"><p class="fm-ig-h">Beschreibung</p><p class="fm-ig-cap">Abendflug am Turm. Stabilisiert mit Gyroflow, Musik selbst gemacht mit Suno. <b>#flightclubsaar</b> #fpv #cinematicfpv</p><p class="fm-ig-row">Mitwirkende: <b>@flightclubsaar</b></p></div></div>
+          <div class="fm-ig-s" data-s="4"><div class="fm-ig-prev" style="background-image:url(media/g/sch9.webp)"></div><p class="fm-ig-bar ok">Geteilt · Warten auf @flightclubsaar</p></div>
+        </div>
+      </div>
+      <div class="fm-collab-side">
+        <p class="fm-hint fm-hint-ig" aria-hidden="true">Schritt antippen</p>
+        <ol class="fm-ig-steps" id="fm-ig-steps">
+          <li><button type="button" data-s="0" aria-pressed="true"><b>1</b><span>Reel erstellen</span><em>Plus antippen, Reel wählen, deinen Clip hochladen.</em></button></li>
+          <li><button type="button" data-s="1" aria-pressed="false"><b>2</b><span>Vereinslogo drauf</span><em>Im Clip-Studio im Crew-Bereich bekommst du Logo und Sticker passend zum Format.</em></button></li>
+          <li><button type="button" data-s="2" aria-pressed="false"><b>3</b><span>Mitwirkende einladen</span><em>Auf der Teilen-Seite „Personen markieren“, dann „Mitwirkende einladen“ und @flightclubsaar suchen.</em></button></li>
+          <li><button type="button" data-s="3" aria-pressed="false"><b>4</b><span>Text und Hashtag</span><em>Kurz sagen, wo und womit. #flightclubsaar nicht vergessen, Musik nennen.</em></button></li>
+          <li><button type="button" data-s="4" aria-pressed="false"><b>5</b><span>Teilen</span><em>Der Verein nimmt die Einladung an, dann erscheint dein Reel auch bei uns. Bis dahin sehen es nur deine Follower.</em></button></li>
+        </ol>
+        <p class="fm-src mute">TikTok: Markier @flightclubsaar in der Beschreibung. Bietet dir die App eine Funktion für Mitwirkende an, nutze sie gern. Stories können auf Instagram keine Collab-Beiträge sein. Menünamen können je nach App-Version leicht abweichen.</p>
+      </div>
+    </div>
+
+    <div class="grid g2 fm-two">
+      <div class="panel fm-capgen" data-reveal>
+        <h3 class="h3">Beschreibung in 20 Sekunden</h3>
+        <div class="fm-cg-grid">
+          <div class="field"><label for="fm-cg-spot">Wo?</label><input id="fm-cg-spot" type="text" value="Abendflug am Turm" maxlength="60"></div>
+          <div class="field"><label for="fm-cg-q">Kopter</label><select id="fm-cg-q"><option>5-Zoll-Kopter</option><option>Cinewhoop</option><option>Tiny Whoop</option><option>Long-Range-Kopter</option></select></div>
+          <div class="field"><label for="fm-cg-c">Kamera</label><input id="fm-cg-c" type="text" value="GoPro HERO13" maxlength="40"></div>
+          <div class="field"><label for="fm-cg-m">Musik</label><select id="fm-cg-m"><option value="suno">eigener Song mit Suno</option><option value="app">Musik aus der App</option><option value="yt">YouTube-Audiomediathek</option><option value="none">Originalton</option></select></div>
+        </div>
+        <label class="check"><input type="checkbox" id="fm-cg-g" checked><span>Gyroflow erwähnen</span></label>
+        <output class="fm-cg-out" id="fm-cg-out"></output>
+        <div class="btns"><button type="button" class="btn solid" id="fm-cg-copy">Text kopieren</button></div>
+        <p class="fm-copied hud" id="fm-cg-ok" role="status"></p>
+      </div>
+      <div class="panel fm-rules" data-reveal>
+        <h3 class="h3">Bevor du postest</h3>
+        <ul class="fm-rule-list">
+          <li><b>Gesichter Dritter</b> unkenntlich machen, wenn die Person nicht zugestimmt hat.</li>
+          <li><b>Kennzeichen und Hausnummern</b> verwischen, keine Einblicke in Gärten und Fenster.</li>
+          <li><b>Nur erlaubte Flüge zeigen.</b> Kein Überfliegen von Menschenansammlungen, Abstand zu Unbeteiligten, nicht über 120 Meter. Was gegen die Regeln verstößt, schadet allen Piloten.</li>
+          <li><b>Private Spots</b> nicht mit genauer Adresse nennen. Wenn Eigentümer das Fliegen erlaubt haben, bedank dich gern im Text.</li>
+          <li><b>Musik</b> nur mit Rechten, siehe Kapitel 10.</li>
+          <li><b>Hashtag</b> #flightclubsaar, damit wir deinen Clip finden.</li>
+        </ul>
+        <div class="btns">
+          <a class="btn amber solid" href="crew.html#studio">Clip einsenden <span class="arr">→</span></a>
+          <a class="btn ghost" href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener">@flightclubsaar <span class="arr">↗</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · CHECKLISTE -->
+<section class="sec fm-sec fm-check" id="checkliste" aria-labelledby="check-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 12 · Checkliste</p>
+      <h2 class="h2" id="check-h" data-split>Vor dem Filmflug</h2>
+      <p class="lede" data-reveal>Hak ab, was erledigt ist. Dein Stand bleibt in diesem Browser gespeichert, bis du ihn zurücksetzt. Ideal am Spot auf dem Handy.</p>
+    </header>
+    <div class="fm-ck">
+      <div class="fm-ck-meter" data-reveal>
+        <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="fm-ck-bg"/><circle cx="60" cy="60" r="52" class="fm-ck-fg" id="fm-ck-ring" pathLength="1"/></svg>
+        <p class="fm-ck-num"><b id="fm-ck-n">0</b><span>von <i id="fm-ck-t">0</i></span></p>
+        <p class="fm-ck-st hud" id="fm-ck-st" aria-live="polite">STANDBY</p>
+        <button type="button" class="btn ghost" id="fm-ck-reset">Zurücksetzen</button>
+      </div>
+      <div class="fm-ck-groups" id="fm-ck"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · GLOSSAR -->
+<section class="sec fm-sec fm-gl" id="glossar" aria-labelledby="gl-h">
+  <div class="wrap">
+    <header class="sec-head fm-slate">
+      <p class="kicker"><span class="fm-clap" aria-hidden="true"><i></i></span>Kapitel 13 · Glossar</p>
+      <h2 class="h2" id="gl-h" data-split>Film-Glossar</h2>
+      <p class="lede" data-reveal>Von 180-Grad-Regel bis Zebra: Die Begriffe rund ums FPV-Filmen, kurz erklärt. Such einfach drauflos.</p>
+    </header>
+    <div class="fm-gl-ctrl" data-reveal>
+      <div class="field fm-gl-search"><label for="fm-gl-q">Begriff suchen</label><input type="search" id="fm-gl-q" placeholder="z. B. Shutter, LUT, Gyro" autocomplete="off"></div>
+      <div class="chips" id="fm-gl-cat" role="radiogroup" aria-label="Bereich"></div>
+      <p class="fm-gl-count hud" aria-live="polite"><b id="fm-gl-n">0</b>Begriffe</p>
+    </div>
+    <dl class="fm-gl-list" id="fm-gl"></dl>
+    <div class="btns fm-gl-morewrap"><button type="button" class="btn ghost" id="fm-gl-more" aria-controls="fm-gl">Alle Begriffe zeigen <span class="arr">↓</span></button></div>
+    <p class="fm-gl-empty" id="fm-gl-empty" hidden>Nichts gefunden. Frag gern im <a href="hilfe.html#frage">Forum des Vereins</a>.</p>
+  </div>
+</section>
+
+<!-- ABSPANN -->
+<section class="fm-end" aria-labelledby="end-h">
+  <div class="fm-end-bg" aria-hidden="true"><img src="media/turm.webp" alt="" width="1280" height="720" loading="lazy"></div>
+  <div class="wrap fm-end-in">
+    <p class="kicker">Abspann</p>
+    <h2 class="h2" id="end-h" data-split>Zeig uns deinen Clip.</h2>
+    <p class="lede" data-reveal>Schick uns deine besten Aufnahmen über das Clip-Studio oder lade @flightclubsaar als Mitwirkenden ein. Die schönsten Clips zeigen wir auf unseren Kanälen.</p>
+    <div class="btns" data-reveal>
+      <a class="btn solid" href="crew.html#studio">Clip einsenden <span class="arr">→</span></a>
+      <a class="btn" href="wissen.html">FPV-Wissen <span class="arr">→</span></a>
+      <a class="btn ghost" href="hilfe.html">Technik-Hilfe</a>
+    </div>
+    <p class="fm-credits hud" aria-hidden="true">Ein Ratgeber des Flight Club Saar e. V. · Filme: Falcon Eye · Stand 24.10.2026</p>
+  </div>
+</section>
+
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social"><a href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" aria-label="Instagram @flightclubsaar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="TikTok @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></a><a href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="YouTube @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a></div></div>
+      <div><h4>Fliegen</h4><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><h4>Lernen</h4><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html">FPV filmen</a></li></ul></div>
+      <div><h4>Verein</h4><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="crew.html#studio">Clip einsenden</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+    </div>
+    <div class="foot-big" aria-hidden="true">Brille an</div>
+    <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
+  </div>
+</footer>
+<script src="assets/js/data.js?v=9ac81320"></script>
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/lib/ScrollTrigger.min.js"></script>
+<script src="assets/lib/SplitText.min.js"></script>
+<script src="assets/lib/ScrambleTextPlugin.min.js"></script>
+<script src="assets/lib/Draggable.min.js"></script>
+<script src="assets/lib/InertiaPlugin.min.js"></script>
+<script src="assets/lib/DrawSVGPlugin.min.js"></script>
+<script src="assets/lib/MotionPathPlugin.min.js"></script>
+<script src="assets/lib/lenis.min.js"></script>
+<script src="assets/js/fcs.js?v=260c3e35"></script>
+<script src="assets/js/filmen.js?v=42b7c3e8"></script>
+</body>
+</html>

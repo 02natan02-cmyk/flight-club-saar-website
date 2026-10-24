@@ -1,0 +1,18 @@
+/* Impressum und Datenschutz */
+.rhead{min-height:46svh}
+.rhead .bgimg{opacity:.5}
+.recht{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:48px;align-items:start}
+.recht nav{position:sticky;top:96px;display:grid;gap:6px}
+.recht nav a{font:600 12px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);text-decoration:none;padding:6px 0;border-left:2px solid var(--line);padding-left:12px;transition:color .2s,border-color .2s}
+.recht nav a:hover,.recht nav a.on{color:#fff;border-color:var(--sig)}
+.rtext{max-width:76ch;display:grid;gap:8px}
+.rtext h2{font:400 clamp(30px,4vw,44px)/1 var(--big);letter-spacing:.02em;margin:40px 0 6px;scroll-margin-top:100px}
+.rtext h2:first-child{margin-top:0}
+.rtext h3{font:600 15px var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--sig);margin:20px 0 2px}
+.rtext p,.rtext li{color:#cfdcec;line-height:1.7}
+.rtext ul{margin:4px 0 8px;padding-left:20px}
+.rtext a{color:var(--sig)}
+.rcard{padding:22px 24px;border-radius:18px;border:1px solid var(--line-hi);background:rgba(4,12,28,.6);display:grid;gap:4px}
+.rcard b{color:#fff}
+.rnote{font-size:13px;color:var(--mute);border-top:1px dashed var(--line-hi);padding-top:14px;margin-top:30px}
+@media (max-width:860px){.recht{grid-template-columns:minmax(0,1fr)}.recht nav{position:static;display:flex;flex-wrap:wrap;gap:6px 14px}.recht nav a{border-left:0;padding-left:0}}
