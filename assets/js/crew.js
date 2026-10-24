@@ -23,7 +23,9 @@
     { k: 'herz', n: 'FPV Liebe', src: 'assets/img/sticker/fpv-herz.svg', w: .15 },
     { k: 'vollgas', n: 'Vollgas', src: 'assets/img/sticker/vollgas.svg', w: .15 },
     { k: 'akku', n: 'Akku leer', src: 'assets/img/sticker/akku-leer.svg', w: .15 },
-    { k: 'ayedo', n: 'Ayedo (Sponsor)', src: 'assets/img/partner/ayedo-logo.webp', w: .3, opt: 1 }
+    { k: 'ayedo', n: 'Ayedo (Sponsor)', src: 'assets/img/partner/ayedo-logo.svg', w: .3, opt: 1 },
+    { k: 'fpvalien', n: 'Unser FPV-Alien', src: 'assets/img/partner/fpv-alien.webp', w: .22, opt: 1 },
+    { k: 'alienquad', n: 'Alien-Kopter', src: 'assets/img/partner/fpv-alien-quad.webp', w: .16, opt: 1 }
   ];
   const LIB = 'assets/lib/mediabunny.min.mjs';
   const MAXLEN = 60, MINLEN = .5;
