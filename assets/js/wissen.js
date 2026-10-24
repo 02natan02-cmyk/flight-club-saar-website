@@ -1,8 +1,9 @@
 /* Flight Club Saar – FPV-Wissen
    3D-Drohne (three.js), Schaltplan, Videosysteme, Kanäle, Weg zum ersten Flug, Checkliste, Glossar.
    Läuft als Modul. GSAP und Plugins kommen global aus fcs.js; wir warten auf „fcs:ready“.
-   Stand 24.10.2026: kein Festkleben mehr beim Scrollen. Die Drohne wird per Regler zerlegt
-   (und zerlegt sich beim ersten Sichtkontakt einmal von selbst). */
+   Stand 24.10.2026 abends: Die Drohne zerlegt sich wieder beim Scrollen (ScrollTrigger, kurzer Halt
+   von höchstens etwa 70 % Bildschirmhöhe). Regler und Knöpfe bleiben als Alternative: Der Regler folgt
+   dem Scrollen, wer ihn zieht, übernimmt, bis das Scrollen den Wert wieder einholt. */
 import * as THREE from '../lib/three.module.min.js';
 
 const D = document, W = window;
@@ -74,7 +75,7 @@ function webgl2() { try { const c = D.createElement('canvas'); return !!(W.WebGL
 
 function drone() {
   const sec = $('#drohne'); if (!sec) return;
-  const stage = $('.wi-stage', sec), canvas = $('.wi-canvas', sec);
+  const stage = $('.wi-stage', sec), track = $('.wi-track', sec) || stage, canvas = $('.wi-canvas', sec);
   const labs = $$('.wi-lab', sec), card = $('.wi-card', sec);
   const hint = makeHint($('.wi-hint-drag', sec));
   const ids = PARTS.map(p => p.id);
@@ -107,11 +108,12 @@ function drone() {
   const flat = () => { if (lede) lede.textContent = 'Eine typische 5-Zoll-Freestyle-Drohne. Tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.'; };
   if (!webgl2()) { sec.classList.add('no-3d'); flat(); return; }
   sec.classList.add('is-3d'); if (RM) sec.classList.add('rm');
-  api = drone3d({ sec, stage, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
+  if (RM && lede) lede.textContent = 'Eine 5-Zoll-Freestyle-Drohne, in ihre Bauteile zerlegt. Tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.';
+  api = drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick: (id) => { if (id) open(ids.indexOf(id), false); else if (sel >= 0) close(); } });
   if (!api) { sec.classList.remove('is-3d', 'rm'); sec.classList.add('no-3d'); flat(); }
 }
 
-function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
+function drone3d({ sec, stage, track, canvas, labs, hint, ids, onPick }) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -362,6 +364,8 @@ function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
   const labW = {}, labH = {}; const measure = () => labs.forEach(b => { labW[b.dataset.part] = b.offsetWidth || 100; labH[b.dataset.part] = b.offsetHeight || 28; });
   const roYaw = $('[data-wi-yaw]', sec), roEx = $('[data-wi-ex]', sec), exRange = $('.wi-ex-range', sec), exBtns = $$('.wi-explode button', sec);
   let rangeHeld = false, rangeT = 0;
+  const hintT = $('.wi-hint-t', sec); let hintMode = '';
+  const setHint = (m) => { if (!hintT || m === hintMode) return; hintMode = m; hintT.textContent = m === 'scroll' ? '↓ Weiterscrollen zerlegt die Drohne' : 'Bauteil antippen · ziehen dreht'; };
 
   function size() {
     Wd = stage.clientWidth || 1; Hd = stage.clientHeight || 1;
@@ -447,14 +451,18 @@ function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
       if (exRange && !rangeHeld && performance.now() - rangeT > 500) { exRange.value = ex; }
       if (exRange) exRange.style.setProperty('--p', ex + '%');
       exBtns.forEach(b => b.classList.toggle('on', (+b.dataset.go === 1) === (e > .5)));
+      if (exRange) exRange.setAttribute('aria-valuetext', ex >= 98 ? 'ganz zerlegt' : ex <= 2 ? 'zusammengebaut' : ex + ' Prozent zerlegt');
+      setHint(st && e < .35 ? 'scroll' : 'parts');
       lastEx = ex;
     }
   }
 
   function frame(now) {
     raf = 0; if (!running) return;
-    const dt = Math.min(.05, (now - last) / 1000); last = now; clock += dt;
-    e += (target - e) * (RM ? 1 : 1 - Math.pow(.004, dt));
+    const rdt = Math.min(.25, Math.max(0, (now - last) / 1000)), dt = Math.min(.05, rdt); last = now; clock += dt;
+    // weiches Nachziehen wie „scrub“, nach echter Zeit, damit es auch auf langsamen Geräten nicht hinterherhinkt
+    e += (target - e) * (RM ? 1 : 1 - Math.pow(.003, rdt));
+    if (Math.abs(target - e) < .0005) e = target;
     if (!drag) { yaw += vel; vel *= Math.pow(.05, dt); if (Math.abs(vel) < 1e-5) vel = 0; }
     root.rotation.y = yaw + impulse.v + (RM ? 0 : e * .8);
     applyExplode(dt); layoutCamera(); glow();
@@ -522,30 +530,59 @@ function drone3d({ sec, stage, canvas, labs, hint, ids, onPick }) {
     return hit ? hit.object.userData.part : null;
   }
 
-  /* ---------- Zerlegen: Regler und Knöpfe (kein Festkleben beim Scrollen) ---------- */
-  let touched = false, autoT = null;
-  const user = () => { touched = true; if (autoT) { autoT.kill(); autoT = null; } };
-  exBtns.forEach(b => b.addEventListener('click', () => {
-    user(); target = +b.dataset.go; rangeT = 0; kick();
-  }));
+  /* ---------- Zerlegen: beim Scrollen (scrub), dazu Regler und Knöpfe ----------
+     Scrollen steuert, solange niemand Regler oder Knöpfe benutzt. Wer sie benutzt, übernimmt,
+     bis der Scroll-Wert den gewählten Wert wieder einholt oder der Abschnitt verlassen wird.
+     So springt nichts und beides beißt sich nicht. */
+  let st = null, manual = null, lastT = 0, touched = false, autoT = null;
+  const fromScroll = (p) => smooth(clamp((p - .1) / .74));
+  const user = (v) => { touched = true; if (autoT) { autoT.kill(); autoT = null; } manual = v; target = v; kick(); };
+  // Bühne klebt unter der Kapitel-Leiste: deren Höhe als Abstand nach oben
+  const tocH = () => { const t = $('.toc'); sec.style.setProperty('--wi-top', (t ? Math.round(t.getBoundingClientRect().height) : 0) + 'px'); };
+  tocH(); addEventListener('resize', tocH, { passive: true }); setTimeout(tocH, 400);
+  if (!RM && has('ScrollTrigger') && track !== stage) {
+    sec.classList.add('scrub');
+    st = ScrollTrigger.create({
+      trigger: track, start: 'top 72%', end: 'bottom bottom', invalidateOnRefresh: true,
+      onUpdate: s => {
+        const t = fromScroll(s.progress);
+        if (manual !== null) {
+          // Abschnitt verlassen: Scrollen übernimmt wieder, der Zustand bleibt bis zum nächsten Scrollen stehen
+          if (!s.isActive) { manual = null; lastT = t; return; }
+          if ((lastT - manual) * (t - manual) <= 0 || Math.abs(t - manual) < .015) manual = null;
+        }
+        lastT = t;
+        if (manual === null) { target = t; kick(); }
+      }
+    });
+    lastT = fromScroll(st.progress); target = lastT; e = lastT;
+    D.addEventListener('fcs:ready', () => ScrollTrigger.refresh(), { once: true });
+    // „Drohne zerlegen“ oben im Seitenkopf: durch den Abschnitt gleiten, dabei zerlegt sie sich
+    $$('a[href="#drohne"]').forEach(a => a.addEventListener('click', ev => {
+      if (!st) return; ev.preventDefault(); ev.stopPropagation();
+      manual = null; scrollToY(st.start + (st.end - st.start) * .92);
+      history.replaceState(null, '', '#drohne');
+    }));
+  }
+  exBtns.forEach(b => b.addEventListener('click', () => { rangeT = 0; user(+b.dataset.go); }));
   if (exRange) {
     exRange.value = Math.round(target * 100);
-    const set = () => { user(); rangeT = performance.now(); target = clamp(exRange.value / 100); exRange.style.setProperty('--p', exRange.value + '%'); kick(); };
+    const set = () => { rangeT = performance.now(); user(clamp(exRange.value / 100)); exRange.style.setProperty('--p', exRange.value + '%'); };
     exRange.addEventListener('input', set);
-    exRange.addEventListener('pointerdown', () => { rangeHeld = true; user(); });
+    exRange.addEventListener('pointerdown', () => { rangeHeld = true; touched = true; if (autoT) { autoT.kill(); autoT = null; } });
     const rel = () => { rangeHeld = false; rangeT = performance.now(); };
     exRange.addEventListener('pointerup', rel); exRange.addEventListener('pointercancel', rel); exRange.addEventListener('change', rel);
   }
 
-  /* ---------- Selbst-Impuls: dreht sich einmal und zerlegt sich von allein ---------- */
+  /* ---------- Selbst-Impuls: dreht sich einmal. Ohne Scroll-Steuerung zerlegt sie sich dabei von allein ---------- */
   firstSight(stage, () => {
-    if (RM || !GS()) { if (!touched) { target = 1; kick(); } hint.show(); return; }
+    if (RM || !GS()) { if (!touched && !st) { target = 1; kick(); } hint.show(); return; }
     autoT = gsap.timeline()
       .to(impulse, { v: 1.05, duration: 1.5, ease: 'power2.inOut', onUpdate: kick, onStart: kick })
-      .add(() => { if (!touched) { target = 1; kick(); } }, .5)
+      .add(() => { if (!touched && !st) { target = 1; kick(); } }, .5)
       .to(impulse, { v: .45, duration: 1.2, ease: 'power2.inOut', onUpdate: kick })
-      .add(() => hint.show(), 1.4);
-  }, .4);
+      .add(() => hint.show(), .9);
+  }, .3);
 
   size(); renderOnce();
   return { select(id) { selected = id; region && kick(); } };

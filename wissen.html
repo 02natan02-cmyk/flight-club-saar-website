@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=d7340379">
-<link rel="stylesheet" href="assets/css/wissen.css?v=9e956a9d">
+<link rel="stylesheet" href="assets/css/wissen.css?v=49f38982">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -52,6 +52,7 @@
 
 <!-- Drohne in 3D -->
 <section class="wi-drone" id="drohne" data-toc="Drohne 3D" aria-labelledby="drohne-h">
+  <div class="wi-track">
   <div class="wi-stage">
     <div class="wi-stage-bg" aria-hidden="true"></div>
     <canvas class="wi-canvas" role="img" aria-label="3D-Modell einer 5-Zoll-FPV-Drohne. Ziehen dreht das Modell, Antippen eines Bauteils öffnet eine Infokarte."></canvas>
@@ -76,7 +77,7 @@
     <div class="osd-frame" aria-hidden="true"><i></i></div>
     <div class="wi-stage-head">
       <h2 class="h2" id="drohne-h" data-split>Die Drohne in 3D</h2>
-      <p class="wi-stage-lede">Zerleg eine 5-Zoll-Freestyle-Drohne und tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.</p>
+      <p class="wi-stage-lede">Scroll weiter, dann zerlegt sich die 5-Zoll-Freestyle-Drohne in ihre Bauteile. Tipp auf ein Bauteil: Du siehst, was es macht und worauf du achten musst.</p>
     </div>
     <div class="osd wi-ro" aria-hidden="true">5 ZOLL · <b>10</b> BAUTEILE<br>YAW <b data-wi-yaw>000</b>° · ZERLEGT <b data-wi-ex>0</b> %</div>
     <ul class="wi-labels" aria-label="Bauteile der Drohne">
@@ -91,7 +92,7 @@
       <li><button type="button" class="wi-lab" data-part="akku"><i></i><span>LiPo-Akku</span></button></li>
       <li><button type="button" class="wi-lab" data-part="strap"><i></i><span>Akku-Strap</span></button></li>
     </ul>
-    <p class="wi-hint wi-hint-drag" aria-hidden="true">Bauteil antippen · ziehen dreht</p>
+    <p class="wi-hint wi-hint-drag" aria-hidden="true"><span class="wi-hint-t">Bauteil antippen · ziehen dreht</span></p>
     <div class="wi-card" hidden>
       <p class="wi-card-n">Bauteil <b data-wi-cn>1</b> von 10</p>
       <h3 class="h3 wi-card-t">Rahmen</h3>
@@ -110,6 +111,7 @@
       <input type="range" class="wi-ex-range" min="0" max="100" value="0" step="1" aria-label="Drohne zerlegen, 0 heißt zusammengebaut, 100 heißt ganz zerlegt">
       <button type="button" data-go="1">Zerlegen</button>
     </div>
+  </div>
   </div>
 </section>
 
@@ -507,6 +509,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=27c61f1e"></script>
-<script src="assets/js/wissen.js?v=ce093523" type="module"></script>
+<script src="assets/js/wissen.js?v=a0c8caa7" type="module"></script>
 </body>
 </html>

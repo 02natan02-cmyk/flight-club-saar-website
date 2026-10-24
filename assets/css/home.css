@@ -347,6 +347,8 @@
 .club-show .show-osd{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:.22em;color:#cfe0f5}
 .club-show .show-osd b{color:var(--sig)}
 .club-show .show-cap{position:absolute;left:12px;right:12px;bottom:58px;text-align:center;pointer-events:none}
+.club-show .show-k{display:inline-block;margin:0 0 6px;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,176,32,.5);background:rgba(4,9,18,.7);font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--amber)}
+.club-show .show-k::before{content:"Die Drohnen zeigen: ";color:#cfe0f5}
 .club-show .show-t{font:400 clamp(30px,3.6vw,52px)/1 var(--big);margin:0;text-transform:uppercase;text-shadow:0 0 30px rgba(63,224,255,.5)}
 .club-show .show-s{margin:4px 0 0;font-size:14px;color:var(--mute)}
 .show-dots{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;padding:0 10px}

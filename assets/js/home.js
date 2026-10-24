@@ -251,68 +251,97 @@
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SMALL = matchMedia('(max-width: 700px)').matches;
 
-  /* ---------- Drohnenshow: läuft von allein durch, kein Festkleben beim Scrollen ---------- */
+  /* ---------- Drohnenshow: läuft von allein durch, kein Festkleben beim Scrollen ----------
+     Jede Formation ist eine klare Form (Logo, Jahreszahl, Sprechblase, Buchstaben, Brille).
+     Die Punkte sitzen gleichmäßig verteilt, die Kontur bekommt extra Punkte, damit man die Form in einer Sekunde erkennt. */
   async function show() {
     const box = $('#show'), cv = $('#show-cv'); if (!box || !cv) return;
-    const cx = cv.getContext('2d');
-    const N = SMALL ? 460 : 860;
-    let W = 0, H = 0; const dpr = Math.min(devicePixelRatio || 1, 2);
-    const size = () => { const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const cx = cv.getContext('2d'), cap = $('.show-cap', box);
+    const N = SMALL ? 620 : 980;
+    let W = 0, H = 0, top = 40, bot = 0; const dpr = Math.min(devicePixelRatio || 1, 2);
+    // Freie Fläche für die Formation: unter der OSD-Zeile, über der Beschriftung
+    const size = () => { const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      top = Math.min(56, H * .1); bot = cap ? Math.max(H * .5, cap.offsetTop - 12) : H * .72; };
     size();
     const spr = (c, r) => { const s = document.createElement('canvas'); s.width = s.height = r * 2; const g = s.getContext('2d'); const gr = g.createRadialGradient(r, r, 0, r, r, r); gr.addColorStop(0, '#fff'); gr.addColorStop(.25, c); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, r * 2, r * 2); return s; };
     const SC = spr('rgba(63,224,255,.9)', 9), SA = spr('rgba(255,176,32,.9)', 9), SW = spr('rgba(234,244,255,.9)', 9);
     try { await document.fonts.load('400 200px "Bebas Neue"'); } catch (e) {}
     const loadImg = src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; });
     const mark = await loadImg('assets/img/logo-mark.svg');
+    // Form zeichnen, gleichmäßig verteilte Punkte ziehen (Kontur zuerst, dann Fläche), feste Zufallsfolge
     const sample = (draw, aspect) => {
-      const w = 420, h = Math.round(420 / aspect), o = document.createElement('canvas'); o.width = w; o.height = h; const g = o.getContext('2d');
-      g.fillStyle = '#fff'; draw(g, w, h);
-      const d = g.getImageData(0, 0, w, h).data, pts = [];
-      for (let y = 0; y < h; y += 3) for (let x = 0; x < w; x += 3) if (d[(y * w + x) * 4 + 3] > 120) pts.push([x / w, y / h]);
-      const out = []; for (let i = 0; i < N; i++) out.push(pts.length ? pts[(i * 7919) % pts.length] : [Math.random(), Math.random()]);
-      return { pts: out, aspect };
+      const w = 480, h = Math.round(w / aspect), o = document.createElement('canvas'); o.width = w; o.height = h; const g = o.getContext('2d');
+      g.fillStyle = g.strokeStyle = '#fff'; g.lineCap = g.lineJoin = 'round'; draw(g, w, h);
+      const d = g.getImageData(0, 0, w, h).data, on = (x, y) => x >= 0 && y >= 0 && x < w && y < h && d[(y * w + x) * 4 + 3] > 120;
+      const edge = [], fill = [];
+      for (let y = 0; y < h; y += 2) for (let x = 0; x < w; x += 2) if (on(x, y)) (on(x - 3, y) && on(x + 3, y) && on(x, y - 3) && on(x, y + 3) ? fill : edge).push([x, y]);
+      let seed = 4711; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+      const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = rnd() * (i + 1) | 0; const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+      shuf(edge); shuf(fill);
+      const all = edge.concat(fill); if (!all.length) return { pts: Array.from({ length: N }, () => [rnd(), rnd()]), aspect };
+      const pick = [], G = 6, cols = Math.ceil(w / G), grid = new Map();
+      const free = (x, y, r) => { const r2 = r * r, gx = x / G | 0, gy = y / G | 0, k = Math.ceil(r / G);
+        for (let yy = gy - k; yy <= gy + k; yy++) for (let xx = gx - k; xx <= gx + k; xx++) { const c = grid.get(yy * cols + xx); if (c) for (const q of c) { const dx = q[0] - x, dy = q[1] - y; if (dx * dx + dy * dy < r2) return false; } } return true; };
+      const put = p => { pick.push(p); const key = (p[1] / G | 0) * cols + (p[0] / G | 0); (grid.get(key) || grid.set(key, []).get(key)).push(p); };
+      let r = Math.sqrt(all.length * 4 / N);
+      for (const p of edge) { if (pick.length >= N * .46) break; if (free(p[0], p[1], r * .8)) put(p); }
+      for (let pass = 0; pass < 8 && pick.length < N; pass++, r *= .86) for (const p of all) { if (pick.length >= N) break; if (free(p[0], p[1], r)) put(p); }
+      while (pick.length < N) pick.push(all[rnd() * all.length | 0]);
+      return { pts: shuf(pick).map(p => [p[0] / w, p[1] / h]), aspect };
     };
-    const txt = (t, size) => (g, w, h) => { g.font = `400 ${size}px "Bebas Neue"`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t, w / 2, h / 2 + size * .06); };
+    const font = s => `400 ${s}px "Bebas Neue"`;
+    const rr = (g, x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
     const F = [
-      { s: sample((g, w, h) => mark && g.drawImage(mark, (w - h) / 2, 0, h, h), 1.4), t: 'Flight Club Saar', u: 'Unser Logo, geflogen von Drohnen.', n: 'Logo' },
-      { s: sample(txt('2022', 300), 1.9), t: 'Gegründet 2022', u: 'Am 10. Dezember 2022 in Dillingen.', n: '2022' },
-      { s: sample(txt('69', 320), 1.6), t: '69 im Vereins-Chat', u: 'So viele Leute sind im Hauptchat unserer Community.', n: '69' },
-      { s: sample(txt('FPV', 300), 1.9), t: 'First Person View', u: 'Du siehst, was die Drohne sieht. Live, durch die Brille.', n: 'FPV' },
-      { s: sample((g, w, h) => { g.font = '400 118px "Bebas Neue"'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('FLIGHT CLUB', w / 2, h * .3); g.fillText('SAAR', w / 2, h * .74); }, 1.55), t: 'Brille an. Welt aus.', u: 'Flight Club Saar e. V.', n: 'Name' }
+      { s: sample((g, w, h) => mark && g.drawImage(mark, (w - h) / 2, 0, h, h), 1.25), n: 'Logo', k: 'Vereinslogo', t: 'Flight Club Saar', u: 'Unser Vereinslogo, geflogen von Drohnen.' },
+      { s: sample((g, w, h) => { g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = font(250); g.fillText('2022', w / 2, h / 2 + 12); }, 1.85), n: '2022', k: 'Gründungsjahr', t: 'Gegründet 2022', u: 'Am 10. Dezember 2022 in Dillingen.' },
+      { s: sample((g, w, h) => { // Sprechblase mit der Zahl: so viele sind im Hauptchat
+          g.lineWidth = 15; rr(g, 26, 14, w - 52, h - 92, 54); g.stroke();
+          g.beginPath(); g.moveTo(104, h - 80); g.lineTo(84, h - 14); g.lineTo(168, h - 80); g.stroke();
+          g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = font(200); g.fillText('69', w / 2, (h - 78) / 2 + 22); }, 1.4), n: 'Chat', k: 'Sprechblase', t: '69 im Vereins-Chat', u: 'So viele Leute sind im Hauptchat unserer WhatsApp-Community.' },
+      { s: sample((g, w, h) => { g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = font(250); g.fillText('FPV', w / 2, h / 2 + 12); }, 1.85), n: 'FPV', k: 'Buchstaben FPV', t: 'FPV: First Person View', u: 'Du siehst live durch die Brille, was die Drohne sieht.' },
+      { s: sample((g, w, h) => { // FPV-Brille mit Band und Antenne
+          g.lineWidth = 16; g.beginPath(); g.moveTo(8, h * .56); g.lineTo(60, h * .56); g.moveTo(w - 60, h * .56); g.lineTo(w - 8, h * .56); g.stroke();
+          rr(g, 52, h * .26, w - 104, h * .62, 46); g.fill();
+          g.globalCompositeOperation = 'destination-out';
+          rr(g, 90, h * .38, (w - 104) / 2 - 62, h * .38, 30); g.fill(); rr(g, w / 2 + 24, h * .38, (w - 104) / 2 - 62, h * .38, 30); g.fill();
+          g.beginPath(); g.moveTo(w / 2 - 30, h * .885); g.quadraticCurveTo(w / 2, h * .62, w / 2 + 30, h * .885); g.fill();
+          g.globalCompositeOperation = 'source-over';
+          g.lineWidth = 12; g.beginPath(); g.moveTo(w - 128, h * .27); g.lineTo(w - 112, h * .05); g.stroke(); g.beginPath(); g.arc(w - 111, h * .06, 13, 0, 7); g.fill(); }, 2.1), n: 'Brille', k: 'FPV-Brille', t: 'Brille an. Welt aus.', u: 'Unser Motto, geflogen als FPV-Brille.' }
     ];
     const dots = $('#show-dots');
-    dots.innerHTML = F.map((f, i) => `<button type="button" data-i="${i}" aria-pressed="${i === 0}">${f.n}</button>`).join('');
-    const P = Array.from({ length: N }, (_, i) => ({ x: Math.random() * W, y: H + Math.random() * 60, vx: 0, vy: 0, k: .035 + Math.random() * .04, c: i % 11 === 0 ? SA : i % 5 === 0 ? SW : SC, ph: Math.random() * 6.28 }));
+    dots.innerHTML = F.map((f, i) => `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="Formation ${i + 1}: ${f.k}">${f.n}</button>`).join('');
+    const P = Array.from({ length: N }, (_, i) => ({ x: Math.random() * W, y: H + Math.random() * 60, vx: 0, vy: 0, k: .04 + Math.random() * .04, c: i % 11 === 0 ? SA : i % 5 === 0 ? SW : SC, ph: Math.random() * 6.28 }));
     let fi = 0, mx = -999, my = -999, vis = false, running = false, userUntil = 0;
-    const target = (f, p) => { const s = F[f].s; const bw = Math.min(W * .86, (H * .56) * s.aspect), bh = bw / s.aspect; const ox = (W - bw) / 2, oy = H * .4 - bh / 2; return [ox + p[0] * bw, oy + p[1] * bh]; };
+    // Formation in die freie Fläche einpassen, mittig
+    const target = (f, p) => { const s = F[f].s, aw = W * .86, ah = Math.max(80, bot - top) * .94; const bw = Math.min(aw, ah * s.aspect), bh = bw / s.aspect; return [(W - bw) / 2 + p[0] * bw, top + (bot - top - bh) / 2 + p[1] * bh]; };
     const setF = (f, user) => { fi = (f + F.length) % F.length; if (user) userUntil = Date.now() + 9000;
-      $('#show-t').textContent = F[fi].t; $('#show-s').textContent = F[fi].u; $('#show-f').textContent = fi + 1;
+      $('#show-t').textContent = F[fi].t; $('#show-s').textContent = F[fi].u; $('#show-f').textContent = (fi + 1) + '/' + F.length; $('#show-k').textContent = F[fi].k;
       $$('button', dots).forEach((b, k) => b.setAttribute('aria-pressed', k === fi));
-      if (window.gsap && !RM) gsap.fromTo('#show-t', { opacity: 0, y: 14, filter: 'blur(6px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .5 }); };
+      if (window.gsap && !RM) gsap.fromTo(['#show-t', '#show-k'], { opacity: 0, y: 14, filter: 'blur(6px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .5, stagger: .05 }); };
     dots.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) setF(+b.dataset.i, true); });
     const pt = e => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; const h = $('#show-hint'); if (h) h.classList.add('gone'); };
     box.addEventListener('pointermove', pt); box.addEventListener('pointerdown', pt);
     box.addEventListener('pointerleave', () => { mx = my = -999; });
-    box.addEventListener('touchend', () => { mx = my = -999; }, { passive: true });
-    $('#show-n').textContent = N;
+    ['pointerup', 'pointercancel'].forEach(t => box.addEventListener(t, e => { if (e.pointerType !== 'mouse') mx = my = -999; }));
+    $('#show-n').textContent = N; setF(0);
     new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis && !running) { running = true; loop(); } }, { threshold: .05 }).observe(box);
     new ResizeObserver(size).observe(cv);
-    // Selbst-Impuls: Formationen wechseln von allein alle 3,6 Sekunden
-    setInterval(() => { if (vis && !RM && Date.now() > userUntil) setF(fi + 1); }, 3600);
+    // Selbst-Impuls: Formationen wechseln von allein (genug Zeit zum Lesen)
+    setInterval(() => { if (vis && !RM && !document.hidden && Date.now() > userUntil) setF(fi + 1); }, 4200);
     let t = 0;
     function loop() {
       if (!vis) { running = false; return; } t += .016;
-      cx.globalCompositeOperation = 'source-over'; cx.fillStyle = 'rgba(2,5,11,.42)'; cx.fillRect(0, 0, W, H);
+      cx.globalCompositeOperation = 'source-over'; cx.fillStyle = 'rgba(2,5,11,.5)'; cx.fillRect(0, 0, W, H);
       cx.globalCompositeOperation = 'lighter';
-      const s = F[fi].s.pts;
+      const s = F[fi].s.pts, big = SMALL ? 7 : 8, sm = SMALL ? 5 : 5.5;
       for (let i = 0; i < N; i++) {
         const p = P[i]; const [tx, ty] = target(fi, s[i]);
-        const hx = tx + Math.sin(t * 1.3 + p.ph) * 1.6, hy = ty + Math.cos(t * 1.1 + p.ph) * 1.6;
+        const hx = tx + Math.sin(t * 1.3 + p.ph) * 1.1, hy = ty + Math.cos(t * 1.1 + p.ph) * 1.1;
         let ax = (hx - p.x) * p.k, ay = (hy - p.y) * p.k;
         const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy;
         if (d2 < 9000) { const d = Math.sqrt(d2) || 1, fz = (95 - d) / 95 * 4.2; ax += dx / d * fz; ay += dy / d * fz; }
-        p.vx = (p.vx + ax) * .82; p.vy = (p.vy + ay) * .82; p.x += p.vx; p.y += p.vy;
-        const sz = (i % 13 === 0 ? 9 : 6) + (Math.sin(t * 6 + p.ph) > .96 ? 4 : 0);
+        p.vx = (p.vx + ax) * .8; p.vy = (p.vy + ay) * .8; p.x += p.vx; p.y += p.vy;
+        const sz = (i % 13 === 0 ? big : sm) + (RM ? 0 : Math.sin(t * 6 + p.ph) > .97 ? 3 : 0);
         cx.drawImage(p.c, p.x - sz / 2, p.y - sz / 2, sz, sz);
       }
       requestAnimationFrame(loop);

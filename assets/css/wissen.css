@@ -80,6 +80,13 @@
 
 /* 3D-Modus: eine Bühne, so hoch wie der freie Bildschirm unter Menü und Kapitel-Leiste */
 .wi-drone.is-3d .wi-stage{height:calc(100vh - 130px);height:calc(100svh - 130px);min-height:520px;max-height:880px;padding:0;overflow:hidden}
+/* Beim Scrollen zerlegen: Bühne klebt kurz unter der Kapitel-Leiste (höchstens ca. 2/3 Bildschirmhöhe) */
+.wi-drone.is-3d.scrub .wi-stage{position:sticky;top:var(--wi-top,52px);height:calc(100vh - var(--wi-top,52px));height:calc(100svh - var(--wi-top,52px));max-height:none}
+.wi-drone.is-3d.scrub .wi-track::after{content:"";display:block;height:65vh;height:65svh}
+@media (max-height:560px){
+  .wi-drone.is-3d.scrub .wi-stage{position:relative;top:auto}
+  .wi-drone.is-3d.scrub .wi-track::after{display:none}
+}
 .wi-drone.is-3d .wi-canvas{display:block;position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:grab;z-index:3}
 .wi-drone.is-3d .wi-canvas.grab{cursor:grabbing}
 .wi-drone.is-3d .wi-canvas.over{cursor:pointer}
