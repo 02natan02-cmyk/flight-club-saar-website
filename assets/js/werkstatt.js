@@ -299,7 +299,7 @@
     '': 'Seit Version 2025.12 zählt Betaflight nach Kalender. Geplant sind zwei große Versionen pro Jahr, im Juni und im Dezember. 2025.12 ist der Nachfolger von 4.5.',
     y: '2026 ist das Jahr, in dem die Version erschienen ist.',
     m: '6 steht für den Monat Juni. Die großen Versionen sind für Juni und Dezember geplant.',
-    p: '2 ist die zweite Fehlerbehebung für 2026.6. Patches bringen Fehlerbehebungen, keine neuen Funktionen.'
+    p: '2 ist die Patch-Nummer. Patches erscheinen zwischen den großen Versionen und beheben vor allem Fehler.'
   };
   function version() {
     const sec = $('#version'); if (!sec) return;
@@ -667,7 +667,7 @@
         const bad = radio[c] !== fn; rows[i].classList.toggle('wrong', bad);
         if (bad && radio[c] === 'T') wrong = NAME[fn];
       });
-      if (m !== 'AETR') { msg.className = 'ws-d-msg bad'; msg.textContent = `Falsche Belegung: Dein Gas bewegt den Balken ${wrong}. Stell die Kanalbelegung so ein, wie deine Funke sendet.`; }
+      if (m !== 'AETR') { msg.className = 'ws-d-msg bad'; msg.textContent = `Falsche Zuordnung: Dein Gas bewegt den Balken ${wrong}. Stell die Kanalzuordnung so ein, wie deine Funke sendet.`; }
       else if (user && msg.dataset.bound !== '1') { msg.className = 'ws-d-msg ok'; msg.textContent = 'Passt: Jeder Balken folgt dem richtigen Stick.'; }
     }
     function init() {
@@ -749,7 +749,7 @@
     }
     function init() {
       p = $('#wp-mot'); ms = $$('.ws-mq-m', p); dirs = $$('.ws-mq-dir', p); okBox = $('[data-mt-ok]', p); btns = $$('[data-mt]', p); msg = $('[data-mt-msg]', p);
-      $$('[data-pr]', p).forEach(b => b.addEventListener('click', () => { did = true; out = b.dataset.pr === 'out'; $$('[data-pr]', p).forEach(x => x.setAttribute('aria-pressed', x === b)); setDirs(true); msg.className = 'ws-d-msg'; msg.textContent = out ? 'Props out: Alle Motoren drehen andersherum. In der App heißt das „Motorrichtung umgekehrt“.' : 'Props in ist der Standard: 1 und 4 drehen im Uhrzeigersinn, 2 und 3 dagegen.'; }));
+      $$('[data-pr]', p).forEach(b => b.addEventListener('click', () => { did = true; out = b.dataset.pr === 'out'; $$('[data-pr]', p).forEach(x => x.setAttribute('aria-pressed', x === b)); setDirs(true); msg.className = 'ws-d-msg'; msg.textContent = out ? 'Props out: Alle Motoren drehen andersherum. In der App heißt das „Motordrehrichtung ist umgekehrt“.' : 'Props in ist der Standard: 1 und 4 drehen im Uhrzeigersinn, 2 und 3 dagegen.'; }));
       okBox.addEventListener('change', () => { did = true; btns.forEach(b => { b.disabled = !okBox.checked; }); msg.className = 'ws-d-msg'; msg.textContent = okBox.checked ? 'Freigegeben. Tipp auf M1 bis M4 und schau, welcher Motor sich dreht.' : 'Motortest gesperrt.'; });
       btns.forEach((b, i) => b.addEventListener('click', () => spin(i)));
       setDirs(false);
@@ -871,7 +871,7 @@
     upd(false);
     // Propeller-Warnung: einmal drehen und „abheben“
     const pr = $('.ws-props-p', sec);
-    const props = () => { if (!GS() || RM) return; gsap.timeline().to(pr, { rotation: 720, duration: 1.1, ease: 'power2.in' }).to(pr, { y: -26, opacity: 0, duration: 0.5, ease: 'power2.in' }).set(pr, { rotation: 0, y: 14 }).to(pr, { y: 0, opacity: 1, duration: 0.6, ease: 'back.out(2)', delay: 0.4 }); };
+    const props = () => { if (!GS() || RM) return; gsap.timeline().to(pr, { rotation: 720, transformOrigin: '50% 50%', duration: 1.1, ease: 'power2.in' }).to(pr, { y: -26, opacity: 0, duration: 0.5, ease: 'power2.in' }).set(pr, { rotation: 0, y: 14 }).to(pr, { y: 0, opacity: 1, duration: 0.6, ease: 'back.out(2)', delay: 0.4 }); };
     $('.ws-props', sec).addEventListener('pointerenter', props);
     firstSight($('.ws-su-grid', sec), () => {
       props();
@@ -933,7 +933,8 @@
     function build() {
       if (!GS()) return;
       gsap.set(iron, { x: REST_I.x, y: REST_I.y }); gsap.set(solder, { x: REST_S.x, y: REST_S.y });
-      gsap.set(wire, { x: 170, y: -80 }); gsap.set(wtin, { opacity: 0 }); gsap.set(padsol, { scaleY: 0, opacity: 1 });
+      gsap.set(wire, { x: 170, y: -80 }); gsap.set(wtin, { opacity: 0 }); gsap.set(padsol, { scaleY: 0, opacity: 1, transformOrigin: '50% 100%' });
+      gsap.set([heat, badge, tipglow, ...smoke], { transformOrigin: '50% 50%' });
       gsap.set(jW, { opacity: 0, scale: 0.7, transformOrigin: '50% 100%' }); gsap.set(heat, { opacity: 0, scale: 0.7 }); gsap.set(smoke, { opacity: 0 });
       gsap.set(badge, { opacity: 0, scale: 0.4 }); gsap.set(lift, { rotation: 0, svgOrigin: '380 262' });
       const puff = (t, at, n) => { smoke.slice(0, n).forEach((c, k) => t.fromTo(c, { opacity: 0, x: 0, y: 0, scale: 0.6 }, { opacity: 0.55, scale: 1.4, y: -26, duration: 0.5, ease: 'sine.out' }, at + k * 0.12).to(c, { opacity: 0, y: -70, scale: 2.4, duration: 0.9, ease: 'sine.in' }, at + k * 0.12 + 0.5)); };
@@ -1028,12 +1029,19 @@
   /* =====================================================================
      06 · Videos (laden erst nach Klick, ohne Vorschaubilder von YouTube)
      ===================================================================== */
+  /* Nur Videos, deren Seite per Abruf geprüft ist (Titel, Kanal, Datum). Stand 24.10.2026. */
   const VIDS = [
-    { id: 'bWIPMkWhXPA', t: 'How to Set Up Betaflight | Quad & Radio | 2026', ch: 'Drone Camps RC', d: '10.02.2026', lang: 'EN', topic: 'bf', art: 'bf', why: 'Die wichtigsten Einstellungen, um Drohne und Funke zu binden, zu armen und sicher zu fliegen.' },
-    { id: 'qqQsVdEPr18', t: 'Meine Tricks und Tipps für das Update auf Betaflight 2025.12.1', ch: '', d: '', lang: 'DE', topic: 'bf', art: 'up', why: 'Update auf die neue Kalender-Version, auf Deutsch erklärt.' },
-    { id: '8Ph4w06gUKY', t: 'How-to Bind v3.4 Express LRS Receivers • All 4 Methods [ELRS]', ch: '', d: '', lang: 'EN', topic: 'elrs', art: 'elrs', why: 'Alle vier Wege, einen ExpressLRS-Empfänger ab Version 3.4 zu binden.' },
+    { id: 'bWIPMkWhXPA', t: 'How to Set Up Betaflight | Quad & Radio | 2026', ch: 'Drone Camps RC', d: '10.02.2026', lang: 'EN', topic: 'bf', art: 'bf', why: 'Für Einsteiger: die wichtigsten Einstellungen, um Drohne und Funke zu binden, zu armen und sicher zu fliegen.' },
     { id: 'GoPT69y98pY', t: 'Most FPV pilots need to watch this soldering tutorial', ch: 'Joshua Bardwell', d: '06.11.2021', lang: 'EN', topic: 'lot', art: 'lot', why: 'Lötkolben, Lot, Flussmittel, Spitzenpflege, Temperatur und wie du gute von schlechten Lötstellen unterscheidest.' }
   ];
+  /* Kandidaten aus der Suche (Titel laut Suchindex). YouTube hat den Abruf zur Prüfung blockiert.
+     Erst nach Prüfung von Titel, Kanal und Länge in VIDS übernehmen.
+     qqQsVdEPr18 · Meine Tricks und Tipps für das Update auf Betaflight 2025.12.1 (DE)
+     kCtL8RxNeRU · NEUES Betaflight 2025.12.1 (4.6) Update: SO rettest du deine SETTINGS (DE)
+     8Ph4w06gUKY · How-to Bind v3.4 Express LRS Receivers, All 4 Methods [ELRS] (EN)
+     jkjlk-ahcto · ExpressLRS (ELRS) Binding Demo, with and without a Binding Phrase (EN)
+     Ia_Pd1QcujA · Flight Controller löten & Komponenten anschließen (DE)
+     Wk2uNRD8kNc · Betaflight 2025.12 Tutorial: Flashing Firmware and Getting Position Hold Working (EN) */
   function videos() {
     const sec = $('#videos'); if (!sec) return;
     const list = $('[data-vlist]', sec);
@@ -1046,6 +1054,7 @@
       };
       return `<svg class="ws-vthumb" viewBox="0 0 320 180" aria-hidden="true" focusable="false"><rect width="320" height="180" class="ws-vth-bg"/><g opacity=".5"><path d="M0 45H320M0 90H320M0 135H320M80 0V180M160 0V180M240 0V180" stroke="rgba(158,196,255,.08)"/></g>${A[k] || A.bf}</svg>`;
     };
+    list.dataset.n = VIDS.length;
     list.innerHTML = VIDS.map((v, i) => `
       <li class="ws-vc" data-topic="${v.topic}">
         <div class="ws-vbox" data-vid="${v.id}">
@@ -1060,6 +1069,10 @@
           <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">Auf YouTube öffnen <span aria-hidden="true">↗</span></a>
         </div>
       </li>`).join('');
+    // Themen-Filter nur für Themen, zu denen es Videos gibt
+    const topics = new Set(VIDS.map(v => v.topic)), fs = $('.ws-vf', sec);
+    $$('input[name=ws-vt]', sec).forEach(r => { if (r.value && !topics.has(r.value)) r.closest('.chip').hidden = true; });
+    if (fs && topics.size < 2) fs.hidden = true;
     const hint = makeHint($('.ws-hint-vid', sec));
     list.addEventListener('click', e => {
       const b = e.target.closest('.ws-vplay'); if (!b) return;

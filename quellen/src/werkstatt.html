@@ -280,7 +280,7 @@
               <h3 class="h3">Anschlüsse</h3>
               <p>Legt fest, welches Gerät an welchem UART hängt. Ein UART hat ein TX- und ein RX-Pad.</p>
               <p class="ws-tk">Das brauchst du</p>
-              <ul class="ws-li"><li>Serial RX bei dem UART einschalten, an den dein Empfänger gelötet ist.</li><li>Analoger Videosender: SmartAudio oder Tramp als Peripherie. Digitales System: meist MSP auf dem UART des Videosenders, damit das OSD läuft.</li><li>Die Zeile USB VCP lässt du, wie sie ist. Darüber spricht die App mit dem Flugcontroller.</li></ul>
+              <ul class="ws-li"><li>Serial RX (in der deutschen App „Serieller Empfänger“) bei dem UART einschalten, an den dein Empfänger gelötet ist.</li><li>Analoger Videosender: SmartAudio oder Tramp als Peripherie. Digitales System: meist MSP auf dem UART des Videosenders, damit das OSD läuft.</li><li>Die Zeile USB VCP lässt du, wie sie ist. Darüber spricht die App mit dem Flugcontroller.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
               <ul class="ws-li bad"><li>Serial RX auf dem falschen UART: Im Empfänger-Tab bewegt sich nichts.</li><li>TX an TX gelötet: TX gehört immer an RX, und RX an TX.</li></ul>
             </div>
@@ -310,7 +310,7 @@
               <h3 class="h3">Konfiguration</h3>
               <p>Grundeinstellungen: wie der Flugcontroller eingebaut ist, wie die Drohne heißt und ab welcher Schräglage sie armt.</p>
               <p class="ws-tk">Das brauchst du</p>
-              <ul class="ws-li"><li>Board-Ausrichtung: Zeigt der Pfeil auf dem Flugcontroller nach vorne, bleibt sie auf 0.</li><li>Ist der Flugcontroller gedreht eingebaut, trägst du den Winkel ein und prüfst im Tab Einrichtung, ob das Modell richtig mitkippt.</li><li>Arming-Winkel: Steht die Drohne schräger als eingestellt (meist 25°), armt sie nicht.</li></ul>
+              <ul class="ws-li"><li>Board-Ausrichtung: Zeigt der Pfeil auf dem Flugcontroller nach vorne, bleibt sie auf 0.</li><li>Ist der Flugcontroller gedreht eingebaut, trägst du den Winkel ein und prüfst im Tab Einrichtung, ob das Modell richtig mitkippt.</li><li>„Zum Armen maximal zulässiger Winkel“: Steht die Drohne schräger (Standard 25°), armt sie nicht.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
               <ul class="ws-li bad"><li>Flugcontroller gedreht eingebaut, Ausrichtung nicht angepasst: Die Drohne flippt beim Start.</li></ul>
               <p class="ws-cli">In der CLI: <code>align_board_yaw</code> · <code>small_angle</code> · <code>craft_name</code> <span class="ws-ver-tag">Ort im Menü je nach Version anders</span></p>
@@ -338,7 +338,7 @@
               <h3 class="h3">Failsafe</h3>
               <p>Bestimmt, was passiert, wenn das Funksignal abreißt.</p>
               <p class="ws-tk">Das brauchst du</p>
-              <ul class="ws-li"><li>Stufe 1: Betaflight wartet kurz, ob das Signal zurückkommt. Standard sind 1,5 Sekunden.</li><li>Stufe 2: Standard ist Drop, die Motoren gehen aus. Möglich sind auch Landen oder die GPS-Rettung, die ein GPS braucht.</li><li>Testen: Props ab, armen, Funke ausschalten. Die Motoren müssen stoppen.</li></ul>
+              <ul class="ws-li"><li>Stufe 1: Betaflight wartet kurz, ob das Signal zurückkommt. Standard sind 1,5 Sekunden.</li><li>Stufe 2: Standard ist Drop, die Motoren gehen sofort aus und die Drohne fällt. Möglich sind auch Landen oder die GPS-Rettung, die ein GPS braucht.</li><li>Testen: Props ab, armen, Funke ausschalten. Die Motoren müssen stoppen.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
               <ul class="ws-li bad"><li>Failsafe nie getestet. Mach den Test vor dem ersten Flug, immer ohne Propeller.</li></ul>
               <p class="ws-cli">In der CLI: <code>failsafe_delay</code> · <code>failsafe_procedure</code></p>
@@ -392,22 +392,22 @@
                   <li><span>Gas</span><b><i data-rb="3"></i></b><em data-rv="3">1000</em></li>
                 </ul>
               </div>
-              <fieldset class="ws-fs"><legend class="lbl">Kanalbelegung</legend>
+              <fieldset class="ws-fs"><legend class="lbl">Kanalzuordnung</legend>
                 <div class="chips">
                   <label class="chip"><input type="radio" name="ws-map" value="AETR" checked><span>AETR1234</span></label>
                   <label class="chip"><input type="radio" name="ws-map" value="TAER"><span>TAER1234</span></label>
                 </div>
               </fieldset>
-              <div class="ws-d-row"><button type="button" class="ws-mini" data-rx-bind>Bind Receiver</button><span class="ws-led" data-rx-led aria-hidden="true"></span></div>
+              <div class="ws-d-row"><button type="button" class="ws-mini" data-rx-bind>Empfänger koppeln</button><span class="ws-led" data-rx-led aria-hidden="true"></span></div>
               <p class="ws-d-msg" data-rx-msg aria-live="polite">Beweg die Sticks: Jeder Balken muss zum richtigen Stick passen.</p>
             </div>
             <div class="ws-txt">
               <h3 class="h3">Empfänger</h3>
               <p>Zeigt, was von deiner Funke ankommt, und legt das Protokoll fest.</p>
               <p class="ws-tk">Das brauchst du</p>
-              <ul class="ws-li"><li>Empfänger-Modus seriell, Anbieter CRSF. Das gilt für ExpressLRS und Crossfire.</li><li>Sticks bewegen: Jeder Balken muss zum richtigen Stick passen. Standard ist AETR1234.</li><li>Binden: ab Betaflight 4.5 und ExpressLRS 3.4 per Knopf in diesem Tab oder mit <code>bind_rx</code> in der CLI. Sonst über die Bindephrase.</li></ul>
+              <ul class="ws-li"><li>Empfänger-Modus seriell, Anbieter CRSF. Das gilt für ExpressLRS und Crossfire.</li><li>Sticks bewegen: Jeder Balken muss zum richtigen Stick passen. Die Kanalzuordnung steht meist auf AETR1234.</li><li>Binden: ab Betaflight 4.5 und ExpressLRS 3.4 per Knopf „Empfänger koppeln“ (englisch Bind Receiver) oder mit <code>bind_rx</code> in der CLI. Sonst über die Bindephrase.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
-              <ul class="ws-li bad"><li>Kein Balken bewegt sich: Serial RX im Tab Anschlüsse fehlt oder der UART stimmt nicht.</li><li>Gas bewegt den falschen Balken: Kanalbelegung passt nicht zur Funke.</li></ul>
+              <ul class="ws-li bad"><li>Kein Balken bewegt sich: Serial RX im Tab Anschlüsse fehlt oder der UART stimmt nicht.</li><li>Gas bewegt den falschen Balken: Die Kanalzuordnung passt nicht zur Funke.</li></ul>
               <p class="ws-cli">In der CLI: <code>serialrx_provider</code> · <code>map</code></p>
             </div>
           </div>
@@ -457,7 +457,7 @@
               <p class="ws-tk">Das brauchst du</p>
               <ul class="ws-li"><li>Protokoll DShot, meist DShot600.</li><li>Bidirektionales DShot an und die Zahl der Motorpole eintragen (die meisten Motoren haben 14). Dann läuft der RPM-Filter gegen Vibrationen. Dein ESC muss das können.</li><li>Reihenfolge und Drehrichtung mit dem Motortest prüfen, nur ohne Propeller. Standard ist Props in.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
-              <ul class="ws-li bad"><li>Motoren in falscher Reihenfolge oder Richtung: Die Drohne flippt beim Start.</li><li>Bidirektionales DShot an, aber der ESC kann es nicht: Arming-Sperre <code>DSHOT_TELEM</code>.</li></ul>
+              <ul class="ws-li bad"><li>Motoren in falscher Reihenfolge oder Richtung: Die Drohne flippt beim Start.</li><li>Bidirektionales DShot an, aber der ESC kann es nicht: Arming-Sperre <code>DSHOT_TELEM</code> (in alten Versionen <code>RPMFILTER</code>).</li></ul>
               <p class="ws-cli">In der CLI: <code>motor_pwm_protocol</code> · <code>dshot_bidir</code> · <code>motor_poles</code> · <code>yaw_motors_reversed</code></p>
             </div>
           </div>
@@ -683,7 +683,7 @@
     <div class="sec-head ws-vid-head">
       <div>
         <h2 class="h2" id="vid-h" data-split>Videos</h2>
-        <p class="lede" data-reveal>Ausgewählte Tutorials auf Deutsch und Englisch. Ein Video lädt erst, wenn du auf „Video laden“ tippst.</p>
+        <p class="lede" data-reveal>Ausgewählte Tutorials zum Einrichten und Löten. Ein Video lädt erst, wenn du auf „Video laden“ tippst.</p>
       </div>
       <fieldset class="ws-fs ws-vf"><legend class="sr">Thema</legend>
         <div class="chips">
@@ -696,6 +696,7 @@
     </div>
     <div class="ws-vrow">
       <ul class="ws-vlist" data-vlist></ul>
+      <noscript><p class="ws-note">Ohne JavaScript direkt auf YouTube: <a href="https://www.youtube.com/watch?v=bWIPMkWhXPA" target="_blank" rel="noopener">How to Set Up Betaflight (Drone Camps RC)</a> · <a href="https://www.youtube.com/watch?v=GoPT69y98pY" target="_blank" rel="noopener">Soldering tutorial (Joshua Bardwell)</a></p></noscript>
       <p class="ws-hint ws-hint-vid" aria-hidden="true">Video antippen</p>
     </div>
     <p class="ws-vnote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg><span>Erst mit dem Klick auf „Video laden“ verbindet sich die Seite mit YouTube (Google). Dabei werden Daten wie deine IP-Adresse übertragen. Mehr dazu im <a href="datenschutz.html">Datenschutz</a>.</span></p>
