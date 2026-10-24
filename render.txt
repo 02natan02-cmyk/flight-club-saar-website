@@ -1,0 +1,328 @@
+20:42:53 [DEBUG] (1) gyroflow: [in main] Qt version: 6.4.3
+20:42:53 [DEBUG] (1) gyroflow: Gyroflow 1.6.3 (gh2453)
+20:42:53 [INFO] Videos: ["/home/runner/work/flight-club-saar-website/flight-club-saar-website/clips/avata.mp4"]
+20:42:53 [INFO] Settings file path: /home/runner/.local/share/Gyroflow/settings.json
+20:42:53 [INFO] Lens profiles directory: "/home/runner/work/flight-club-saar-website/flight-club-saar-website/gf/Gyroflow/camera_presets"
+20:42:54 [INFO] Loaded 12344 lens profiles in 226.699ms
+20:42:57 [ERROR] OpenCL error init: BufferCmd(MapUnavailable)
+20:43:01 [ERROR] wgpu init error
+20:43:01 [WARN] IMU duration 33014.40855428659 is different than video duration (34000.63333333333)
+20:43:01 [INFO] [3e0f301a] Processing done
+20:43:01 [ERROR] [CUDA @ 0x7f46982e6f00] Cannot load libcuda.so.1
+20:43:01 [ERROR] [CUDA @ 0x7f46982e6f00] Could not dynamically load CUDA
+20:43:01 [ERROR] [VDPAU @ 0x7f46982e6f00] Cannot open the X11 display .
+20:43:01 [ERROR] [Vulkan @ 0x7f4698001600] Instance creation failure: VK_ERROR_INCOMPATIBLE_DRIVER
+20:43:33 [INFO] Setting offset at 2919.5835: 49.2083 (cost 4468.5191)
+20:43:33 [INFO] Setting offset at 11127.7835: 49.0818 (cost 3633.7139)
+20:43:33 [INFO] Setting offset at 19002.3165: 49.6487 (cost 5830.6849)
+20:43:33 [INFO] Setting offset at 25508.8165: 50.0237 (cost 3737.9001)
+20:43:33 [INFO] Setting offset at 30413.7165: 50.4277 (cost 5222.2982)
+20:43:34 [ERROR] [CUDA @ 0x7f4698012980] Cannot load libcuda.so.1
+20:43:34 [ERROR] [CUDA @ 0x7f4698012980] Could not dynamically load CUDA
+20:43:34 [ERROR] [VDPAU @ 0x7f4698012980] Cannot open the X11 display .
+20:43:34 [ERROR] [Vulkan @ 0x7f46048a0380] Instance creation failure: VK_ERROR_INCOMPATIBLE_DRIVER
+config is null h264_vaapi
+config is null h264_v4l2m2m
+20:43:34 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:34 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:34 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:34 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:34 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:34 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:34 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:34 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:34 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:34 [WARN] [libx264 @ 0x7f4698aa4040] VBV maxrate specified, but no bufsize, ignored
+20:43:34 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:34 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:34 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:34 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:34 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:34 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:34 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:34 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:34 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:34 [INFO] Queue:
+20:43:34 [INFO] - [3e0f301a] file:///home/runner/work/flight-club-saar-website/flight-club-saar-website/clips/avata.mp4 -> /home/runner/work/flight-club-saar-website/flight-club-saar-website/clips/avata_stab.mp4, 1920x1080 29.970fps | H.264/AVC 63 Mbps, Frames: 1019, Status: Rendering uses_cpu
+20:43:34 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:34 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:34 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:35 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:35 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:35 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:36 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:36 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:36 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:37 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:37 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:37 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:38 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:38 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:38 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:38 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:38 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:38 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:38 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:38 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:38 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:38 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:38 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:38 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:38 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:38 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:38 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:38 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:38 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:38 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:38 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:38 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:38 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:39 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:39 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:39 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:40 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:40 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:40 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:41 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:41 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:41 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:42 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:42 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:42 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:43 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:43 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:43 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:43 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:43 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:43 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:43 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:43 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:43 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:43 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:43 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:43 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:43 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:43 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:43 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:43 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:43 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:43 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:43 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:43 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:43 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:44 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:44 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:44 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:45 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:45 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:45 [ERROR] No cached wgpu found for key: 3909588900|opencv_fisheye||8|96|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
+20:43:46 [ERROR] OpenCL error init_backends: BufferCmd(MapUnavailable)
+20:43:46 [ERROR] Failed to initialize wgpu NoAvailableAdapter
+20:43:46 [ERROR] No cached wgpu found for key: 4269171109|opencv_fisheye||8|64|(2704, 2028)|(2704, 1520)|Lanczos4|ThreadId(2)
