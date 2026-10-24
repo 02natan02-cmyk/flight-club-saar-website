@@ -133,8 +133,15 @@ jobs:
           PY
           curl -sS -X POST "$HOOK" --data-urlencode a=fertig --data-urlencode id="$JOB" --data-urlencode item="$(cat item.txt)"
       - name: Fehler melden
-        if: failure()
+        # Nur wenn dieser Lauf den Auftrag wirklich übernommen hat (sonst gehört er einem anderen Lauf).
+        if: failure() && steps.auftrag.outcome == 'success'
         env:
           JOB: ${{ inputs.job }}
+          RENDER: ${{ steps.render.outcome }}
         run: |
-          curl -sS -X POST "$HOOK" --data-urlencode a=fehler --data-urlencode id="$JOB" --data-urlencode msg="Gyroflow konnte den Clip nicht bearbeiten. Meist fehlen die Gyro-Daten in der Datei (EIS/RockSteady war an oder die Kamera schreibt keine)." || true
+          if [ "$RENDER" = "failure" ]; then
+            MSG="Gyroflow konnte den Clip nicht stabilisieren. Meist fehlen die Gyro-Daten in der Datei: Bei DJI O3/O4/Avata muss EIS (RockSteady) aus sein, bei GoPro HyperSmooth aus. Kameras ohne Gyro-Daten brauchen das Blackbox-Log dazu."
+          else
+            MSG="Technischer Fehler beim Laden oder Speichern des Clips. Bitte lade ihn später noch einmal hoch."
+          fi
+          curl -sS -X POST "$HOOK" --data-urlencode a=fehler --data-urlencode id="$JOB" --data-urlencode msg="$MSG" || true
