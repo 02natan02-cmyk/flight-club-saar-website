@@ -1,0 +1,59 @@
+name: Gyroflow Machbarkeitstest
+on:
+  push:
+    branches: [gyroflow-test]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Gyroflow holen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view -R gyroflow/gyroflow --json tagName,assets --jq '.tagName, (.assets[].name)'
+          gh release download -R gyroflow/gyroflow --pattern '*inux64.tar.gz' -D gf || gh release download -R gyroflow/gyroflow --pattern '*.AppImage' -D gf
+          ls -la gf
+          cd gf
+          for f in *.tar.gz; do [ -f "$f" ] && tar xzf "$f"; done
+          for f in *.AppImage; do [ -f "$f" ] && chmod +x "$f" && ./"$f" --appimage-extract >/dev/null; done
+          find . -maxdepth 3 -type f -iname 'gyroflow*' | head -20
+      - name: Abhängigkeiten
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libxkbcommon0 libxkbcommon-x11-0 libegl1 libgl1 libfontconfig1 libdbus-1-3 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libxcb-xinerama0 libxcb-randr0 libxcb-render-util0 libxcb-image0 libva2 libvdpau1 ocl-icd-libopencl1 pocl-opencl-icd ffmpeg xvfb >/dev/null
+          pip install -q gdown
+      - name: Testclip DJI Avata (Gyroflow-Testdaten)
+        run: |
+          mkdir clips && cd clips
+          gdown -q 1s8BkMyyFq1aqnfIGlyRSvhm0KFXzdYbW -O avata.mp4
+          ls -la
+          ffprobe -v error -show_entries format=duration:stream=index,codec_type,codec_name,width,height,r_frame_rate -of compact avata.mp4 | head -10
+          ffmpeg -v error -y -i avata.mp4 -t 8 -map 0 -c copy -copy_unknown -map_metadata 0 kurz.mp4 || true
+          ls -la
+      - name: Stabilisieren (ohne Bildschirm)
+        run: |
+          BIN=$(find gf -type f -name gyroflow -perm -u+x | head -1); [ -z "$BIN" ] && BIN=$(find gf -type f -iname 'gyroflow*' -perm -u+x | grep -v '\.so' | head -1)
+          echo "BIN=$BIN"
+          export QT_QPA_PLATFORM=offscreen
+          "$BIN" --help 2>&1 | head -60 || true
+          START=$(date +%s)
+          timeout 1500 "$BIN" "$PWD/clips/avata.mp4" -f -t _stab -p "{ 'codec': 'H.264/AVC', 'output_width': 1920, 'output_height': 1080 }" 2>&1 | tail -60 || echo "Fehlercode $?"
+          echo "Dauer: $(( $(date +%s) - START )) s"
+          ls -la clips
+      - name: Vorschaubilder
+        if: always()
+        run: |
+          mkdir -p out
+          for f in clips/*_stab*; do [ -f "$f" ] && ffmpeg -v error -y -i "$f" -vf "fps=1,scale=480:-1,tile=4x2" -frames:v 1 out/stab.jpg; done
+          ffmpeg -v error -y -i clips/avata.mp4 -vf "fps=1,scale=480:-1,tile=4x2" -frames:v 1 out/orig.jpg || true
+          for f in clips/*_stab*; do [ -f "$f" ] && ffmpeg -v error -y -i "$f" -t 6 -vf scale=640:-2 -c:v libx264 -crf 28 -an out/stab_klein.mp4; done
+          ffmpeg -v error -y -i clips/avata.mp4 -t 6 -vf scale=640:-2 -c:v libx264 -crf 28 -an out/orig_klein.mp4 || true
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gyroflow-test
+          path: out/
+          retention-days: 3
