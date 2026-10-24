@@ -8,7 +8,7 @@ BASE_URL = os.environ.get('FCS_BASE', 'https://02natan02-cmyk.github.io/flight-c
 
 PAGES = [
   # datei, titel, beschreibung, menü-schlüssel, zusätzliche skripte
-  ('index.html', 'Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!', 'Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält.', 'start', ['home', 'game']),
+  ('index.html', 'Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!', 'Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält.', 'start', ['home', 'game', 'intro3d']),
   ('hallenfliegen.html', 'Hallenfliegen · Flight Club Saar e. V.', 'Tiny Whoops in der Halle: alle Termine der Wintersaison in Eiweiler und Holz, mit Kalender-Export und Route. Kommt einfach vorbei!', 'halle', ['halle']),
   ('spots.html', 'Spot-Karte · Flight Club Saar e. V.', 'Unsere FPV-Spots im Saarland mit Route per Klick, Bewertungen und Spot-Vorschlag. Mit den Regeln, die für jeden Piloten gelten.', 'spots', ['leaflet', 'spots']),
   ('wissen.html', 'FPV-Wissen · Flight Club Saar e. V.', 'FPV einfach erklärt: Bauteile einer Drohne in 3D, Schaltplan zum Anklicken, Videosysteme, Kanäle und der Weg vom Simulator zum ersten Flug.', 'wissen', ['three', 'wissen']),
@@ -130,7 +130,7 @@ def scripts(extra, file):
         tags.append('<script src="assets/lib/leaflet.js"></script>')
     tags.append(f'<script src="assets/js/fcs.js?v={ver("assets/js/fcs.js")}"></script>')
     for e in extra:
-        if e in ('leaflet', 'three'): continue
+        if e in ('leaflet', 'three', 'intro3d'): continue
         js = f'assets/js/{e}.js'
         if (OUT / js).exists():
             mod = ' type="module"' if 'three' in extra and e in ('home', 'wissen', 'sim') else ''
@@ -140,6 +140,7 @@ def scripts(extra, file):
 
 def page_css(extra):
     out = ['<link rel="stylesheet" href="assets/lib/leaflet.css">'] if 'leaflet' in extra else []
+    if 'intro3d' in extra: out.append('<link rel="modulepreload" href="assets/lib/three.module.min.js">')
     for e in extra:
         css = f'assets/css/{e}.css'
         if (OUT / css).exists(): out.append(f'<link rel="stylesheet" href="{css}?v={ver(css)}">')
@@ -151,6 +152,7 @@ def build():
         if not src.exists():
             print('fehlt:', src); continue
         body = src.read_text()
+        body = re.sub(r'%%V:([^%]+)%%', lambda m: ver(m.group(1)), body)
         html = head(file, title, desc) + page_css(extra) + '\n</head>\n<body>\n' + nav(key) + f'<main id="inhalt">\n{body}\n</main>\n' + foot() + scripts(extra, file) + '\n</body>\n</html>\n'
         (OUT / file).write_text(html)
         print('gebaut:', file, len(html))

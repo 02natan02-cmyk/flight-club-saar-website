@@ -138,6 +138,7 @@ export async function playIntro(root, opts = {}) {
   stage.className = 'i3d-stage';
   stage.style.setProperty('--i3d-a', O.colors.a);
   stage.style.setProperty('--i3d-b', O.colors.b);
+  stage.style.setProperty('--i3d-a-rgb', CA.map(v => Math.round(v * 255)).join(','));
   stage.innerHTML =
     '<canvas class="i3d-noise"></canvas>' +
     '<div class="i3d-boot"><p class="i3d-b1"></p><p class="i3d-b2">BAT <b>16.8V</b> · RSSI <b>99</b> · CH <b>R4 5769</b></p></div>' +
@@ -848,7 +849,7 @@ async function buildScene(T, C) {
     vertexShader: `attribute float aSeed;uniform float uTime,uDpr,uRing,uPx;varying float vB;
       void main(){vec3 p=position;p.x+=sin(uTime*.4+aSeed*40.)*.06;p.y+=cos(uTime*.33+aSeed*23.)*.05;
         vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;
-        float dr=abs(length(p.xy)-.96)+abs(p.z)*.7;vB=.22+uRing*exp(-dr*1.6)*1.2;
+        float dr=abs(length(p.xy)-${(1 - ringW / 2).toFixed(4)})+abs(p.z)*.7;vB=.22+uRing*exp(-dr*1.6)*1.2;
         gl_PointSize=clamp((1.2+aSeed*2.2)*uDpr*uPx*5./max(.3,-mv.z),1.,9.);}`,
     fragmentShader: `uniform float uAlpha;uniform vec3 uA;varying float vB;
       void main(){vec2 c=gl_PointCoord-.5;float a=exp(-dot(c,c)*14.);gl_FragColor=vec4(mix(vec3(.75,.85,1.),uA,.35)*a*vB*uAlpha,1.);}`

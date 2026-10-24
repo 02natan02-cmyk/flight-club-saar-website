@@ -16,6 +16,13 @@
     let seen = false; try { seen = !!sessionStorage.getItem('fcs-intro'); } catch (e) {}
     if (q.includes('nointro') || (seen && !q.includes('intro')) || RM || !window.gsap) { el.classList.add('gone'); return Promise.resolve(); }
     try { sessionStorage.setItem('fcs-intro', '1'); } catch (e) {}
+    // Neues 3D-Intro (Kreis, Drohne fliegt ein, wird zum Logo). Ohne WebGL oder bei Fehler: altes Intro.
+    const v = el.dataset.i3d || '1';
+    const url = new URL('assets/js/intro3d.js?v=' + v, document.baseURI).href;
+    return import(url).then(m => m.playIntro(el, { onReveal: () => FCS._heroGo && FCS._heroGo() })).catch(() => false).then(ok => ok || introAlt(el));
+  }
+  function introAlt(el) {
+    el.classList.remove('i3d', 'gone');
     document.documentElement.style.overflow = 'hidden';
     // Bildrauschen wie analoges FPV-Video
     const cv = $('.intro-noise', el), cx = cv.getContext('2d'); let run = true;
@@ -233,7 +240,7 @@
     addEventListener('scroll', upd, { passive: true }); upd();
   }
 
-  function go() { intro().then(() => { hero(); if (window.ScrollTrigger) ScrollTrigger.refresh(); }); termin(); motto(); crew(); reels(); net(); joinCard(); faces(); secnav(); }
+  function go() { let heroOn = false; FCS._heroGo = () => { if (heroOn) return; heroOn = true; hero(); }; intro().then(() => { FCS._heroGo(); if (window.ScrollTrigger) ScrollTrigger.refresh(); }); termin(); motto(); crew(); reels(); net(); joinCard(); faces(); secnav(); }
   document.addEventListener('fcs:ready', go, { once: true });
 })();
 
