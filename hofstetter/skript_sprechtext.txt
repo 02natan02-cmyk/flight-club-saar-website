@@ -1,0 +1,27 @@
+[warmly] Hallo, Herr Hofstetter! Wie geht es Ihnen?
+Wir waren heute fleißig.
+Dreiundzwanzig KI-Agenten.
+Rund vierundzwanzigtausend Zeilen Code.
+Dreizehn Seiten. Und das alles an einem einzigen Tag.
+Und keine Angst vor Hackern: Kein P-H-P, kein eigener Server, keine Datenbank.
+Die Seite ist statisch und liegt bei GitHub. Die typischen Sicherheitslücken gibt es da gar nicht.
+Live-Funktionen laufen über einen Automatisierungsdienst, mit Prüfsummen. Wer etwas einstellt, bekommt einen Löschcode, und der Vorstand hat einen Generalcode.
+Keine Cookies, kein Tracking. Und alles läuft auf Handy, Tablet und PC.
+[excited] Und das kann die Seite:
+Ein Intro in drei D: Die Drohne fliegt durch den Ring und wird zum Logo.
+Eine Drohnenshow, die das Vereinslogo formt.
+Das Spiel „Kannst du fliegen?“: gesteuert durch Kippen des Handys, drei Level, und eine Bestenliste für alle.
+Ein F-P-V-Simulator, mit echter Funke oder PlayStation-Controller.
+Die Spot-Karte mit Radar und Bewertungen.
+Hallenfliegen mit Countdown, Kalender und „Ich bin dabei“.
+Biete und Suche: der Vereinsflohmarkt, mit Fotos.
+Das Clip-Studio: Video rein, Vereinslogo drauf, fertig.
+F-P-V-Wissen mit einer Drohne zum Zerlegen. Und der F-P-V-Doktor hilft bei der Technik.
+Mitglied werden geht online, mit SEPA. Und die Crew hat eine eigene Pinnwand.
+[warmly] Bei einer Agentur frei eingekauft, wäre so eine Website rund sechzigtausend Euro wert.
+Und jetzt eine Bitte: Klicken Sie sich durch und schauen Sie sich alles an.
+Bevor wir den Link weitergeben: Schicken Sie Natan alles, was Ihnen auffällt, als Sprachnachricht und mit Screenshots.
+Über Nacht überarbeiten wir das, und dann veröffentlichen wir.
+Ich wünsche Ihnen einen wunderschönen Samstagabend.
+[playfully] Und keine Sorge: Beim nächsten Schachspiel lässt Natan Sie nicht mehr gewinnen.
+[excited] Jetzt viel Spaß mit Ihrer neuen Vereinswebsite!

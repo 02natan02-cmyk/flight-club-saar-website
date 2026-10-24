@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="de" class="no-js">
+<head>
+<meta charset="utf-8">
+<script data-fe="intro">try{var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="back_forward")sessionStorage.removeItem("fcs-intro")}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Betaflight & Löten · Flight Club Saar e. V.</title>
+<meta name="description" content="Betaflight einfach erklärt: Version, Flashen, die wichtigsten Einstellungen, dazu Löten Schritt für Schritt. Mit Animationen und Videos.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#040912">
+<link rel="canonical" href="https://02natan02-cmyk.github.io/flight-club-saar-website/werkstatt.html">
+<meta property="og:type" content="website"><meta property="og:locale" content="de_DE"><meta property="og:site_name" content="Flight Club Saar e. V.">
+<meta property="og:title" content="Betaflight & Löten · Flight Club Saar e. V."><meta property="og:description" content="Betaflight einfach erklärt: Version, Flashen, die wichtigsten Einstellungen, dazu Löten Schritt für Schritt. Mit Animationen und Videos.">
+<meta property="og:url" content="https://02natan02-cmyk.github.io/flight-club-saar-website/werkstatt.html"><meta property="og:image" content="https://02natan02-cmyk.github.io/flight-club-saar-website/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fcs.css?v=babf9187">
+<link rel="stylesheet" href="assets/css/werkstatt.css?v=fb0bfe35">
+</head>
+<body>
+<a class="sr" href="#inhalt">Zum Inhalt springen</a>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
+  <nav class="nav-links" aria-label="Hauptmenü"><a href="hallenfliegen.html">Hallenfliegen</a><a href="spots.html">Spots</a><a href="wissen.html">FPV-Wissen</a><a href="hilfe.html">Technik-Hilfe</a><a href="filmen.html">Clip-Studio</a><a href="crew.html">Crew</a></nav>
+  <a class="btn solid nav-cta" href="mitglied.html">Mitglied werden</a>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Übersicht</span></button>
+</header>
+<div class="menu" id="menu" aria-label="Übersicht aller Seiten"><div class="menu-in wrap"><div class="mg"><p class="mg-h">Fliegen</p><div class="mg-t"><a class="mt" href="hallenfliegen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V10l9-6 9 6v10"/><path d="M8 20v-6h8v6"/><circle cx="12" cy="9.5" r="1.4"/></svg><b>Hallenfliegen</b><span>Tiny Whoops im Winter. Nächster Termin: <span data-next>bald</span></span></a><a class="mt" href="spots.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg><b>Spot-Karte</b><span>Wo wir draußen fliegen, mit Route, Regeln und Bewertungen</span></a><a class="mt" href="simulator.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="11" rx="3"/><circle cx="8.5" cy="14.5" r="2.2"/><circle cx="15.5" cy="14.5" r="2.2"/><path d="M6.5 9V4M17.5 9V4"/></svg><b>FPV-Simulator</b><span>Mit Funke, Controller oder Handy im Browser fliegen</span></a></div></div><div class="mg"><p class="mg-h">Lernen & Filmen</p><div class="mg-t"><a class="mt" href="wissen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M7 10.5V15c0 1.7 2.2 3 5 3s5-1.3 5-3v-4.5"/></svg><b>FPV-Wissen</b><span>Drohne in 3D, Schaltplan, Kanäle, erster Flug</span></a><a class="mt" href="hilfe.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3.5 17.5 6.5 20.5l5.7-5.7a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.6-.6-2.6 2.6-2.2z"/></svg><b>Technik-Hilfe</b><span>Kopter armt nicht? Der FPV-Doktor hilft</span></a><a class="mt" href="filmen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/><circle cx="9.5" cy="12" r="2.4"/></svg><b>Clip-Studio & Filmen</b><span>Video hochladen, Logo drauf, runterladen. Plus Film-Ratgeber</span></a></div></div><div class="mg"><p class="mg-h">Verein</p><div class="mg-t"><a class="mt" href="mitglied.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.8-1.7 2-2.4 3.2-2.4s2.4.7 3.2 2.4M14.5 10h4M14.5 13.5h3"/></svg><b>Mitglied werden</b><span>Antrag online in wenigen Minuten</span></a><a class="mt" href="crew.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M2.8 19c.9-3 2.9-4.5 5.2-4.5s4.3 1.5 5.2 4.5M13.6 15.2c.8-.6 1.8-1 2.9-1 2 0 3.6 1.3 4.3 3.8"/></svg><b>Crew</b><span>Unsere Piloten, dein Profil, die Pinnwand</span></a><a class="mt" href="markt.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/></svg><b>Biete/Suche</b><span>Kopter, Brillen und Teile von Pilot zu Pilot</span></a></div></div><p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V. · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p></div></div>
+<main id="inhalt">
+<section class="pagehead ws-head" aria-labelledby="ws-h1">
+  <svg class="ws-head-art" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="ws-hot" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffcf6a" stop-opacity=".95"/><stop offset=".45" stop-color="#ff8a20" stop-opacity=".45"/><stop offset="1" stop-color="#ff5a1a" stop-opacity="0"/></radialGradient>
+    </defs>
+    <g class="ws-ha-board">
+      <rect x="40" y="40" width="320" height="320" rx="26" fill="#0b1a33" stroke="rgba(63,224,255,.45)" stroke-width="2"/>
+      <g fill="none" stroke="rgba(63,224,255,.55)" stroke-width="2"><circle cx="76" cy="76" r="15"/><circle cx="324" cy="76" r="15"/><circle cx="76" cy="324" r="15"/><circle cx="324" cy="324" r="15"/></g>
+      <g fill="#040912"><circle cx="76" cy="76" r="7"/><circle cx="324" cy="76" r="7"/><circle cx="76" cy="324" r="7"/><circle cx="324" cy="324" r="7"/></g>
+      <g class="ws-ha-tr" fill="none" stroke="#3fe0ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".6">
+        <path id="ws-tr1" d="M74 128H110L134 152H150"/>
+        <path id="ws-tr2" d="M74 156H120L136 172H150"/>
+        <path id="ws-tr3" d="M74 184H150"/>
+        <path id="ws-tr4" d="M74 212H122L136 198H150"/>
+        <path id="ws-tr5" d="M74 240H112L136 216H150"/>
+        <path id="ws-tr6" d="M250 160H276"/>
+        <path id="ws-tr7" d="M250 230H300L314 244V290"/>
+        <path id="ws-tr8" d="M200 250V282"/>
+      </g>
+      <rect x="144" y="144" width="112" height="112" rx="8" fill="none" stroke="#9db1cc" stroke-width="7" stroke-dasharray="2 5"/>
+      <rect x="152" y="152" width="96" height="96" rx="6" fill="#10244a" stroke="#9db1cc" stroke-width="1.5"/>
+      <text x="200" y="198" text-anchor="middle" font-family="Chakra Petch, monospace" font-size="13" font-weight="600" fill="#9db1cc" letter-spacing="2">MCU</text>
+      <rect x="276" y="143" width="36" height="36" rx="5" fill="#10244a" stroke="#ffb020" stroke-width="1.5"/>
+      <text x="294" y="197" text-anchor="middle" font-family="Chakra Petch, monospace" font-size="10" font-weight="600" fill="#ffb020" letter-spacing="1.5">GYRO</text>
+      <g fill="#c98a4b"><rect x="52" y="121" width="22" height="14" rx="3"/><rect x="52" y="149" width="22" height="14" rx="3"/><rect x="52" y="177" width="22" height="14" rx="3"/><rect x="52" y="205" width="22" height="14" rx="3"/><rect x="52" y="233" width="22" height="14" rx="3"/></g>
+      <g font-family="Chakra Petch, monospace" font-size="9.5" font-weight="600" fill="#eaf4ff" letter-spacing="1"><text x="82" y="122">5V</text><text x="82" y="150">GND</text><text x="82" y="178">T2</text><text x="82" y="206">R2</text><text x="82" y="234">SBUS</text></g>
+      <path d="M200 286l-14 22h9v20h10v-20h9z" fill="none" stroke="#eaf4ff" stroke-width="2" stroke-linejoin="round" transform="rotate(180 200 307)"/>
+      <circle class="ws-ha-led" cx="314" cy="300" r="5" fill="#3ee08a"/>
+      <text x="200" y="350" text-anchor="middle" font-family="Chakra Petch, monospace" font-size="11" font-weight="600" fill="#3fe0ff" letter-spacing="2.5">FW 2026.6.2</text>
+      <g class="ws-ha-pulse" fill="#3fe0ff"><circle r="3.2"/><circle r="3.2"/><circle r="3.2"/></g>
+    </g>
+    <g class="ws-ha-iron">
+      <circle class="ws-ha-glow" cx="63" cy="184" r="26" fill="url(#ws-hot)"/>
+      <g class="ws-ha-smoke" fill="#cfe0f5"><circle cx="58" cy="168" r="5"/><circle cx="66" cy="166" r="4"/><circle cx="60" cy="170" r="3.5"/></g>
+      <g transform="translate(63 184) rotate(-22)">
+        <path d="M0 0-5-14V-92H5V-14z" fill="#8c99ad" stroke="#eaf4ff" stroke-width="1.2"/>
+        <rect x="-11" y="-196" width="22" height="106" rx="8" fill="#1f497d" stroke="#5aa2ff" stroke-width="1.2"/>
+        <path d="M-6-170H6M-6-156H6M-6-142H6" stroke="#5aa2ff" stroke-width="2" opacity=".7"/>
+      </g>
+    </g>
+  </svg>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="osd-frame" aria-hidden="true"><i></i></div>
+  <div class="osd ws-osd-tl" aria-hidden="true"><span class="dot ws-rec"></span> WERKSTATT · CLI</div>
+  <div class="wrap">
+    <p class="crumb"><a href="index.html">Start</a> / Betaflight &amp; Löten</p>
+    <h1 class="h1" id="ws-h1" data-split>Betaflight &amp; Löten</h1>
+    <p class="lede">Betaflight verstehen und sauber löten: Schritt für Schritt erklärt, mit Animationen zum Ausprobieren und ausgewählten Videos.</p>
+    <div class="btns ws-quick">
+      <a class="btn solid" href="#betaflight">Betaflight <span class="arr">→</span></a>
+      <a class="btn ghost" href="#loeten">Löten</a>
+      <a class="btn ghost" href="#videos">Videos</a>
+    </div>
+  </div>
+</section>
+
+<!-- Was ist Betaflight? -->
+<section class="sec ws-sec ws-bf" id="betaflight" data-toc="Betaflight" aria-labelledby="bf-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2" id="bf-h" data-split>Was ist Betaflight?</h2>
+      <p class="lede" data-reveal>Betaflight ist die Firmware auf dem Flugcontroller, also das Programm, das deine Drohne in der Luft hält. Es bekommt deine Steuerbefehle vom Empfänger und misst mit dem Gyro mehrere tausend Mal pro Sekunde, wie sich die Drohne wirklich dreht. Den Unterschied gleicht der PID-Regler aus und schickt über den ESC die passende Drehzahl an jeden Motor.</p>
+    </div>
+    <div class="ws-flow panel">
+      <svg class="ws-flow-svg" aria-hidden="true" focusable="false"></svg>
+      <div class="ws-node ws-n-radio">
+        <p class="ws-node-t"><b>Funke</b><span>deine Sticks</span></p>
+        <div class="ws-sticks">
+          <div class="ws-stick" data-stick="l" tabindex="0" role="application" aria-label="Linker Stick: hoch und runter ist Gas, links und rechts ist Gieren. Mit den Pfeiltasten bewegen."><i class="ws-knob"></i></div>
+          <div class="ws-stick" data-stick="r" tabindex="0" role="application" aria-label="Rechter Stick: hoch und runter ist Nicken, links und rechts ist Rollen. Mit den Pfeiltasten bewegen."><i class="ws-knob"></i></div>
+        </div>
+        <p class="ws-node-s">Gas · Gieren <span>|</span> Nicken · Rollen</p>
+      </div>
+      <div class="ws-node ws-n-rx">
+        <p class="ws-node-t"><b>Empfänger</b><span>ELRS oder Crossfire</span></p>
+        <div class="ws-ch" aria-hidden="true"><i data-ch="0"></i><i data-ch="1"></i><i data-ch="2"></i><i data-ch="3"></i></div>
+        <p class="ws-node-s">CRSF · 4 Kanäle</p>
+      </div>
+      <div class="ws-node ws-n-fc">
+        <p class="ws-node-t"><b>Flugcontroller</b><span>Gyro misst, PID regelt</span></p>
+        <canvas class="ws-plot" width="240" height="70" aria-hidden="true"></canvas>
+        <p class="ws-node-s ws-fc-read" aria-hidden="true"><span class="ws-c-amber">Soll <b data-fc-sp>0</b></span><span class="ws-c-sig">Gyro <b data-fc-gy>0</b></span><span>°/s</span></p>
+      </div>
+      <div class="ws-node ws-n-esc">
+        <p class="ws-node-t"><b>ESC</b><span>DShot</span></p>
+        <div class="ws-esc" aria-hidden="true"><span data-m="0">0</span><span data-m="1">0</span><span data-m="2">0</span><span data-m="3">0</span></div>
+        <p class="ws-node-s">Prozent je Motor</p>
+      </div>
+      <div class="ws-node ws-n-mot">
+        <p class="ws-node-t"><b>Motoren</b><span>von oben</span></p>
+        <div class="ws-quadwrap" aria-hidden="true">
+          <svg class="ws-quad" viewBox="-100 -100 200 200">
+            <g class="ws-q-body">
+              <path d="M-52-52 52 52M52-52-52 52" stroke="#2a3446" stroke-width="14" stroke-linecap="round"/>
+              <rect x="-20" y="-30" width="40" height="60" rx="8" fill="#10244a" stroke="#ffb020" stroke-width="2"/>
+              <path d="M0-44l-8 10h16z" fill="#eaf4ff"/>
+              <g class="ws-q-m" data-q="0" transform="translate(52 52)"><circle r="33" class="ws-q-disc"/><g class="ws-q-prop"><path d="M-30 0H30" /><path d="M0-30V30" opacity=".35"/></g><circle r="7" class="ws-q-hub"/><text y="4" class="ws-q-n">1</text></g>
+              <g class="ws-q-m" data-q="1" transform="translate(52 -52)"><circle r="33" class="ws-q-disc"/><g class="ws-q-prop"><path d="M-30 0H30"/><path d="M0-30V30" opacity=".35"/></g><circle r="7" class="ws-q-hub"/><text y="4" class="ws-q-n">2</text></g>
+              <g class="ws-q-m" data-q="2" transform="translate(-52 52)"><circle r="33" class="ws-q-disc"/><g class="ws-q-prop"><path d="M-30 0H30"/><path d="M0-30V30" opacity=".35"/></g><circle r="7" class="ws-q-hub"/><text y="4" class="ws-q-n">3</text></g>
+              <g class="ws-q-m" data-q="3" transform="translate(-52 -52)"><circle r="33" class="ws-q-disc"/><g class="ws-q-prop"><path d="M-30 0H30"/><path d="M0-30V30" opacity=".35"/></g><circle r="7" class="ws-q-hub"/><text y="4" class="ws-q-n">4</text></g>
+            </g>
+          </svg>
+        </div>
+        <p class="ws-node-s">vorne ist oben</p>
+      </div>
+      <p class="ws-hint ws-hint-stick" aria-hidden="true">Zieh einen Stick</p>
+    </div>
+    <p class="ws-note">Modus 2, wie bei den meisten Funken: links Gas und Gieren, rechts Nicken und Rollen. Vereinfachte Darstellung, die Werte sind keine Messung.</p>
+  </div>
+</section>
+
+<!-- Version und Flashen -->
+<section class="sec ws-sec ws-ver" id="version" data-toc="Version" aria-labelledby="ver-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2" id="ver-h" data-split>Version und Flashen</h2>
+      <p class="lede" data-reveal>So liest du die Versionsnummer und so bringst du Betaflight in fünf Schritten auf deinen Flugcontroller.</p>
+    </div>
+    <div class="ws-ver-grid">
+      <div class="ws-vcard panel">
+        <p class="ws-k">Neueste stabile Version</p>
+        <p class="ws-vbig" aria-label="Betaflight 2026.6.2"><span data-vp="y">2026</span><i>.</i><span data-vp="m">6</span><i>.</i><span data-vp="p">2</span></p>
+        <p class="ws-vdate">erschienen am 16.09.2026</p>
+        <ul class="ws-vparts" aria-label="So liest du die Nummer">
+          <li><button type="button" data-vp-b="y"><b>2026</b><span>Jahr</span></button></li>
+          <li><button type="button" data-vp-b="m"><b>6</b><span>Monat</span></button></li>
+          <li><button type="button" data-vp-b="p"><b>2</b><span>Fehlerbehebung</span></button></li>
+        </ul>
+        <p class="ws-vtxt" data-vp-txt aria-live="polite">Seit Version 2025.12 zählt Betaflight nach Kalender. Geplant sind zwei große Versionen pro Jahr, im Juni und im Dezember. 2025.12 ist der Nachfolger von 4.5.</p>
+        <ol class="ws-vline" aria-label="Die letzten großen Versionen">
+          <li>4.5</li><li>2025.12</li><li class="on">2026.6</li>
+        </ol>
+        <p class="ws-src">Quelle: <a href="https://github.com/betaflight/betaflight/releases" target="_blank" rel="noopener">GitHub-Releases</a> und <a href="https://betaflight.com/blog" target="_blank" rel="noopener">Betaflight-Blog</a>, Stand 24.10.2026</p>
+      </div>
+      <div class="ws-flash panel">
+        <div class="ws-win-bar"><span class="ws-win-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ws-win-t">Betaflight App</span><span class="tag amber">Schema</span></div>
+        <p class="ws-merk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/></svg><span><b>Merksatz:</b> Vorher Backup mit <code>diff all</code></span></p>
+        <div class="ws-fscreen" aria-hidden="true">
+          <div class="ws-fsc" data-fs="0">
+            <div class="ws-term"><p class="ws-term-l"><span class="ws-pr">#</span> <span data-type="diff all"></span><i class="ws-caret"></i></p><div class="ws-term-out" data-term-out></div></div>
+          </div>
+          <div class="ws-fsc" data-fs="1">
+            <div class="ws-url"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>app.betaflight.com</span></div>
+            <div class="ws-fs-mid"><svg class="ws-usb" viewBox="0 0 120 60"><rect x="4" y="18" width="40" height="24" rx="4"/><path d="M44 30h30"/><rect x="74" y="22" width="20" height="16" rx="2"/><rect x="94" y="14" width="22" height="32" rx="3"/></svg><span class="ws-pill">Verbinden</span></div>
+          </div>
+          <div class="ws-fsc" data-fs="2">
+            <p class="ws-fs-h">Firmware Flasher</p>
+            <div class="ws-sel"><span data-board>Suche Board …</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+            <span class="ws-pill ghost">Auto-Erkennung</span>
+            <div class="ws-scan"><i></i></div>
+          </div>
+          <div class="ws-fsc" data-fs="3">
+            <p class="ws-fs-h">Board &amp; Build</p>
+            <ul class="ws-opts"><li><i></i>Version 2026.6.2</li><li><i></i>Empfänger: CRSF</li><li><i></i>Telemetrie</li><li><i></i>OSD</li><li><i></i>Motor: DShot</li></ul>
+            <div class="ws-cloud"><svg viewBox="0 0 64 40"><path d="M18 34h30a10 10 0 0 0 0-20 14 14 0 0 0-27-3A11 11 0 0 0 18 34z"/></svg><span>Cloud Build</span><b class="ws-dots"><i></i><i></i><i></i></b></div>
+          </div>
+          <div class="ws-fsc" data-fs="4">
+            <p class="ws-fs-h">Flash</p>
+            <div class="ws-bar"><i></i></div>
+            <p class="ws-fs-pct"><b data-pct>0</b> %</p>
+            <p class="ws-fs-warn">USB nicht ziehen</p>
+          </div>
+          <div class="ws-fsc" data-fs="5">
+            <div class="ws-ok"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21"/><path d="m14 25 7 7 14-15"/></svg><span>Verbunden</span></div>
+            <p class="ws-fs-sub">Jetzt kalibrieren und einstellen</p>
+          </div>
+        </div>
+        <div class="ws-player">
+          <button type="button" class="ws-ibtn" data-f-prev aria-label="Vorheriger Schritt"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
+          <button type="button" class="ws-ibtn ws-play" data-f-play aria-label="Abspielen"><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+          <button type="button" class="ws-ibtn" data-f-next aria-label="Nächster Schritt"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+          <div class="ws-prog" aria-hidden="true"><i></i></div>
+        </div>
+        <ol class="ws-fsteps">
+          <li><button type="button" data-f="0" aria-current="step"><b>0</b><span>Backup</span></button></li>
+          <li><button type="button" data-f="1"><b>1</b><span>App öffnen</span></button></li>
+          <li><button type="button" data-f="2"><b>2</b><span>Board erkennen</span></button></li>
+          <li><button type="button" data-f="3"><b>3</b><span>Firmware wählen</span></button></li>
+          <li><button type="button" data-f="4"><b>4</b><span>Flashen</span></button></li>
+          <li><button type="button" data-f="5"><b>5</b><span>Verbinden</span></button></li>
+        </ol>
+        <p class="ws-fcap" aria-live="polite" data-f-cap>Flashen löscht immer deine Einstellungen. Tipp in der CLI <code>diff all</code> ein und speicher die Ausgabe als Textdatei.</p>
+        <p class="ws-hint ws-hint-flash" aria-hidden="true">Schritt antippen</p>
+      </div>
+    </div>
+    <details class="fold ws-fold">
+      <summary>Mehr dazu: App, Cloud Build und was neu ist</summary>
+      <div class="fold-in ws-cols">
+        <div>
+          <h3 class="ws-fh">Betaflight App</h3>
+          <p>Die App läuft im Browser unter <a href="https://app.betaflight.com" target="_blank" rel="noopener">app.betaflight.com</a> und aktualisiert sich selbst. Sie braucht einen Browser mit WebSerial, also Chrome oder Edge und seit 2026.6 auch Firefox ab Version 151. Programme für Windows, macOS, Linux und eine Android-App gibt es unter <a href="https://downloads.betaflight.com" target="_blank" rel="noopener">downloads.betaflight.com</a>. App und Firmware tragen dieselbe Versionsnummer.</p>
+        </div>
+        <div>
+          <h3 class="ws-fh">Cloud Build</h3>
+          <p>Seit Betaflight 4.4 wird die Firmware online gebaut, mit genau den Funktionen, die du auswählst: Empfängerprotokoll, Telemetrie, OSD, GPS, LED-Streifen und mehr. Wähl nur, was dein Flugcontroller wirklich hat. Jede Option macht die Firmware größer, und bei Boards mit wenig Speicher (512 KB) passt sie sonst nicht mehr.</p>
+        </div>
+        <div>
+          <h3 class="ws-fh">Neu in 2026.6 (Auswahl)</h3>
+          <p>Der Firmware Flasher hat nur noch zwei Reiter: „Board &amp; Build“ und „Flash“. Neu sind ein Preflight-Tab für die Prüfung vor dem Flug, der Blackbox Viewer direkt in der App und umschaltbare Akku-Profile. Autotune und einige Verbindungsoptionen siehst du nur im Expertenmodus.</p>
+        </div>
+        <div>
+          <h3 class="ws-fh">Beim Update beachten</h3>
+          <p>Nach einem großen Update empfiehlt die Doku, alles neu einzustellen, statt eine alte Sicherung blind einzufügen. Manche Einstellungen heißen nämlich anders: Aus <code>dshot_idle_value</code> in 4.5 wurde <code>motor_idle</code>. Flugcontroller mit dem Gyro IIM-42652 brauchen laut Release Notes nach dem Update auf 2026.6 zurückgesetzte und neu abgestimmte PIDs.</p>
+        </div>
+        <p class="ws-src ws-src-wide">Quellen: <a href="https://betaflight.com/docs/wiki/release/Betaflight-2026-6-Release-Notes" target="_blank" rel="noopener">Release Notes 2026.6</a> · <a href="https://betaflight.com/docs/wiki/release/Betaflight-2025-12-Release-Notes" target="_blank" rel="noopener">Release Notes 2025.12</a> · <a href="https://betaflight.com/docs/wiki/app/firmware-flasher-tab" target="_blank" rel="noopener">Doku Firmware Flasher</a> · <a href="https://betaflight.com/docs/development/API/Cloud-Build-API" target="_blank" rel="noopener">Doku Cloud Build</a></p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- Die wichtigsten Tabs -->
+<section class="sec ws-sec ws-tabs" id="tabs" data-toc="Tabs" aria-labelledby="tabs-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2" id="tabs-h" data-split>Die wichtigsten Tabs</h2>
+      <p class="lede" data-reveal>Die Betaflight App als vereinfachte Nachzeichnung: Tipp auf einen Reiter, probier die Einstellung aus und lies, was Anfänger wirklich brauchen.</p>
+    </div>
+    <div class="ws-app panel">
+      <div class="ws-win-bar"><span class="ws-win-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ws-win-t">Betaflight App</span><span class="tag amber">Schema, keine echte App</span></div>
+      <div class="ws-app-body">
+        <div class="ws-app-nav" role="tablist" aria-label="Tabs der Betaflight App" aria-orientation="vertical">
+          <button type="button" role="tab" id="wt-setup" aria-controls="wp-setup" aria-selected="true" data-tab="setup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/></svg><span>Einrichtung</span></button>
+          <button type="button" role="tab" id="wt-ports" aria-controls="wp-ports" aria-selected="false" tabindex="-1" data-tab="ports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v6M17 4v6M5 10h14v3a7 7 0 0 1-14 0zM12 20v-2"/></svg><span>Anschlüsse</span></button>
+          <button type="button" role="tab" id="wt-conf" aria-controls="wp-conf" aria-selected="false" tabindex="-1" data-tab="conf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Konfiguration</span></button>
+          <button type="button" role="tab" id="wt-fs" aria-controls="wp-fs" aria-selected="false" tabindex="-1" data-tab="fs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="M12 9v4M12 16v.5"/></svg><span>Failsafe</span></button>
+          <button type="button" role="tab" id="wt-pid" aria-controls="wp-pid" aria-selected="false" tabindex="-1" data-tab="pid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20c6 0 8-2 10-6s4-10 8-10"/><path d="M3 20h18M3 20V4"/></svg><span>PID &amp; Rates</span></button>
+          <button type="button" role="tab" id="wt-rx" aria-controls="wp-rx" aria-selected="false" tabindex="-1" data-tab="rx"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M10 20V6M15 20v-8M20 20V4"/></svg><span>Empfänger</span></button>
+          <button type="button" role="tab" id="wt-modes" aria-controls="wp-modes" aria-selected="false" tabindex="-1" data-tab="modes"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="4"/><circle cx="16" cy="12" r="2.5"/></svg><span>Modi</span></button>
+          <button type="button" role="tab" id="wt-mot" aria-controls="wp-mot" aria-selected="false" tabindex="-1" data-tab="mot"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3a9 9 0 0 1 9 9M12 21a9 9 0 0 1-9-9"/><path d="m19 9 2 3 3-2M5 15l-2-3-3 2"/></svg><span>Motoren</span></button>
+          <button type="button" role="tab" id="wt-osd" aria-controls="wp-osd" aria-selected="false" tabindex="-1" data-tab="osd"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 9h4M14 15h4"/></svg><span>OSD</span></button>
+          <button type="button" role="tab" id="wt-bb" aria-controls="wp-bb" aria-selected="false" tabindex="-1" data-tab="bb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><span>Blackbox</span></button>
+          <button type="button" role="tab" id="wt-cli" aria-controls="wp-cli" aria-selected="false" tabindex="-1" data-tab="cli"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 8 4 4-4 4M12 16h7"/></svg><span>CLI</span></button>
+        </div>
+        <div class="ws-app-main">
+
+          <div class="ws-tp" role="tabpanel" id="wp-setup" aria-labelledby="wt-setup" tabindex="0">
+            <div class="ws-demo">
+              <div class="ws-tilt" tabindex="0" role="application" aria-label="Drohnenmodell. Ziehen oder Pfeiltasten kippen die Drohne.">
+                <div class="ws-tilt-grid" aria-hidden="true"></div>
+                <div class="ws-tilt-in" aria-hidden="true">
+                  <svg viewBox="-100 -100 200 200"><path d="M-55-55 55 55M55-55-55 55" stroke="#2a3446" stroke-width="16" stroke-linecap="round"/><g fill="#0b1a33" stroke="#3fe0ff" stroke-width="2"><circle cx="-55" cy="-55" r="30"/><circle cx="55" cy="-55" r="30"/><circle cx="-55" cy="55" r="30"/><circle cx="55" cy="55" r="30"/></g><rect x="-22" y="-34" width="44" height="68" rx="9" fill="#10244a" stroke="#ffb020" stroke-width="2.5"/><path d="M0-48l-9 12h18z" fill="#ffb020"/></svg>
+                </div>
+              </div>
+              <div class="ws-d-row"><span class="hud ws-read">ROLL <b data-su-r>0</b>° · NICK <b data-su-p>0</b>°</span><button type="button" class="ws-mini" data-su-cal>Kalibrieren</button></div>
+              <p class="ws-d-msg" data-su-msg aria-live="polite">Zieh am Modell: So kippt es mit, wenn du die Drohne in der Hand kippst.</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Einrichtung</h3>
+              <p>Die Startseite nach dem Verbinden. Ein 3D-Modell zeigt, wie deine Drohne gerade liegt.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Beschleunigungssensor kalibrieren: Drohne gerade hinlegen, dann auf Kalibrieren tippen.</li><li>Drohne in der Hand kippen: Das Modell muss genauso mitkippen.</li><li>Hier stehen auch die Arming-Sperren, also warum die Drohne gerade nicht armt.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Das Modell kippt falsch herum: Board-Ausrichtung im Tab Konfiguration prüfen.</li><li>Auf einem schiefen Tisch kalibriert: Die Drohne driftet im Angle-Modus.</li></ul>
+              <p class="ws-links"><a href="hilfe.html#flagtool">Arming-Sperre nachschlagen <span aria-hidden="true">→</span></a></p>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-ports" aria-labelledby="wt-ports" tabindex="0" hidden>
+            <div class="ws-demo">
+              <table class="ws-ports">
+                <caption class="sr">Serielle Anschlüsse des Flugcontrollers</caption>
+                <thead><tr><th scope="col">Anschluss</th><th scope="col">Funktion</th><th scope="col">Serial RX</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">USB VCP</th><td>MSP</td><td><span class="ws-lock">bleibt</span></td></tr>
+                  <tr><th scope="row">UART1</th><td data-pt-f="1">frei</td><td><button type="button" class="ws-sw" role="switch" aria-checked="false" aria-label="Serial RX auf UART1" data-uart="1"><i></i></button></td></tr>
+                  <tr><th scope="row">UART2</th><td data-pt-f="2">frei</td><td><button type="button" class="ws-sw" role="switch" aria-checked="false" aria-label="Serial RX auf UART2" data-uart="2"><i></i></button></td></tr>
+                  <tr><th scope="row">UART3</th><td data-pt-f="3">frei</td><td><button type="button" class="ws-sw" role="switch" aria-checked="false" aria-label="Serial RX auf UART3" data-uart="3"><i></i></button></td></tr>
+                </tbody>
+              </table>
+              <svg class="ws-wire" viewBox="0 0 320 92" aria-hidden="true">
+                <rect x="6" y="18" width="92" height="56" rx="10" class="ws-w-box"/><text x="52" y="42" class="ws-w-t">EMPFÄNGER</text><text x="52" y="60" class="ws-w-s">TX · RX</text>
+                <rect x="222" y="18" width="92" height="56" rx="10" class="ws-w-box"/><text x="268" y="42" class="ws-w-t">FC UART2</text><text x="268" y="60" class="ws-w-s">T2 · R2</text>
+                <path d="M98 36C160 36 160 56 222 56" class="ws-w-l"/><path d="M98 56C160 56 160 36 222 36" class="ws-w-l b"/>
+                <circle r="3.5" class="ws-w-p" data-wp="0"/><circle r="3.5" class="ws-w-p b" data-wp="1"/>
+              </svg>
+              <p class="ws-d-msg" data-pt-msg aria-live="polite">Dein Empfänger ist an UART2 gelötet. Welcher Schalter ist richtig?</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Anschlüsse</h3>
+              <p>Legt fest, welches Gerät an welchem UART hängt. Ein UART hat ein TX- und ein RX-Pad.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Serial RX bei dem UART einschalten, an den dein Empfänger gelötet ist.</li><li>Analoger Videosender: SmartAudio oder Tramp als Peripherie. Digitales System: meist MSP auf dem UART des Videosenders, damit das OSD läuft.</li><li>Die Zeile USB VCP lässt du, wie sie ist. Darüber spricht die App mit dem Flugcontroller.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Serial RX auf dem falschen UART: Im Empfänger-Tab bewegt sich nichts.</li><li>TX an TX gelötet: TX gehört immer an RX, und RX an TX.</li></ul>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-conf" aria-labelledby="wt-conf" tabindex="0" hidden>
+            <div class="ws-demo">
+              <svg class="ws-frame" viewBox="0 0 240 200" aria-hidden="true">
+                <text x="120" y="16" class="ws-w-s">VORNE</text>
+                <path d="M120 22v10" class="ws-fr-ax"/>
+                <path d="M40 40 200 180M200 40 40 180" class="ws-fr-arm"/>
+                <g class="ws-fr-props"><circle cx="40" cy="40" r="26"/><circle cx="200" cy="40" r="26"/><circle cx="40" cy="180" r="26"/><circle cx="200" cy="180" r="26"/></g>
+                <g class="ws-fr-fc" data-fc-rot><rect x="92" y="82" width="56" height="56" rx="7"/><path d="M120 92l-10 14h7v20h6v-20h7z" class="ws-fr-arr"/></g>
+              </svg>
+              <div class="ws-d-row"><button type="button" class="ws-mini" data-cf-rot>FC drehen</button><span class="hud ws-read">Einbau: <b data-cf-mount>Pfeil vorne</b></span></div>
+              <fieldset class="ws-fs"><legend class="lbl">Board-Ausrichtung in der App</legend>
+                <div class="chips">
+                  <label class="chip"><input type="radio" name="ws-align" value="0" checked><span>Pfeil vorne</span></label>
+                  <label class="chip"><input type="radio" name="ws-align" value="1"><span>rechts</span></label>
+                  <label class="chip"><input type="radio" name="ws-align" value="2"><span>hinten</span></label>
+                  <label class="chip"><input type="radio" name="ws-align" value="3"><span>links</span></label>
+                </div>
+              </fieldset>
+              <p class="ws-d-msg" data-cf-msg aria-live="polite">Passt: Der Pfeil zeigt nach vorne, Ausrichtung bleibt auf 0.</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Konfiguration</h3>
+              <p>Grundeinstellungen: wie der Flugcontroller eingebaut ist, wie die Drohne heißt und ab welcher Schräglage sie armt.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Board-Ausrichtung: Zeigt der Pfeil auf dem Flugcontroller nach vorne, bleibt sie auf 0.</li><li>Ist der Flugcontroller gedreht eingebaut, trägst du den Winkel ein und prüfst im Tab Einrichtung, ob das Modell richtig mitkippt.</li><li>Arming-Winkel: Steht die Drohne schräger als eingestellt (meist 25°), armt sie nicht.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Flugcontroller gedreht eingebaut, Ausrichtung nicht angepasst: Die Drohne flippt beim Start.</li></ul>
+              <p class="ws-cli">In der CLI: <code>align_board_yaw</code> · <code>small_angle</code> · <code>craft_name</code> <span class="ws-ver-tag">Ort im Menü je nach Version anders</span></p>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-fs" aria-labelledby="wt-fs" tabindex="0" hidden>
+            <div class="ws-demo">
+              <div class="ws-fsim">
+                <div class="ws-fsim-top"><span class="hud">LINK <b data-fs-lq>100</b> %</span><span class="ws-fsim-st" data-fs-st>Verbunden</span></div>
+                <div class="ws-fsim-bar"><i data-fs-bar></i></div>
+                <div class="ws-fsim-stages"><span data-fs-s="1">Stufe 1: warten</span><span data-fs-s="2">Stufe 2: <b data-fs-proc>Drop</b></span></div>
+                <svg class="ws-fsim-q" viewBox="-60 -40 120 80" aria-hidden="true"><g data-fs-q><path d="M-34-20 34 20M34-20-34 20" stroke="#2a3446" stroke-width="8" stroke-linecap="round"/><g class="ws-fsim-p"><ellipse cx="-34" cy="-20" rx="20" ry="5"/><ellipse cx="34" cy="-20" rx="20" ry="5"/><ellipse cx="-34" cy="20" rx="20" ry="5"/><ellipse cx="34" cy="20" rx="20" ry="5"/></g><rect x="-12" y="-9" width="24" height="18" rx="4" fill="#10244a" stroke="#ffb020" stroke-width="1.5"/></g></svg>
+              </div>
+              <div class="ws-d-row"><button type="button" class="ws-mini" data-fs-go>Funke ausschalten</button></div>
+              <fieldset class="ws-fs"><legend class="lbl">Stufe 2</legend>
+                <div class="chips">
+                  <label class="chip"><input type="radio" name="ws-fsp" value="drop" checked><span>Drop</span></label>
+                  <label class="chip"><input type="radio" name="ws-fsp" value="land"><span>Landen</span></label>
+                  <label class="chip"><input type="radio" name="ws-fsp" value="gps"><span>GPS-Rettung</span></label>
+                </div>
+              </fieldset>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Failsafe</h3>
+              <p>Bestimmt, was passiert, wenn das Funksignal abreißt.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Stufe 1: Betaflight wartet kurz, ob das Signal zurückkommt. Standard sind 1,5 Sekunden.</li><li>Stufe 2: Standard ist Drop, die Motoren gehen aus. Möglich sind auch Landen oder die GPS-Rettung, die ein GPS braucht.</li><li>Testen: Props ab, armen, Funke ausschalten. Die Motoren müssen stoppen.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Failsafe nie getestet. Mach den Test vor dem ersten Flug, immer ohne Propeller.</li></ul>
+              <p class="ws-cli">In der CLI: <code>failsafe_delay</code> · <code>failsafe_procedure</code></p>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-pid" aria-labelledby="wt-pid" tabindex="0" hidden>
+            <div class="ws-demo">
+              <div class="ws-rtype" role="group" aria-label="Rate-Typ">
+                <button type="button" data-rt="actual" aria-pressed="true">Actual</button>
+                <button type="button" data-rt="bf" aria-pressed="false">Betaflight</button>
+              </div>
+              <svg class="ws-rate" viewBox="0 0 320 190" role="img" aria-label="Rate-Kurve: Drehrate über dem Stick-Ausschlag">
+                <g class="ws-r-grid"></g>
+                <path class="ws-r-lin" d=""/>
+                <path class="ws-r-curve" d=""/>
+                <g class="ws-r-dot"><circle r="6"/></g>
+                <text class="ws-r-ax" x="300" y="184" text-anchor="end">Stick 100 %</text>
+                <text class="ws-r-ax" x="44" y="12">°/s</text>
+              </svg>
+              <div class="ws-r-out"><span>Voller Stick: <b data-r-max>670</b> °/s</span><span>Halber Stick: <b data-r-half>0</b> °/s</span></div>
+              <div class="ws-r-sl">
+                <label><span data-r-l="a">Mitte</span><input type="range" data-r="a" min="0" max="1" step="1" value="0"><output data-r-o="a"></output></label>
+                <label><span data-r-l="b">Maximum</span><input type="range" data-r="b" min="0" max="1" step="1" value="0"><output data-r-o="b"></output></label>
+                <label><span data-r-l="c">Expo</span><input type="range" data-r="c" min="0" max="1" step="1" value="0"><output data-r-o="c"></output></label>
+              </div>
+              <p class="ws-hint ws-hint-rate" aria-hidden="true">Regler schieben</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">PID &amp; Rates</h3>
+              <p>PIDs bestimmen, wie die Drohne nachregelt. Rates bestimmen, wie schnell sie sich dreht, wenn du den Stick bewegst.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>PIDs für den Anfang auf Standard lassen oder ein passendes Preset aus dem Presets-Tab laden.</li><li>Standard-Rates sind Actual: 70 °/s um die Mitte, 670 °/s bei vollem Stick, Expo 0.</li><li>Rates im <a href="simulator.html">Simulator</a> ausprobieren. Dort gilt die Betaflight-Formel.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>An den PIDs drehen, obwohl ein Propeller verbogen oder eine Schraube locker ist.</li><li>Fühlt sich das Steuern zu träge oder zu nervös an, sind das die Rates, nicht die PIDs.</li></ul>
+              <p class="ws-cli">In der CLI: <code>rates_type</code> <span class="ws-ver-tag">heißt in der App „PID-Einstellungen“</span></p>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-rx" aria-labelledby="wt-rx" tabindex="0" hidden>
+            <div class="ws-demo">
+              <div class="ws-rxd">
+                <div class="ws-sticks sm">
+                  <div class="ws-stick" data-stick="l" tabindex="0" role="application" aria-label="Linker Stick der Funke: Gas und Gieren. Mit den Pfeiltasten bewegen."><i class="ws-knob"></i></div>
+                  <div class="ws-stick" data-stick="r" tabindex="0" role="application" aria-label="Rechter Stick der Funke: Nicken und Rollen. Mit den Pfeiltasten bewegen."><i class="ws-knob"></i></div>
+                </div>
+                <ul class="ws-bars" aria-label="Kanalvorschau">
+                  <li><span>Rollen</span><b><i data-rb="0"></i></b><em data-rv="0">1500</em></li>
+                  <li><span>Nicken</span><b><i data-rb="1"></i></b><em data-rv="1">1500</em></li>
+                  <li><span>Gieren</span><b><i data-rb="2"></i></b><em data-rv="2">1500</em></li>
+                  <li><span>Gas</span><b><i data-rb="3"></i></b><em data-rv="3">1000</em></li>
+                </ul>
+              </div>
+              <fieldset class="ws-fs"><legend class="lbl">Kanalbelegung</legend>
+                <div class="chips">
+                  <label class="chip"><input type="radio" name="ws-map" value="AETR" checked><span>AETR1234</span></label>
+                  <label class="chip"><input type="radio" name="ws-map" value="TAER"><span>TAER1234</span></label>
+                </div>
+              </fieldset>
+              <div class="ws-d-row"><button type="button" class="ws-mini" data-rx-bind>Bind Receiver</button><span class="ws-led" data-rx-led aria-hidden="true"></span></div>
+              <p class="ws-d-msg" data-rx-msg aria-live="polite">Beweg die Sticks: Jeder Balken muss zum richtigen Stick passen.</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Empfänger</h3>
+              <p>Zeigt, was von deiner Funke ankommt, und legt das Protokoll fest.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Empfänger-Modus seriell, Anbieter CRSF. Das gilt für ExpressLRS und Crossfire.</li><li>Sticks bewegen: Jeder Balken muss zum richtigen Stick passen. Standard ist AETR1234.</li><li>Binden: ab Betaflight 4.5 und ExpressLRS 3.4 per Knopf in diesem Tab oder mit <code>bind_rx</code> in der CLI. Sonst über die Bindephrase.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Kein Balken bewegt sich: Serial RX im Tab Anschlüsse fehlt oder der UART stimmt nicht.</li><li>Gas bewegt den falschen Balken: Kanalbelegung passt nicht zur Funke.</li></ul>
+              <p class="ws-cli">In der CLI: <code>serialrx_provider</code> · <code>map</code></p>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-modes" aria-labelledby="wt-modes" tabindex="0" hidden>
+            <div class="ws-demo">
+              <ul class="ws-modes">
+                <li data-md="arm"><span class="ws-md-n">ARM</span><span class="ws-md-a">AUX 1</span><span class="ws-md-r"><i class="ws-md-rng"></i><i class="ws-md-mk"></i></span><button type="button" class="ws-sw" role="switch" aria-checked="false" aria-label="Schalter AUX 1 für ARM"><i></i></button></li>
+                <li data-md="angle"><span class="ws-md-n">ANGLE</span><span class="ws-md-a">AUX 2</span><span class="ws-md-r"><i class="ws-md-rng"></i><i class="ws-md-mk"></i></span><button type="button" class="ws-sw" role="switch" aria-checked="false" aria-label="Schalter AUX 2 für ANGLE"><i></i></button></li>
+                <li data-md="beeper"><span class="ws-md-n">BEEPER</span><span class="ws-md-a">AUX 3</span><span class="ws-md-r"><i class="ws-md-rng"></i><i class="ws-md-mk"></i></span><button type="button" class="ws-sw" role="switch" aria-checked="false" aria-label="Schalter AUX 3 für BEEPER"><i></i></button></li>
+                <li data-md="turtle"><span class="ws-md-n">FLIP OVER AFTER CRASH</span><span class="ws-md-a">AUX 4</span><span class="ws-md-r"><i class="ws-md-rng"></i><i class="ws-md-mk"></i></span><button type="button" class="ws-sw" role="switch" aria-checked="false" aria-label="Schalter AUX 4 für Turtle-Modus"><i></i></button></li>
+              </ul>
+              <p class="ws-d-msg" data-md-msg aria-live="polite">Kipp einen Schalter: Liegt die Markierung im Bereich, ist der Modus aktiv.</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Modi</h3>
+              <p>Legt fest, welcher Schalter an deiner Funke was auslöst. Jeder Modus bekommt einen Kanal und einen Bereich.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>ARM: schaltet die Motoren scharf. Ohne geht nichts.</li><li>ANGLE: Selbstnivellierung für den Anfang. Ohne Modus fliegst du Acro.</li><li>BEEPER zum Wiederfinden und FLIP OVER AFTER CRASH, den Turtle-Modus, zum Umdrehen nach einem Crash.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Die Markierung erreicht den Bereich nicht ganz: Der Modus wird nie aktiv.</li><li>Turtle erst nach dem Armen eingeschaltet: Schalter zuerst umlegen, dann armen.</li></ul>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-mot" aria-labelledby="wt-mot" tabindex="0" hidden>
+            <div class="ws-demo">
+              <svg class="ws-mq" viewBox="-100 -100 200 200" aria-hidden="true">
+                <text x="0" y="-90" class="ws-w-s">VORNE</text>
+                <path d="M-52-52 52 52M52-52-52 52" stroke="#2a3446" stroke-width="12" stroke-linecap="round"/>
+                <rect x="-18" y="-26" width="36" height="52" rx="7" fill="#10244a" stroke="#ffb020" stroke-width="2"/>
+                <g class="ws-mq-m" data-mm="0" transform="translate(52 52)"><circle r="30" class="ws-mq-d"/><g class="ws-mq-dir"><path d="M-20-12A23 23 0 0 1 20-12"/><path d="m14-19 6 7-9 2"/></g><g class="ws-mq-prop"><path d="M-26 0H26"/></g><text y="5" class="ws-mq-n">1</text></g>
+                <g class="ws-mq-m" data-mm="1" transform="translate(52 -52)"><circle r="30" class="ws-mq-d"/><g class="ws-mq-dir"><path d="M-20-12A23 23 0 0 1 20-12"/><path d="m14-19 6 7-9 2"/></g><g class="ws-mq-prop"><path d="M-26 0H26"/></g><text y="5" class="ws-mq-n">2</text></g>
+                <g class="ws-mq-m" data-mm="2" transform="translate(-52 52)"><circle r="30" class="ws-mq-d"/><g class="ws-mq-dir"><path d="M-20-12A23 23 0 0 1 20-12"/><path d="m14-19 6 7-9 2"/></g><g class="ws-mq-prop"><path d="M-26 0H26"/></g><text y="5" class="ws-mq-n">3</text></g>
+                <g class="ws-mq-m" data-mm="3" transform="translate(-52 -52)"><circle r="30" class="ws-mq-d"/><g class="ws-mq-dir"><path d="M-20-12A23 23 0 0 1 20-12"/><path d="m14-19 6 7-9 2"/></g><g class="ws-mq-prop"><path d="M-26 0H26"/></g><text y="5" class="ws-mq-n">4</text></g>
+              </svg>
+              <div class="ws-rtype" role="group" aria-label="Motorrichtung">
+                <button type="button" data-pr="in" aria-pressed="true">Props in</button>
+                <button type="button" data-pr="out" aria-pressed="false">Props out</button>
+              </div>
+              <label class="check ws-mcheck"><input type="checkbox" data-mt-ok><span>Propeller sind ab. Motortest freigeben.</span></label>
+              <div class="ws-mbtns" role="group" aria-label="Motor testen"><button type="button" data-mt="0" disabled>M1</button><button type="button" data-mt="1" disabled>M2</button><button type="button" data-mt="2" disabled>M3</button><button type="button" data-mt="3" disabled>M4</button></div>
+              <p class="ws-d-msg" data-mt-msg aria-live="polite">Die Reihenfolge bei Betaflight: 1 hinten rechts, 2 vorne rechts, 3 hinten links, 4 vorne links.</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Motoren</h3>
+              <p>Motorprotokoll, Drehrichtung und der Motortest.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Protokoll DShot, meist DShot600.</li><li>Bidirektionales DShot an und die Zahl der Motorpole eintragen (die meisten Motoren haben 14). Dann läuft der RPM-Filter gegen Vibrationen. Dein ESC muss das können.</li><li>Reihenfolge und Drehrichtung mit dem Motortest prüfen, nur ohne Propeller. Standard ist Props in.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Motoren in falscher Reihenfolge oder Richtung: Die Drohne flippt beim Start.</li><li>Bidirektionales DShot an, aber der ESC kann es nicht: Arming-Sperre <code>DSHOT_TELEM</code>.</li></ul>
+              <p class="ws-cli">In der CLI: <code>motor_pwm_protocol</code> · <code>dshot_bidir</code> · <code>motor_poles</code> · <code>yaw_motors_reversed</code></p>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-osd" aria-labelledby="wt-osd" tabindex="0" hidden>
+            <div class="ws-demo">
+              <div class="ws-osdv" aria-hidden="true">
+                <div class="ws-osdv-grid"></div>
+                <span class="ws-oe" data-oe="volt">3.92V</span>
+                <span class="ws-oe" data-oe="time">02:41</span>
+                <span class="ws-oe warn" data-oe="warn">AKKU SCHWACH</span>
+                <span class="ws-oe" data-oe="lq">LQ 100</span>
+                <span class="ws-oe" data-oe="name">FCS</span>
+                <i class="ws-osdv-x"></i>
+              </div>
+              <fieldset class="ws-fs"><legend class="lbl">Elemente</legend>
+                <div class="chips">
+                  <label class="chip"><input type="checkbox" data-oc="volt" checked><span>Spannung pro Zelle</span></label>
+                  <label class="chip"><input type="checkbox" data-oc="time" checked><span>Flugzeit</span></label>
+                  <label class="chip"><input type="checkbox" data-oc="warn" checked><span>Warnungen</span></label>
+                  <label class="chip"><input type="checkbox" data-oc="lq" checked><span>Link-Qualität</span></label>
+                  <label class="chip"><input type="checkbox" data-oc="name"><span>Name</span></label>
+                </div>
+              </fieldset>
+              <p class="ws-d-msg">Am PC kannst du die Elemente in der Vorschau verschieben. Hier auch: einfach ziehen.</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">OSD</h3>
+              <p>Legt fest, was du im Brillenbild eingeblendet bekommst.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Akkuspannung, am besten pro Zelle, dazu Flugzeit und Warnungen.</li><li>Link-Qualität zeigt, wie gut die Funkverbindung gerade ist.</li><li>Elemente an den Rand schieben, damit die Mitte frei bleibt.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Kein OSD bei digitalem Video: Die MSP-Einstellungen für dein Videosystem fehlen. Schau in die Anleitung des Herstellers.</li></ul>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-bb" aria-labelledby="wt-bb" tabindex="0" hidden>
+            <div class="ws-demo">
+              <div class="ws-bbv" aria-hidden="true">
+                <svg class="ws-bb-svg" viewBox="0 0 320 150" preserveAspectRatio="none">
+                  <g class="ws-bb-grid"><path d="M0 37.5H320M0 75H320M0 112.5H320"/></g>
+                  <g class="ws-bb-move"><path class="ws-bb-sp" d=""/><path class="ws-bb-gy" d=""/></g>
+                  <path class="ws-bb-cur" d="M240 0V150"/>
+                </svg>
+                <span class="ws-bb-key"><i class="amber"></i>Stick (Soll)<i></i>Gyro</span>
+              </div>
+              <div class="ws-d-row"><button type="button" class="ws-mini" data-bb-rec aria-pressed="true"><span class="ws-recdot"></span><span data-bb-t>Aufnahme läuft</span></button><span class="hud ws-read">Speicher <b data-bb-mem>12</b> %</span></div>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">Blackbox</h3>
+              <p>Ein Flugdatenschreiber: Er zeichnet Gyro, Sticks und Motoren auf.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li>Für den Anfang nicht nötig. Spannend, wenn du tunen oder einen Fehler finden willst.</li><li>Gespeichert wird je nach Flugcontroller im Flash-Speicher oder auf einer SD-Karte.</li><li>Auswerten im Blackbox Explorer, seit 2026.6 auch als eigener Tab in der App.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Speicher voll: Es wird nichts mehr aufgezeichnet. Vor der Testrunde löschen.</li></ul>
+            </div>
+          </div>
+
+          <div class="ws-tp" role="tabpanel" id="wp-cli" aria-labelledby="wt-cli" tabindex="0" hidden>
+            <div class="ws-demo">
+              <div class="ws-term ws-cli-term" data-cli-out aria-live="polite"><p class="ws-term-m">Tipp auf einen Befehl.</p></div>
+              <div class="ws-cmds" role="group" aria-label="Befehle">
+                <button type="button" data-cmd="diff">diff all</button>
+                <button type="button" data-cmd="get">get serialrx</button>
+                <button type="button" data-cmd="status">status</button>
+                <button type="button" data-cmd="save">save</button>
+              </div>
+              <p class="ws-d-msg">Beispielausgaben, stark gekürzt.</p>
+            </div>
+            <div class="ws-txt">
+              <h3 class="h3">CLI</h3>
+              <p>Die Kommandozeile: Textbefehle für alle Einstellungen, auch für die ohne Schaltfläche.</p>
+              <p class="ws-tk">Das brauchst du</p>
+              <ul class="ws-li"><li><code>diff all</code> zeigt alles, was du geändert hast. Das ist dein Backup.</li><li><code>get</code> sucht eine Einstellung, <code>set</code> ändert sie.</li><li><code>save</code> speichert und startet neu. Ohne <code>save</code> ist die Änderung weg.</li></ul>
+              <p class="ws-tk amber">Typische Fehler</p>
+              <ul class="ws-li bad"><li>Eine alte Sicherung aus einer anderen Version eingefügt: Manche Einstellungen heißen anders oder gibt es nicht mehr.</li></ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <p class="ws-hint ws-hint-tabs" aria-hidden="true">Reiter antippen</p>
+    </div>
+    <p class="ws-note">Namen und Orte in der App können sich je nach Version und Sprache unterscheiden. Die Befehle für die CLI sind für Betaflight 2026.6 geprüft (<a href="https://github.com/betaflight/betaflight/tree/2026.6.2" target="_blank" rel="noopener">Quelltext</a>, <a href="https://www.expresslrs.org/quick-start/receivers/configuring-fc/" target="_blank" rel="noopener">ExpressLRS-Doku</a>).</p>
+  </div>
+</section>
+
+<!-- Erste Einrichtung -->
+<section class="sec ws-sec ws-setup" id="einrichtung" data-toc="10 Schritte" aria-labelledby="su-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2" id="su-h" data-split>Erste Einrichtung in 10 Schritten</h2>
+      <p class="lede" data-reveal>Hak ab, was erledigt ist. Ein Tipp auf den Pfeil öffnet den passenden Tab. Dein Stand bleibt auf diesem Gerät gespeichert.</p>
+    </div>
+    <div class="ws-su-grid">
+      <div class="ws-su-side">
+        <div class="ws-props panel" role="note">
+          <svg class="ws-props-ico" viewBox="-40 -40 80 80" aria-hidden="true"><g class="ws-props-p"><path d="M-30 0H30"/><path d="M0-30V30" opacity=".4"/></g><circle r="6"/></svg>
+          <p><b>Props ab beim Testen!</b><span>Alle Tests am Tisch nur ohne Propeller. Die kommen erst vor dem ersten Schwebeflug drauf.</span></p>
+        </div>
+        <div class="ws-ring panel" aria-live="polite">
+          <div class="ws-ring-dial">
+            <svg viewBox="0 0 220 220" aria-hidden="true"><circle class="ws-ring-bg" cx="110" cy="110" r="92"/><circle class="ws-ring-fg" cx="110" cy="110" r="92" pathLength="100"/></svg>
+            <div class="ws-ring-in"><b data-su-n>0</b><span>von 10</span><small data-su-st>DISARMED</small></div>
+          </div>
+          <div class="ws-ring-txt">
+            <p data-su-txt>Fang oben an.</p>
+            <button type="button" class="btn ghost ws-su-reset">Zurücksetzen</button>
+          </div>
+        </div>
+      </div>
+      <ol class="ws-su-list">
+        <li><label class="check"><input type="checkbox" data-su="smoke"><span>Akku das erste Mal nur über einen Smoke Stopper anstecken</span></label><a class="ws-su-go" href="#loeten" aria-label="Zum Abschnitt Löten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="backup"><span>Backup: <code>diff all</code> in der CLI als Datei speichern</span></label><a class="ws-su-go" href="#tabs" data-go-tab="cli" aria-label="Zum Tab CLI"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="flash"><span>Aktuelle Firmware flashen, im Cloud Build CRSF und Telemetrie wählen</span></label><a class="ws-su-go" href="#version" aria-label="Zum Abschnitt Version und Flashen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="setup"><span>Beschleunigungssensor kalibrieren, Modell kippt richtig mit</span></label><a class="ws-su-go" href="#tabs" data-go-tab="setup" aria-label="Zum Tab Einrichtung"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="ports"><span>Serial RX auf dem UART des Empfängers</span></label><a class="ws-su-go" href="#tabs" data-go-tab="ports" aria-label="Zum Tab Anschlüsse"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="rx"><span>Empfänger binden, alle Balken bewegen sich richtig</span></label><a class="ws-su-go" href="#tabs" data-go-tab="rx" aria-label="Zum Tab Empfänger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="modes"><span>Schalter für ARM, ANGLE, BEEPER und Turtle</span></label><a class="ws-su-go" href="#tabs" data-go-tab="modes" aria-label="Zum Tab Modi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="fs"><span>Failsafe testen: Funke aus, Motoren stoppen</span></label><a class="ws-su-go" href="#tabs" data-go-tab="fs" aria-label="Zum Tab Failsafe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="mot"><span>DShot einstellen, Reihenfolge und Drehrichtung prüfen</span></label><a class="ws-su-go" href="#tabs" data-go-tab="mot" aria-label="Zum Tab Motoren"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><label class="check"><input type="checkbox" data-su="osd"><span>OSD einrichten, <code>save</code>, Props richtig herum drauf, erster Schwebeflug</span></label><a class="ws-su-go" href="#tabs" data-go-tab="osd" aria-label="Zum Tab OSD"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+      </ol>
+      <p class="ws-hint ws-hint-su" aria-hidden="true">Tippe zum Abhaken</p>
+    </div>
+  </div>
+</section>
+
+<!-- Löten -->
+<section class="sec ws-sec ws-solder" id="loeten" data-toc="Löten" aria-labelledby="lo-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2" id="lo-h" data-split>Löten</h2>
+      <p class="lede" data-reveal>Schau zu, wie ein guter Lötpunkt entsteht, und probier mit dem Regler aus, was die Temperatur ausmacht.</p>
+    </div>
+    <div class="ws-lo-grid">
+      <div class="ws-scene panel">
+        <svg class="ws-lo-svg" viewBox="0 0 640 360" role="img" aria-label="Animation: ein Kabel wird an ein Lötpad gelötet">
+          <defs>
+            <linearGradient id="ws-tin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f8ff"/><stop offset=".45" stop-color="#b9c4d4"/><stop offset="1" stop-color="#6d7a8e"/></linearGradient>
+            <linearGradient id="ws-tin-dull" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa1aa"/><stop offset="1" stop-color="#5d636c"/></linearGradient>
+            <radialGradient id="ws-heat" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffd27a" stop-opacity=".9"/><stop offset=".5" stop-color="#ff8a20" stop-opacity=".35"/><stop offset="1" stop-color="#ff5a1a" stop-opacity="0"/></radialGradient>
+            <pattern id="ws-grain" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="#454b55"/><circle cx="4.5" cy="4" r=".8" fill="#c7ccd4"/></pattern>
+            <pattern id="ws-lgrid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="rgba(158,196,255,.07)"/></pattern>
+          </defs>
+          <rect width="640" height="360" fill="url(#ws-lgrid)"/>
+          <g class="lo-pcb">
+            <rect x="20" y="262" width="600" height="70" rx="6" fill="#0d2e2a" stroke="#1d5a4f" stroke-width="2"/>
+            <path d="M20 280H250" stroke="#8a5a2c" stroke-width="5" opacity=".7"/>
+            <text x="34" y="314" class="lo-lbl">PLATINE</text>
+          </g>
+          <g class="lo-lift">
+            <rect class="lo-pad" x="240" y="252" width="140" height="12" rx="2" fill="#c98a4b"/>
+            <path class="lo-padsol" d="M246 253C262 236 358 236 374 253Z" fill="url(#ws-tin)"/>
+            <g class="lo-wire">
+              <rect x="352" y="214" width="300" height="26" rx="9" fill="#c8323b"/>
+              <rect x="352" y="214" width="300" height="8" rx="4" fill="#e86a70" opacity=".5"/>
+              <g class="lo-strands"><path d="M276 220H356M276 227H356M276 234H356" stroke="#d99a5a" stroke-width="5" stroke-linecap="round"/></g>
+              <g class="lo-wtin"><rect x="272" y="215" width="86" height="24" rx="11" fill="url(#ws-tin)"/><path d="M282 221H350" stroke="#fff" stroke-width="2" opacity=".6" stroke-linecap="round"/></g>
+            </g>
+            <g class="lo-joint">
+              <g class="lo-j-good"><path d="M244 254C258 252 266 214 300 211H352C378 214 384 246 378 254Z" fill="url(#ws-tin)"/><path d="M270 236C280 222 292 216 316 215" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/></g>
+              <g class="lo-j-cold"><path d="M256 254C246 236 262 204 298 200C334 196 360 210 362 232C364 248 356 254 340 254Z" fill="url(#ws-tin-dull)"/><path d="M256 254C246 236 262 204 298 200C334 196 360 210 362 232C364 248 356 254 340 254Z" fill="url(#ws-grain)" opacity=".8"/></g>
+              <g class="lo-j-hot"><path d="M248 254C262 248 268 224 300 220H350C372 224 378 246 374 254Z" fill="url(#ws-tin-dull)"/><ellipse cx="310" cy="256" rx="84" ry="9" fill="#6b3d12" opacity=".75"/><path d="M262 250C270 240 286 238 294 244M326 242C338 236 352 240 360 248" stroke="#3a2008" stroke-width="3" fill="none" opacity=".8"/></g>
+            </g>
+          </g>
+          <ellipse class="lo-heat" cx="310" cy="236" rx="90" ry="46" fill="url(#ws-heat)"/>
+          <g class="lo-smoke" fill="#dfe8f5"><circle cx="300" cy="200" r="9"/><circle cx="318" cy="196" r="7"/><circle cx="292" cy="190" r="6"/><circle cx="326" cy="186" r="8"/><circle cx="308" cy="182" r="6"/></g>
+          <g class="lo-solder"><path d="M0 0 120-120" stroke="#c7ccd4" stroke-width="7" stroke-linecap="round"/><path d="M0 0 120-120" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".5"/></g>
+          <g class="lo-iron">
+            <path d="M0 0-12-18-150-170-130-186 4-30z" fill="#8c99ad" stroke="#eaf4ff" stroke-width="1.5"/>
+            <path d="M-150-170-260-290-224-318-118-200z" fill="#1f497d" stroke="#5aa2ff" stroke-width="1.5"/>
+            <path d="M-212-268-176-296M-196-250-160-278M-180-232-144-260" stroke="#5aa2ff" stroke-width="3" opacity=".6"/>
+            <circle class="lo-tipglow" r="16" fill="url(#ws-heat)"/>
+          </g>
+          <g class="lo-badge" transform="translate(560 64)"><circle r="34" class="lo-badge-c"/><path class="lo-ok" d="m-14 1 9 9 19-20"/><path class="lo-no" d="m-12-12 24 24M12-12-12 12"/></g>
+        </svg>
+        <div class="ws-lo-cap" aria-live="polite"><p class="ws-lo-step"><b data-lo-n>1</b> / 5 · <span data-lo-t>Pad verzinnen</span></p><p data-lo-x>Flussmittel aufs Pad, Spitze dran, etwas Zinn zuführen. Es entsteht ein kleiner, glänzender Hügel.</p></div>
+        <div class="ws-player">
+          <button type="button" class="ws-ibtn" data-lo-prev aria-label="Vorheriger Schritt"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
+          <button type="button" class="ws-ibtn ws-play" data-lo-play aria-label="Abspielen"><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+          <button type="button" class="ws-ibtn" data-lo-next aria-label="Nächster Schritt"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+          <div class="ws-prog" aria-hidden="true"><i></i></div>
+          <div class="ws-rtype ws-lo-cmp" role="group" aria-label="Vergleich">
+            <button type="button" data-lo-q="good" aria-pressed="true">Guter Lötpunkt</button>
+            <button type="button" data-lo-q="cold" aria-pressed="false">Kalter Lötpunkt</button>
+          </div>
+        </div>
+      </div>
+      <div class="ws-temp panel">
+        <p class="ws-k">Temperatur ausprobieren</p>
+        <fieldset class="ws-fs"><legend class="lbl">Was lötest du?</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="ws-job" value="sig" checked><span>Signal-Pad</span></label>
+            <label class="chip"><input type="radio" name="ws-job" value="mot"><span>Motorkabel</span></label>
+            <label class="chip"><input type="radio" name="ws-job" value="xt"><span>XT60</span></label>
+          </div>
+        </fieldset>
+        <div class="ws-tread"><b data-t-v>370</b><span>°C</span><em data-t-state>guter Startwert</em></div>
+        <div class="ws-tscale" aria-hidden="true"><i class="ws-t-good"></i><i class="ws-t-mk"></i><span>250</span><span>480</span></div>
+        <label class="sr" for="ws-t">Temperatur der Lötspitze in Grad Celsius</label>
+        <input type="range" id="ws-t" class="ws-trange" min="250" max="480" step="5" value="370">
+        <p class="ws-t-msg" data-t-msg aria-live="polite">Im Startbereich fließt das Zinn schnell und glänzt.</p>
+        <p class="ws-src">Startwerte als Spanne laut <a href="https://www.unmannedtechshop.co.uk/de/blogs/knowledge-base/how-to-solder-fpv-drone-components-beginner-guide" target="_blank" rel="noopener">Unmanned Tech</a> (April 2026): Signal-Pads 350 bis 390 °C, Motorkabel 380 bis 420 °C, XT60 400 bis 450 °C. Spitze, Lot und Pad-Größe verändern das Ergebnis.</p>
+        <p class="ws-hint ws-hint-temp" aria-hidden="true">Regler schieben</p>
+      </div>
+    </div>
+    <ul class="ws-tips" aria-label="Tipps zum Löten">
+      <li class="ws-tip"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 8h12v8l6 22a4 4 0 0 1-4 5H16a4 4 0 0 1-4-5l6-22z"/><path d="M15 30h18" class="ws-tip-a"/></svg><b>Flussmittel</b><span>Frisches Flussmittel hilft beim Verzinnen und Nachlöten. Eine schmutzige Spitze rettet es aber nicht.</span></li>
+      <li class="ws-tip"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 42 30 18M30 18l8-8 4 4-8 8z"/><path d="M34 22 40 28" class="ws-tip-a"/></svg><b>Spitzengröße</b><span>Fein für kleine Pads, für große Pads eine saubere 2 bis 3 mm breite Meißelspitze mit viel Kontaktfläche.</span></li>
+      <li class="ws-tip"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="14" width="28" height="22" rx="4"/><path d="M18 14V8M30 14V8" /><path d="M17 24h4M27 24h4" class="ws-tip-a"/></svg><b>XT60 braucht Wärme</b><span>Schmilzt es erst nach Sekunden, nimm eine breitere Spitze, statt länger draufzuhalten.</span></li>
+      <li class="ws-tip"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M4 24h12M32 24h12"/><rect x="16" y="18" width="16" height="12" rx="3" class="ws-tip-a"/></svg><b>Schrumpfschlauch</b><span>Vor dem Löten aufs Kabel schieben. Danach über die Lötstelle ziehen und mit Heißluft schrumpfen.</span></li>
+      <li class="ws-tip"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 24h8l4-8 8 16 4-8h8"/><circle cx="24" cy="24" r="20" class="ws-tip-a"/></svg><b>Smoke Stopper</b><span>Vor dem ersten Anstecken mit dem Multimeter auf Kurzschluss prüfen, dann den Akku über einen Smoke Stopper anschließen.</span></li>
+      <li class="ws-tip"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 22c0-6 8-8 18-8s18 2 18 8-4 10-10 10c-4 0-6-4-8-4s-4 4-8 4C10 32 6 28 6 22z"/><path d="M24 4v6M14 6l2 5M34 6l-2 5" class="ws-tip-a"/></svg><b>Lüften und Brille</b><span>Für frische Luft sorgen, Schutzbrille tragen, nicht am Lötplatz essen und danach Hände waschen.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Videos -->
+<section class="sec ws-sec ws-vid" id="videos" data-toc="Videos" aria-labelledby="vid-h">
+  <div class="wrap">
+    <div class="sec-head ws-vid-head">
+      <div>
+        <h2 class="h2" id="vid-h" data-split>Videos</h2>
+        <p class="lede" data-reveal>Ausgewählte Tutorials auf Deutsch und Englisch. Ein Video lädt erst, wenn du auf „Video laden“ tippst.</p>
+      </div>
+      <fieldset class="ws-fs ws-vf"><legend class="sr">Thema</legend>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="ws-vt" value="" checked><span>Alle</span></label>
+          <label class="chip"><input type="radio" name="ws-vt" value="bf"><span>Betaflight</span></label>
+          <label class="chip"><input type="radio" name="ws-vt" value="elrs"><span>ELRS</span></label>
+          <label class="chip"><input type="radio" name="ws-vt" value="lot"><span>Löten</span></label>
+        </div>
+      </fieldset>
+    </div>
+    <div class="ws-vrow">
+      <ul class="ws-vlist" data-vlist></ul>
+      <p class="ws-hint ws-hint-vid" aria-hidden="true">Video antippen</p>
+    </div>
+    <p class="ws-vnote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg><span>Erst mit dem Klick auf „Video laden“ verbindet sich die Seite mit YouTube (Google). Dabei werden Daten wie deine IP-Adresse übertragen. Mehr dazu im <a href="datenschutz.html">Datenschutz</a>.</span></p>
+  </div>
+</section>
+
+<!-- Weiter -->
+<section class="sec ws-sec ws-next" id="weiter" data-toc="Weiter" aria-labelledby="next-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2" id="next-h" data-split>Wie geht es weiter?</h2>
+    </div>
+    <div class="ws-ncards">
+      <a class="ws-ncard" href="hilfe.html#doktor">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M29 13a8 8 0 0 0-10.6 10.6L7 35l6 6 11.4-11.4A8 8 0 0 0 35 19l-4.8 4.8-5.2-1.2-1.2-5.2z"/></svg>
+        <b>Technik-Hilfe</b><span>Kopter armt nicht? Der FPV-Doktor fragt dich Schritt für Schritt durch. Dazu das Werkzeug für Arming-Sperren.</span><svg class="ws-nc-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="ws-ncard" href="wissen.html#schaltplan">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6 42 16 24 26 6 16z"/><path d="M14 21v9c0 3.4 4.5 6 10 6s10-2.6 10-6v-9"/></svg>
+        <b>FPV-Wissen</b><span>Die Drohne in 3D, der Schaltplan zum Anklicken und welche Leitung wohin gehört.</span><svg class="ws-nc-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="ws-ncard" href="simulator.html">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="18" width="36" height="22" rx="6"/><circle cx="17" cy="29" r="4"/><circle cx="31" cy="29" r="4"/><path d="M13 18V8M35 18V8"/></svg>
+        <b>Simulator</b><span>Deine Rates gleich im Browser ausprobieren, mit Funke, Controller oder Handy.</span><svg class="ws-nc-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="ws-ask">
+      <div>
+        <h3 class="h3">Frag den Verein</h3>
+        <p>Du kommst beim Löten oder in Betaflight nicht weiter? Schick uns deine Frage, am besten mit der Ausgabe von <code>diff all</code>, oder bring die Drohne zum Hallenfliegen mit.</p>
+      </div>
+      <div class="btns"><a class="btn solid" href="hilfe.html#frage">Frage stellen <span class="arr">→</span></a><a class="btn amber" href="mitglied.html">Mitglied werden</a></div>
+    </div>
+    <p class="ws-official"><span>Offizielle Quellen:</span> <a href="https://betaflight.com/docs/wiki" target="_blank" rel="noopener">Betaflight-Doku</a> <a href="https://app.betaflight.com" target="_blank" rel="noopener">Betaflight App</a> <a href="https://github.com/betaflight/betaflight/releases" target="_blank" rel="noopener">GitHub-Releases</a> <a href="https://www.expresslrs.org/quick-start/binding/" target="_blank" rel="noopener">ExpressLRS-Doku</a></p>
+  </div>
+</section>
+
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social"><a href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" aria-label="Instagram @flightclubsaar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="TikTok @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></a><a href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="YouTube @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a></div></div>
+      <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="simulator.html">FPV-Simulator</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+    </div>
+    <div class="foot-big" aria-hidden="true">Brille an</div>
+    <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
+  </div>
+</footer>
+<script src="assets/js/data.js?v=55188713"></script>
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/lib/ScrollTrigger.min.js"></script>
+<script src="assets/lib/SplitText.min.js"></script>
+<script src="assets/lib/ScrambleTextPlugin.min.js"></script>
+<script src="assets/lib/Draggable.min.js"></script>
+<script src="assets/lib/InertiaPlugin.min.js"></script>
+<script src="assets/lib/DrawSVGPlugin.min.js"></script>
+<script src="assets/lib/MotionPathPlugin.min.js"></script>
+<script src="assets/js/fcs.js?v=27c61f1e"></script>
+<script src="assets/js/werkstatt.js?v=d9ef7564"></script>
+</body>
+</html>
