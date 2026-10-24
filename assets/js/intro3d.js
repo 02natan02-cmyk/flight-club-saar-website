@@ -100,7 +100,13 @@ function makeSpline(keys, endV) {
 
 function webgl2(canvas, soft) {
   try {
-    return canvas.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: true, depth: true, stencil: false, powerPreference: 'high-performance', failIfMajorPerformanceCaveat: !soft });
+    const gl = canvas.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: true, depth: true, stencil: false, powerPreference: 'high-performance', failIfMajorPerformanceCaveat: !soft });
+    if (!gl || soft) return gl;
+    // Software-Rasterizer (kein Grafikchip) → lieber das leichte alte Intro
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = String(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER) || '');
+    if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(name)) { const lc = gl.getExtension('WEBGL_lose_context'); lc && lc.loseContext(); return null; }
+    return gl;
   } catch (e) { return null; }
 }
 
@@ -140,6 +146,7 @@ export async function playIntro(root, opts = {}) {
     '<span class="i3d-o i3d-bl">CH R4 5769</span><span class="i3d-armed">ARMED</span></div>' +
     '<div class="i3d-title"><div class="i3d-t1"></div><div class="i3d-t2"></div></div>';
   stage.insertBefore(glCanvas, stage.firstChild);
+  glCanvas.addEventListener('webglcontextlost', e => { e.preventDefault(); if (!finished) { if (ready3d) finish(); else fail(); } });
   const $ = s => stage.querySelector(s);
   const noiseCv = $('.i3d-noise'), boot = $('.i3d-boot'), b1 = $('.i3d-b1'), osd = $('.i3d-osd'), armed = $('.i3d-armed');
   const titleWrap = $('.i3d-title'), t1 = $('.i3d-t1'), t2 = $('.i3d-t2'), osdTm = $('[data-o=tm]'), osdBat = $('[data-o=bat]');
@@ -275,7 +282,7 @@ export async function playIntro(root, opts = {}) {
       // Titel knallt rein
       .fromTo(chars, { opacity: 0, scale: 2.6, yPercent: -18 },
         { opacity: 1, scale: 1, yPercent: 0, duration: 0.62, ease: 'expo.out', stagger: { each: 0.028, from: 'center' }, immediateRender: true }, TL.title)
-      .fromTo(t1, { filter: 'blur(10px)', textShadow: '0 0 0px rgba(0,0,0,0)' }, { filter: 'blur(0px)', duration: 0.34, ease: 'power2.out', immediateRender: true }, TL.title)
+      .fromTo(t1, { filter: 'blur(10px)' }, { filter: 'blur(0px)', duration: 0.34, ease: 'power2.out', immediateRender: true }, TL.title)
       .fromTo(t1, { '--i3d-glow': 0 }, { '--i3d-glow': 1, duration: 0.12, ease: 'none', immediateRender: true }, TL.title + 0.2)
       .to(t1, { '--i3d-glow': 0, duration: 0.6, ease: 'power2.out' }, TL.title + 0.32)
       .fromTo(t2, { opacity: 0 }, { opacity: 1, duration: 0.05, immediateRender: true }, TL.sub)
@@ -299,13 +306,13 @@ export async function playIntro(root, opts = {}) {
       const T = mainTl.time();
       if (S.exitStart) { S.exit = clamp01((now - S.exitStart) / EXIT_MS); S.exit = S.exit * S.exit; }
       const a = performance.now();
-      R3.render(T, S, revealed); stats.renders = (stats.renders || 0) + 1;
+      try { R3.render(T, S, revealed); } catch (err) { if (O.debug) console.warn('[intro3d]', err); finish(); return; }
       if (S.exitStart && S.exit >= 1) { finish(); return; }
       const ms = performance.now() - a;
-      if (T > TL.bootEnd && T < TL.end) {
-        stats.frames++; stats.renderMs += ms; stats.maxRenderMs = Math.max(stats.maxRenderMs, ms);
+      if (T > TL.bootEnd && T < TL.end) R3.adapt(gap);
+      if (O.debug && T > TL.bootEnd && T < TL.end) {
+        stats.renders = (stats.renders || 0) + 1; stats.frames++; stats.renderMs += ms; stats.maxRenderMs = Math.max(stats.maxRenderMs, ms);
         if (stats.frames > 2) { stats.maxGap = Math.max(stats.maxGap, gap); if (gap > 50) stats.long++; stats.gaps.push(gap); if (gap > 150 || ms > 50) (stats.slow = stats.slow || []).push([+T.toFixed(2), Math.round(gap), Math.round(ms)]); }
-        R3.adapt(gap);
       }
       const live = T >= 1.04 || exiting; if (live !== isLive) { isLive = live; stage.classList.toggle('live', live); }
       if (T > 1.2 && noiseOn && !seeked) stopNoise();
@@ -347,7 +354,7 @@ export async function playIntro(root, opts = {}) {
 function manualSplit(el) {
   const txt = el.textContent; el.textContent = '';
   el.setAttribute('aria-label', txt);
-  return [...txt].map(c => { const s = document.createElement('span'); s.className = 'i3d-ch'; s.style.display = 'inline-block'; s.setAttribute('aria-hidden', 'true'); s.textContent = c === ' ' ? ' ' : c; el.appendChild(s); return s; });
+  return [...txt].map(c => { const s = document.createElement('span'); s.className = 'i3d-ch'; s.style.display = 'inline-block'; s.setAttribute('aria-hidden', 'true'); s.textContent = c === ' ' ? '\u00a0' : c; el.appendChild(s); return s; });
 }
 
 /* Analoges FPV-Rauschen: klein, weich hochskaliert, 30 Bilder/s, gedämpft */
