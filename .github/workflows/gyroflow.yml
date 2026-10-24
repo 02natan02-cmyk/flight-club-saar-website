@@ -73,9 +73,15 @@ jobs:
           python3 - <<'PY'
           import json, subprocess
           o = json.load(open('opt.json'))
-          glatt = min(max(float(o.get('glatt', 0.5)), 0.05), 1.0)
+          # Optionen aus dem Clip-Studio: glaettung 0-100 (oder glatt 0-1), horizont an/aus, zoom dynamisch/statisch/aus, aufl original/1080
+          if 'glatt' in o:
+              glatt = float(o.get('glatt') or 0.5)
+          else:
+              glatt = float(o.get('glaettung', 50) or 50) / 100.0
+          glatt = min(max(glatt, 0.05), 1.0)
           horizont = 100.0 if o.get('horizont') else 0.0
-          preset = {"version": 2, "stabilization": {"method": "Default", "smoothing_params": [{"name": "smoothness", "value": glatt}], "horizon_lock_amount": horizont, "horizon_lock_roll": 0.0}}
+          zoom = {'dynamisch': 4.0, 'statisch': -1.0, 'aus': 0.0}.get(str(o.get('zoom', 'dynamisch')), 4.0)
+          preset = {"version": 2, "stabilization": {"method": "Default", "smoothing_params": [{"name": "smoothness", "value": glatt}], "horizon_lock_amount": horizont, "horizon_lock_roll": 0.0, "adaptive_zoom_window": zoom}}
           w = h = 0
           try:
               out = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', 'clip/eingang.mp4'], capture_output=True, text=True).stdout.strip().split(',')
