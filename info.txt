@@ -1,0 +1,4 @@
+stream|codec_name=h264|width=1920|height=1440|r_frame_rate=30000/1001
+stream|codec_name=aac|r_frame_rate=0/0
+stream|codec_name=unknown|r_frame_rate=0/0
+format|duration=34.005000|bit_rate=66924536
