@@ -272,3 +272,8 @@ details.fold>summary::after{content:"";flex:none;width:28px;height:28px;border-r
 details.fold[open]>summary::after{transform:rotate(45deg)}
 details.fold>summary:hover{background:rgba(255,255,255,.03)}
 details.fold>.fold-in{padding:0 22px 22px}
+
+/* Prüfbericht 24.10.: Tippflächen am Handy, Hinweise je Gerät */
+.only-touch{display:none}
+@media (pointer:coarse){.only-touch{display:inline}.only-fine{display:none}
+ .toc a,.toc button{min-height:40px;display:inline-flex;align-items:center}}

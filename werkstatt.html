@@ -16,8 +16,8 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fcs.css?v=babf9187">
-<link rel="stylesheet" href="assets/css/werkstatt.css?v=fb0bfe35">
+<link rel="stylesheet" href="assets/css/fcs.css?v=84f45c46">
+<link rel="stylesheet" href="assets/css/werkstatt.css?v=d363e42f">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -496,6 +496,7 @@
           <div class="ws-tp" role="tabpanel" id="wp-osd" aria-labelledby="wt-osd" tabindex="0" hidden>
             <div class="ws-demo">
               <div class="ws-osdv" aria-hidden="true">
+                <div class="ws-osdv-world"><i></i></div>
                 <div class="ws-osdv-grid"></div>
                 <span class="ws-oe" data-oe="volt">3.92V</span>
                 <span class="ws-oe" data-oe="time">02:41</span>
@@ -601,7 +602,7 @@
         </div>
       </div>
       <ol class="ws-su-list">
-        <li><label class="check"><input type="checkbox" data-su="smoke"><span>Akku das erste Mal nur über einen Smoke Stopper anstecken</span></label><a class="ws-su-go" href="#loeten" aria-label="Zum Abschnitt Löten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
+        <li><p class="ws-hint ws-hint-su" aria-hidden="true">Tippe zum Abhaken</p><label class="check"><input type="checkbox" data-su="smoke"><span>Akku das erste Mal nur über einen Smoke Stopper anstecken</span></label><a class="ws-su-go" href="#loeten" aria-label="Zum Abschnitt Löten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
         <li><label class="check"><input type="checkbox" data-su="backup"><span>Backup: <code>diff all</code> in der CLI als Datei speichern</span></label><a class="ws-su-go" href="#tabs" data-go-tab="cli" aria-label="Zum Tab CLI"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
         <li><label class="check"><input type="checkbox" data-su="flash"><span>Aktuelle Firmware flashen, im Cloud Build CRSF und Telemetrie wählen</span></label><a class="ws-su-go" href="#version" aria-label="Zum Abschnitt Version und Flashen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
         <li><label class="check"><input type="checkbox" data-su="setup"><span>Beschleunigungssensor kalibrieren, Modell kippt richtig mit</span></label><a class="ws-su-go" href="#tabs" data-go-tab="setup" aria-label="Zum Tab Einrichtung"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
@@ -612,7 +613,6 @@
         <li><label class="check"><input type="checkbox" data-su="mot"><span>DShot einstellen, Reihenfolge und Drehrichtung prüfen</span></label><a class="ws-su-go" href="#tabs" data-go-tab="mot" aria-label="Zum Tab Motoren"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
         <li><label class="check"><input type="checkbox" data-su="osd"><span>OSD einrichten, <code>save</code>, Props richtig herum drauf, erster Schwebeflug</span></label><a class="ws-su-go" href="#tabs" data-go-tab="osd" aria-label="Zum Tab OSD"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
       </ol>
-      <p class="ws-hint ws-hint-su" aria-hidden="true">Tippe zum Abhaken</p>
     </div>
   </div>
 </section>
@@ -688,7 +688,8 @@
           </div>
         </fieldset>
         <div class="ws-tread"><b data-t-v>370</b><span>°C</span><em data-t-state>guter Startwert</em></div>
-        <div class="ws-tscale" aria-hidden="true"><i class="ws-t-good"></i><i class="ws-t-mk"></i><span>250</span><span>480</span></div>
+        <div class="ws-tscale" aria-hidden="true"><i class="ws-t-good"></i><i class="ws-t-mk"></i></div>
+        <div class="ws-tlab" aria-hidden="true"><span>250 °C</span><span>480 °C</span></div>
         <label class="sr" for="ws-t">Temperatur der Lötspitze in Grad Celsius</label>
         <input type="range" id="ws-t" class="ws-trange" min="250" max="480" step="5" value="370">
         <p class="ws-t-msg" data-t-msg aria-live="polite">Im Startbereich fließt das Zinn schnell und glänzt.</p>
@@ -776,7 +777,7 @@
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=55188713"></script>
+<script src="assets/js/data.js?v=d736006b"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -786,6 +787,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=27c61f1e"></script>
-<script src="assets/js/werkstatt.js?v=d9ef7564"></script>
+<script src="assets/js/werkstatt.js?v=2480ac07"></script>
 </body>
 </html>

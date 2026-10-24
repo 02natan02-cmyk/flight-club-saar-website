@@ -231,7 +231,7 @@
         S.ang[i] = (S.ang[i] + (i === 1 || i === 2 ? -1 : 1) * (240 + 2600 * m[i]) * dt) % 360;
         props[i].setAttribute('transform', `rotate(${S.ang[i].toFixed(1)})`);
       }
-      quad.style.transform = `rotateX(${(-S.gy[1] / 670 * 30).toFixed(2)}deg) rotateY(${(S.gy[0] / 670 * 30).toFixed(2)}deg) rotateZ(${(S.gy[2] / 670 * 12).toFixed(2)}deg)`;
+      quad.style.transform = `rotateX(${(S.gy[1] / 670 * 30).toFixed(2)}deg) rotateY(${(S.gy[0] / 670 * 30).toFixed(2)}deg) rotateZ(${(S.gy[2] / 670 * 12).toFixed(2)}deg)`;
       // Leitungen und Impulse
       S.ph += dt * (0.25 + 1.5 * S.act);
       const op = (0.12 + 0.88 * S.act).toFixed(3);
@@ -978,17 +978,19 @@
       ['s0', 's1', 's2', 's3', 's4'].forEach((l, i) => tl.call(() => { step = i; caption(i); if (i === 4) applyResult(false); else if (i < 3) gsap.set(lift, { rotation: 0, svgOrigin: '380 262' }); }, null, l));
     }
     const LABELS = ['s0', 's1', 's2', 's3', 's4'];
+    let nav = null;
+    const killNav = () => { if (nav) { nav.kill(); nav = null; } };
     function goStep(i, play) {
-      step = clamp(i, 0, 4); caption(step);
+      killNav(); step = clamp(i, 0, 4); caption(step);
       if (!tl) { applyResult(true); return; }
       if (play) { tl.play(LABELS[step]); }
       else {
         const to = step < 4 ? tl.labels[LABELS[step + 1]] - 0.02 : tl.labels.end;
-        tl.pause(); tl.seek(LABELS[step], true); if (step < 3) gsap.set(lift, { rotation: 0, svgOrigin: '380 262' }); tl.tweenTo(to, { ease: 'none' });
+        tl.pause(); tl.seek(LABELS[step], true); if (step < 3) gsap.set(lift, { rotation: 0, svgOrigin: '380 262' }); nav = tl.tweenTo(to, { ease: 'none' });
       }
     }
-    function play() { playing = true; playB.classList.add('on'); playB.setAttribute('aria-label', 'Pause'); if (!tl) return; if (tl.progress() >= 0.999) { tl.restart(); } else tl.play(); }
-    function pause() { playing = false; playB.classList.remove('on'); playB.setAttribute('aria-label', 'Abspielen'); if (tl) tl.pause(); }
+    function play() { killNav(); playing = true; playB.classList.add('on'); playB.setAttribute('aria-label', 'Pause'); if (!tl) return; if (tl.progress() >= 0.999) { tl.restart(); } else tl.play(); }
+    function pause() { killNav(); playing = false; playB.classList.remove('on'); playB.setAttribute('aria-label', 'Abspielen'); if (tl) tl.pause(); }
     playB.addEventListener('click', () => { touched = true; playing ? pause() : play(); });
     $('[data-lo-prev]', sec).addEventListener('click', () => { touched = true; pause(); goStep(step - 1, false); });
     $('[data-lo-next]', sec).addEventListener('click', () => { touched = true; pause(); goStep(step + 1, false); });

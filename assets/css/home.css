@@ -509,3 +509,7 @@
 /* Link vom Spiel zum Simulator */
 .spiel-sim{margin:22px 0 0;display:flex;justify-content:center}
 .spiel-sim .btn{white-space:normal;text-align:center;line-height:1.35}
+
+/* Prüfbericht 24.10. */
+@media (max-width:700px){.hero .kicker{font-size:11px;letter-spacing:.14em;text-shadow:0 1px 8px rgba(0,0,0,.85)}}
+@media (pointer:coarse){#show-dots button,#mo-dots button{min-height:40px}}

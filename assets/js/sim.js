@@ -969,7 +969,7 @@ function init() {
       const req = app.requestFullscreen || app.webkitRequestFullscreen;
       if (req) { try { const p = req.call(app, { navigationUI: 'hide' }); if (p && p.then) p.then(lockLandscape, () => { }); else lockLandscape(); } catch (e) { } }
       try { stage.focus({ preventScroll: true }); } catch (e) { }
-      if (COARSE && W.innerHeight > W.innerWidth) toast('Dreh dein Handy quer, dann siehst du mehr.');
+      if (COARSE && W.innerHeight > W.innerWidth) { toast('Dreh dein Handy quer, dann siehst du mehr.'); helpEl.style.visibility = 'hidden'; setTimeout(() => { helpEl.style.visibility = ''; }, 3400); }
     } else {
       app.classList.remove('panel-open');
       if (W.innerWidth > 1100) app.classList.toggle('no-panel', !panelWanted);

@@ -85,7 +85,7 @@
     const n = FCS.next(), list = $('#t-list'); if (!list) return;
     const all = FCS.termine();
     $('#stat-hallen') && ($('#stat-hallen').dataset.count = all.length);
-    list.innerHTML = all.map(t => `<li class="${t.vorbei ? 'past' : ''}${n && t.d === n.d ? ' nx' : ''}"><span>${FCS.fmtDate(t.d)}</span><span class="mute">${t.halle.name.replace('Großwaldhalle', 'Eiweiler').replace('Glück-Auf-Halle', '')}</span></li>`).join('');
+    list.innerHTML = all.map(t => `<li class="${t.vorbei ? 'past' : ''}${n && t.d === n.d ? ' nx' : ''}"><span>${FCS.fmtDate(t.d)}</span><span class="mute">${t.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}</span></li>`).join('');
     if (!n) { $('#t-datum').textContent = 'Neue Termine folgen'; $('#t-ort').textContent = 'Die nächste Saison kündigen wir in der Gruppe und hier an.'; $('#t-cd').hidden = true; return; }
     $('#t-datum').textContent = FCS.fmtDate(n.d, 1);
     $('#t-ort').textContent = `${n.halle.name} · ${D.zeit.von.replace(':00', '')} bis ${D.zeit.bis.replace(':00', '')} Uhr`;
@@ -479,7 +479,8 @@
       requestAnimationFrame(draw); };
     new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis) draw(); }).observe(stage);
     // Selbst-Impuls: das Log fährt einmal ein Stück nach rechts und zurück
-    if (!RM) new IntersectionObserver((es, o) => { if (!es[0].isIntersecting) return; o.disconnect(); setTimeout(() => { go(step() * 1.2); setTimeout(() => go(0), 1300); }, 600); }, { threshold: .5 }).observe(rail);
+    if (!RM) { let user = false; const sec = rail.closest('section') || rail; ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev => sec.addEventListener(ev, () => { user = true; }, { capture: true, passive: true }));
+      new IntersectionObserver((es, o) => { if (!es[0].isIntersecting) return; o.disconnect(); setTimeout(() => { if (user) return; go(step() * 1.2); setTimeout(() => { if (!user) go(0); }, 1300); }, 600); }, { threshold: .5 }).observe(rail); }
   }
   document.addEventListener('fcs:ready', chronik, { once: true });
 })();

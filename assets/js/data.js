@@ -73,8 +73,8 @@ FCS.data = {
   // WhatsApp-Community „Flight Club Saar e.V.“ (gegründet 27.05.2023, Stand 24.10.2026)
   gruppen: [
     { n: 'Flight Club Saar Chat', m: 69, t: 'Der Hauptkanal: Fragen, Fotos, Verabredungen.' },
-    { n: 'Spots / Treffen', m: 60, t: '„Ich geh morgen da hin.“ – „Samstag was los?“' },
-    { n: 'Technischer Support', m: 55, t: 'Löten, Betaflight, VTX, ELRS – hier wird geholfen.' },
+    { n: 'Spots / Treffen', m: 60, t: '„Ich geh morgen da hin.“ „Samstag was los?“' },
+    { n: 'Technischer Support', m: 55, t: 'Löten, Betaflight, VTX, ELRS: Hier wird geholfen.' },
     { n: 'Videos & Fotos', m: 55, t: 'Die besten Clips der Woche.' },
     { n: 'Hab ich neu', m: 44, t: 'Neue Kopter, neue Brillen, neue Teile.' },
     { n: 'Marktplatz intern', m: null, t: 'Kaufen, verkaufen, tauschen unter Mitgliedern.' },
@@ -170,6 +170,6 @@ FCS.data = {
   markt: [],
   partner: [
     { n: 'Ayedo', u: 'https://ayedo.de/', ig: 'weareayedo', t: 'Sponsor und Partner seit Februar 2025. Cloud-Anbieter aus Schwalbach-Hülzweiler im Saarland.' },
-    { n: 'Falcon Eye', u: 'https://falcon-eye.de/', t: 'FPV-Filme und Webdesign aus dem Verein heraus – die Filme auf dieser Seite stammen von hier.' }
+    { n: 'Falcon Eye', u: 'https://falcon-eye.de/', t: 'FPV-Filme und Webdesign aus dem Verein heraus. Die Filme auf dieser Seite stammen von hier.' }
   ]
 };

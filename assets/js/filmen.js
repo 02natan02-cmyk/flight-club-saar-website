@@ -223,7 +223,7 @@
     { n: 'GoPro HERO13 Black', t: 'Action-Cam', g: 159, gt: '159 g mit Akku', s: '5.3K60, 4K120, 10 Bit, Log, bis 120 Mbit/s, HyperSmooth 6.0', gy: 'ja', k: ['fuenf', 'lr'] },
     { n: 'DJI Osmo Action 6', t: 'Action-Cam', g: 149, gt: '149 g', s: '4K bis 120 fps, auch quadratisch 3840 × 3840, 1/1,1-Zoll-Sensor, Blende f/2,0 bis f/4,0, D-Log M in 10 Bit', gy: 'ja', k: ['fuenf', 'lr'] },
     { n: 'DJI Osmo Action 5 Pro', t: 'Action-Cam', g: 146, gt: '146 g', s: '4K120, 1/1,3-Zoll-Sensor, 155°, RockSteady 3.0+', gy: 'ja', k: ['fuenf', 'lr'] },
-    { n: 'GoPro Mission 1', t: 'Action-Cam', g: null, gt: 'noch keine Angabe', s: 'Neu seit Mai 2026: 1-Zoll-Sensor, 8K60, 4K240, 159°', gy: 'prüfen', k: ['fuenf', 'lr'] },
+    { n: 'GoPro Mission 1', t: 'Action-Cam', g: null, gt: 'keine Angabe', s: 'Neu seit Mai 2026: 1-Zoll-Sensor, 8K60, 4K240, 159°', gy: 'nicht gelistet', k: ['fuenf', 'lr'] },
     { n: 'Naked GoPro (Beispiel HERO9)', t: 'Naked', g: 49, gt: '49 g im Flywoo-Case', s: 'Bild wie das Original, Strom vom Kopter (2S bis 6S), nicht wasserdicht', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
     { n: 'RunCam Thumb 2', t: 'Mini-HD', g: 27, gt: '27 g', s: '4K60, 1080p120, 5 V, Gyro-Datei für Gyroflow', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
     { n: 'Insta360 GO 3S', t: 'Mini-HD', g: 39, gt: '39 g Kamera allein', s: '4K, FlowState-Stabilisierung', gy: 'ja', k: ['cine', 'fuenf'] },
