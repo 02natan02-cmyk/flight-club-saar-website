@@ -170,12 +170,12 @@
     deck.innerHTML = list.map(c => {
       const name = c.n || c.a, alias = c.n ? c.a : '';
       const back = [c.seit ? `<span>FPV seit <b>${esc(c.seit)}</b></span>` : '', c.stil ? `<span>Stil <b>${esc(c.stil)}</b></span>` : '', c.ort ? `<span>Aus <b>${esc(c.ort)}</b></span>` : ''].filter(Boolean).join('') || '<span>Mitglied im Flight Club Saar</span>';
-      return `<div class="card3${c.v ? ' v' : ''}" tabindex="0" role="button" aria-pressed="false" aria-label="${esc(name)}${alias ? ', ' + esc(alias) : ''}: Karte umdrehen"><div class="c3-in">
+      return `<div class="card3${c.v ? ' v' : ''}" tabindex="0" role="button" aria-pressed="false"><span class="sr">Karte umdrehen: </span><div class="c3-in">
         <div class="c3-f c3-front">${top}
         ${c.img ? `<img class="mc-ph" src="${esc(c.img)}" alt="" loading="lazy" width="400" height="400">` : ''}<div style="align-self:end"><div class="mc-name">${esc(name)}</div><div class="mc-alias">${esc(alias)}</div></div>
         <div class="mc-bot"><span>Flight Club Saar e. V.</span><span class="mc-role">${esc(c.r || 'Mitglied')}</span></div><i class="mc-shine"></i></div>
         <div class="c3-f c3-back"><div class="cc-b">${back}</div></div></div></div>`;
-    }).join('') + (rest > 0 ? `<div class="card3 more" tabindex="0" role="button" aria-pressed="false" aria-label="${rest} weitere Piloten: Karte umdrehen"><div class="c3-in"><div class="c3-f c3-front">${top}<div style="align-self:end"><div class="mc-name">+${rest}</div><div class="mc-alias">weitere Piloten</div></div><div class="mc-bot"><span>Flight Club Saar e. V.</span><span class="mc-role">Crew 2026</span></div><i class="mc-shine"></i></div><div class="c3-f c3-back"><div class="cc-b"><span>Dabei und bezahlt. Wer mit Namen hierher möchte, ergänzt einfach sein Profil.</span></div></div></div></div>` : '') + '<a class="card3 free" href="#profil"><div class="c3-in"><div class="c3-f c3-front"><b>+ Du?</b><span>Profil ergänzen</span></div></div></a>';
+    }).join('') + (rest > 0 ? `<div class="card3 more" tabindex="0" role="button" aria-pressed="false"><span class="sr">Karte umdrehen: </span><div class="c3-in"><div class="c3-f c3-front">${top}<div style="align-self:end"><div class="mc-name">+${rest}</div><div class="mc-alias">weitere Piloten</div></div><div class="mc-bot"><span>Flight Club Saar e. V.</span><span class="mc-role">Crew 2026</span></div><i class="mc-shine"></i></div><div class="c3-f c3-back"><div class="cc-b"><span>Dabei und bezahlt. Wer mit Namen hierher möchte, ergänzt einfach sein Profil.</span></div></div></div></div>` : '') + '<a class="card3 free" href="#profil"><div class="c3-in"><div class="c3-f c3-front"><b>+ Du?</b><span>Profil ergänzen</span></div></div></a>';
     const cards = $$('.card3', deck);
     cards.forEach(c => {
       if (c.classList.contains('free')) return;
@@ -203,9 +203,9 @@
     grid.innerHTML = all.map(({ p, t, i }) => {
       const soc = socLinks(p), ini = esc(String(p.a || '?').charAt(0).toUpperCase());
       return `<article class="plc" data-i="${i}"><div class="plc-in">
-        <button type="button" class="plc-f plc-front" aria-expanded="false" aria-controls="plc-b${i}" aria-label="${esc(p.a)}: Details zeigen">
+        <button type="button" class="plc-f plc-front" aria-expanded="false" aria-controls="plc-b${i}">
           <span class="plc-img">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy" width="400" height="400">` : `<span>${ini}</span>`}</span>
-          <span class="plc-a">${esc(p.a)}</span><span class="plc-seit hud">${p.seit ? 'seit ' + esc(p.seit) : '&nbsp;'}</span></button>
+          <span class="plc-a">${esc(p.a)}</span><span class="plc-seit hud">${p.seit ? 'seit ' + esc(p.seit) : '&nbsp;'}</span><span class="sr">Details zeigen</span></button>
         <div class="plc-f plc-back" id="plc-b${i}">
           <p class="plc-b-a">${esc(p.a)}</p>
           <p class="plc-n">${[p.n, p.ort].filter(Boolean).map(esc).join(' · ') || 'Pilot im Saarland'}</p>

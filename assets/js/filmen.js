@@ -1178,7 +1178,16 @@
 
   /* Filmklappe schlägt zu, wenn ein Kapitel ins Bild kommt */
   function slates() {
-    $$('.fm-slate').forEach(s => onVis(s, v => { if (v && !s.classList.contains('snap')) setTimeout(() => s.classList.add('snap'), 280); }, '-12% 0px'));
+    const anim = hasG() && !RM;
+    $$('.fm-slate').forEach(s => {
+      const t = $('.fm-ch-t', s), below = s.getBoundingClientRect().top > innerHeight;
+      if (anim && t && below) gsap.set(t, { yPercent: 55, opacity: 0 });
+      onVis(s, v => {
+        if (!v || s.classList.contains('snap')) return;
+        setTimeout(() => s.classList.add('snap'), 280);
+        if (anim && t) gsap.to(t, { yPercent: 0, opacity: 1, duration: .9, ease: 'expo.out' });
+      }, '0px 0px -8% 0px');
+    });
   }
 
   /* Absicherung: Nach schnellen Sprüngen (Kapitel-Leiste) erscheinen Inhalte sofort statt nach langer Stagger-Kette */
