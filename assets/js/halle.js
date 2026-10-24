@@ -17,6 +17,7 @@
     $('#n-ort').textContent = `${n.halle.name} · ${n.halle.adresse} · ${zeit()}`;
     $('#n-route').href = FCS.route(n.halle.lat, n.halle.lng, n.halle.adresse);
     $('#n-ics').onclick = () => FCS.ics(n);
+    const np = $('#n-plan'); if (np) np.href = 'termin.html?d=' + n.d;
     const zb = $('#n-zu'); if (zb) zb.dataset.zu = n.d;
     FCS.countdown($('#n-ring'), n.start.getTime());
     // Ring zeigt, wie viel von den letzten 30 Tagen bis zum Termin schon vorbei ist
@@ -34,7 +35,7 @@
       const d = new Date(t.d + 'T12:00:00'), isN = n && n.d === t.d;
       return `<article class="ticket${t.vorbei ? ' done' : ''}${isN ? ' next' : ''}">
         <div class="t-date"><b>${String(d.getDate()).padStart(2, '0')}</b><span>${MON[d.getMonth()]} · Sa</span></div>
-        <div class="t-info"><h3>${t.halle.name}${isN ? ' <em class="t-next">Nächster Abend</em>' : ''}</h3><p>${zeit()} · ${(t.halle.adresse.split(', ')[1] || t.halle.adresse).replace(/^\d{5}\s*/, '')}</p></div>
+        <div class="t-info"><h3>${t.halle.name}${isN ? ' <em class="t-next">Nächster Abend</em>' : ''}</h3><p>${zeit()} · ${(t.halle.adresse.split(', ')[1] || t.halle.adresse).replace(/^\d{5}\s*/, '')}</p><a class="t-plan" href="termin.html?d=${t.d}">${t.vorbei ? 'Abendplan ansehen' : 'Abendplan &amp; eintragen'}<span aria-hidden="true">→</span></a></div>
         <div class="t-act">${t.vorbei ? '<span class="stamp">Geflogen</span>' : `<span class="t-zu" data-zu-act="${t.d}"></span><button class="t-btn" type="button" data-ics="${i}" aria-label="${FCS.fmtDate(t.d, 1)} in den Kalender">${ICS}<span>Kalender</span></button><a class="t-btn" href="${FCS.route(t.halle.lat, t.halle.lng, t.halle.adresse)}" target="_blank" rel="noopener" aria-label="Route zur ${t.halle.name} (öffnet Google Maps)">${PIN}<span>Route</span></a>`}</div>
         <div class="t-crew zu" data-zu="${t.d}" hidden></div>
       </article>`;

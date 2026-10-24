@@ -1,0 +1,133 @@
+<section class="pagehead tp-head">
+  <div class="tp-bars" id="tp-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="scanlines"></div>
+  <div class="osd-frame"><i></i></div>
+  <div class="osd tp-osd-tl"><span class="blink" style="color:var(--red)">●</span> HALLENABEND · ABENDPLAN</div>
+  <div class="osd tp-osd-tr">5,8 GHz · <b id="tp-osd-k">R3 bis R6</b></div>
+  <div class="wrap">
+    <p class="crumb"><a href="index.html">Start</a> / <a href="hallenfliegen.html">Hallenfliegen</a> / Abendplan</p>
+    <h1 class="h1 tp-h1"><span class="tp-h1-k">Hallenabend</span> <span id="tp-datum">Termin</span></h1>
+    <p class="lede tp-ort" id="tp-ort">Halle und Uhrzeit werden geladen.</p>
+    <ul class="tp-stats">
+      <li><b id="tp-st-n">0</b><span>Piloten eingetragen</span></li>
+      <li><b id="tp-st-k">4</b><span>gleichzeitig in der Luft</span></li>
+      <li><b id="tp-st-h">0</b><span>Durchgänge</span></li>
+    </ul>
+    <div class="btns tp-btns"><a class="btn amber solid" href="#eintragen" id="tp-cta">Ich bin dabei <span class="arr">→</span></a><a class="btn" id="tp-route" href="hallenfliegen.html#hallen" target="_blank" rel="noopener">Route ↗</a><button class="btn ghost" type="button" id="tp-ics">In den Kalender</button></div>
+    <nav class="tp-switch" id="tp-switch" aria-label="Alle Hallenabende"></nav>
+  </div>
+</section>
+
+<section class="sec tp-sec tp-404" id="tp-404" hidden>
+  <div class="wrap">
+    <div class="panel tp-404-in">
+      <p class="tag amber"><span class="dot"></span>Termin nicht gefunden</p>
+      <h2 class="h2">Diesen Abend gibt es nicht</h2>
+      <p class="lede" id="tp-404-t">Für dieses Datum steht kein Hallenfliegen im Kalender. Such dir einen der Abende aus:</p>
+      <ul class="tp-404-list" id="tp-404-list"></ul>
+      <a class="btn" href="hallenfliegen.html">Zur Hallenseite</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec tp-sec tp-sign" id="eintragen" data-toc="Eintragen">
+  <div class="wrap tp-sign-grid">
+    <div class="tp-sign-l">
+      <div class="sec-head tp-sh"><h2 class="h2" data-split>Trag dich ein</h2><p class="lede" data-reveal>Name und Videosystem reichen. Den Kanal teilt der Plan automatisch zu, so stört keiner den anderen.</p></div>
+      <div id="tp-me" class="tp-me panel" hidden></div>
+      <form id="tp-form" class="panel tp-form" novalidate data-reveal>
+        <div class="field" id="tp-f-name"><label for="tp-name">Dein Name oder Pilotenname <b class="req" aria-hidden="true">*</b></label><input id="tp-name" name="n" maxlength="40" autocomplete="nickname" enterkeyhint="next" required><span class="err">Bitte gib einen Namen mit mindestens 2 Zeichen ein.</span></div>
+        <fieldset class="field tp-sys" id="tp-f-sys"><legend class="lbl">Videosystem <b class="req" aria-hidden="true">*</b></legend><div class="chips" id="tp-sys-chips"></div><span class="err">Wähl dein Videosystem oder „weiß nicht“.</span></fieldset>
+        <div class="tp-chrow">
+          <div class="field"><label for="tp-ch">Kanal</label><select id="tp-ch"><option value="">Kein Wunsch, der Plan teilt zu</option></select></div>
+          <label class="check tp-fix"><input type="checkbox" id="tp-fix"><span>Mein Kanal lässt sich nicht umstellen</span></label>
+        </div>
+        <details class="tp-more">
+          <summary>Kopterklasse und Notiz <small>(freiwillig)</small></summary>
+          <div class="tp-more-in">
+            <fieldset class="field"><legend class="lbl">Kopterklasse</legend><div class="chips" id="tp-cls-chips"></div></fieldset>
+            <div class="field"><label for="tp-note">Notiz</label><textarea id="tp-note" maxlength="200" rows="2" placeholder="Zum Beispiel: Ich bringe Gates mit."></textarea></div>
+          </div>
+        </details>
+        <div class="field tp-pw" id="tp-f-pw"><label for="tp-pw">Löschcode (merk ihn dir)</label><input id="tp-pw" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" required><span class="hint">Mit dem Code kannst du dich selbst wieder austragen.</span><span class="err">Der Code braucht mindestens 4 Zeichen.</span></div>
+        <label class="check" id="tp-f-ok"><input type="checkbox" id="tp-ok-dsgvo" required><span>Mein Name erscheint öffentlich auf der Website bei diesem Termin.</span></label>
+        <p class="tp-msg" id="tp-form-msg" role="alert" hidden></p>
+        <div class="btns"><button class="btn amber solid" type="submit" id="tp-submit">Eintragen</button><button class="btn ghost" type="button" id="tp-form-x" hidden>Abbrechen</button></div>
+        <p class="hp-hint tp-hint" id="tp-form-hint"><span class="dot" aria-hidden="true"></span>Tipp dein Videosystem an. Unsicher? Dann „weiß nicht“.</p>
+      </form>
+      <div id="tp-done" class="panel tp-done" hidden></div>
+    </div>
+    <div class="panel tp-who" data-reveal>
+      <div class="tp-who-h"><h3 class="h3">Wer kommt</h3><p class="tp-who-n hud" id="tp-who-n" aria-live="polite"></p><button class="tp-mini" type="button" id="tp-reload" aria-label="Liste neu laden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg><span>Neu laden</span></button></div>
+      <ul class="tp-list" id="tp-list" aria-label="Eingetragene Piloten"></ul>
+      <details class="fold tp-late">
+        <summary>Vor Ort dazugekommen?</summary>
+        <div class="fold-in">
+          <form id="tp-late-f" class="tp-late-f" novalidate>
+            <p class="mute">Nachzügler ohne Handy hier aufnehmen. Sie stehen dann im Plan dieses Geräts und nach dem Veröffentlichen bei allen.</p>
+            <div class="field"><label for="tp-late-n">Name</label><input id="tp-late-n" maxlength="40" autocomplete="off" required><span class="err">Bitte einen Namen eingeben.</span></div>
+            <div class="field"><label for="tp-late-s">Videosystem</label><select id="tp-late-s"></select></div>
+            <button class="btn solid" type="submit">In den Plan aufnehmen</button>
+          </form>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec tp-sec tp-kan" id="kanaele" data-toc="Kanäle">
+  <div class="wrap">
+    <div class="sec-head tp-sh"><h2 class="h2" data-split>Kanäle ohne Störung</h2><p class="lede" data-reveal>Wer gleichzeitig fliegt, liegt weit genug auseinander. Tipp auf einen Piloten, um seinen Kanal von Hand umzustellen.</p></div>
+    <div class="panel tp-specp" data-reveal>
+      <div class="tp-spec" id="tp-spec" role="img" aria-label="Frequenzband 5,8 GHz mit den belegten Kanälen"></div>
+      <p class="tp-legend"><i aria-hidden="true"></i>Grün markiert: frei nutzbar ohne Lizenz, 5725 bis 5875 MHz mit höchstens 25 mW. Gestreift: teilen sich den Platz und fliegen nie gleichzeitig.</p>
+      <p class="hp-hint tp-hint" id="tp-spec-hint"><span class="dot" aria-hidden="true"></span>Tipp auf einen Kanal, dann siehst du, wer darauf fliegt.</p>
+    </div>
+    <div class="tp-conf" id="tp-conf" aria-live="polite"></div>
+    <div class="tp-chgrid" id="tp-chlist"></div>
+    <div class="tp-kan-act">
+      <label class="check tp-all"><input type="checkbox" id="tp-all"><span>Alle acht Raceband-Kanäle verwenden. R1, R2, R7 und R8 liegen außerhalb von 5725 bis 5875 MHz und brauchen eine Amateurfunk-Lizenz.</span></label>
+      <button class="btn ghost" type="button" id="tp-reassign">Kanäle neu verteilen</button>
+    </div>
+    <details class="fold tp-table">
+      <summary>Frequenztabelle, Abstände und Quellen</summary>
+      <div class="fold-in" id="tp-table"></div>
+    </details>
+  </div>
+</section>
+
+<section class="sec tp-sec tp-plan" id="plan" data-toc="Abendplan">
+  <div class="wrap">
+    <div class="sec-head tp-sh"><h2 class="h2" data-split>Der Abendplan</h2><p class="lede" data-reveal>Jeder kommt gleich oft dran. Stell Beginn, Flugzeit und Wechselpause ein, der Plan rechnet sofort neu.</p></div>
+    <div class="panel tp-set" id="tp-set" data-reveal></div>
+    <div class="tp-tools" id="tp-tools"></div>
+    <div class="tp-heats" id="tp-heats" aria-live="polite"></div>
+    <div class="panel tp-pub" id="tp-pub"></div>
+  </div>
+</section>
+
+<section class="sec tp-sec tp-livesec" id="live" data-toc="Live">
+  <div class="wrap">
+    <div class="panel tp-livecard" data-reveal>
+      <div class="tp-livecard-t">
+        <p class="tag sig"><span class="dot"></span>Für Tablet oder Bildschirm in der Halle</p>
+        <h2 class="h2">Live-Modus</h2>
+        <p class="lede">Groß und gut lesbar: wer jetzt fliegt, auf welchem Kanal, wie lange noch und wer als Nächstes dran ist. Mit Signalton beim Wechsel, Vollbild und wachem Bildschirm.</p>
+        <div class="btns"><button class="btn solid" type="button" id="tp-live-go">Live-Modus starten</button></div>
+      </div>
+      <div class="tp-livecard-p" id="tp-live-prev" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec tp-sec tp-back">
+  <div class="wrap">
+    <div class="grid g2">
+      <a class="panel cta-card" href="hallenfliegen.html#termine" data-reveal><span class="tag amber"><span class="dot"></span>Alle Abende</span><h3 class="h3">Zurück zur Hallenseite</h3><p class="mute">Termine, Hallen, Route und was in die Tasche gehört.</p><span class="tri-go">Hallenfliegen →</span></a>
+      <a class="panel cta-card" href="hallenfliegen.html#akkus" data-reveal><span class="tag sig"><span class="dot"></span>Planen</span><h3 class="h3">Wie viele Akkus?</h3><p class="mute">Der Akku-Rechner sagt dir, wie viele du für den Abend einpacken solltest.</p><span class="tri-go">Akku-Rechner →</span></a>
+    </div>
+  </div>
+</section>
+
+<dialog class="tp-dlg" id="tp-dlg" aria-labelledby="tp-dlg-h"><div class="tp-dlg-in"><button class="tp-dlg-x" type="button" id="tp-dlg-x" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div id="tp-dlg-body"></div></div></dialog>
+<div class="tp-live" id="tp-live" role="dialog" aria-modal="true" aria-label="Live-Modus Hallenabend" hidden></div>

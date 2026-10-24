@@ -242,3 +242,11 @@ main [hidden]{display:none!important}
   .zu-big .zu-act{margin-left:0;width:100%}
   .zu-big .zu-go{flex:1;justify-content:center;min-height:48px}
 }
+
+/* Abendplan je Termin (termin.html) */
+.t-plan{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin:4px 0 -6px;padding:0 2px;font:700 12px/1.2 var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--amber);text-decoration:none}
+.t-plan span{transition:transform .3s var(--ease)}
+.t-plan:hover{color:#ffd690}
+.t-plan:hover span{transform:translateX(4px)}
+.ticket.done .t-plan{color:#cfdcec}
+.hp-big .btns .btn.amber{order:-1}

@@ -350,124 +350,557 @@
     }));
   }
 
-  /* ---------- Radar (läuft ohne fremde Server) ---------- */
-  const R = { box: null, cv: null, cx: null, w: 0, h: 0, on: false, raf: 0, a: 0, t0: 0, pos: {}, prevA: 0 };
-  function proj() {
-    // Ausschnitt aus allen Spots, gleicher Maßstab in beide Richtungen (km), damit Abstände stimmen
-    const lat0 = S.reduce((m, s) => Math.min(m, s.lat), 90), lat1 = S.reduce((m, s) => Math.max(m, s.lat), -90);
-    const lng0 = S.reduce((m, s) => Math.min(m, s.lng), 180), lng1 = S.reduce((m, s) => Math.max(m, s.lng), -180);
-    const cl = Math.cos(((lat0 + lat1) / 2) * Math.PI / 180);
-    const kx = 111.32 * cl, ky = 110.57;
-    const dx = Math.max(6, (lng1 - lng0) * kx), dy = Math.max(6, (lat1 - lat0) * ky);
-    const padX = Math.min(150, R.w * .2), padY = Math.min(110, R.h * .2);
-    const k = Math.min((R.w - padX * 2) / dx, (R.h - padY * 2) / dy); // px pro km
-    const cxL = (lng0 + lng1) / 2, cyL = (lat0 + lat1) / 2;
-    return { k, at: (lat, lng) => ({ x: R.w / 2 + (lng - cxL) * kx * k, y: R.h / 2 - (lat - cyL) * ky * k }) };
+  /* ---------- Saarland-Radar: eigene Karte mit Umriss, Nachbarn, Autobahnen, Flüssen und Orten (ohne fremde Server) ----------
+     Alles läuft durch dieselbe Projektion km(lng, lat): Spots, Orte, Straßen und Umrisse liegen dadurch exakt übereinander.
+     Unterste Ebene Canvas (Karte, nur bei Bedarf neu gezeichnet), darüber der Radar-Strahl (CSS-Drehung, nur transform),
+     darüber die Spots als echte Knöpfe. Läuft nur, solange die Karte zu sehen ist. */
+  const GEO_URL = 'assets/data/saarland.json?v=1';
+  const LAT0 = 49.4, LON0 = 6.9, KX = 111.32 * Math.cos(LAT0 * Math.PI / 180), KY = 110.57;
+  const km = (lng, lat) => [(lng - LON0) * KX, (lat - LAT0) * KY];
+  const SLB = (() => { const a = km(6.25, 49.112), b = km(7.42, 49.639); return { x0: a[0], y0: a[1], x1: b[0], y1: b[1] }; })();
+  const SWEEP = 5200;
+  const R = { box: null, cv: null, cx: null, sw: null, sa: null, pins: null, read: null, w: 0, h: 0, dpr: 1, k: 0, kFit: 0, kMin: 0, kMax: 0, c: [0, 0], fitted: false,
+    geo: null, geoP: null, vis: false, on: false, raf: 0, dirty: true, intro: -1, introDone: false, pinsIn: false, mv: null, active: false, dragged: false,
+    lastA: -1, readTxt: '', pos: {}, boxes: [], pinEls: [], ringPx: 90, scKm: 0, font: { hud: '"Chakra Petch",monospace', body: 'Inter,system-ui,sans-serif' } };
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const seg = (t, a, d) => clamp((t - a) / d, 0, 1);
+  const toS = (x, y) => [R.w / 2 + (x - R.c[0]) * R.k, R.h / 2 - (y - R.c[1]) * R.k];
+  const toW = (sx, sy) => [R.c[0] + (sx - R.w / 2) / R.k, R.c[1] - (sy - R.h / 2) / R.k];
+  const fitCenter = () => [(SLB.x0 + SLB.x1) / 2, (SLB.y0 + SLB.y1) / 2];
+  function fitK() {
+    const padX = Math.min(40, R.w * .05), padY = Math.min(56, R.h * .08);
+    return Math.min((R.w - padX * 2) / (SLB.x1 - SLB.x0), (R.h - padY * 2 - 44) / (SLB.y1 - SLB.y0));
   }
-  function radarSize() {
-    if (!R.box || R.box.hidden) return;
-    const r = R.box.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
-    if (!r.width || !r.height) return;
-    R.w = r.width; R.h = r.height; R.cv.width = Math.round(R.w * d); R.cv.height = Math.round(R.h * d); R.cx.setTransform(d, 0, 0, d, 0, 0);
-    radarPins(); draw();
-  }
-  function radarPins() {
-    const box = $('#radar-pins'); if (!box || !R.w) return;
-    const P = proj(); R.k = P.k;
-    const v = vis();
-    box.innerHTML = v.map(s => {
-      const p = P.at(s.lat, s.lng); R.pos[s.id] = p;
-      return `<button class="rpin${s.id === current ? ' on' : ''}" type="button" style="left:${p.x.toFixed(1)}px;top:${p.y.toFixed(1)}px;--c:${typ(s).c}" data-id="${esc(s.id)}" aria-pressed="${s.id === current}" aria-label="${esc(s.n)} markieren"><span class="rp-ring"></span><span class="rp-dot"></span><span class="rp-l" aria-hidden="true">${esc(s.n)}</span></button>`;
-    }).join('');
-    // Beschriftung rechts, links oder unter dem Punkt, je nachdem wo sie ganz hineinpasst
-    $$('.rpin', box).forEach(b => {
-      const p = R.pos[b.dataset.id], lw = b.querySelector('.rp-l').offsetWidth;
-      if (p.x + 30 + lw > R.w - 10) b.classList.add(p.x - 30 - lw > 10 ? 'l' : 'b');
-    });
-    $$('.rpin', box).forEach(b => b.addEventListener('click', () => { stopImpulse(); pick(b.dataset.id, 'map'); }));
-    const n = $('#radar-n'); if (n) n.textContent = v.length;
-    // Maßstab: runde Kilometerzahl, die etwa 70–130 px lang ist
-    const sc = $('#radar-scale');
-    if (sc && R.k) {
-      const km = [1, 2, 5, 10, 20, 50].find(x => x * R.k >= 70) || 50;
-      sc.querySelector('i').style.width = Math.round(km * R.k) + 'px'; sc.querySelector('span').textContent = km + ' km';
-      R.ring = km * R.k;
-    }
-  }
-  function draw(t) {
-    const { cx, w, h } = R; if (!cx || !w) return;
-    cx.clearRect(0, 0, w, h);
-    const mx = w / 2, my = h / 2, rad = Math.hypot(w, h) / 2;
-    cx.lineWidth = 1;
-    cx.strokeStyle = 'rgba(63,224,255,.06)';
-    for (let x = mx % 48; x < w; x += 48) { cx.beginPath(); cx.moveTo(x, 0); cx.lineTo(x, h); cx.stroke(); }
-    for (let y = my % 48; y < h; y += 48) { cx.beginPath(); cx.moveTo(0, y); cx.lineTo(w, y); cx.stroke(); }
-    cx.strokeStyle = 'rgba(63,224,255,.16)';
-    const step = Math.max(40, R.ring || 80);
-    for (let r = step; r < rad; r += step) { cx.beginPath(); cx.arc(mx, my, r, 0, Math.PI * 2); cx.stroke(); }
-    cx.strokeStyle = 'rgba(63,224,255,.12)'; cx.beginPath(); cx.moveTo(mx, 0); cx.lineTo(mx, h); cx.moveTo(0, my); cx.lineTo(w, my); cx.stroke();
-    if (RM || !t) return;
-    const a = ((t - R.t0) / 4200 * Math.PI * 2) % (Math.PI * 2);
-    if (cx.createConicGradient) {
-      const g = cx.createConicGradient(a - .55, mx, my);
-      g.addColorStop(0, 'rgba(63,224,255,0)'); g.addColorStop(.0875, 'rgba(63,224,255,.30)'); g.addColorStop(.088, 'rgba(63,224,255,0)'); g.addColorStop(1, 'rgba(63,224,255,0)');
-      cx.fillStyle = g; cx.beginPath(); cx.moveTo(mx, my); cx.arc(mx, my, rad, 0, Math.PI * 2); cx.fill();
-    }
-    cx.strokeStyle = 'rgba(63,224,255,.65)'; cx.beginPath(); cx.moveTo(mx, my); cx.lineTo(mx + Math.cos(a) * rad, my + Math.sin(a) * rad); cx.stroke();
-    // Wenn der Strahl über einen Spot läuft, blinkt der Punkt kurz auf
-    const pa = R.prevA; R.prevA = a;
-    $$('#radar-pins .rpin').forEach(b => {
-      const p = R.pos[b.dataset.id]; if (!p) return;
-      const ang = (Math.atan2(p.y - my, p.x - mx) + Math.PI * 2) % (Math.PI * 2);
-      const hit = pa <= a ? ang > pa && ang <= a : ang > pa || ang <= a;
-      if (hit) { const ring = b.querySelector('.rp-ring'); if (ring && ring.animate) ring.animate([{ transform: 'scale(.6)', opacity: .9 }, { transform: 'scale(2.6)', opacity: 0 }], { duration: 900, easing: 'cubic-bezier(.2,.7,.1,1)' }); }
-    });
-    const rd = $('#radar-read'); if (rd) rd.textContent = String(Math.round((a * 180 / Math.PI + 90) % 360)).padStart(3, '0') + '°';
-  }
-  function loop(t) { if (!R.on || R.box.hidden) { R.raf = 0; return; } draw(t); R.raf = requestAnimationFrame(loop); }
-  function radarRun() { if (RM) { draw(); return; } if (!R.raf && R.on && !R.box.hidden) { R.t0 = R.t0 || performance.now(); R.raf = requestAnimationFrame(loop); } }
-  function radar() {
-    R.box = $('#radar'); R.cv = $('#radar-cv'); if (!R.box || !R.cv) return;
-    R.cx = R.cv.getContext('2d');
-    radarSize();
-    if (window.ResizeObserver) new ResizeObserver(() => radarSize()).observe(R.box); else addEventListener('resize', radarSize);
-    new IntersectionObserver(es => { R.on = es[0].isIntersecting; if (R.on) radarRun(); }).observe(R.box);
+  function clampC() { const m = 24; R.c[0] = clamp(R.c[0], SLB.x0 - m, SLB.x1 + m); R.c[1] = clamp(R.c[1], SLB.y0 - m, SLB.y1 + m); }
+  function touchMode() {
+    if (!R.box) return;
+    const zoomed = R.k > R.kFit * 1.04;
+    // In der Übersicht scrollt ein Finger die Seite weiter, gezoomt verschiebt er die Karte
+    R.box.style.touchAction = zoomed ? 'none' : 'pan-y';
+    R.box.classList.toggle('zoomed', zoomed);
   }
 
-  /* ---------- Straßenkarte (Leaflet, lädt erst nach Klick) ---------- */
-  const M = { map: null, tiles: null, layer: null, mk: {}, ok: 0, bad: 0, timer: 0, failed: false };
-  const TILE = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  /* Kartendaten laden (15 KB) und als Pfade vorbereiten */
+  function geoLoad() {
+    if (R.geoP) return R.geoP;
+    const t = setTimeout(() => { if (R.geo === null) { R.geo = false; introMaybe(); } }, 6000);
+    R.geoP = fetch(GEO_URL).then(r => { if (!r.ok) throw new Error('geo'); return r.json(); })
+      .then(d => { clearTimeout(t); if (R.geo === null || R.geo === false) R.geo = geoPrep(d); R.dirty = true; introMaybe(); kick(); })
+      .catch(() => { clearTimeout(t); if (R.geo === null) R.geo = false; introMaybe(); });
+    return R.geoP;
+  }
+  function geoPrep(d) {
+    const q = d.q || 10000;
+    const dec = a => { const o = new Float32Array(a.length); let x = 0, y = 0; for (let i = 0; i < a.length; i += 2) { x += a[i]; y += a[i + 1]; const p = km(x / q, y / q); o[i] = p[0]; o[i + 1] = -p[1]; } return o; };
+    const line = (a, close) => { const o = dec(a), p = new Path2D(); let len = 0; p.moveTo(o[0], o[1]); for (let i = 2; i < o.length; i += 2) { p.lineTo(o[i], o[i + 1]); len += Math.hypot(o[i] - o[i - 2], o[i + 1] - o[i - 1]); } if (close) p.closePath(); return { p, len, o }; };
+    const G = {
+      sl: (d.sl || []).map(a => line(a, true)), rp: (d.rp || []).map(a => line(a, true)),
+      bd: [...(d.rpl || []), ...(d.gr || [])].map(a => line(a)),
+      ab: Object.entries(d.ab || {}).map(([n, ls]) => ({ n, ls: ls.map(a => line(a)) })),
+      fl: Object.entries(d.fl || {}).map(([n, ls]) => ({ n, ls: ls.map(a => line(a)) })),
+      sch: (d.sch || []).map(([t, cs]) => { const c = []; for (let i = 0; i < cs.length; i += 2) c.push(km(cs[i], cs[i + 1])); return { t, c }; }),
+      orte: (d.orte || []).map(([n, lng, lat, r]) => ({ n, p: km(lng, lat), r })).sort((a, b) => a.r - b.r),
+      land: (d.land || []).map(([n, cs]) => ({ n, c: cs.map(([lng, lat]) => km(lng, lat)) })),
+      flab: []
+    };
+    G.sch.forEach(s => { s.ai = G.ab.findIndex(r => r.n === 'A ' + s.t); });
+    // Flussnamen: nächster Punkt am Fluss und Richtung dort (einmal berechnet)
+    (d.flab || []).forEach(([n, lng, lat]) => {
+      const f = G.fl.find(r => r.n === n); if (!f) return;
+      const p = km(lng, lat); let best = null;
+      f.ls.forEach(l => { for (let i = 4; i < l.o.length - 4; i += 2) { const dd = (l.o[i] - p[0]) ** 2 + (l.o[i + 1] + p[1]) ** 2; if (!best || dd < best.d) best = { d: dd, l, i }; } });
+      if (!best) return;
+      const o = best.l.o, i = best.i;
+      let ang = Math.atan2(o[i + 3] - o[i - 1], o[i + 2] - o[i - 2]);
+      if (ang > Math.PI / 2) ang -= Math.PI; if (ang < -Math.PI / 2) ang += Math.PI;
+      G.flab.push({ n, x: o[i], y: -o[i + 1], ang });
+    });
+    return G;
+  }
+
+  /* Ablauf des Intros: Umriss zeichnet sich, Nachbarn und Flüsse erscheinen, Autobahnen ziehen sich ein, Orte, dann die Spots */
+  function phase(now) {
+    if (RM || R.introDone || R.intro < 0) return null;
+    const t = now - R.intro;
+    return { land: easeOut(seg(t, 200, 900)), sl: ease(seg(t, 0, 1500)), slf: easeOut(seg(t, 800, 900)), fl: ease(seg(t, 650, 1300)),
+      ab: i => ease(seg(t, 1050 + i * 130, 950)), sch: i => seg(t, 1850 + i * 130, 260), orte: easeOut(seg(t, 1600, 700)), lab: easeOut(seg(t, 1300, 900)) };
+  }
+  function A(P, key, i) { if (!P) return 1; const v = P[key]; return typeof v === 'function' ? v(i) : v; }
+  function reveal(l, p) {
+    const cx = R.cx;
+    if (p >= 1) { cx.stroke(l.p); return; }
+    if (p <= 0) return;
+    cx.setLineDash([l.len * p, l.len + 1]); cx.lineDashOffset = 0; cx.stroke(l.p); cx.setLineDash([]);
+  }
+  function scaleBar() {
+    const kmv = [.5, 1, 2, 5, 10, 20, 50].find(x => x * R.k >= 64) || 50;
+    R.ringPx = Math.max(70, kmv * R.k * 2);
+    const sc = $('#radar-scale'); if (!sc) return;
+    const wpx = Math.round(kmv * R.k);
+    if (sc._w !== wpx) { sc._w = wpx; sc.querySelector('i').style.width = wpx + 'px'; }
+    if (R.scKm !== kmv) { R.scKm = kmv; sc.querySelector('span').textContent = kmv < 1 ? '500 m' : kmv + ' km'; }
+  }
+  function hud() {
+    const { cx, w, h } = R, mx = w / 2, my = h / 2, rad = Math.hypot(w, h) / 2;
+    cx.lineWidth = 1;
+    cx.strokeStyle = 'rgba(63,224,255,.045)'; cx.beginPath();
+    for (let x = mx % 48; x < w; x += 48) { cx.moveTo(x, 0); cx.lineTo(x, h); }
+    for (let y = my % 48; y < h; y += 48) { cx.moveTo(0, y); cx.lineTo(w, y); }
+    cx.stroke();
+    cx.strokeStyle = 'rgba(63,224,255,.12)'; cx.beginPath();
+    for (let r = R.ringPx; r < rad; r += R.ringPx) { cx.moveTo(mx + r, my); cx.arc(mx, my, r, 0, Math.PI * 2); }
+    cx.stroke();
+    cx.strokeStyle = 'rgba(63,224,255,.08)'; cx.beginPath(); cx.moveTo(mx, 0); cx.lineTo(mx, h); cx.moveTo(0, my); cx.lineTo(w, my); cx.stroke();
+  }
+  const over = (b, o) => b.x0 < o.x1 && b.x1 > o.x0 && b.y0 < o.y1 && b.y1 > o.y0;
+  function blocked(b) { return b.x0 < 4 || b.y0 < 34 || b.x1 > R.w - 4 || b.y1 > R.h - 30 || R.boxes.some(o => over(b, o)); }
+  function rrect(x, y, w, h, r) {
+    const cx = R.cx; cx.beginPath();
+    if (cx.roundRect) { cx.roundRect(x, y, w, h, r); return; }
+    cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath();
+  }
+  function halo(t, x, y, fill, lw = 3.2) { const cx = R.cx; cx.lineWidth = lw; cx.strokeStyle = 'rgba(4,9,18,.88)'; cx.strokeText(t, x, y); cx.fillStyle = fill; cx.fillText(t, x, y); }
+  function spaced(t, x, y, sp) { const cx = R.cx; let px = x; for (const ch of t) { cx.fillText(ch, px, y); px += cx.measureText(ch).width + sp; } }
+  function spacedW(t, sp) { let s = 0; for (const ch of t) s += R.cx.measureText(ch).width + sp; return s - sp; }
+
+  function labels(P) {
+    const { cx, w, h } = R, G = R.geo, z = R.k / R.kFit, F = R.font;
+    cx.textBaseline = 'top'; cx.textAlign = 'left'; cx.lineJoin = 'round';
+    const oa = A(P, 'orte');
+    // Reihenfolge nach Wichtigkeit: gewählter Spot (weicht den Orten aus), wichtige Orte, Autobahnnummern, übrige Spots, Länder, kleine Orte, Flüsse
+    selLabel();
+    G.orte.filter(o => o.r <= 2).forEach(o => town(o));
+    // Autobahn-Schildchen (blau mit weißem Rand, wie an der Autobahn)
+    G.sch.forEach(s => {
+      const p = A(P, 'sch', Math.max(0, s.ai));
+      cx.font = `700 11px ${F.hud}`;
+      const bw = Math.max(21, cx.measureText(s.t).width + 12), bh = 17;
+      // erste freie Stelle entlang der Autobahn rund um den Wunschpunkt
+      let sx = 0, sy = 0, b = null;
+      for (const c of s.c) { [sx, sy] = toS(c[0], c[1]); const t = { x0: sx - bw / 2 - 2, y0: sy - bh / 2 - 2, x1: sx + bw / 2 + 2, y1: sy + bh / 2 + 2 }; if (!blocked(t)) { b = t; break; } }
+      if (!b) return;
+      R.boxes.push(b);
+      if (p <= 0) return;
+      const sc = p >= 1 ? 1 : easeOut(p) * (1 + .25 * Math.sin(p * Math.PI));
+      cx.save(); cx.translate(sx, sy); cx.scale(sc, sc);
+      rrect(-bw / 2, -bh / 2, bw, bh, 4); cx.fillStyle = '#1557b0'; cx.fill(); cx.lineWidth = 1.4; cx.strokeStyle = '#f2f7ff'; cx.stroke();
+      cx.fillStyle = '#fff'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(s.t, 0, .5);
+      cx.restore(); cx.textAlign = 'left'; cx.textBaseline = 'top';
+    });
+    // Orte: Rang 1 und 2 immer (Name nur, wenn Platz ist), Rang 3 und 4 nur mit Platz und genug Zoom
+    function town(o) {
+      if (o.r === 3 && z < .9) return; if (o.r === 4 && z < 1.8) return;
+      const [sx, sy] = toS(o.p[0], o.p[1]); if (sx < -60 || sx > w + 60 || sy < -60 || sy > h + 60) return;
+      const big = o.r === 1;
+      cx.font = big ? `700 14px ${F.body}` : o.r === 2 ? `600 12.5px ${F.body}` : `500 11.5px ${F.body}`;
+      const tw = cx.measureText(o.n).width, th = big ? 15 : 13, dr = big ? 3.8 : o.r === 2 ? 3 : 2.2;
+      const dot = { x0: sx - dr - 1, y0: sy - dr - 1, x1: sx + dr + 1, y1: sy + dr + 1 };
+      if (o.r >= 3 && blocked(dot)) return;
+      const R0 = sx + dr + 5, L0 = sx - dr - 5 - tw, M0 = sy - th / 2;
+      const cand = [[R0, M0], [L0, M0], [sx - tw / 2, sy - dr - 3 - th], [sx - tw / 2, sy + dr + 3], [R0, M0 - 6], [R0, M0 + 6], [L0, M0 - 6], [L0, M0 + 6]];
+      let pos = null;
+      for (const [x, y] of cand) { const b = { x0: x - 3, y0: y - 1, x1: x + tw + 3, y1: y + th + 1 }; if (!blocked(b)) { pos = [x, y]; R.boxes.push(b); break; } }
+      if (!pos && o.r >= 3) return;
+      R.boxes.push(dot);
+      cx.globalAlpha = oa * (o.r >= 3 ? .62 : 1);
+      cx.beginPath(); cx.arc(sx, sy, dr, 0, Math.PI * 2); cx.fillStyle = '#eaf4ff'; cx.fill(); cx.lineWidth = 1.6; cx.strokeStyle = 'rgba(4,9,18,.9)'; cx.stroke();
+      if (pos) halo(o.n, pos[0], pos[1], o.r >= 3 ? '#b9c9de' : '#f2f7ff');
+      cx.globalAlpha = 1;
+    }
+    spotLabels();
+    // Nachbarländer und Saarland: blasse, gesperrte Großbuchstaben an der ersten freien Stelle
+    const la = A(P, 'lab');
+    G.land.forEach(l => {
+      const sl = l.n === 'Saarland';
+      const sm = w < 560, fz = sl ? (sm ? 13 : 15) : (sm ? 11 : 12.5);
+      cx.font = `600 ${fz}px ${F.hud}`;
+      const t = l.n.toUpperCase(), sp = sl ? (sm ? 4 : 6) : (sm ? 2.5 : 3.5), tw = spacedW(t, sp), th = fz + 1;
+      for (const c of l.c) {
+        const [sx, sy] = toS(c[0], c[1]);
+        const b = { x0: sx - tw / 2 - 4, y0: sy - th / 2 - 3, x1: sx + tw / 2 + 4, y1: sy + th / 2 + 3 };
+        if (b.x0 < 10 || b.x1 > w - 10 || b.y0 < 40 || b.y1 > h - 36 || R.boxes.some(o => over(b, o))) continue;
+        R.boxes.push(b);
+        cx.globalAlpha = la * (sl ? .55 : .5); cx.fillStyle = sl ? '#3fe0ff' : '#b5c9ea';
+        spaced(t, sx - tw / 2, sy - th / 2, sp); cx.globalAlpha = 1;
+        break;
+      }
+    });
+    G.orte.filter(o => o.r > 2).forEach(town);
+    // Flussnamen schräg am Fluss entlang
+    G.flab.forEach(f => {
+      const [sx, sy] = toS(f.x, f.y);
+      cx.font = `italic 500 11.5px ${F.body}`;
+      const tw = cx.measureText(f.n).width, ca = Math.abs(Math.cos(f.ang)), sa = Math.abs(Math.sin(f.ang));
+      const ox = -Math.sin(f.ang) * 9, oy = Math.cos(f.ang) * 9;
+      const hw = (tw * ca + 12 * sa) / 2, hh = (tw * sa + 12 * ca) / 2;
+      const b = { x0: sx + ox - hw, y0: sy + oy - hh, x1: sx + ox + hw, y1: sy + oy + hh };
+      if (blocked(b)) return;
+      R.boxes.push(b);
+      cx.save(); cx.globalAlpha = A(P, 'fl'); cx.translate(sx + ox, sy + oy); cx.rotate(f.ang); cx.textAlign = 'center'; cx.textBaseline = 'middle';
+      halo(f.n, 0, 0, '#86bdff', 3); cx.restore();
+    });
+  }
+
+  function pinsLayout() {
+    const { w, h } = R, B = R.boxes;
+    R.pinEls.forEach(e => {
+      const p = km(e.s.lng, e.s.lat), [x, y] = toS(p[0], p[1]);
+      e.x = x; e.y = y; R.pos[e.s.id] = [x, y];
+      e.out = x < -24 || x > w + 24 || y < -24 || y > h + 24;
+      e.b.style.transform = `translate3d(${(x - 22).toFixed(1)}px,${(y - 22).toFixed(1)}px,0)`;
+      B.push({ x0: x - 12, y0: y - 12, x1: x + 12, y1: y + 12 });
+    });
+  }
+  function spotLabel(e, avoid) {
+    const { w, h } = R, B = R.boxes;
+    if (!e.lw) e.lw = e.lab.offsetWidth || 160;
+    const lw = e.lw, lh = 26, { x, y } = e;
+    const C = { r: [x + 18, y - lh / 2], l: [x - 18 - lw, y - lh / 2], b: [x - lw / 2, y + 22], t: [x - lw / 2, y - 22 - lh] };
+    let pl = 'n', best = 1e9;
+    if (!e.out) for (const key of ['r', 'l', 'b', 't']) {
+      const [bx, by] = C[key], b = { x0: bx, y0: by, x1: bx + lw, y1: by + lh };
+      const outB = b.x0 < 6 || b.x1 > w - 6 || b.y0 < 34 || b.y1 > h - 28;
+      if (!avoid) { if (outB || B.some(o => over(b, o))) continue; pl = key; break; }
+      // gewählter Spot: immer beschriftet, an der Stelle, die am wenigsten verdeckt (Rand, andere Spots, wichtige Orte)
+      const sc = (outB ? 100 : 0) + B.filter(o => over(b, o)).length * 20 + avoid.filter(o => over(b, o)).reduce((m, o) => m + o.wt, 0);
+      if (sc < best) { best = sc; pl = key; }
+      if (!sc) break;
+    }
+    // Handy: der Name steht ohnehin groß in der Leiste unter der Karte, deshalb dort nur beschriften, wenn kaum etwas verdeckt wird
+    if (avoid && MOB.matches && best > 3) pl = 'n';
+    if (pl !== 'n') { const [bx, by] = C[pl]; B.push({ x0: bx, y0: by, x1: bx + lw, y1: by + lh }); }
+    if (e.pl !== pl) { e.pl = pl; e.b.dataset.pl = pl; }
+    // Ohne Platz erscheint der Name nur beim Zeigen oder Fokus, dann auf der Seite, auf der er ganz hineinpasst
+    const ph = x + 18 + lw < w - 6 ? 'r' : 'l'; if (e.ph !== ph) { e.ph = ph; e.b.dataset.ph = ph; }
+  }
+  // Grobe Flächen der wichtigen Orte (Punkt und Name rechts daneben), damit der gewählte Spot sie möglichst nicht verdeckt
+  function townAreas() {
+    const G = R.geo; if (!G) return [];
+    return G.orte.filter(o => o.r <= 2).map(o => { const [sx, sy] = toS(o.p[0], o.p[1]), tw = o.n.length * (o.r === 1 ? 8 : 7); return { x0: sx - 4, y0: sy - 8, x1: sx + 8 + tw, y1: sy + 8, wt: o.r === 1 ? 6 : 3 }; });
+  }
+  const selLabel = () => R.pinEls.filter(e => e.s.id === current).forEach(e => spotLabel(e, townAreas()));
+  const spotLabels = () => R.pinEls.filter(e => e.s.id !== current).forEach(e => spotLabel(e, null));
+
+  function render(now) {
+    const { cx, w, h, dpr, k } = R; if (!cx || !w) return;
+    const P = phase(now);
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, w, h);
+    scaleBar(); hud();
+    // Zoom-Knöpfe rechts oben freihalten
+    R.boxes = R.zr ? [R.zr] : [];
+    pinsLayout();
+    const G = R.geo;
+    if (G) {
+      cx.setTransform(k * dpr, 0, 0, k * dpr, (w / 2 - R.c[0] * k) * dpr, (h / 2 + R.c[1] * k) * dpr);
+      const px = v => v / k;
+      cx.lineJoin = 'round'; cx.lineCap = 'round';
+      let a = A(P, 'land');
+      if (a > 0) {
+        cx.globalAlpha = a; cx.fillStyle = 'rgba(120,160,230,.075)'; G.rp.forEach(r => cx.fill(r.p));
+        cx.strokeStyle = 'rgba(190,215,255,.36)'; cx.lineWidth = px(1.1); cx.setLineDash([px(5), px(4)]); G.bd.forEach(l => cx.stroke(l.p)); cx.setLineDash([]);
+      }
+      a = A(P, 'slf'); if (a > 0) { cx.globalAlpha = a; cx.fillStyle = 'rgba(63,224,255,.075)'; G.sl.forEach(r => cx.fill(r.p)); }
+      cx.globalAlpha = 1;
+      a = A(P, 'fl');
+      G.fl.forEach(f => { cx.strokeStyle = 'rgba(86,160,255,.85)'; cx.lineWidth = px(f.n === 'Saar' || f.n === 'Mosel' ? 2.1 : 1.35); f.ls.forEach(l => reveal(l, a)); });
+      a = A(P, 'sl');
+      cx.strokeStyle = 'rgba(63,224,255,.16)'; cx.lineWidth = px(8); G.sl.forEach(l => reveal(l, a));
+      cx.strokeStyle = 'rgba(63,224,255,.95)'; cx.lineWidth = px(1.8); G.sl.forEach(l => reveal(l, a));
+      const lw = clamp(2 + Math.log2(k / R.kFit) * .55, 1.8, 3.6);
+      G.ab.forEach((r, i) => {
+        const p = A(P, 'ab', i); if (p <= 0) return;
+        cx.strokeStyle = 'rgba(4,9,18,.85)'; cx.lineWidth = px(lw + 2.6); r.ls.forEach(l => reveal(l, p));
+        cx.strokeStyle = 'rgba(255,186,64,.95)'; cx.lineWidth = px(lw); r.ls.forEach(l => reveal(l, p));
+      });
+      cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      labels(P);
+    } else { selLabel(); spotLabels(); }
+    const zi = $('#rz-in'), zo = $('#rz-out');
+    if (zi) { const a = String(k >= R.kMax * .999), b = String(k <= R.kMin * 1.001); if (zi.getAttribute('aria-disabled') !== a) zi.setAttribute('aria-disabled', a); if (zo.getAttribute('aria-disabled') !== b) zo.setAttribute('aria-disabled', b); }
+  }
+
+  /* Radar-Strahl: dreht per CSS-Transform; JS liest nur den Winkel, damit Spots aufleuchten, wenn er vorbeikommt */
+  function sweepStart() {
+    if (RM || !R.sw || !R.sw.animate) return;
+    if (!R.sa) R.sa = R.sw.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: SWEEP, iterations: Infinity });
+    R.sw.classList.add('on');
+    if (R.on) R.sa.play(); else R.sa.pause();
+  }
+  function ping(e) { if (e.ring && e.ring.animate) e.ring.animate([{ transform: 'scale(.6)', opacity: .95 }, { transform: 'scale(2.8)', opacity: 0 }], { duration: 1000, easing: 'cubic-bezier(.2,.7,.1,1)' }); }
+  function sweepCheck() {
+    if (!R.sa) return;
+    const t = R.sa.currentTime; if (t == null) return;
+    const a = (t % SWEEP) / SWEEP * 360, pa = R.lastA; R.lastA = a;
+    const txt = String(Math.floor(a)).padStart(3, '0') + '°';
+    if (txt !== R.readTxt && R.read) { R.readTxt = txt; R.read.textContent = txt; }
+    if (pa < 0) return;
+    R.pinEls.forEach(e => {
+      if (e.out) return;
+      let b = Math.atan2(e.x - R.w / 2, -(e.y - R.h / 2)) * 180 / Math.PI; if (b < 0) b += 360;
+      if (pa <= a ? b > pa && b <= a : b > pa || b <= a) ping(e);
+    });
+  }
+
+  function kick() { if (!R.raf && R.on) R.raf = requestAnimationFrame(tick); }
+  const redraw = () => { R.dirty = true; kick(); };
+  function tick(now) {
+    R.raf = 0; if (!R.on) return;
+    let more = false;
+    if (R.mv) { if (R.mv(now) === false) R.mv = null; else more = true; }
+    if (R.intro >= 0 && !R.introDone) {
+      const t = now - R.intro;
+      if (!R.pinsIn && t > 2250) pinsIn();
+      if (t > 2700) { R.introDone = true; introEnd(); }
+      R.dirty = true; more = true;
+    }
+    if (R.dirty) { R.dirty = false; render(now); }
+    if (R.introDone && R.sa) { sweepCheck(); more = true; }
+    if (more) R.raf = requestAnimationFrame(tick);
+  }
+  function setOn(v) {
+    if (v != null) R.vis = v;
+    R.on = !!(R.vis && R.box && !R.box.hidden && !document.hidden);
+    if (R.sa) { if (R.on) R.sa.play(); else R.sa.pause(); }
+    if (R.on) { geoLoad(); introMaybe(); kick(); }
+  }
+  function introMaybe() {
+    if (R.intro >= 0 || R.geo === null || !R.on) return;
+    if (RM) { R.intro = 0; R.introDone = true; pinsIn(); introEnd(); redraw(); return; }
+    R.intro = performance.now(); R.dirty = true; kick();
+  }
+  function pinsIn() {
+    R.pinsIn = true;
+    if (R.pins) R.pins.classList.remove('is-pre');
+    if (RM) return;
+    R.pinEls.forEach((e, i) => {
+      if (e.dot.animate) e.dot.animate([{ transform: 'scale(0)', opacity: 0 }, { transform: 'scale(1.5)', opacity: 1, offset: .6 }, { transform: 'scale(1)', opacity: 1 }], { duration: 650, delay: i * 120, easing: 'cubic-bezier(.2,.7,.1,1)', fill: 'backwards' });
+      if (e.lab.animate) e.lab.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 500, delay: 200 + i * 120, easing: 'cubic-bezier(.2,.7,.1,1)', fill: 'backwards' });
+      setTimeout(() => ping(e), 120 + i * 120);
+    });
+  }
+  function introEnd() { sweepStart(); impulseStart(); }
+
+  /* Ansicht ändern: Zoom um einen Punkt, Hinfliegen, Schwung nach dem Ziehen */
+  function zoomBy(f, sx = R.w / 2, sy = R.h / 2, anim = true) {
+    const W = toW(sx, sy), k0 = R.k, k1 = clamp(R.k * f, R.kMin, R.kMax);
+    const cAt = k => [W[0] - (sx - R.w / 2) / k, W[1] + (sy - R.h / 2) / k];
+    if (!anim || RM) { R.k = k1; R.c = cAt(k1); clampC(); touchMode(); redraw(); return; }
+    const t0 = performance.now(), dur = 380;
+    R.mv = now => { const t = Math.min(1, (now - t0) / dur); R.k = k0 * Math.pow(k1 / k0, easeOut(t)); R.c = cAt(R.k); clampC(); R.dirty = true; if (t >= 1) { touchMode(); return false; } };
+    kick();
+  }
+  function flyTo(k1, c1, dur = 600) {
+    k1 = clamp(k1, R.kMin, R.kMax);
+    const k0 = R.k, c0 = [...R.c];
+    if (RM || !R.on) { R.k = k1; R.c = [...c1]; clampC(); touchMode(); redraw(); return; }
+    const t0 = performance.now();
+    R.mv = now => { const t = Math.min(1, (now - t0) / dur), e = ease(t); R.k = k0 * Math.pow(k1 / k0, e); R.c = [c0[0] + (c1[0] - c0[0]) * e, c0[1] + (c1[1] - c0[1]) * e]; clampC(); R.dirty = true; if (t >= 1) { touchMode(); return false; } };
+    kick();
+  }
+  function inertia(vx, vy) {
+    if (RM || Math.hypot(vx, vy) < .15) return;
+    let last = performance.now();
+    R.mv = now => { const dt = Math.min(40, now - last); last = now; R.c[0] -= vx * dt / R.k; R.c[1] += vy * dt / R.k; clampC(); const f = Math.exp(-dt / 260); vx *= f; vy *= f; R.dirty = true; if (Math.hypot(vx, vy) < .02) return false; };
+    kick();
+  }
+  // Liegen Spots am Handy so dicht, dass ein Finger mehrere trifft, zoomt der Tipp die Gruppe auseinander
+  function fanOut(e) {
+    const grp = R.pinEls.filter(o => !o.out && Math.hypot(o.x - e.x, o.y - e.y) < 46);
+    if (grp.length < 2) return;
+    let md = 1e9; grp.forEach((a, i) => grp.slice(i + 1).forEach(b => { md = Math.min(md, Math.hypot(a.x - b.x, a.y - b.y)); }));
+    const f = clamp(64 / Math.max(md, 4), 1.4, R.kMax / R.k); if (f <= 1.01) return;
+    const c = grp.reduce((m, o) => { const p = km(o.s.lng, o.s.lat); return [m[0] + p[0] / grp.length, m[1] + p[1] / grp.length]; }, [0, 0]);
+    flyTo(R.k * f, c, 560);
+  }
+  function centerOn(id) { const s = byId(id); if (!s || !R.w) return; flyTo(R.k, km(s.lng, s.lat)); }
+  function inView(id) { const p = R.pos[id]; return p && p[0] > 30 && p[0] < R.w - 30 && p[1] > 50 && p[1] < R.h - 40; }
+  function hintFlash(t) {
+    const h = $('#map-hint'); if (!h || imp) return;
+    h.textContent = t; h.classList.add('on'); clearTimeout(h._t); h._t = setTimeout(() => h.classList.remove('on'), 1800);
+  }
+
+  function gestures() {
+    const box = R.box, P = new Map();
+    let st = null, moved = false, vel = [0, 0], lastT = 0, lastTap = 0, tapXY = null;
+    const loc = e => { const r = box.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    const user = () => { touched = true; stopImpulse(); };
+    box.addEventListener('pointerdown', e => {
+      if (e.target.closest('.radar-zoom')) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      R.active = true; R.mv = null; R.dragged = false; R.pt = e.pointerType;
+      P.set(e.pointerId, loc(e));
+      if (P.size === 1) { st = loc(e); moved = false; vel = [0, 0]; lastT = performance.now(); }
+      if (P.size === 2) { moved = true; R.dragged = true; P.forEach((v, id) => { try { box.setPointerCapture(id); } catch (er) {} }); user(); }
+    });
+    box.addEventListener('pointermove', e => {
+      if (!P.has(e.pointerId)) return;
+      const cur = loc(e), prev = P.get(e.pointerId);
+      if (P.size === 1) {
+        // Übersicht am Handy: ein Finger scrollt die Seite, die Karte bleibt stehen (zwei Finger zoomen)
+        if (e.pointerType === 'touch' && !R.box.classList.contains('zoomed') && !moved) return;
+        if (!moved) {
+          if (Math.hypot(cur[0] - st[0], cur[1] - st[1]) < 7) return;
+          moved = true; R.dragged = true; try { box.setPointerCapture(e.pointerId); } catch (er) {} box.classList.add('grab'); user();
+        }
+        const dx = cur[0] - prev[0], dy = cur[1] - prev[1], now = performance.now(), dt = Math.max(1, now - lastT); lastT = now;
+        R.c[0] -= dx / R.k; R.c[1] += dy / R.k; clampC();
+        vel = [vel[0] * .5 + dx / dt * .5, vel[1] * .5 + dy / dt * .5];
+        P.set(e.pointerId, cur); redraw(); return;
+      }
+      if (P.size === 2) {
+        const ids = [...P.keys()], a0 = P.get(ids[0]), b0 = P.get(ids[1]);
+        P.set(e.pointerId, cur);
+        const a1 = P.get(ids[0]), b1 = P.get(ids[1]);
+        const d0 = Math.hypot(a0[0] - b0[0], a0[1] - b0[1]) || 1, d1 = Math.hypot(a1[0] - b1[0], a1[1] - b1[1]) || 1;
+        const m0 = [(a0[0] + b0[0]) / 2, (a0[1] + b0[1]) / 2], m1 = [(a1[0] + b1[0]) / 2, (a1[1] + b1[1]) / 2];
+        zoomBy(d1 / d0, m0[0], m0[1], false);
+        R.c[0] -= (m1[0] - m0[0]) / R.k; R.c[1] += (m1[1] - m0[1]) / R.k; clampC(); redraw();
+        lastT = performance.now(); vel = [0, 0];
+        return;
+      }
+      P.set(e.pointerId, cur);
+    });
+    const up = e => {
+      if (!P.has(e.pointerId)) return;
+      const n = P.size; P.delete(e.pointerId);
+      if (P.size === 1) { st = [...P.values()][0]; lastT = performance.now(); vel = [0, 0]; return; }
+      if (P.size) return;
+      box.classList.remove('grab'); touchMode();
+      if (moved && n === 1 && e.type === 'pointerup' && performance.now() - lastT < 90) inertia(vel[0], vel[1]);
+      if (!moved && e.type === 'pointerup' && e.pointerType !== 'mouse' && !e.target.closest('.rpin,.radar-zoom')) {
+        // Doppeltipp zoomt hinein (am PC übernimmt das der Doppelklick)
+        const now = performance.now(), p = loc(e);
+        if (now - lastTap < 320 && tapXY && Math.hypot(p[0] - tapXY[0], p[1] - tapXY[1]) < 32) { lastTap = 0; user(); zoomBy(2, p[0], p[1]); }
+        else { lastTap = now; tapXY = p; }
+      }
+    };
+    box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
+    box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !P.size) R.active = false; });
+    // Safari: Zwei-Finger-Geste nicht als Seitenzoom behandeln
+    box.addEventListener('gesturestart', e => e.preventDefault());
+    box.addEventListener('dblclick', e => { if (e.target.closest('.rpin,.radar-zoom') || (R.pt && R.pt !== 'mouse')) return; e.preventDefault(); const p = loc(e); user(); zoomBy(e.shiftKey ? .5 : 2, p[0], p[1]); });
+    // Mausrad: mit Strg (oder nachdem man in die Karte geklickt hat), sonst scrollt die Seite ganz normal weiter
+    box.addEventListener('wheel', e => {
+      if (!(e.ctrlKey || e.metaKey || R.active)) { hintFlash('Strg + Mausrad zum Zoomen'); return; }
+      e.preventDefault(); user(); R.mv = null;
+      const p = loc(e), dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+      zoomBy(Math.exp(-dy * (Math.abs(dy) < 40 ? .012 : .0022)), p[0], p[1], false);
+    }, { passive: false });
+    box.addEventListener('keydown', e => {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      const k = e.key; let ok = true;
+      if (k === '+' || k === '=') zoomBy(1.6);
+      else if (k === '-' || k === '_') zoomBy(1 / 1.6);
+      else if (k === '0') flyTo(R.kFit, fitCenter());
+      else if (k.indexOf('Arrow') === 0) { const s = 90 / R.k, c = [...R.c]; if (k === 'ArrowLeft') c[0] -= s; if (k === 'ArrowRight') c[0] += s; if (k === 'ArrowUp') c[1] += s; if (k === 'ArrowDown') c[1] -= s; flyTo(R.k, c, 260); }
+      else ok = false;
+      if (ok) { e.preventDefault(); user(); }
+    });
+    box.addEventListener('focusin', e => { const b = e.target.closest('.rpin'); if (b && !inView(b.dataset.id)) centerOn(b.dataset.id); });
+    const zb = (id, fn) => { const b = $(id); if (b) b.addEventListener('click', () => { if (b.getAttribute('aria-disabled') === 'true') return; user(); fn(); }); };
+    zb('#rz-in', () => zoomBy(1.8)); zb('#rz-out', () => zoomBy(1 / 1.8)); zb('#rz-fit', () => flyTo(R.kFit, fitCenter()));
+  }
+
+  function size() {
+    if (!R.box || R.box.hidden) return;
+    const r = R.box.getBoundingClientRect(); if (!r.width || !r.height) return;
+    const d = Math.min(devicePixelRatio || 1, 2), rel = R.kFit ? R.k / R.kFit : 1, rc = [...R.c];
+    R.w = r.width; R.h = r.height; R.dpr = d;
+    R.cv.width = Math.round(R.w * d); R.cv.height = Math.round(R.h * d);
+    R.kFit = fitK(); R.kMin = R.kFit * .7; R.kMax = R.kFit * 8;
+    if (!R.fitted) { R.fitted = true; R.k = R.kFit; R.c = fitCenter(); } else { R.k = clamp(R.kFit * rel, R.kMin, R.kMax); R.c = rc; clampC(); }
+    const dia = Math.ceil(Math.hypot(R.w, R.h));
+    if (R.sw) { R.sw.style.width = R.sw.style.height = dia + 'px'; R.sw.style.margin = `${-dia / 2}px 0 0 ${-dia / 2}px`; }
+    const z = $('.radar-zoom', R.box);
+    if (z) { const zr = z.getBoundingClientRect(); R.zr = { x0: zr.left - r.left - 6, y0: zr.top - r.top - 6, x1: zr.right - r.left + 6, y1: zr.bottom - r.top + 6 }; }
+    touchMode(); R.dirty = false; render(performance.now());
+  }
+  function radarPins() {
+    const box = R.pins; if (!box) return;
+    const v = vis();
+    box.innerHTML = v.map(s => `<button class="rpin${s.id === current ? ' on' : ''}" type="button" style="--c:${typ(s).c}" data-id="${esc(s.id)}" aria-pressed="${s.id === current}" aria-label="${esc(s.n)}: Spot öffnen"><span class="rp-ring"></span><span class="rp-dot"></span><span class="rp-l" aria-hidden="true">${esc(s.n)}</span></button>`).join('');
+    R.pinEls = $$('.rpin', box).map(b => ({ b, s: byId(b.dataset.id), lab: $('.rp-l', b), ring: $('.rp-ring', b), dot: $('.rp-dot', b), lw: 0, pl: '' }));
+    R.pinEls.forEach(e => e.b.addEventListener('click', ev => { if (R.dragged) { R.dragged = false; return; } stopImpulse(); if (ev.detail && R.pt && R.pt !== 'mouse') fanOut(e); pick(e.s.id, 'map'); }));
+    const n = $('#radar-n'); if (n) n.textContent = v.length;
+    if (R.w) { R.dirty = false; render(performance.now()); }
+    redraw();
+  }
+  function radar() {
+    if (/[?&]radardebug/.test(location.search)) window.__R = R;
+    R.box = $('#radar'); R.cv = $('#radar-cv'); R.sw = $('#radar-sweep'); R.pins = $('#radar-pins'); R.read = $('#radar-read');
+    if (!R.box || !R.cv) return;
+    R.cx = R.cv.getContext('2d');
+    const cs = getComputedStyle(document.documentElement), hf = cs.getPropertyValue('--hud').trim(), bf = cs.getPropertyValue('--body').trim();
+    if (hf) R.font.hud = hf; if (bf) R.font.body = bf;
+    if (!RM && R.pins) R.pins.classList.add('is-pre');
+    radarPins(); size(); gestures();
+    if (window.ResizeObserver) new ResizeObserver(() => size()).observe(R.box); else addEventListener('resize', size);
+    new IntersectionObserver(es => setOn(es[0].isIntersecting), { threshold: .2 }).observe(R.box);
+    document.addEventListener('visibilitychange', () => setOn());
+    // Kartendaten früh holen, die Schrift für die Beschriftung abwarten
+    const pre = new IntersectionObserver(es => { if (es[0].isIntersecting) { pre.disconnect(); geoLoad(); } }, { rootMargin: '900px 0px' });
+    pre.observe(R.box);
+    if (document.fonts && document.fonts.load) Promise.all([document.fonts.load(`600 12px ${R.font.hud}`), document.fonts.load(`600 12px ${R.font.body}`)]).then(() => { R.pinEls.forEach(e => { e.lw = 0; }); redraw(); }).catch(() => {});
+  }
+
+  /* ---------- Straßenkarte und Satellit (Leaflet, lädt erst nach Klick, Anbieter ohne Schlüssel) ----------
+     Straßenkarte: OpenStreetMap. Satellit: Esri World Imagery, darüber Straßen und Ortsnamen von Esri. */
+  const M = { map: null, base: null, over: [], layer: null, mk: {}, ok: 0, bad: 0, timer: 0, failed: false, kind: '', acc: 0 };
+  const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
+  function tiles(kind) {
+    if (kind === 'sat') return [
+      L.tileLayer(ESRI + 'World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 19, attribution: 'Powered by <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a> · Bilder © Esri, Maxar, Earthstar Geographics' }),
+      L.tileLayer(ESRI + 'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18, opacity: .9 }),
+      L.tileLayer(ESRI + 'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18, attribution: 'Beschriftung © Esri' })
+    ];
+    return [L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende' })];
+  }
+  function setLayer(kind) {
+    if (!M.map || M.kind === kind) return;
+    [M.base, ...M.over].forEach(l => { if (l) M.map.removeLayer(l); });
+    const ls = tiles(kind); M.base = ls[0]; M.over = ls.slice(1); M.kind = kind;
+    M.ok = 0; M.bad = 0;
+    M.base.on('tileload', () => { M.ok++; if (M.ok === 1) { $('#map-wait').hidden = true; clearTimeout(M.timer); } });
+    M.base.on('tileerror', () => { M.bad++; if (!M.ok && M.bad >= 4) fail(); });
+    ls.forEach(l => l.addTo(M.map));
+    $('#leaf').classList.toggle('is-sat', kind === 'sat');
+    watchTiles();
+  }
   function setView(v) {
-    const street = v === 'street';
-    const radarEl = $('#radar'), leaf = $('#leaf');
-    $('#view-radar').setAttribute('aria-pressed', String(!street));
-    $('#map-load').setAttribute('aria-pressed', String(street));
+    const street = v !== 'radar';
+    $$('.mp-vbtn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
     $('#map-fail').hidden = true;
-    radarEl.hidden = street; leaf.hidden = !street;
+    R.box.hidden = street; $('#leaf').hidden = !street;
     $('#mapbox').classList.toggle('is-street', street);
-    if (!street) { $('#map-wait').hidden = true; radarSize(); radarRun(); return; }
-    stopImpulse();
+    if (!street) { $('#map-wait').hidden = true; size(); setOn(); redraw(); return; }
+    setOn(); stopImpulse();
     if (!window.L) { fail(); return; }
-    if (!M.map) makeMap();
+    if (!M.map) makeMap(v);
     else {
+      if (M.kind !== v) setLayer(v); else if (M.failed) retry();
       // Behälter war versteckt: Größe neu messen, sonst bleibt die Karte grau oder klein
       requestAnimationFrame(() => { M.map.invalidateSize(); focusSpot(false); });
-      if (M.failed) retry();
     }
   }
-  function makeMap() {
+  function makeMap(kind) {
     const el = $('#leaf');
-    $('#map-load-t').textContent = 'Straßenkarte';
-    M.map = L.map(el, { zoomControl: true, scrollWheelZoom: false, attributionControl: false, zoomSnap: .5, minZoom: 7, maxZoom: 18 });
-    L.control.attribution({ position: 'topright', prefix: false }).addTo(M.map);
-    M.map.on('click', () => stopImpulse());
-    M.tiles = L.tileLayer(TILE, { subdomains: 'abcd', maxZoom: 19, detectRetina: false, attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende · © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>' });
-    M.tiles.on('tileload', () => { M.ok++; if (M.ok === 1) { $('#map-wait').hidden = true; clearTimeout(M.timer); } });
-    M.tiles.on('tileerror', () => { M.bad++; if (!M.ok && M.bad >= 4) fail(); });
-    M.tiles.addTo(M.map);
+    M.map = L.map(el, { zoomControl: true, scrollWheelZoom: false, attributionControl: false, zoomSnap: .5, minZoom: 7, maxZoom: 19 });
+    L.control.attribution({ position: 'bottomright', prefix: false }).addTo(M.map);
+    M.map.on('click', () => { stopImpulse(); M.map.scrollWheelZoom.enable(); });
+    el.addEventListener('mouseleave', () => { if (M.map) M.map.scrollWheelZoom.disable(); });
+    // Mausrad nur mit Strg oder nach einem Klick in die Karte, sonst scrollt die Seite weiter
+    el.addEventListener('wheel', e => {
+      if (!M.map || M.map.scrollWheelZoom.enabled()) return;
+      if (!(e.ctrlKey || e.metaKey)) { hintFlash('Strg + Mausrad zum Zoomen'); return; }
+      e.preventDefault(); M.acc += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+      if (Math.abs(M.acc) < 60) return;
+      M.map.setZoomAround(M.map.mouseEventToContainerPoint(e), M.map.getZoom() + (M.acc < 0 ? .5 : -.5)); M.acc = 0;
+    }, { passive: false });
+    setLayer(kind);
     leafPins(false);
     fit(false);
-    watchTiles();
     requestAnimationFrame(() => { M.map.invalidateSize(); fit(false); });
     setTimeout(() => M.map && M.map.invalidateSize(), 350);
     if (window.ResizeObserver) new ResizeObserver(() => M.map && !el.hidden && M.map.invalidateSize()).observe(el);
@@ -477,7 +910,7 @@
     clearTimeout(M.timer);
     M.timer = setTimeout(() => { if (!M.ok) fail(); }, 9000);
   }
-  function retry() { M.ok = 0; M.bad = 0; watchTiles(); M.tiles.redraw(); }
+  function retry() { M.ok = 0; M.bad = 0; watchTiles(); [M.base, ...M.over].forEach(l => l && l.redraw()); }
   function fail() {
     M.failed = true; clearTimeout(M.timer);
     $('#map-wait').hidden = true;
@@ -582,46 +1015,58 @@
   function pick(id, from) {
     if (!byId(id)) return;
     if (from !== 'auto') touched = true;
-    current = id; sel();
-    if (from === 'map' && !MOB.matches) {
-      const li = $(`.sp-item[data-id="${CSS.escape(id)}"]`);
-      if (li) { const r = li.getBoundingClientRect(); if (r.top < 120 || r.bottom > innerHeight) go(li, -140); }
+    const was = current; current = id; sel(); redraw();
+    if (from === 'map') {
+      if (!MOB.matches) {
+        // PC: die Spot-Karte rechts klappt auf (Route, Bewertungen) und rückt ins Bild, die Karte bleibt stehen
+        const li = $(`.sp-item[data-id="${CSS.escape(id)}"]`);
+        if (li && $('.sp-det', li).hidden) toggleDet(id, true);
+        if (li) { const r = li.getBoundingClientRect(); if (r.top < 140 || r.top > innerHeight - 220) go(li, -150); }
+      } else {
+        // Handy: direkt unter der Karte erscheint der Spot mit Route und Details
+        const ms = $('#mp-sel');
+        if (ms) {
+          const r = ms.getBoundingClientRect();
+          if (r.bottom > innerHeight - 72) window.scrollBy({ top: r.bottom - innerHeight + 84, behavior: RM ? 'auto' : 'smooth' });
+          const g = G(); if (g && was !== id) g.fromTo(ms.children, { opacity: .35, y: 6 }, { opacity: 1, y: 0, duration: .4, ease: 'expo.out', stagger: .05 });
+        }
+      }
     }
+    if (from === 'list' && R.w && !R.box.hidden && !inView(id)) centerOn(id);
     if (from !== 'auto') focusSpot(true);
   }
   function sel() {
-    $$('#radar-pins .rpin').forEach(p => { const on = p.dataset.id === current; p.classList.toggle('on', on); p.setAttribute('aria-pressed', String(on)); });
+    R.pinEls.forEach(e => { const on = e.s.id === current; e.b.classList.toggle('on', on); e.b.setAttribute('aria-pressed', String(on)); });
     $$('.sp-item').forEach(li => li.classList.toggle('on', li.dataset.id === current));
     Object.entries(M.mk).forEach(([id, m]) => { const el = m.getElement(); if (el) el.classList.toggle('on', id === current); });
     const box = $('#mp-sel'), s = byId(current); if (!box) return;
     if (!s) { box.innerHTML = ''; return; }
     const t = typ(s);
     box.style.setProperty('--c', t.c);
-    box.innerHTML = `<div class="ms-t"><p class="sp-typ"><i></i>${esc(t.n)}</p><p class="ms-n">${esc(s.n)}</p><p class="sp-rt ms-rt" data-rt="${esc(s.id)}"${rtBadge(s.id) ? '' : ' hidden'}>${rtBadge(s.id)}</p></div><div class="ms-b">${routeBtn(s)}<button class="btn ghost" type="button" data-det="${esc(s.id)}">Details</button></div>`;
+    const pic = s.foto ? `<img src="${esc(s.foto)}" alt="" loading="lazy" decoding="async">` : typIcon(s.typ);
+    box.innerHTML = `<div class="ms-row"><span class="ms-pic">${pic}</span><div class="ms-t"><p class="sp-typ"><i></i>${esc(t.n)}</p><p class="ms-n">${esc(s.n)}</p><p class="sp-rt ms-rt" data-rt="${esc(s.id)}"${rtBadge(s.id) ? '' : ' hidden'}>${rtBadge(s.id)}</p></div></div><div class="ms-b">${routeBtn(s)}<button class="btn ghost" type="button" data-det="${esc(s.id)}">Details${IC.chev}</button></div>`;
     wire(box);
-    $('[data-det]', box).addEventListener('click', () => { const li = $(`.sp-item[data-id="${CSS.escape(s.id)}"]`); toggleDet(s.id, true); if (li) go(li, -16); });
+    $('[data-det]', box).addEventListener('click', () => { stopImpulse(); touched = true; const li = $(`.sp-item[data-id="${CSS.escape(s.id)}"]`); toggleDet(s.id, true); if (li) go(li, -16); });
   }
 
-  /* Selbst-Impuls: Sobald die Karte zu sehen ist, werden die Spots einmal nacheinander angetippt */
+  /* Selbst-Impuls: Nach dem Intro werden die Spots einmal nacheinander angetippt, dazu ein kurzer Hinweis */
   let imp = 0;
   function stopImpulse() { if (imp) { clearInterval(imp); imp = 0; } const h = $('#map-hint'); if (h) h.classList.remove('on'); }
+  function impulseStart() {
+    if (RM || touched || imp || !R.on) return;
+    const hint = $('#map-hint');
+    if (hint) { hint.textContent = FINE ? 'Klick auf einen Punkt · Ziehen verschiebt · Strg + Mausrad zoomt' : 'Tipp auf einen Punkt · Zoomen mit zwei Fingern'; hint.classList.add('on'); }
+    const ids = vis().map(s => s.id), first = current; let i = 0;
+    if (ids.length < 2) { setTimeout(() => { if (!imp && hint) hint.classList.remove('on'); }, 4000); return; }
+    imp = setInterval(() => {
+      if (touched || R.box.hidden || !R.on) { stopImpulse(); return; }
+      i++; if (i > ids.length) { stopImpulse(); pick(first, 'auto'); return; }
+      pick(ids[i % ids.length], 'auto');
+    }, 1400);
+  }
   function impulse() {
-    const box = $('#mapbox'); if (!box || RM) return;
-    const hint = $('#map-hint'); if (hint) hint.textContent = FINE ? 'Klick auf einen Punkt oder einen Spot in der Liste' : 'Tipp auf einen Punkt';
-    const io = new IntersectionObserver(es => {
-      if (!es[0].isIntersecting) return; io.disconnect();
-      if (touched) return;
-      if (hint) hint.classList.add('on');
-      const ids = vis().map(s => s.id), first = current; let i = 0;
-      if (ids.length < 2) return;
-      imp = setInterval(() => {
-        if (touched || $('#radar').hidden) { stopImpulse(); return; }
-        i++; if (i > ids.length) { stopImpulse(); pick(first, 'auto'); return; }
-        pick(ids[i % ids.length], 'auto');
-      }, 1300);
-    }, { threshold: .55 });
-    io.observe(box);
-    ['pointerdown', 'keydown', 'wheel'].forEach(ev => box.addEventListener(ev, () => { touched = true; stopImpulse(); }, { passive: true }));
+    const box = $('#mapbox'); if (!box) return;
+    ['pointerdown', 'keydown'].forEach(ev => box.addEventListener(ev, () => { touched = true; stopImpulse(); }, { passive: true }));
   }
 
   /* ---------- Bewerten: ein Formular, das in den geöffneten Spot wandert ----------
@@ -767,8 +1212,7 @@
   function init() {
     if (!S.length) return;
     rules(); filters(); radar(); list(); sel(); send(); rate(); impulse(); ratingsInit();
-    $('#map-load').addEventListener('click', () => { touched = true; setView('street'); });
-    $('#view-radar').addEventListener('click', () => { touched = true; setView('radar'); });
+    $$('.mp-vbtn').forEach(b => b.addEventListener('click', () => { touched = true; setView(b.dataset.view); }));
     $('#map-fail-radar').addEventListener('click', () => setView('radar'));
     const g = G();
     if (g && window.ScrollTrigger) g.from('#mapbox', { opacity: 0, y: 24, duration: .9, ease: 'expo.out', scrollTrigger: { trigger: '#mapbox', start: 'top 90%', once: true } });

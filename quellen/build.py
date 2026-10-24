@@ -10,6 +10,7 @@ PAGES = [
   # datei, titel, beschreibung, menü-schlüssel, zusätzliche skripte
   ('index.html', 'Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!', 'Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält.', 'start', ['home', 'game', 'intro3d']),
   ('hallenfliegen.html', 'Hallenfliegen · Flight Club Saar e. V.', 'Tiny Whoops in der Halle: alle Termine der Wintersaison in Eiweiler und Holz, mit Kalender-Export und Route. Kommt einfach vorbei!', 'halle', ['halle']),
+  ('termin.html', 'Hallenabend planen · Flight Club Saar e. V.', 'Der Abendplan fürs Hallenfliegen: Piloten eintragen, Kanäle ohne Störungen zuteilen, Flugzeiten einteilen und vor Ort live steuern.', 'halle', ['termin']),
   ('spots.html', 'Spot-Karte · Flight Club Saar e. V.', 'Unsere FPV-Spots im Saarland mit Route per Klick, Bewertungen und Spot-Vorschlag. Mit den Regeln, die für jeden Piloten gelten.', 'spots', ['leaflet', 'spots']),
   ('wissen.html', 'FPV-Wissen · Flight Club Saar e. V.', 'FPV einfach erklärt: Bauteile einer Drohne in 3D, Schaltplan zum Anklicken, Videosysteme, Kanäle und der Weg vom Simulator zum ersten Flug.', 'wissen', ['three', 'wissen']),
   ('werkstatt.html', 'Betaflight & Löten · Flight Club Saar e. V.', 'Betaflight einfach erklärt: Version, Flashen, die wichtigsten Einstellungen, dazu Löten Schritt für Schritt. Mit Animationen und Videos.', 'werkstatt', ['werkstatt']),
