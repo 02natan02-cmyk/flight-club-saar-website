@@ -275,7 +275,8 @@
     }
   }
   function zusagen() {
-    const sec = $('#termine'); if (!sec || !FCS.board || !FCS.board.on()) return;
+    const sec = $('#termine'); if (!sec) return;
+    if (!FCS.board || !FCS.board.on()) { const l = $('#termine-lede'); if (l) l.textContent = 'Jeweils 18 bis 21 Uhr, die Hallen sind für uns fest reserviert. Ein Klick legt den Termin in deinen Kalender oder plant die Route.'; return; }
     live = document.createElement('p'); live.className = 'sr'; live.setAttribute('role', 'status'); sec.appendChild(live);
     sec.addEventListener('click', e => {
       const el = e.target.closest('[data-zu-go],[data-zu-no],[data-zu-x],[data-zu-edit],[data-zu-retry]'); if (!el) return;
