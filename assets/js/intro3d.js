@@ -35,8 +35,8 @@ const FCS_DEFAULTS = {
 /* Drehbuch (Sekunden) */
 const TL = {
   bootEnd: 0.7, ringA: 0.75, ringB: 1.45, appear: 1.0, gate: 2.25, blendA: 3.78, stop: 4.35,
-  flatA: 4.3, flatB: 4.72, morphA: 4.28, morphB: 4.8, whiteA: 4.42, whiteB: 4.9,
-  zipA: 4.38, zipB: 4.95, scanA: 4.66, scanB: 5.16, burst: 5.16, title: 5.36, armed: 5.56, sub: 5.62,
+  flatA: 4.3, flatB: 4.72, morphA: 4.42, morphB: 4.78, whiteA: 4.32, whiteB: 4.8,
+  zipA: 4.2, zipB: 4.62, scanA: 4.66, scanB: 5.16, burst: 5.16, title: 5.36, armed: 5.56, sub: 5.62,
   portal: 6.3, end: 7.0
 };
 
@@ -68,6 +68,32 @@ function makeTrack(keys) {
     const k0 = keys[i], k1 = keys[i + 1], h = k1.t - k0.t, s = (t - k0.t) / h, s2 = s * s, s3 = s2 * s;
     const h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + s, h01 = -2 * s3 + 3 * s2, h11 = s3 - s2;
     for (let j = 0; j < dim; j++) out[j] = h00 * k0.v[j] + h10 * h * k0.d[j] + h01 * k1.v[j] + h11 * h * k1.d[j];
+    return out;
+  };
+}
+
+/* C2-stetiger kubischer Spline durch Zeit-Stützpunkte (glatte Beschleunigung → ruhige Lage).
+   Anfang natürlich, Ende mit vorgegebener Geschwindigkeit endV (z. B. 0 = Stillstand). */
+function makeSpline(keys, endV) {
+  const n = keys.length, dim = keys[0].v.length, t = keys.map(k => k.t), M = [];
+  for (let j = 0; j < dim; j++) {
+    const y = keys.map(k => k.v[j]), a = new Array(n).fill(0), b = new Array(n).fill(0), c = new Array(n).fill(0), d = new Array(n).fill(0);
+    b[0] = 1; d[0] = 0;
+    for (let i = 1; i < n - 1; i++) {
+      const h0 = t[i] - t[i - 1], h1 = t[i + 1] - t[i];
+      a[i] = h0 / 6; b[i] = (h0 + h1) / 3; c[i] = h1 / 6; d[i] = (y[i + 1] - y[i]) / h1 - (y[i] - y[i - 1]) / h0;
+    }
+    const hl = t[n - 1] - t[n - 2]; a[n - 1] = hl / 6; b[n - 1] = hl / 3; d[n - 1] = (endV ? endV[j] : 0) - (y[n - 1] - y[n - 2]) / hl;
+    for (let i = 1; i < n; i++) { const m = a[i] / b[i - 1]; b[i] -= m * c[i - 1]; d[i] -= m * d[i - 1]; }
+    const m2 = new Array(n); m2[n - 1] = d[n - 1] / b[n - 1];
+    for (let i = n - 2; i >= 0; i--) m2[i] = (d[i] - c[i] * m2[i + 1]) / b[i];
+    M.push({ y, m2 });
+  }
+  return (tt, out) => {
+    const q = Math.min(t[n - 1], Math.max(t[0], tt));
+    let i = 0; while (i < n - 2 && q >= t[i + 1]) i++;
+    const h = t[i + 1] - t[i], A = (t[i + 1] - q) / h, B = (q - t[i]) / h;
+    for (let j = 0; j < dim; j++) { const { y, m2 } = M[j]; out[j] = A * y[i] + B * y[i + 1] + ((A * A * A - A) * m2[i] + (B * B * B - B) * m2[i + 1]) * h * h / 6; }
     return out;
   };
 }
@@ -126,7 +152,7 @@ export async function playIntro(root, opts = {}) {
   htmlEl.style.overflow = 'hidden';
 
   /* --- Zustand, Aufräumen --- */
-  let finished = false, exiting = false, ready3d = false, THREE = null, R3 = null, mainTl = null, exitTl = null, split = null;
+  let finished = false, exiting = false, ready3d = false, THREE = null, R3 = null, mainTl = null, exitTl = null;
   let resolveFn; const done = new Promise(r => (resolveFn = r));
   const t0 = performance.now();
   const cleanups = [];
@@ -139,7 +165,6 @@ export async function playIntro(root, opts = {}) {
     cleanups.splice(0).forEach(f => { try { f(); } catch (e) {} });
     try { bootTl.kill(); } catch (e) {}
     try { mainTl && mainTl.kill(); exitTl && exitTl.kill(); } catch (e) {}
-    try { split && split.revert && split.revert(); } catch (e) {}
     if (R3) { try { R3.dispose(); } catch (e) {} R3 = null; }
     try { const lc = gl.getExtension('WEBGL_lose_context'); lc && lc.loseContext(); } catch (e) {}
     stage.remove();
@@ -163,7 +188,7 @@ export async function playIntro(root, opts = {}) {
   /* --- Boot: analoges Rauschen (gedämpft) + OSD --- */
   const stopNoise = startNoise(noiseCv);
   cleanups.push(stopNoise);
-  const plug = ['SplitText', 'ScrambleTextPlugin'].map(n => window[n]).filter(Boolean);
+  const plug = ['ScrambleTextPlugin'].map(n => window[n]).filter(Boolean);
   if (plug.length) try { gsap.registerPlugin(...plug); } catch (e) {}
   const SCR = !!window.ScrambleTextPlugin;
   if (!SCR) b1.textContent = O.osd;
@@ -230,9 +255,7 @@ export async function playIntro(root, opts = {}) {
 
   function startMain() {
     ready3d = true;
-    const gsapST = window.SplitText;
-    try { split = gsapST ? new gsapST(t1, { type: 'words,chars', charsClass: 'i3d-ch', wordsClass: 'i3d-w' }) : null; } catch (e) { split = null; }
-    const chars = split && split.chars && split.chars.length ? split.chars : manualSplit(t1);
+    const chars = manualSplit(t1);          // Buchstaben einzeln (wie SplitText, ohne Schrift-Wartezeit)
     R3.layout();
 
     mainTl = gsap.timeline({ paused: true, onComplete: finish });
@@ -240,7 +263,6 @@ export async function playIntro(root, opts = {}) {
     tl.set({}, {}, TL.end);
     // Übergang Boot → 3D
     tl.fromTo(glCanvas, { opacity: 0 }, { opacity: 1, duration: 0.32, ease: 'power1.out', immediateRender: true }, TL.bootEnd)
-      .call(() => stage.classList.add('live'), null, 1.04)
       .fromTo(noiseCv, { opacity: 0.2 }, { opacity: 0, duration: 0.45, ease: 'power1.in', immediateRender: false }, TL.bootEnd)
       .fromTo(boot, { opacity: 1, y: 0, scaleY: 1 }, { opacity: 0, y: -10, scaleY: 0.4, duration: 0.22, ease: 'power2.in', immediateRender: false }, TL.bootEnd)
       .fromTo(osd.querySelectorAll('.i3d-o'), { opacity: 0 }, { opacity: 0.88, duration: 0.18, stagger: 0.06, immediateRender: true }, 0.95)
@@ -263,20 +285,21 @@ export async function playIntro(root, opts = {}) {
     else t2.textContent = O.subtitle;
 
     // Regie-Takt: GSAP aktualisiert die Timeline, danach rendern wir denselben Zeitpunkt
-    let last = performance.now();
+    let last = performance.now(), isLive = false, seeked = false;
     const stats = { frames: 0, renderMs: 0, maxRenderMs: 0, maxGap: 0, long: 0, gaps: [] };
     const tick = () => {
       if (finished || !R3) return;
       const now = performance.now(), gap = now - last; last = now;
       const T = mainTl.time();
       const a = performance.now();
-      R3.render(T, S, revealed);
+      R3.render(T, S, revealed); stats.renders = (stats.renders || 0) + 1;
       const ms = performance.now() - a;
       if (T > TL.bootEnd && T < TL.end) {
         stats.frames++; stats.renderMs += ms; stats.maxRenderMs = Math.max(stats.maxRenderMs, ms);
-        if (stats.frames > 2) { stats.maxGap = Math.max(stats.maxGap, gap); if (gap > 50) stats.long++; stats.gaps.push(gap); }
+        if (stats.frames > 2) { stats.maxGap = Math.max(stats.maxGap, gap); if (gap > 50) stats.long++; stats.gaps.push(gap); if (gap > 150 || ms > 50) (stats.slow = stats.slow || []).push([+T.toFixed(2), Math.round(gap), Math.round(ms)]); }
         R3.adapt(gap);
       }
+      const live = T >= 1.04 || exiting; if (live !== isLive) { isLive = live; stage.classList.toggle('live', live); }
       // OSD-Werte aus der Zeit (deterministisch)
       const ft = Math.max(0, T - TL.bootEnd), sec = Math.floor(ft);
       const tm = '00:0' + Math.min(9, sec); if (osdTm.textContent !== tm) osdTm.textContent = tm;
@@ -290,7 +313,7 @@ export async function playIntro(root, opts = {}) {
     // Start frühestens nach dem Boot
     const wait = Math.max(0, TL.bootEnd * 1000 - (performance.now() - t0));
     const go = () => {
-      if (finished || exiting) return;
+      if (finished || exiting || seeked) return;
       bootTl.pause();
       if (O.hold) { mainTl.pause(TL.bootEnd); }
       else mainTl.play(TL.bootEnd);
@@ -299,9 +322,10 @@ export async function playIntro(root, opts = {}) {
 
     if (O.debug) {
       window.FCSIntro3D = window.FCSIntro3D || {};
+      window.FCSIntro3D.stats = stats;
       window.FCSIntro3D.debug = {
         ready: true, stats, tl: mainTl,
-        seek(T) { mainTl.pause(); mainTl.time(T, false); R3.render(T, S, revealed); return T; },
+        seek(T) { seeked = true; bootTl.pause(); mainTl.pause(); mainTl.time(T, false); R3.render(T, S, revealed); return T; },
         skip, layout: () => R3.layoutInfo(), r3: () => R3
       };
     }
@@ -471,8 +495,8 @@ async function buildScene(T, C) {
       if(uHalo>0.){c=col*pow(nv,uHalo)*b;}
       else{led=mix(led,1.,uWhite);c=mix(col,vec3(1.),.42+head*.4)*led*b*(.75+.35*nv);}
       gl_FragColor=vec4(c*uGain,1.);}`;
-  const mkRingMat = (halo, gain) => {
-    const u = Object.assign({}, ringU, { uHalo: U(halo), uGain: U(gain) });
+  const mkRingMat = (halo, gain, own) => {
+    const u = Object.assign({}, ringU, { uHalo: U(halo), uGain: own || U(gain) });
     return track(new T.ShaderMaterial({ uniforms: u, vertexShader: ringVS, fragmentShader: ringFS, transparent: true, depthWrite: false, blending: T.AdditiveBlending }));
   };
   const ringGroup = new T.Group(); scene.add(ringGroup);
@@ -575,9 +599,9 @@ async function buildScene(T, C) {
 
   /* ---------- Flugbahn (zeitbasiert) und Lage aus Schub = Beschleunigung + Schwerkraft ---------- */
   const pathKeys = [
-    { t: 1.00, v: [-9.0, -2.1, -17.5] },
-    { t: 1.45, v: [-4.7, -1.0, -10.2] },
-    { t: 1.85, v: [-1.55, -0.32, -4.7] },
+    { t: 1.00, v: [-9.0, -1.15, -17.5] },
+    { t: 1.45, v: [-4.7, -0.7, -10.2] },
+    { t: 1.85, v: [-1.55, -0.25, -4.7] },
     { t: 2.25, v: [0.0, -0.05, 0.0] },
     { t: 2.47, v: [0.14, -0.18, 2.45] },
     { t: 2.70, v: [0.1, 0.45, 3.65] },
@@ -588,29 +612,32 @@ async function buildScene(T, C) {
     { t: 4.08, v: [0.0, 0.17, 0.25] },
     { t: TL.stop, v: [0, 0, 0], ease: true }
   ];
-  const path = makeTrack(pathKeys);
+  const path = makeSpline(pathKeys, [0, 0, 0]);
   const HZ = 240, tA = TL.appear, tB = TL.stop, NTAB = Math.ceil((tB - tA) * HZ) + 1;
   const tabP = new Float32Array(NTAB * 3), tabQ = new Float32Array(NTAB * 4);
   {
-    const h = 1 / 90, G = 24, p0 = [], p1 = [], p2 = [], ups = new Float32Array(NTAB * 3), vel = new Float32Array(NTAB * 3);
+    const h = 1 / 90, G = 10, p0 = [], p1 = [], p2 = [], ups = new Float32Array(NTAB * 3), vel = new Float32Array(NTAB * 3);
     for (let i = 0; i < NTAB; i++) {
       const t = tA + i / HZ; path(t - h, p0); path(t, p1); path(t + h, p2);
       tabP[i * 3] = p1[0]; tabP[i * 3 + 1] = p1[1]; tabP[i * 3 + 2] = p1[2];
       for (let j = 0; j < 3; j++) { vel[i * 3 + j] = (p2[j] - p0[j]) / (2 * h); ups[i * 3 + j] = (p2[j] - 2 * p1[j] + p0[j]) / (h * h) + (j === 1 ? G : 0); }
     }
-    const win = 14, up = new T.Vector3(), fwd = new T.Vector3(1e-6, 0, 1), right = new T.Vector3(), m = new T.Matrix4(), q = new T.Quaternion(), qs = new T.Quaternion(), qy = new T.Quaternion(), Y = new T.Vector3(0, 1, 0);
+    const win = 22, up = new T.Vector3(), fwd = new T.Vector3(1e-6, 0, 1), right = new T.Vector3(), m = new T.Matrix4(), q = new T.Quaternion(), qs = new T.Quaternion(), qy = new T.Quaternion(), Y = new T.Vector3(0, 1, 0);
     const lastF = new T.Vector3(0, 0, 1);
     for (let i = 0; i < NTAB; i++) {
       up.set(0, 0, 0);
       for (let k = -win; k <= win; k++) { const j = Math.min(NTAB - 1, Math.max(0, i + k)), w = 1 - Math.abs(k) / (win + 1); up.x += ups[j * 3] * w; up.y += ups[j * 3 + 1] * w; up.z += ups[j * 3 + 2] * w; }
       up.normalize();
+      // Nase = Flugrichtung quer zum Schub; bei senkrechtem Flug die letzte Richtung weitertragen
       fwd.set(vel[i * 3], vel[i * 3 + 1], vel[i * 3 + 2]); fwd.addScaledVector(up, -fwd.dot(up));
-      if (fwd.lengthSq() < 1e-4) fwd.copy(lastF); fwd.normalize(); lastF.copy(fwd);
+      const fl = fwd.length(); lastF.addScaledVector(up, -lastF.dot(up)).normalize();
+      if (fl > 1e-5) fwd.multiplyScalar(1 / fl); else fwd.copy(lastF);
+      fwd.lerp(lastF, 1 - clamp01(fl / 2.5)).normalize(); lastF.copy(fwd);
       right.crossVectors(up, fwd).normalize(); fwd.crossVectors(right, up);
       m.makeBasis(right, up, fwd); q.setFromRotationMatrix(m);
       const t = tA + i / HZ, w = sstep(ramp(t, TL.blendA, tB - 0.06));
       if (w > 0) {
-        const spin = Math.PI * 1.5 * Math.pow(1 - eOut3(ramp(t, TL.blendA, tB)), 1);
+        const spin = Math.PI * 0.5 * (1 - eOut3(ramp(t, TL.blendA, tB)));
         qy.setFromAxisAngle(Y, spin); qs.copy(qFinal).multiply(qy); q.slerp(qs, w);
       }
       if (i > 0 && q.dot(new T.Quaternion(tabQ[i * 4 - 4], tabQ[i * 4 - 3], tabQ[i * 4 - 2], tabQ[i * 4 - 1])) < 0) { q.x = -q.x; q.y = -q.y; q.z = -q.z; q.w = -q.w; }
@@ -649,11 +676,18 @@ async function buildScene(T, C) {
   const motorL = propsL.map(p => new T.Vector3(p.x, 0.035, p.z));
   const _p = new T.Vector3(), _q = new T.Quaternion(), _v = new T.Vector3(), _w = new T.Vector3(), _tan = new T.Vector3(), _side = new T.Vector3();
   const trailPts = new Float32Array(NS * 3);
-  function updateTrails(T_, W, camPos) {
+  function updateTrails(T_, W, camPos, swirl) {
     for (let k = 0; k < NT; k++) {
+      let hx = 0, hy = 0;
       for (let s = 0; s < NS; s++) {
         const ts = T_ - W * s / (NS - 1);
         pose(ts, _p, _q); _v.copy(motorL[k]).applyQuaternion(_q).add(_p);
+        if (s === 0) { hx = _v.x; hy = _v.y; }
+        else if (swirl > 0) {          // Wirbel: Spur dreht sich beim Einsaugen um ihren Propeller
+          const dx = _v.x - hx, dy = _v.y - hy, r = Math.hypot(dx, dy), th = swirl * 5.5 * (0.35 + 0.65 * Math.min(r, 2) / 2) * (propsL[k].x * propsL[k].z > 0 ? 1 : -1);
+          const c = Math.cos(th), sn = Math.sin(th), sh = Math.exp(-3.4 * swirl);
+          _v.x = hx + (dx * c - dy * sn) * sh; _v.y = hy + (dx * sn + dy * c) * sh;
+        }
         trailPts[s * 3] = _v.x; trailPts[s * 3 + 1] = _v.y; trailPts[s * 3 + 2] = _v.z;
       }
       for (let s = 0; s < NS; s++) {
@@ -670,6 +704,31 @@ async function buildScene(T, C) {
     }
     trailGeo.attributes.position.needsUpdate = true;
   }
+
+  /* ---------- Hallenboden: dunkel glänzend, spiegelt Gate und Lichtspuren ---------- */
+  const FLOOR_Y = -1.85;
+  // Spiegelbilder teilen Geometrie und Shader, haben aber eine eigene Helligkeit
+  const uRefl = U(0), uReflT = U(0);
+  const mirror = (o, mat) => { const m = new T.Mesh(o.geometry, mat); m.renderOrder = o.renderOrder - 10; m.frustumCulled = false; return m; };
+  const reflGroup = new T.Group(); reflGroup.scale.y = -1; reflGroup.position.y = 2 * FLOOR_Y; scene.add(reflGroup);
+  const reflRing = new T.Group();
+  reflRing.add(mirror(ringHalo2, mkRingMat(3.2, 0, uRefl)), mirror(ringCore, mkRingMat(0, 0, uRefl)));
+  reflGroup.add(reflRing);
+  const reflTrailMat = track(new T.ShaderMaterial({ uniforms: { uA: trailMat.uniforms.uA, uB: trailMat.uniforms.uB, uGain: uReflT }, vertexShader: trailMat.vertexShader, fragmentShader: trailMat.fragmentShader, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide }));
+  const reflTrails = mirror(trails, reflTrailMat); reflGroup.add(reflTrails);
+  const floorU = { uA: U(V3(CA)), uB: U(V3(CB)), uAlpha: U(0), uGrid: U(0), uFloorY: U(FLOOR_Y) };
+  const floorMat = track(new T.ShaderMaterial({
+    uniforms: floorU, transparent: true, depthWrite: false,
+    vertexShader: `varying vec3 vW;void main(){vec4 wp=modelMatrix*vec4(position,1.);vW=wp.xyz;gl_Position=projectionMatrix*viewMatrix*wp;}`,
+    fragmentShader: `uniform float uAlpha,uGrid;uniform vec3 uA,uB;varying vec3 vW;
+      void main(){vec2 g=abs(fract(vW.xz*.5)-.5)/fwidth(vW.xz*.5);float line=1.-min(min(g.x,g.y),1.);
+        float dist=length(vW.xz-vec2(0.,1.5));float fade=smoothstep(22.,3.,dist);
+        float pool=exp(-dot(vW.xz,vW.xz)*.18);
+        vec3 col=vec3(.006,.012,.024)+mix(uA,uB,smoothstep(-1.,1.,vW.x))*pool*.05+vec3(.25,.45,.7)*line*.09*uGrid*fade;
+        gl_FragColor=vec4(col,.6*fade*uAlpha);}`
+  }));
+  const floor = new T.Mesh(track(new T.PlaneGeometry(60, 60)), floorMat);
+  floor.rotation.x = -Math.PI / 2; floor.position.set(0, FLOOR_Y, -8); floor.renderOrder = -5; scene.add(floor);
 
   /* ---------- Logo-Ebene (echter SVG-Pfad), Scan, Glitch, Portal-Ring ---------- */
   const lw = VB[2] / O.ring.r, lh = VB[3] / O.ring.r;
@@ -820,10 +879,10 @@ async function buildScene(T, C) {
       k(0.70, [0.0, 0.05, 0], [0.5, 0.12, 1], 2.75, 36, 0),
       k(1.45, [0.0, 0.0, -0.4], [0.42, 0.07, 1], 2.3, 38, -0.02),
       k(2.05, [0.0, -0.02, -0.5], [0.36, 0.03, 1], 2.15, 40, -0.03),
-      k(2.30, [0.06, -0.06, 0.55], [0.33, 0.0, 1], 2.3, 43, 0.0),
-      k(2.72, [0.08, 0.55, 1.75], [0.32, -0.2, 1], 2.6, 46, 0.05),
-      k(3.18, [0.0, 1.25, 1.35], [0.26, -0.18, 1], 2.55, 44, 0.03),
-      k(3.66, [0.0, 0.62, 0.45], [0.16, -0.06, 1], 2.2, 34, 0.0),
+      k(2.30, [0.06, -0.06, 0.55], [0.5, 0.02, 1], 2.35, 43, 0.0),
+      k(2.72, [0.0, 0.75, 1.75], [1.0, -0.1, 0.8], 2.95, 46, 0.04),
+      k(3.18, [0.0, 1.0, 1.7], [1.0, -0.06, 0.3], 3.1, 44, 0.02),
+      k(3.66, [0.0, 0.6, 0.6], [0.6, 0.0, 1], 2.4, 36, 0.0),
       k(4.12, [tf[0] * 0.7, tf[1] * 0.7, 0.1], [0.05, -0.01, 1], frameF * 1.02, 18, 0),
       k(4.62, tf, [0, 0, 1], frameF, FINAL_FOV, 0, true),
       k(TL.end, tf, [0, 0, 1], frameF, FINAL_FOV, 0, true)
@@ -832,9 +891,13 @@ async function buildScene(T, C) {
   }
 
   const cv = new Array(9).fill(0), tgt = new T.Vector3(), dir = new T.Vector3();
+  const followK = makeTrack([{ t: 1.7, v: [0], ease: true }, { t: 2.2, v: [0.45] }, { t: 2.7, v: [0.28] }, { t: 3.2, v: [0.25] }, { t: 3.6, v: [0.4] }, { t: 4.05, v: [0], ease: true }]);
+  const fk = [0], fp = new T.Vector3(), fq = new T.Quaternion();
   function placeCamera(T_, flyIn) {
     camTrack(T_, cv);
     tgt.set(cv[0], cv[1], cv[2]); dir.set(cv[3], cv[4], cv[5]).normalize();
+    followK(T_, fk);
+    if (fk[0] > 0.001) { pose(T_, fp, fq); tgt.lerp(fp, fk[0]); }
     const fovMinor = cv[7], fr = cv[6];
     let dist = fr / Math.tan(fovMinor * Math.PI / 360);
     if (flyIn > 0) dist /= (1 + 7.5 * Math.pow(flyIn, 2.3));
@@ -890,7 +953,7 @@ async function buildScene(T, C) {
       propU.uTime.value = T_; propU.uMorph.value = sstep(ramp(T_, TL.morphA, TL.morphB));
       haloU.uGain.value = 1 - 0.6 * white;
       const pass = decay(T_, TL.gate - 0.05, 0.5);
-      gateLight.intensity = 9 * pass + 2.5 * draw * (1 - white); gateLight.position.set(0, 0, 0.2);
+      gateLight.intensity = 9 * pass + 2.0 * draw * (1 - sstep(ramp(T_, 3.7, 4.2))); gateLight.position.set(0, 0, 0.2);
       spr.forEach(s => { s.material.opacity = 1 - 0.7 * white; });
     }
 
@@ -898,7 +961,7 @@ async function buildScene(T, C) {
     const W0 = 1.55, zip = eIn2(ramp(T_, TL.zipA, TL.zipB));
     const Wt = W0 * (1 - zip);
     trails.visible = vis && Wt > 0.01;
-    if (trails.visible) { updateTrails(T_, Math.min(Wt, Math.max(0.0, T_ - TL.appear)), camera.position); trailMat.uniforms.uGain.value = 1 + zip * 0.8; }
+    if (trails.visible) { updateTrails(T_, Math.min(Wt, Math.max(0.0, T_ - TL.appear)), camera.position, sstep(ramp(T_, TL.zipA, TL.zipB))); trailMat.uniforms.uGain.value = 1 + zip * 1.2; }
 
     /* Scan */
     const sc = ramp(T_, TL.scanA, TL.scanB), scE = eInOut3(sc);
@@ -911,6 +974,8 @@ async function buildScene(T, C) {
     /* Abschluss: Blitz, Druckwelle, Funken, Glitch */
     const bt = T_ - TL.burst;
     fxU.uFlash.value = decay(T_, TL.burst, 0.45);
+    fx.visible = (sc > 0 && sc < 1) || (bt > 0 && bt < 1.0);
+    sparks.visible = bt > 0 && bt < 1.4;
     fxU.uShockR.value = bt > 0 ? 0.25 + 3.4 * eOutExpo(clamp01(bt / 0.85)) : 0;
     fxU.uShockA.value = bt > 0 ? Math.pow(1 - clamp01(bt / 0.85), 1.4) * 1.1 : 0;
     spMat.uniforms.uT.value = bt > 0 ? bt : -1;
@@ -920,12 +985,12 @@ async function buildScene(T, C) {
     logoU.uGlowAmt.value = T_ >= TL.scanA ? 0.35 + decay(T_, TL.burst, 0.6) * 0.9 + decay(T_, TL.title + 0.2, 0.5) * 0.45 : 0;
 
     /* Portal: Innenkreis wird Bullauge, Ring wächst über den Bildschirm */
-    const inner = 1 - sstep(ramp(T_, TL.portal, TL.portal + 0.26));
+    const inner = 1 - sstep(ramp(T_, TL.portal + 0.1, TL.portal + 0.32));
     logoU.uInner.value = inner; logoU.uPortal.value = portalP > 0 ? 1 : 0;
     let holeR = -10, holeC = [L.cx, L.cy], rim = 0;
     if (portalP > 0) {
       const c0 = toPx(centerW); rimW.set(1 - ringW, 0, 0); const c1 = toPx(rimW);
-      holeC = c0; holeR = Math.hypot(c1[0] - c0[0], c1[1] - c0[1]) * sstep(ramp(T_, TL.portal, TL.portal + 0.3));
+      holeC = c0; holeR = Math.hypot(c1[0] - c0[0], c1[1] - c0[1]) * eOut3(ramp(T_, TL.portal, TL.portal + 0.3));
       rim = 0.9 * (1 - portalP);
     }
     if (St.exit > 0) {
@@ -935,6 +1000,13 @@ async function buildScene(T, C) {
     punchMat.uniforms.uHole.value.set(holeC[0] * dpr, (L.H - holeC[1]) * dpr, holeR * dpr);
     punchMat.uniforms.uRim.value = rim; punchMat.uniforms.uSoft.value = 1.5 * dpr;
     punch.visible = holeR > 0;
+
+    /* Boden blendet vor der Draufsicht aus */
+    const fl = sstep(ramp(T_, 0.72, 1.2)) * (1 - sstep(ramp(T_, 3.85, 4.3)));
+    floorU.uAlpha.value = fl; floorU.uGrid.value = 1;
+    uRefl.value = 0.42 * fl * (1 - 0.4 * white); uReflT.value = 0.5 * fl;
+    floor.visible = reflGroup.visible = fl > 0.002;
+    reflRing.visible = ringGroup.visible; reflTrails.visible = trails.visible;
 
     /* Hintergrund, Staub, Flare */
     veilMat.uniforms.uTime.value = T_;
@@ -963,6 +1035,10 @@ async function buildScene(T, C) {
   const parallel = !!gl.getExtension('KHR_parallel_shader_compile');
   try { if (parallel && renderer.compileAsync) await renderer.compileAsync(scene, camera); else renderer.compile(scene, camera); } catch (e) { renderer.compile(scene, camera); }
   vis0.forEach(([o, v]) => (o.visible = v));
+  // Vorwärmen: typische Bilder einmal unsichtbar zeichnen (Leinwand ist noch durchsichtig),
+  // damit Treiber ihre Zustände nicht erst mitten im Flug anlegen
+  for (const t of [2.32, 3.1, 4.9, 5.3, 6.5]) render(t, { exit: 0 });
+  render(TL.bootEnd, { exit: 0 });
 
   function dispose() {
     scene.traverse(o => {
@@ -975,7 +1051,7 @@ async function buildScene(T, C) {
     renderer.dispose();
   }
 
-  return { render: (T_, St) => render(T_, St), layout, layoutInfo, dispose, adapt, renderer, _dbg: { tPos, pose, camera, drone, T } };
+  return { render: (T_, St) => render(T_, St), layout, layoutInfo, dispose, adapt, renderer, _dbg: { tPos, pose, camera, drone, T, scene, parts: { veil, punch, ringGroup, drone, trails, floor, reflGroup, logo, fx, sparks, dust, flare } } };
 }
 
 if (typeof window !== 'undefined') window.FCSIntro3D = Object.assign(window.FCSIntro3D || {}, { playIntro });

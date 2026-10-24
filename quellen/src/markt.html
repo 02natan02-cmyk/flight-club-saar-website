@@ -1,275 +1,252 @@
 <section class="pagehead mk-head" id="top">
   <img class="bgimg mk-head-bg" src="media/hg_whoops_v1.webp" alt="" aria-hidden="true">
   <div class="scanlines"></div><div class="osd-frame"><i></i></div>
-  <div class="osd mk-osd-tl"><span class="blink" style="color:var(--green)">◉</span> MARKT ONLINE · <b data-mk-count>0</b> ANZEIGEN</div>
-  <div class="osd mk-osd-tr">GEBÜHR <b class="mk-fee">0,00 €</b></div>
-  <div class="wrap mk-head-grid">
-    <div class="mk-head-txt">
-      <p class="crumb"><a href="index.html">Start</a> / Biete/Suche</p>
-      <h1 class="h1 mk-h1" data-split><span>Biete</span> <span class="mk-h1-s">/Suche</span></h1>
-      <p class="lede">Hier findest du Kopter, Brillen und Teile von Piloten für Piloten und stellst kostenlos deine eigene Anzeige ein, mit Foto oder einfach mit deinem Kleinanzeigen-Link.</p>
-      <div class="btns"><a class="btn amber solid" href="#aufgeben">Anzeige aufgeben <span class="arr">→</span></a><a class="btn" href="#wand">Zur Wand</a><a class="btn ghost" href="#sicher">Sicher handeln</a></div>
-      <ul class="mk-badges" aria-label="Das Wichtigste">
-        <li class="tag green"><span class="dot"></span>Kostenlos</li>
-        <li class="tag sig"><span class="dot"></span>Privat von Pilot zu Pilot</li>
-        <li class="tag amber"><span class="dot"></span>Vom Vorstand geprüft</li>
-      </ul>
-    </div>
-    <div class="mk-rail-box">
-      <div class="mk-rail" id="mk-rail" role="group" aria-label="Kategorien: tippen zum Filtern"></div>
-      <p class="mk-hint"><span class="mk-hint-dot" aria-hidden="true"></span>Fahr mit der Maus durch die Etiketten oder tipp eins an, um direkt zu filtern.</p>
-    </div>
+  <div class="wrap mk-head-in">
+    <p class="crumb"><a href="index.html">Start</a> / Biete/Suche</p>
+    <h1 class="h1 mk-h1" data-split>Biete<span class="mk-h1-s">/Suche</span></h1>
+    <p class="lede">Kopter, Brillen und Teile von Pilot zu Pilot. Stell deine Anzeige kostenlos rein und nimm sie mit deinem Löschcode wieder raus, wann du willst.</p>
+    <div class="btns mk-head-btns"><a class="btn amber solid" href="#aufgeben">Anzeige aufgeben <span class="arr">→</span></a><a class="btn" href="#wand">Zur Wand</a></div>
   </div>
 </section>
 
-<!-- Die Wand -->
-<section class="sec mk-wall" id="wand" data-toc="Wand">
+<!-- Die Wand: live über FCS.board -->
+<section class="sec mk-wall" id="wand" data-toc="Wand" aria-labelledby="mk-wall-h">
   <div class="wrap">
-    <div class="sec-head mk-sh">
-      <h2 class="h2" data-split>Die Wand</h2>
-      <p class="lede" data-reveal>Alle Anzeigen, die der Vorstand freigegeben hat. Jede bleibt 30 Tage, ein Klick auf eine Karte zeigt Fotos und Kontakt.</p>
+    <div class="mk-wall-head">
+      <h2 class="h2" id="mk-wall-h" data-split>Die Wand</h2>
+      <p class="mk-live hud" id="mk-live" aria-live="polite"><span class="mk-live-dot" aria-hidden="true"></span><span id="mk-live-t">Lädt …</span></p>
     </div>
-    <div class="mk-ctrl" data-reveal>
-      <div class="mk-seg" id="mk-seg" role="radiogroup" aria-label="Biete oder Suche">
-        <label><input type="radio" name="mk-art" value="alle" checked><span>Alle <b data-cnt="alle">0</b></span></label>
-        <label><input type="radio" name="mk-art" value="biete"><span>Biete <b data-cnt="biete">0</b></span></label>
-        <label><input type="radio" name="mk-art" value="suche"><span>Suche <b data-cnt="suche">0</b></span></label>
-        <i class="mk-seg-pill" aria-hidden="true"></i>
-      </div>
-      <label class="mk-search" for="mk-q">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
-        <span class="sr">Anzeigen durchsuchen</span>
-        <input type="search" id="mk-q" autocomplete="off" enterkeyhint="search" placeholder="Suchen …">
-      </label>
-    </div>
-    <div class="mk-kats" id="mk-kats" role="radiogroup" aria-label="Kategorie" data-reveal></div>
-    <p class="mk-readout hud" id="mk-readout" aria-live="polite"></p>
-    <p class="mk-hint mk-wall-hint"><span class="mk-hint-dot" aria-hidden="true"></span>Wähl Biete oder Suche, eine Kategorie oder such nach einem Begriff.</p>
-    <div class="mk-grid" id="mk-grid"></div>
 
-    <!-- Leerzustand: Bandscan der Brille -->
+    <!-- Deine Anzeigen (auf diesem Gerät erstellt) -->
+    <div class="mk-mine" id="mk-mine" hidden>
+      <p class="mk-mine-l"><i data-ico="user"></i>Deine Anzeigen <b id="mk-mine-n">(0)</b></p>
+      <ul class="mk-mine-list" id="mk-mine-list"></ul>
+    </div>
+
+    <div class="mk-filter" id="mk-filter" hidden>
+      <div class="mk-ctrl">
+        <div class="mk-seg" id="mk-seg" role="radiogroup" aria-label="Biete oder Suche">
+          <label><input type="radio" name="mk-art" value="alle" checked><span>Alle <b data-cnt="alle">0</b></span></label>
+          <label><input type="radio" name="mk-art" value="biete"><span>Biete <b data-cnt="biete">0</b></span></label>
+          <label><input type="radio" name="mk-art" value="suche"><span>Suche <b data-cnt="suche">0</b></span></label>
+          <i class="mk-seg-pill" aria-hidden="true"></i>
+        </div>
+        <label class="mk-search" for="mk-q">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <span class="sr">Anzeigen durchsuchen</span>
+          <input type="search" id="mk-q" autocomplete="off" enterkeyhint="search" placeholder="Suchen …">
+        </label>
+      </div>
+      <div class="mk-kats" id="mk-kats" role="radiogroup" aria-label="Kategorie"></div>
+      <p class="mk-hint" id="mk-hint"><span class="mk-hint-dot" aria-hidden="true"></span><span>Tipp eine Anzeige an, dann siehst du Fotos und Kontakt.</span><span class="mk-readout" id="mk-readout" aria-live="polite"></span></p>
+    </div>
+
+    <!-- Netzfehler -->
+    <div class="mk-state mk-err" id="mk-err" role="alert" hidden>
+      <i data-ico="wifi"></i>
+      <div>
+        <p class="mk-state-h">Gerade nicht erreichbar, versuch es gleich nochmal.</p>
+        <p class="mute">Die Anzeigen konnten nicht geladen werden. An deinem Gerät liegt es meistens nicht.</p>
+      </div>
+      <button class="btn" type="button" id="mk-retry">Nochmal versuchen</button>
+    </div>
+
+    <div class="mk-grid" id="mk-grid" aria-busy="true"></div>
+
+    <!-- Leerzustand -->
     <div class="mk-empty" id="mk-empty" hidden>
       <div class="mk-goggle" id="mk-goggle">
         <canvas id="mk-static" aria-hidden="true"></canvas>
         <div class="mk-gg-osd" aria-hidden="true">
-          <span class="mk-gg-tl" id="mk-gg-band">RACEBAND R1 · 5658 MHz</span>
-          <span class="mk-gg-tr">RSSI <b id="mk-gg-rssi">00</b>%</span>
-          <span class="mk-gg-c"><b class="blink">KEIN SIGNAL</b><small id="mk-gg-sub">0 ANZEIGEN AUF DIESEM KANAL</small></span>
-          <span class="mk-gg-bl" id="mk-gg-scan">BANDSCAN …</span>
-          <span class="mk-gg-br">REC <i class="blink">●</i></span>
+          <span class="mk-gg-tl" id="mk-gg-band">R1 · 5658 MHz</span>
+          <span class="mk-gg-c"><b class="blink">Kein Signal</b><small>0 Anzeigen</small></span>
+          <span class="mk-gg-bl" id="mk-gg-scan">Bandscan …</span>
         </div>
-        <div class="mk-spec" id="mk-spec" aria-hidden="true"></div>
         <button type="button" class="mk-gg-hit" aria-label="Kanal wechseln"></button>
       </div>
       <div class="mk-empty-txt">
-        <h3 class="mk-empty-h">Noch funkt hier niemand.</h3>
-        <p>Die Wand ist neu und wartet auf die erste Anzeige. Der Ersatzkopter in der Schublade, die Brille vom Umstieg, der Stapel Akkus: Hier findet er einen Piloten, der damit fliegt.</p>
-        <div class="btns"><a class="btn amber solid" href="#aufgeben" data-mk-art="biete">Erste Anzeige aufgeben <span class="arr">→</span></a><a class="btn" href="#aufgeben" data-mk-art="suche">Ich suche etwas</a></div>
-        <p class="mk-hint"><span class="mk-hint-dot" aria-hidden="true"></span>Tipp auf den Bildschirm, um den Kanal zu wechseln.</p>
+        <h3 class="mk-empty-h">Noch keine Anzeigen.</h3>
+        <p>Stell die erste rein. Sie steht sofort hier auf der Wand.</p>
+        <div class="btns"><a class="btn amber solid" href="#aufgeben" data-mk-art="biete">Anzeige aufgeben <span class="arr">→</span></a><a class="btn" href="#aufgeben" data-mk-art="suche">Ich suche etwas</a></div>
       </div>
     </div>
 
     <!-- Kein Treffer bei Filter -->
-    <div class="mk-none panel" id="mk-none" hidden>
-      <p class="hud mk-none-osd">0 TREFFER</p>
-      <h3 class="h3">Dafür gibt es gerade keine Anzeige.</h3>
-      <p class="mute">Gib ein Gesuch auf. Dann sehen alle, was du brauchst, und melden sich bei dir.</p>
-      <div class="btns"><a class="btn amber solid" href="#aufgeben" id="mk-gesuch">Gesuch aufgeben <span class="arr">→</span></a><button class="btn ghost" type="button" id="mk-reset">Filter zurücksetzen</button></div>
+    <div class="mk-state mk-none" id="mk-none" hidden>
+      <i data-ico="search"></i>
+      <div>
+        <p class="mk-state-h">Dafür gibt es gerade keine Anzeige.</p>
+        <p class="mute">Gib ein Gesuch auf. Dann sehen alle, was du brauchst, und melden sich bei dir.</p>
+      </div>
+      <div class="btns"><a class="btn amber solid" href="#aufgeben" id="mk-gesuch">Gesuch aufgeben</a><button class="btn ghost" type="button" id="mk-reset">Filter zurücksetzen</button></div>
     </div>
   </div>
 </section>
 
 <!-- Anzeige aufgeben -->
-<section class="sec mk-send" id="aufgeben" data-toc="Aufgeben">
+<section class="sec mk-send" id="aufgeben" data-toc="Aufgeben" aria-labelledby="mk-send-h">
   <div class="wrap">
-    <div class="sec-head mk-sh">
-      <h2 class="h2" data-split>Anzeige aufgeben</h2>
-      <p class="lede" data-reveal>Kostenlos. Füll aus, was du hast, und sieh sofort, wie deine Anzeige auf der Wand aussieht.</p>
+    <div class="mk-send-head">
+      <h2 class="h2" id="mk-send-h" data-split>Anzeige aufgeben</h2>
+      <p class="lede">In zwei Minuten online. Mit deinem Löschcode nimmst du sie jederzeit selbst wieder raus.</p>
     </div>
-<div class="mk-plan" id="ablauf" role="group" aria-labelledby="mk-plan-h">
-    <div class="mk-plan-head">
-      <h3 class="h3" id="mk-plan-h">So läuft’s</h3>
-      <p class="mute">Kostenlos. Kauf und Verkauf laufen direkt zwischen euch. Der Verein vermittelt nicht und haftet nicht.</p>
+    <div class="mk-steps" id="mk-steps">
+      <ol aria-label="So läuft es">
+        <li class="mk-step"><span class="mk-step-n" aria-hidden="true"><i data-ico="edit"></i></span><span class="mk-step-t">Ausfüllen</span></li>
+        <li class="mk-step"><span class="mk-step-n" aria-hidden="true"><i data-ico="bolt"></i></span><span class="mk-step-t">Sofort online</span></li>
+        <li class="mk-step"><span class="mk-step-n" aria-hidden="true"><i data-ico="key"></i></span><span class="mk-step-t">Löschen mit Code</span></li>
+      </ol>
+      <span class="mk-steps-track" aria-hidden="true"><i></i></span>
+      <span class="mk-steps-quad" aria-hidden="true"></span>
     </div>
-    <div class="mk-wps-box">
-    <ol class="mk-wps" id="mk-wps">
-      <li class="mk-wp" data-wp="0"><button type="button" class="mk-wp-btn" aria-describedby="mk-wp0"><span class="mk-wp-node"><b>WP1</b></span><span class="mk-wp-t">Anzeige einschicken</span></button><p id="mk-wp0">Foto, Preis und Kontakt ins Formular. Oder nur dein Kleinanzeigen-Link.</p></li>
-      <li class="mk-wp" data-wp="1"><button type="button" class="mk-wp-btn" aria-describedby="mk-wp1"><span class="mk-wp-node"><b>WP2</b></span><span class="mk-wp-t">Vorstand prüft</span></button><p id="mk-wp1">So schnell es geht. Danach steht deine Anzeige auf der Wand.</p></li>
-      <li class="mk-wp" data-wp="2"><button type="button" class="mk-wp-btn" aria-describedby="mk-wp2"><span class="mk-wp-node"><b>WP3</b></span><span class="mk-wp-t">30 Tage sichtbar</span></button><p id="mk-wp2">Dann läuft sie automatisch aus. Die Akkuanzeige auf jeder Karte zeigt, wie lange noch.</p></li>
-    </ol>
-    <div class="mk-track" aria-hidden="true"><i class="mk-track-fill"></i></div>
-    <span class="mk-quad" aria-hidden="true"></span>
-    </div>
-    <p class="mk-wp-now" id="mk-wp-now" aria-hidden="true"></p>
-    <p class="mk-hint mk-plan-hint"><span class="mk-hint-dot" aria-hidden="true"></span>Tipp auf einen Wegpunkt, und die Drohne fliegt hin.</p>
-</div>
-
 
     <div class="mk-send-grid">
-      <aside class="mk-pv" id="mk-pv" aria-label="Vorschau deiner Anzeige">
-        <p class="mk-pv-label hud"><span class="dot" aria-hidden="true"></span>Vorschau deiner Anzeige</p>
-        <div class="mk-pv-stage" id="mk-pv-stage">
-          <div class="mk-pv-tilt" id="mk-pv-tilt"><div id="mk-pv-card"></div><i class="mk-glare" aria-hidden="true"></i></div>
-          <div class="mk-pv-sent" id="mk-pv-sent" hidden>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
-            <b class="hud">Übertragen</b>
-            <span>Deine Anzeige liegt beim Vorstand und wartet auf die Freigabe.</span>
-          </div>
+      <aside class="mk-pv" id="mk-pv-aside" aria-label="Vorschau deiner Anzeige">
+        <div class="mk-pv-box" id="mk-pv-box">
+          <p class="mk-pv-label hud"><span class="dot" aria-hidden="true"></span><span id="mk-pv-l">So erscheint sie auf der Wand</span></p>
+          <div class="mk-pv-stage" id="mk-pv-stage"><div class="mk-pv-tilt" id="mk-pv-tilt"><div id="mk-pv-card"></div></div></div>
+          <button type="button" class="mk-linkbtn" id="mk-pv-open"><i data-ico="eye"></i>Detailansicht ansehen</button>
         </div>
-        <p class="mk-hint"><span class="mk-hint-dot" aria-hidden="true"></span><span class="mk-pv-hint">Die Karte entsteht beim Tippen. Fahr mit der Maus darüber, um sie zu kippen.</span></p>
       </aside>
 
-      <form class="panel mk-form" id="mk-form" data-fcs-form novalidate>
-        <input type="hidden" name="_subject" value="Neue Biete/Suche-Anzeige (Flight Club Saar, Entwurf)">
+      <div class="mk-formbox">
+      <form class="panel mk-form" id="mk-form" novalidate>
+        <input type="hidden" name="_subject" value="Neue Biete/Suche-Anzeige (Flight Club Saar)">
         <input type="hidden" name="Formular" value="Biete/Suche">
-        <input type="hidden" name="Eintrag (data.js)" id="mk-json" value="">
         <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
 
         <fieldset class="mk-switch" id="mk-switch">
-          <legend class="lbl">Was möchtest du?</legend>
-          <label><input type="radio" name="Art" value="Biete" checked><span>Ich biete</span></label>
-          <label><input type="radio" name="Art" value="Suche"><span>Ich suche</span></label>
+          <legend>Was möchtest du?</legend>
+          <label><input type="radio" name="Art" value="biete" checked><span>Ich biete</span></label>
+          <label><input type="radio" name="Art" value="suche"><span>Ich suche</span></label>
           <i class="mk-switch-knob" aria-hidden="true"></i>
         </fieldset>
 
-        <div class="field"><label for="mk-titel">Titel</label><input id="mk-titel" name="Titel" required maxlength="70" placeholder="z. B. 5-Zoll-Freestyle-Kopter, flugbereit"><span class="err">Bitte einen Titel eingeben.</span></div>
+        <div class="field"><label for="mk-titel">Titel <em class="req">Pflicht</em></label><input id="mk-titel" name="Titel" required maxlength="90" placeholder="z. B. 5-Zoll-Freestyle-Kopter, flugbereit"><span class="err">Bitte einen Titel eingeben.</span></div>
 
-        <div class="field mk-katfield"><span class="lbl" id="mk-kat-l">Kategorie</span>
-          <div class="chips mk-katchips" role="radiogroup" aria-labelledby="mk-kat-l">
-            <label class="chip"><input type="radio" name="Kategorie" value="kopter" required><span><i data-ico="kopter"></i>Kopter</span></label>
-            <label class="chip"><input type="radio" name="Kategorie" value="brille" required><span><i data-ico="brille"></i>Brille</span></label>
-            <label class="chip"><input type="radio" name="Kategorie" value="funke" required><span><i data-ico="funke"></i>Funke</span></label>
-            <label class="chip"><input type="radio" name="Kategorie" value="akkus" required><span><i data-ico="akkus"></i>Akkus</span></label>
-            <label class="chip"><input type="radio" name="Kategorie" value="teile" required><span><i data-ico="teile"></i>Teile</span></label>
-            <label class="chip"><input type="radio" name="Kategorie" value="werkzeug" required><span><i data-ico="werkzeug"></i>Werkzeug</span></label>
-            <label class="chip"><input type="radio" name="Kategorie" value="sonstiges" required><span><i data-ico="sonstiges"></i>Sonstiges</span></label>
-          </div>
+        <div class="field mk-katfield"><span class="lbl" id="mk-kat-l">Kategorie <em class="req">Pflicht</em></span>
+          <div class="chips mk-katchips" id="mk-katchips" role="radiogroup" aria-labelledby="mk-kat-l"></div>
           <span class="err">Bitte eine Kategorie wählen.</span>
         </div>
 
-        <div class="field mk-pricefield" id="mk-pricefield"><span class="lbl" id="mk-price-l">Preis</span>
+        <div class="field mk-photofield" id="mk-photofield"><span class="lbl" id="mk-foto-l">Fotos <small>(freiwillig, bis zu 3)</small></span>
+          <div class="mk-photos">
+            <div class="mk-thumbs" id="mk-thumbs" aria-live="polite"></div>
+            <label class="mk-drop" id="mk-drop">
+              <input type="file" accept="image/*" multiple id="mk-files" aria-labelledby="mk-foto-l">
+              <span class="mk-drop-in"><i data-ico="cam"></i><b>Foto hinzufügen</b><span id="mk-drop-sub">oder hierher ziehen</span></span>
+            </label>
+          </div>
+          <span class="hint" id="mk-photo-hint">Das erste Foto ist das Titelbild. Wir verkleinern alles automatisch.</span>
+          <span class="err" id="mk-photo-err">Dieses Foto kann dein Browser nicht öffnen. Bitte als JPG oder PNG versuchen.</span>
+        </div>
+
+        <div class="field mk-pricefield" id="mk-pricefield"><span class="lbl" id="mk-price-l">Preis <small>(freiwillig)</small></span>
           <div class="mk-price-row">
             <div class="mk-eur"><input id="mk-preis" name="Preis" type="number" inputmode="numeric" min="0" max="99999" step="1" placeholder="0" aria-labelledby="mk-price-l"><span aria-hidden="true">€</span></div>
-            <div class="chips" role="radiogroup" aria-label="Preisart">
+            <div class="chips" role="radiogroup" aria-label="Preisart" id="mk-preisart">
               <label class="chip"><input type="radio" name="Preisart" value="Festpreis" checked><span>Festpreis</span></label>
               <label class="chip"><input type="radio" name="Preisart" value="VB"><span>VB</span></label>
-              <label class="chip"><input type="radio" name="Preisart" value="Zu verschenken"><span>Zu verschenken</span></label>
+              <label class="chip mk-only-biete"><input type="radio" name="Preisart" value="Zu verschenken"><span>Zu verschenken</span></label>
               <label class="chip"><input type="radio" name="Preisart" value="Tausch"><span>Tausch</span></label>
             </div>
           </div>
-          <span class="hint" id="mk-price-hint">VB geht auch ohne Zahl.</span>
-          <span class="err">Bitte einen Preis eingeben oder „VB“, „Zu verschenken“ oder „Tausch“ wählen.</span>
         </div>
 
-        <div class="field" id="mk-zfield"><span class="lbl" id="mk-z-l">Zustand</span>
+        <div class="field" id="mk-zfield"><span class="lbl" id="mk-z-l">Zustand <small>(freiwillig)</small></span>
           <div class="chips" role="radiogroup" aria-labelledby="mk-z-l">
-            <label class="chip"><input type="radio" name="Zustand" value="neu"><span>Neu</span></label>
-            <label class="chip"><input type="radio" name="Zustand" value="wie neu"><span>Wie neu</span></label>
-            <label class="chip"><input type="radio" name="Zustand" value="gebraucht"><span>Gebraucht</span></label>
-            <label class="chip"><input type="radio" name="Zustand" value="defekt"><span>Defekt / Bastler</span></label>
+            <label class="chip"><input type="radio" name="Zustand" value="Neu"><span>Neu</span></label>
+            <label class="chip"><input type="radio" name="Zustand" value="Wie neu"><span>Wie neu</span></label>
+            <label class="chip"><input type="radio" name="Zustand" value="Gebraucht"><span>Gebraucht</span></label>
+            <label class="chip"><input type="radio" name="Zustand" value="Defekt / Bastler"><span>Defekt / Bastler</span></label>
           </div>
-          <span class="err">Bitte den Zustand wählen.</span>
         </div>
 
-        <div class="field"><label for="mk-t">Beschreibung</label><textarea id="mk-t" name="Beschreibung" maxlength="800" placeholder="Was ist dabei? Wie oft geflogen? Was ist kaputt, was funktioniert?"></textarea><span class="hint"><span id="mk-t-n">0</span> / 800 Zeichen</span></div>
+        <div class="field"><label for="mk-t">Beschreibung <small>(freiwillig)</small></label><textarea id="mk-t" name="Beschreibung" maxlength="2000" rows="4" placeholder="Was ist dabei? Wie oft geflogen? Was ist kaputt, was funktioniert?"></textarea><span class="hint"><span id="mk-t-n">0</span> / 2000 Zeichen</span></div>
 
-        <div class="field mk-photofield" id="mk-photofield"><span class="lbl" id="mk-foto-l">Fotos <small>(bis zu 3)</small></span>
-          <label class="drop mk-drop" id="mk-drop">
-            <input type="file" accept="image/*" multiple id="mk-files" aria-labelledby="mk-foto-l">
-            <span class="drop-in"><i data-ico="cam"></i><b>Fotos hierher ziehen</b><span>oder tippen zum Auswählen. Wir verkleinern sie automatisch.</span></span>
-          </label>
-          <div class="mk-thumbs" id="mk-thumbs" aria-live="polite"></div>
-          <div class="mk-budget hud" id="mk-budget" hidden><span class="mk-budget-bar"><i></i></span><span class="mk-budget-t">0 FOTOS · 0,0 MB VON 8 MB</span></div>
-          <div class="mk-files-hidden" aria-hidden="true">
-            <input type="file" id="mk-f1" tabindex="-1"><input type="file" id="mk-f2" tabindex="-1"><input type="file" id="mk-f3" tabindex="-1">
-          </div>
-          <div class="mk-or" aria-hidden="true"><span>oder</span></div>
-          <label class="lbl" for="mk-link">Kleinanzeigen-Link</label>
-          <input class="inp" id="mk-link" name="Kleinanzeigen-Link" type="url" inputmode="url" placeholder="https://www.kleinanzeigen.de/s-anzeige/…">
-          <span class="hint" id="mk-photo-hint">Fotos oder Link: eins von beiden reicht.</span>
-          <span class="err" id="mk-photo-err">Bitte mindestens ein Foto hochladen oder einen Kleinanzeigen-Link einfügen.</span>
+        <div class="mk-two">
+          <div class="field"><label for="mk-ort">Ort <small>(freiwillig)</small></label><input id="mk-ort" name="Ort" maxlength="40" autocomplete="address-level2" placeholder="z. B. Saarlouis"></div>
+          <div class="field" id="mk-linkfield"><label for="mk-link">Kleinanzeigen-Link <small>(freiwillig)</small></label><input id="mk-link" name="Kleinanzeigen-Link" type="url" inputmode="url" maxlength="300" placeholder="https://www.kleinanzeigen.de/…"><span class="err">Der Link beginnt mit https://</span></div>
         </div>
 
-        <div class="field"><label for="mk-name">Pilotenname oder Name</label><input id="mk-name" name="Name" required maxlength="40" autocomplete="nickname" placeholder="So steht es auf der Karte"><span class="err">Bitte einen Namen eingeben.</span></div>
-
-        <div class="field mk-kontakt" id="mk-kontakt"><span class="lbl">So erreicht man dich <small>(mindestens eins)</small></span>
-          <div class="grid g2">
-            <div class="mk-kin"><label class="sr" for="mk-wa">WhatsApp-Nummer</label><i data-ico="wa"></i><input class="inp" id="mk-wa" name="WhatsApp" type="tel" inputmode="tel" autocomplete="tel" placeholder="WhatsApp: 0151 …"></div>
-            <div class="mk-kin"><label class="sr" for="mk-mail">E-Mail</label><i data-ico="mail"></i><input class="inp" id="mk-mail" name="E-Mail" type="email" inputmode="email" autocomplete="email" placeholder="E-Mail: name@…"></div>
+        <div class="mk-two">
+          <div class="field"><label for="mk-name">Name oder Pilotenname <em class="req">Pflicht</em></label><input id="mk-name" name="Name" required maxlength="40" autocomplete="nickname" placeholder="So steht es auf der Anzeige"><span class="err">Bitte einen Namen eingeben.</span></div>
+          <div class="field mk-kontakt" id="mk-kontaktfield"><label for="mk-kontakt">Telefon/WhatsApp oder E-Mail <em class="req">Pflicht</em></label>
+            <div class="mk-kin"><i data-ico="phone"></i><input id="mk-kontakt" name="Kontakt" required maxlength="80" autocomplete="tel" placeholder="0151 … oder name@…"></div>
+            <span class="hint" id="mk-k-hint">So melden sich Interessenten bei dir.</span>
+            <span class="err" id="mk-k-err">Bitte eine Telefonnummer oder E-Mail-Adresse angeben.</span>
           </div>
-          <span class="err" id="mk-k-err">Bitte eine WhatsApp-Nummer oder eine E-Mail-Adresse angeben.</span>
         </div>
 
-        <label class="check"><input type="checkbox" name="Privat" value="ja" required><span id="mk-privat-t">Ich verkaufe privat und habe das Recht dazu.</span></label>
-        <label class="check"><input type="checkbox" name="Kontakt sichtbar" value="ja" required><span>Meine Kontaktdaten dürfen 30 Tage in der Anzeige stehen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-        <p class="draftnote">Entwurf: Anzeigen gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben.</p>
+        <div class="field mk-pwfield" id="mk-pwfield"><label for="mk-pw">Löschcode <small>(merk ihn dir)</small></label>
+          <div class="mk-pw-row"><input id="mk-pw" name="Löschcode" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" class="mk-dice" id="mk-dice" aria-label="Neuen Code vorschlagen"><i data-ico="dice"></i></button></div>
+          <span class="hint">Damit löschst du die Anzeige später selbst. Mindestens 4 Zeichen.</span>
+          <span class="err">Der Löschcode braucht mindestens 4 Zeichen.</span>
+        </div>
+
+        <div class="mk-pv-slot" id="mk-pv-slot"></div>
+
+        <label class="check mk-consent"><input type="checkbox" name="Einwilligung" value="ja" required><span>Meine Angaben erscheinen öffentlich auf der Website. (<a href="datenschutz.html">Datenschutz</a>)</span></label>
         <div class="mk-errsum" id="mk-errsum" role="alert" hidden></div>
-        <button class="btn solid mk-submit" type="submit">Anzeige einschicken <span class="arr">→</span></button>
-        <div class="form-ok" hidden><b>Danke!</b> Deine Anzeige ist unterwegs. Der Vorstand schaut sie sich an und schaltet sie frei. Schon verkauft, bevor sie online ist? Gib dem Vorstand kurz Bescheid. <button class="btn ghost mk-again" type="button" id="mk-again">Noch eine Anzeige</button></div>
-        <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schreib dem Vorstand per WhatsApp.</div>
+        <div class="mk-submit-row">
+          <button class="btn solid mk-submit" type="submit" id="mk-submit"><span>Veröffentlichen</span> <span class="arr">→</span></button>
+          <p class="mk-fine">Privat von Pilot zu Pilot. Der Verein vermittelt nicht und haftet nicht.</p>
+        </div>
+        <div class="mk-sendbad" id="mk-sendbad" role="alert" hidden></div>
       </form>
+
+      <!-- Erfolgskarte -->
+      <div class="panel mk-done" id="mk-done" tabindex="-1" hidden>
+        <div class="mk-done-top"><span class="mk-done-ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span><h3 class="h3" id="mk-done-h">Deine Anzeige ist online.</h3></div>
+        <div class="mk-done-live">
+          <p class="mk-done-l">Dein Löschcode</p>
+          <p class="mk-code" id="mk-code" aria-live="polite"></p>
+          <div class="btns"><button class="btn amber solid" type="button" id="mk-copy"><i data-ico="copy"></i><span>Code kopieren</span></button><a class="btn wa" id="mk-wa-me" href="#" target="_blank" rel="noopener"><i data-ico="wa"></i>Per WhatsApp an mich senden</a></div>
+          <p class="mk-done-note">Auf diesem Gerät merken wir ihn uns. Auf einem anderen Handy oder PC brauchst du den Code zum Löschen.</p>
+        </div>
+        <p class="mk-done-mail" id="mk-done-mail" hidden>Deine Anzeige ist beim Vorstand angekommen. Er stellt sie für dich auf die Wand.</p>
+        <div class="btns mk-done-btns"><a class="btn" href="#wand" id="mk-to-new">Zur Anzeige</a><button class="btn ghost" type="button" id="mk-again">Noch eine Anzeige</button></div>
+      </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- WhatsApp-Gruppe für Mitglieder -->
-<section class="sec mk-comm" id="gruppe" data-toc="Intern">
-  <div class="wrap mk-comm-grid">
-    <div class="mk-comm-txt">
-      <h2 class="h2" data-split>Marktplatz intern</h2>
-      <p class="lede" data-reveal>In unserer WhatsApp-Community gibt es die Gruppe „Marktplatz intern“. Dort kaufen, verkaufen und tauschen Mitglieder untereinander. Die Gruppe ist nur für Vereinsmitglieder.</p>
-      <p class="tag amber mk-lock" data-reveal><i data-ico="lock"></i>Zugang mit Mitgliedschaft</p>
-      <div class="btns" data-reveal><a class="btn amber solid" href="mitglied.html">Mitglied werden <span class="arr">→</span></a></div>
-    </div>
-    <div class="mk-orbit-box">
-      <div class="mk-orbit" id="mk-orbit" role="group" aria-label="Gruppen der WhatsApp-Community">
-        <svg class="mk-orbit-lines" id="mk-orbit-lines" aria-hidden="true"></svg>
-        <div class="mk-orbit-core" aria-hidden="true"><img src="assets/img/logo-mark.svg" alt=""><span>Community</span></div>
+<!-- Gut zu wissen: Sicher handeln und Marktplatz intern -->
+<section class="sec mk-more" aria-label="Gut zu wissen">
+  <div class="wrap mk-more-grid">
+    <details class="fold mk-safe" id="sicher" data-toc="Sicher handeln">
+      <summary><span class="mk-safe-t"><i data-ico="shield"></i><span>Sicher handeln<small>4 Punkte vor dem Kauf</small></span></span><span class="mk-safe-st hud" id="mk-safe-st">0/4</span></summary>
+      <div class="fold-in">
+        <ul class="mk-checks" id="mk-checks">
+          <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Ware vor Ort ansehen</b><span>Trefft euch, zum Beispiel beim <a href="hallenfliegen.html">Hallenfliegen</a>, und schaut euch alles in Ruhe an.</span></span></label></li>
+          <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Akkus genau prüfen</b><span>Aufgebläht, eingedellt, Kabel oder Stecker beschädigt: Finger weg. Solche LiPos können brennen.</span></span></label></li>
+          <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Keine Vorkasse an Fremde</b><span>Bezahlt wird bei der Übergabe. Kennst du jemanden nicht, schick kein Geld im Voraus.</span></span></label></li>
+          <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Funktion testen</b><span>Einschalten, binden, Bild prüfen. Motoren nur ohne Propeller hochdrehen.</span></span></label></li>
+        </ul>
+        <p class="mk-arm hud" id="mk-arm" aria-live="polite"><span class="mk-arm-q" aria-hidden="true"></span><b id="mk-arm-state">Hak die Punkte ab wie vor dem Abheben.</b></p>
+        <p class="mk-small">Anzeigen gehen ohne Prüfung online. Fällt dir etwas auf, tipp in der Anzeige auf „Melden“. Der Flight Club Saar e. V. vermittelt nicht und haftet nicht für Kauf, Verkauf oder Tausch. Diese Tipps ersetzen keine Rechtsberatung.</p>
       </div>
-      <div class="mk-orbit-read panel" id="mk-orbit-read" aria-live="polite"></div>
-      <p class="mk-hint"><span class="mk-hint-dot" aria-hidden="true"></span>Tipp auf eine Gruppe, um mehr zu sehen.</p>
-    </div>
-  </div>
-</section>
+    </details>
 
-<!-- Sicherheitstipps -->
-<section class="sec mk-safe" id="sicher" data-toc="Sicher handeln">
-  <div class="wrap">
-    <div class="mk-pre" data-reveal>
-      <div class="mk-pre-head">
-        <div>
-          <h2 class="h2">Preflight-Check</h2>
-          <p class="lede">Ein paar Punkte, bevor Geld und Ware den Besitzer wechseln. Jeder Haken startet einen Motor.</p>
-        </div>
-        <div class="mk-arm" id="mk-arm">
-          <svg class="mk-armq" viewBox="-60 -60 120 120" aria-hidden="true">
-            <path class="mk-armq-arm" d="M-34-34L34 34M34-34L-34 34"/>
-            <rect class="mk-armq-body" x="-13" y="-13" width="26" height="26" rx="6" transform="rotate(45)"/>
-            <g transform="translate(-34 -34)"><circle class="mk-armq-ring" r="18"/><g class="mk-armq-p" data-m="0"><path d="M-16 0H16"/></g><circle class="mk-armq-hub" r="3.5"/></g>
-            <g transform="translate(34 -34)"><circle class="mk-armq-ring" r="18"/><g class="mk-armq-p ccw" data-m="1"><path d="M-16 0H16"/></g><circle class="mk-armq-hub" r="3.5"/></g>
-            <g transform="translate(-34 34)"><circle class="mk-armq-ring" r="18"/><g class="mk-armq-p ccw" data-m="2"><path d="M-16 0H16"/></g><circle class="mk-armq-hub" r="3.5"/></g>
-            <g transform="translate(34 34)"><circle class="mk-armq-ring" r="18"/><g class="mk-armq-p" data-m="3"><path d="M-16 0H16"/></g><circle class="mk-armq-hub" r="3.5"/></g>
-          </svg>
-          <p class="mk-arm-osd hud" aria-live="polite"><b id="mk-arm-state">ARMING DISABLED</b><span id="mk-arm-left">4 CHECKS OFFEN</span></p>
-        </div>
+    <div class="mk-intern" id="gruppe" data-toc="Intern">
+      <span class="mk-padlock" id="mk-lock" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="mk-lock-sh" d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><circle cx="12" cy="15.5" r="1.4"/></svg></span>
+      <div class="mk-intern-t">
+        <h2 class="h3">Marktplatz intern</h2>
+        <p>In unserer WhatsApp-Community gibt es die Gruppe „Marktplatz intern“. Dort kaufen, verkaufen und tauschen Vereinsmitglieder untereinander.</p>
       </div>
-      <ul class="mk-checks" id="mk-checks">
-        <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Ware vor Ort ansehen</b><span>Trefft euch, zum Beispiel beim <a href="hallenfliegen.html">Hallenfliegen</a>, und schaut euch alles in Ruhe an.</span></span><span class="mk-chk-s hud" aria-hidden="true">CHECK</span></label></li>
-        <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Akkus genau prüfen</b><span>Aufgebläht, eingedellt, Kabel oder Stecker beschädigt: Finger weg. Solche LiPos können brennen.</span></span><span class="mk-chk-s hud" aria-hidden="true">CHECK</span></label></li>
-        <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Keine Vorkasse an Fremde</b><span>Bezahlt wird bei der Übergabe. Kennst du jemanden nicht, schick kein Geld im Voraus.</span></span><span class="mk-chk-s hud" aria-hidden="true">CHECK</span></label></li>
-        <li><label class="mk-chk"><input type="checkbox"><span class="mk-chk-box" aria-hidden="true"></span><span class="mk-chk-t"><b>Funktion testen</b><span>Einschalten, binden, Bild prüfen. Motoren nur ohne Propeller hochdrehen.</span></span><span class="mk-chk-s hud" aria-hidden="true">CHECK</span></label></li>
-      </ul>
-      <p class="mk-hint"><span class="mk-hint-dot" aria-hidden="true"></span>Hak die Punkte ab wie vor dem Abheben.</p>
-      <p class="mk-fine">Diese Tipps ersetzen keine Rechtsberatung. Der Flight Club Saar e. V. prüft die Anzeigen, aber nicht die Ware. Er vermittelt nicht und haftet nicht für Kauf, Verkauf oder Tausch.</p>
+      <a class="btn amber" href="mitglied.html" id="mk-join">Mitglied werden <span class="arr">→</span></a>
     </div>
   </div>
 </section>
 
 <!-- Detailansicht -->
-<dialog class="mk-dlg" id="mk-dlg" aria-labelledby="mk-d-h" data-lenis-prevent>
+<dialog class="mk-dlg" id="mk-dlg" aria-labelledby="mk-d-h">
   <div class="mk-dlg-in">
     <button class="mk-x" type="button" id="mk-x" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="mk-gal" id="mk-gal"></div>
     <div class="mk-info" id="mk-info"></div>
   </div>
 </dialog>
+
+<div class="mk-toast" id="mk-toast" role="status" aria-live="polite"></div>

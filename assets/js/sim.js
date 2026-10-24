@@ -16,6 +16,7 @@ const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FINE = matchMedia('(hover:hover) and (pointer:fine)').matches;
 const COARSE = matchMedia('(pointer:coarse)').matches;
 const TEST = /[?&]simtest\b/.test(location.search);
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const DEG = Math.PI / 180, G = 9.81, STEP = 1 / 240;
 const HX = 13.5, HZ = 22.5, HY = 8, CEIL = 7.2;
@@ -79,7 +80,7 @@ function thrCurve(t) {
 
 /* Kopter: Schub/Gewicht, Luftwiderstand, Reaktionszeiten, Größe */
 const CRAFTS = {
-  whoop: { osd: 'WHOOP', tw: 3.4, kLin: 0.55, kQuad: 0.12, tauR: 0.035, tauM: 0.03, r: 0.045, rest: 0.45, crash: 5.5, cells: 1, idle: 0.05, demoV: 6.2, chase: [0.95, 0.36], camFwd: 0.035, shadow: 0.28, kick: 2.4 },
+  whoop: { osd: 'WHOOP', tw: 3.4, kLin: 0.45, kQuad: 0.09, tauR: 0.035, tauM: 0.03, r: 0.045, rest: 0.45, crash: 5.5, cells: 1, idle: 0.05, demoV: 6.2, chase: [0.95, 0.36], camFwd: 0.035, shadow: 0.28, kick: 2.4 },
   five: { osd: '5 ZOLL', tw: 9, kLin: 0.12, kQuad: 0.035, tauR: 0.02, tauM: 0.02, r: 0.11, rest: 0.25, crash: 6.5, cells: 6, idle: 0.05, demoV: 10.5, chase: [1.9, 0.62], camFwd: 0.07, shadow: 0.55, kick: 1.5 }
 };
 const CR = () => CRAFTS[S.craft];
@@ -147,7 +148,7 @@ function init() {
     { t: 'flag', p: [6.8, 1.3, 12], h: 215 },
     { t: 'ring', p: [-0.5, 1.5, 19], h: 270, post: [[-5.6, 1.5, 17.4]] }
   ];
-  const START = new THREE.Vector3(-8, 0, 16.6);
+  const START = new THREE.Vector3(-8, 0, 16.6), START_H = .16;
   const C_NEXT = new THREE.Color('#3fe0ff'), C_AFTER = new THREE.Color('#ffb020'), C_IDLE = new THREE.Color('#6d86c4'), C_PASS = new THREE.Color('#3ee08a');
 
   function hasGL() { try { const c = D.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } }
@@ -344,8 +345,10 @@ function init() {
     for (const [x, z, ry] of [[-10.6, 3.2, .2], [-5.2, -7.4, -.4], [5.4, 8.2, .9], [4.2, -6.6, .1]]) {
       const b = new THREE.Mesh(new THREE.BoxGeometry(.8, .42, .42), MAT.box); b.position.set(x, .21, z); b.rotation.y = ry; scene.add(b); addOBB(mtx(x, .21, z, 0, ry, 0), .4, .21, .21);
     }
-    // Startmatte
-    const sm = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.3), new THREE.MeshLambertMaterial({ map: TEX.start })); sm.rotation.x = -Math.PI / 2; sm.position.set(START.x, .004, START.z); scene.add(sm);
+    // Startkiste mit Vereinslogo oben drauf
+    const sbx = new THREE.Mesh(new THREE.BoxGeometry(.7, START_H, .7), new THREE.MeshLambertMaterial({ color: 0x10244a })); sbx.position.set(START.x, START_H / 2, START.z); scene.add(sbx);
+    addOBB(mtx(START.x, START_H / 2, START.z), .35, START_H / 2, .35);
+    const sm = new THREE.Mesh(new THREE.PlaneGeometry(.7, .7), new THREE.MeshLambertMaterial({ map: TEX.start })); sm.rotation.x = -Math.PI / 2; sm.position.set(START.x, START_H + .002, START.z); scene.add(sm);
   }
 
   /* Spielfeldlinien als dünne Streifen (scharf in jeder Entfernung) */
@@ -515,7 +518,7 @@ function init() {
     } catch (e) { console.warn('Simulator: WebGL', e); return false; }
     ANISO = Math.min(8, renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1);
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x2a2c31, 30, 95);
+    scene.fog = new THREE.Fog(0x77736b, 32, 120);
     camera = new THREE.PerspectiveCamera(80, 1.6, .025, 120);
     hemi = new THREE.HemisphereLight(0xfff4e2, 0x5d5446, 2.3); scene.add(hemi);
     sun = new THREE.DirectionalLight(0xffffff, 1.2); sun.position.set(5, 20, 9); scene.add(sun);
@@ -538,7 +541,7 @@ function init() {
 
   function resetQuad() {
     const C = CR();
-    P.pos.set(START.x, C.r, START.z); P.vel.set(0, 0, 0); yawQ(0, P.q); P.w.set(0, 0, 0);
+    P.pos.set(START.x, START_H + C.r, START.z); P.vel.set(0, 0, 0); yawQ(0, P.q); P.w.set(0, 0, 0);
     P.ppos.copy(P.pos); P.pq.copy(P.q);
     P.motor = 0; P.armed = false; P.armReq = !armSwitch(); P.crashed = 0; P.used = 0; P.flightT = 0; P.upsideT = 0; P.vcell = 4.2;
     race.next = 0; race.running = false; race.t0 = 0;
@@ -736,8 +739,9 @@ function init() {
     const c = e.code;
     if (FLIGHT_KEYS.includes(c) || c === 'ShiftLeft' || c === 'ShiftRight') { if (c.startsWith('Arrow')) e.preventDefault(); KEYS.add(c); if (FLIGHT_KEYS.includes(c)) activity('key'); return; }
     if (e.repeat) return;
-    if (c === 'Space' && !onBtn) { e.preventDefault(); activity('key'); toggleArm(); }
-    else if (c === 'KeyR') { activity('key'); doReset(); }
+    // Bedientasten wechseln die Eingabequelle nicht (Reset per Tastatur beim Fliegen mit Funke)
+    if (c === 'Space' && !onBtn) { e.preventDefault(); nudge(); toggleArm(); }
+    else if (c === 'KeyR') { nudge(); doReset(); }
     else if (c === 'KeyM') toggleMode();
     else if (c === 'KeyC') toggleView();
     else if (c === 'KeyF') toggleFull();
@@ -763,8 +767,8 @@ function init() {
     const zr = zones.l.getBoundingClientRect(); if (!zr.width) return;
     TCH.R = clamp(Math.min(zr.width * 2, zr.height + 64) * .14, 46, 78);
     stage.style.setProperty('--sr', (TCH.R * 2) + 'px');
-    if (TCH.l.id == null) placeStick('l', TCH.R + 30, zr.height - TCH.R - 24);
-    if (TCH.r.id == null) placeStick('r', zr.width - TCH.R - 30, zr.height - TCH.R - 24);
+    if (TCH.l.id == null) placeStick('l', TCH.R + 30, zr.height - TCH.R - 32);
+    if (TCH.r.id == null) placeStick('r', zr.width - TCH.R - 30, zr.height - TCH.R - 32);
     drawSticks();
   }
   function placeStick(s, x, y) { TCH[s].bx = x; TCH[s].by = y; }
@@ -891,6 +895,7 @@ function init() {
     if (demo.on && src !== 'touch') takeover();
     if (src !== 'touch' && FINE && overStage) D.documentElement.classList.add('sim-hidecur');
   }
+  function nudge() { IN.lastAct = performance.now(); if (demo.on) takeover(); }
   let overStage = false;
   stage.addEventListener('pointerenter', () => { overStage = true; });
   stage.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') D.documentElement.classList.remove('sim-hidecur'); });
@@ -1000,7 +1005,7 @@ function init() {
   let toastT = 0;
   function toast(t, ms = 3200) { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), ms); }
   function showHelp() {
-    const t = { key: 'W gibt Gas, die Pfeiltasten lenken. Leertaste armt. Das nächste Gate leuchtet hell.', touch: 'Linken Stick hochschieben gibt Gas, der rechte Stick lenkt. Das nächste Gate leuchtet hell.', pad: padKind() === 'controller' ? 'Linker Stick hoch gibt Gas, Kreuz oder A armt. Das nächste Gate leuchtet hell.' : 'Gas ganz runter, dann armen (Schalter, Leertaste oder automatisch). Das nächste Gate leuchtet hell.' }[IN.src] || '';
+    const t = { key: 'W gibt Gas, Pfeiltasten lenken. Flieg zum hellen Gate 1.', touch: 'Links hochschieben gibt Gas, rechts lenkst du. Flieg zum hellen Gate 1.', pad: padKind() === 'controller' ? 'Linker Stick hoch gibt Gas, Kreuz oder A armt. Flieg zum hellen Gate 1.' : 'Gas ganz runter, dann armen. Flieg zum hellen Gate 1.' }[IN.src] || '';
     $('[data-help-t]', helpEl).textContent = t; helpEl.hidden = !t;
   }
   function hideHelp() { helpEl.hidden = true; }
@@ -1012,7 +1017,7 @@ function init() {
   function osdTick(dt) {
     osdT -= dt;
     // Horizont und Pfeil jedes Bild (nur transform)
-    if (renderer && stageVis) horizonArrow();
+    if (renderer && (stageVis || isFull)) horizonArrow();
     if (osdT > 0) return; osdT = 1 / 12;
     const C = CR();
     P.vdisp += (P.vcell * C.cells - P.vdisp) * .35;
@@ -1032,6 +1037,7 @@ function init() {
     setO('fps', (fpsShown || '--') + ' FPS');
     const hz = hzValue(); setO('hz', IN.src === 'key' ? 'IN TASTATUR' : 'IN ' + (hz ? hz : '--') + ' HZ', hz && hz < 50 ? 'warn' : '');
     setO('time', fmtClock(P.flightT));
+    if (!helpEl.hidden && live && (race.running || P.flightT > 9)) hideHelp();
     // Meldung in der Mitte
     let m = '', cls = '';
     const tnow = performance.now();
@@ -1091,7 +1097,7 @@ function init() {
     quad.position.copy(RP); quad.quaternion.copy(RQ);
     if (S.view === 'fpv') {
       quad.visible = false;
-      tiltQ.setFromAxisAngle(_a.set(1, 0, 0), S.tilt[S.mode] * DEG);
+      tiltQ.setFromAxisAngle(_a.set(1, 0, 0), (demo.on ? Math.max(28, S.tilt[S.mode]) : S.tilt[S.mode]) * DEG);
       camera.quaternion.copy(RQ).multiply(tiltQ);
       camera.position.copy(RP).add(_a.set(0, .012, -C.camFwd).applyQuaternion(RQ));
     } else {
@@ -1117,7 +1123,7 @@ function init() {
   }
 
   /* ---------- Größe und Bildqualität ---------- */
-  const PRS = [.75, 1, 1.5, 2];
+  const PRS = [.6, .9, 1.5, 2];
   const Q = { level: FINE ? 3 : 2, start: FINE ? 3 : 2, t: 0, n: 0, cool: 1.5, good: 0, raises: 0 };
   function prFor(l) { return Math.min(W.devicePixelRatio || 1, PRS[l]); }
   function applyQuality() {
@@ -1151,7 +1157,7 @@ function init() {
   function frame(t) {
     raf = requestAnimationFrame(frame);
     let dt = (t - last) / 1000; last = t;
-    if (!(dt > 0)) return; if (dt > .1) dt = .1;
+    if (!(dt > 0)) return; if (dt > .25) dt = .25;
     run('frame', () => {
       keyTick(dt);
       // Eingabe so spät wie möglich: direkt vor der Physik
@@ -1166,7 +1172,7 @@ function init() {
           else {
             if (!P.armed && P.armReq && !armSwitch() && IN.thr <= .05) arm(true);
             acc += dt; let n = 0;
-            while (acc >= STEP && n < 48) { P.ppos.copy(P.pos); P.pq.copy(P.q); physStep(STEP); acc -= STEP; simT += STEP; n++; if (P.crashed) { acc = 0; break; } }
+            while (acc >= STEP && n < 64) { P.ppos.copy(P.pos); P.pq.copy(P.q); physStep(STEP); acc -= STEP; simT += STEP; n++; if (P.crashed) { acc = 0; break; } }
           }
           // nach langer Pause wieder Demo
           if (!P.armed && !P.crashed && performance.now() - IN.lastAct > 75000 && D.activeElement !== stage && !isFull && !WIZ.on) backToDemo();
@@ -1271,8 +1277,8 @@ function init() {
     syncUI(); if (!renderer) return;
     const on = S.light === 'on';
     hemi.intensity = on ? 2.3 : .16; sun.intensity = on ? 1.2 : 0;
-    const fc = on ? 0x2a2c31 : 0x030508; scene.fog.color.setHex(fc); renderer.setClearColor(fc);
-    scene.fog.near = on ? 30 : 8; scene.fog.far = on ? 95 : 60;
+    const fc = on ? 0x77736b : 0x030508; scene.fog.color.setHex(fc); renderer.setClearColor(fc);
+    scene.fog.near = on ? 32 : 8; scene.fog.far = on ? 120 : 60;
     MAT.lamp.color.setHex(on ? 0xfff3dc : 0x2a2c30); MAT.win.color.setHex(on ? 0xffffff : 0x4a5a78);
     MAT.ledGlow.opacity = on ? .45 : .9; MAT.score.color.setHex(0xffffff);
     applyQuality();
@@ -1349,11 +1355,15 @@ function init() {
       if (padMap(gp)) s = 'Funke eingerichtet. Zuordnung ist auf diesem Gerät gespeichert.';
       else if (isStd(gp)) s = 'Controller in Mode 2: linker Stick Gas und Gieren, rechter Stick Nicken und Rollen.';
       else { s = 'Funke erkannt. Bitte einmal einrichten, dann stimmen Achsen und Richtung.'; cls = 'warn'; }
-    } else if (any && gp) { s += ' Controller erkannt: ' + padName(gp) + '. Beweg einen Stick, um ihn zu nutzen.'; }
+    } else if (any && gp) {
+      if (!isStd(gp) && !padMap(gp)) { n = 'Funke erkannt: ' + padName(gp); s = 'Bitte einmal einrichten, dann stimmen Achsen und Richtung. Danach einen Stick bewegen.'; cls = 'warn'; }
+      else s += ' Erkannt: ' + padName(gp) + '. Beweg einen Stick, um damit zu fliegen.';
+    }
     $('[data-src-n]', srcBox).textContent = n; $('[data-src-s]', srcBox).textContent = s;
     srcBox.classList.toggle('ok', cls === 'ok'); srcBox.classList.toggle('warn', cls === 'warn');
     padHint.hidden = any;
     if (!padsSupported) padHint.textContent = 'Dieser Browser unterstützt keine Controller. Nimm Chrome, Edge, Firefox oder Safari in einer aktuellen Version.';
+    else if (IOS) padHint.textContent = 'Am iPhone und iPad gehen PlayStation- und Xbox-Controller: per Bluetooth koppeln, dann einen Knopf drücken. Funken erkennt das iPhone leider nicht, dafür gibt es die Touch-Sticks.';
     wizBtn.disabled = !gp; $('[data-map-reset]', panel).disabled = !(gp && padMap(gp));
     if (gp && padMap(gp)) wizBtn.classList.remove('pulse');
     const ch = $('[data-cta-h]', stage);
@@ -1403,6 +1413,8 @@ function init() {
     $('[data-wiz-i]', wiz).textContent = i + 1; $('[data-wiz-c]', wiz).textContent = WS.length;
     $('[data-wiz-t]', wiz).textContent = s.t; $('[data-wiz-d]', wiz).textContent = s.d; wizOk.textContent = ''; wizOk.className = 'sim-wiz-ok';
     wizPic.setAttribute('class', 'sim-wiz-pic ' + (s.a || ''));
+    const on = ['rest', 'thr', 'yaw'].includes(s.k) ? 'l' : ['pitch', 'roll'].includes(s.k) ? 'r' : /arm|mode/.test(s.k) ? 'sw' : '';
+    $$('[data-wz]', wizPic).forEach(n => n.classList.toggle('on', n.dataset.wz === on));
     $('[data-wiz-skip]', wiz).hidden = !s.opt; $('[data-wiz-next]', wiz).textContent = s.k === 'done' ? 'Speichern' : 'Weiter';
     const gp = padByIdx(WIZ.pad);
     if (gp && (s.k === 'arm0' || s.k === 'mode0')) { WIZ.snap = null; }
@@ -1470,7 +1482,7 @@ function init() {
   }
   D.addEventListener('visibilitychange', updateRun);
   if ('ResizeObserver' in W) new ResizeObserver(() => { resize(); stickLayout(); syncPanelBtn(); }).observe(stage);
-  W.addEventListener('resize', () => { syncPanelBtn(); });
+  W.addEventListener('resize', () => { syncPanelBtn(); if (W.innerWidth > W.innerHeight && /quer/.test(toastEl.textContent)) toastEl.classList.remove('on'); });
 
   // Rauschen für den Analog-Look (einmal gemalt)
   run('rauschen', () => { const [c, x] = cnv(180, 180), id = x.createImageData(180, 180); for (let i = 0; i < id.data.length; i += 4) { const v = Math.random() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; } x.putImageData(id, 0, 0); $('.sim-noise', stage).style.backgroundImage = `url(${c.toDataURL()})`; });
@@ -1479,7 +1491,7 @@ function init() {
   if (!gl) { $('[data-nogl]', stage).hidden = false; cta.hidden = true; demo.on = false; loadEl.classList.add('gone'); }
   else {
     lateTextures();
-    renderer.setClearColor(0x2a2c31);
+    renderer.setClearColor(0x77736b);
     applyLight(); applyQuality();
     quadW.visible = S.craft === 'whoop'; quadF.visible = S.craft === 'five';
     resetQuad();
@@ -1502,11 +1514,11 @@ function init() {
   W.FCS = W.FCS || {};
   W.FCS.sim = {
     onLap,
-    state: () => ({ pos: P.pos.toArray().map(v => +v.toFixed(3)), vel: P.vel.toArray().map(v => +v.toFixed(3)), quat: P.q.toArray().map(v => +v.toFixed(4)), up: new THREE.Vector3(0, 1, 0).applyQuaternion(P.q).toArray().map(v => +v.toFixed(3)), armed: P.armed, crashed: P.crashed > 0, live, demo: demo.on, mode: S.mode, craft: S.craft, src: IN.src, input: { thr: IN.thr, yaw: IN.yaw, pitch: IN.pitch, roll: IN.roll }, next: race.next, running: race.running, laps: race.laps, last: race.last, fps: fpsShown, quality: Q.level, gl, wizard: WIZ.on ? WS[WIZ.i].k : null, hz: hzValue() })
+    state: () => ({ pos: P.pos.toArray().map(v => +v.toFixed(3)), vel: P.vel.toArray().map(v => +v.toFixed(3)), quat: P.q.toArray().map(v => +v.toFixed(4)), up: new THREE.Vector3(0, 1, 0).applyQuaternion(P.q).toArray().map(v => +v.toFixed(3)), w: P.w.toArray().map(v => +(v / DEG).toFixed(1)), armed: P.armed, crashed: P.crashed > 0, live, demo: demo.on, mode: S.mode, craft: S.craft, src: IN.src, input: { thr: IN.thr, yaw: IN.yaw, pitch: IN.pitch, roll: IN.roll }, next: race.next, running: race.running, laps: race.laps, last: race.last, fps: fpsShown, quality: Q.level, gl, wizard: WIZ.on ? WS[WIZ.i].k : null, hz: hzValue() })
   };
   if (TEST) Object.assign(W.FCS.sim, {
     gates: () => GATES.map(g => ({ c: g.c.toArray(), n: g.n.toArray() })),
     place: (p, v, headingDeg = 0) => { P.pos.fromArray(p); P.ppos.copy(P.pos); P.vel.fromArray(v || [0, 0, 0]); yawQ(headingDeg, P.q); P.pq.copy(P.q); P.w.set(0, 0, 0); for (const g of GATES) g.psd = _a.subVectors(P.pos, g.c).dot(g.n); },
-    hover: () => hoverStick(), settings: () => JSON.parse(JSON.stringify(S))
+    hover: () => hoverStick(), settings: () => JSON.parse(JSON.stringify(S)), three: () => ({ scene, renderer, camera, MAT })
   });
 }

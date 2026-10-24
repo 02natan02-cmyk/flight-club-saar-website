@@ -17,6 +17,7 @@
     $('#n-ort').textContent = `${n.halle.name} · ${n.halle.adresse} · ${zeit()}`;
     $('#n-route').href = FCS.route(n.halle.lat, n.halle.lng, n.halle.adresse);
     $('#n-ics').onclick = () => FCS.ics(n);
+    const zb = $('#n-zu'); if (zb) zb.dataset.zu = n.d;
     FCS.countdown($('#n-ring'), n.start.getTime());
     // Ring zeigt, wie viel von den letzten 30 Tagen bis zum Termin schon vorbei ist
     const fg = $('#n-ring .r-fg'); const total = 30 * 864e5, left = Math.max(0, n.start - Date.now());
@@ -34,7 +35,8 @@
       return `<article class="ticket${t.vorbei ? ' done' : ''}${isN ? ' next' : ''}">
         <div class="t-date"><b>${String(d.getDate()).padStart(2, '0')}</b><span>${MON[d.getMonth()]} · Sa</span></div>
         <div class="t-info"><h3>${t.halle.name}${isN ? ' <em class="t-next">Nächster Abend</em>' : ''}</h3><p>${zeit()} · ${(t.halle.adresse.split(', ')[1] || t.halle.adresse).replace(/^\d{5}\s*/, '')}</p></div>
-        <div class="t-act">${t.vorbei ? '<span class="stamp">Geflogen</span>' : `<button class="t-btn" type="button" data-ics="${i}">${ICS}<span>Kalender</span></button><a class="t-btn" href="${FCS.route(t.halle.lat, t.halle.lng, t.halle.adresse)}" target="_blank" rel="noopener">${PIN}<span>Route</span></a>`}</div>
+        <div class="t-act">${t.vorbei ? '<span class="stamp">Geflogen</span>' : `<span class="t-zu" data-zu-act="${t.d}"></span><button class="t-btn" type="button" data-ics="${i}" aria-label="${FCS.fmtDate(t.d, 1)} in den Kalender">${ICS}<span>Kalender</span></button><a class="t-btn" href="${FCS.route(t.halle.lat, t.halle.lng, t.halle.adresse)}" target="_blank" rel="noopener" aria-label="Route zur ${t.halle.name} (öffnet Google Maps)">${PIN}<span>Route</span></a>`}</div>
+        <div class="t-crew zu" data-zu="${t.d}" hidden></div>
       </article>`;
     }).join('');
     $$('[data-ics]', box).forEach(b => b.addEventListener('click', () => FCS.ics(all[+b.dataset.ics])));
@@ -147,5 +149,159 @@
       ScrollTrigger.create({ trigger: rail, start: 'top 65%', once: true, onEnter: () => gsap.timeline({ delay: .7 }).to(tr, { x: () => Math.max(bounds().minX, -260), duration: 1.3, ease: 'power2.inOut' }).to(tr, { x: 0, duration: 1.1, ease: 'power2.inOut', onComplete: () => { if (d) d.update(); upd(0); } }) });
     }
   }
-  document.addEventListener('fcs:ready', () => { next(); tickets(); fotos(); hallen(); bag(); akku(); }, { once: true });
+  /* ---------- „Ich bin dabei“: Zusagen live für jeden kommenden Abend ----------
+     Lädt alle Zusagen EINMAL (FCS.board.list('termin:')), sobald die Termine in Sicht kommen, und filtert pro Abend.
+     Der Spitzname wird auf dem Gerät gemerkt, der Löschcode merkt sich FCS.board selbst. */
+  const NAMEKEY = 'fcs-name';
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const myName = () => { try { return String(localStorage.getItem(NAMEKEY) || '').slice(0, 40); } catch (e) { return ''; } };
+  const keepName = v => { try { localStorage.setItem(NAMEKEY, v); } catch (e) {} };
+  const COL = ['#3fe0ff', '#ffb020', '#3ee08a', '#c78bff', '#ff7a59', '#5aa2ff'];
+  const colOf = s => { let h = 7; for (const ch of String(s).toLowerCase()) h = (h * 31 + ch.codePointAt(0)) >>> 0; return COL[h % COL.length]; };
+  const ini = s => { const w = String(s).trim().split(/\s+/).filter(Boolean).map(x => [...x]); return (w.length > 1 ? w[0][0] + w[1][0] : (w[0] || ['?']).slice(0, 2).join('')).toUpperCase(); };
+  const IC_GO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  const IC_OK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const Z = { st: 'idle', list: [], open: '', busy: '', src: null, msg: '', msgBad: false, seen: new Set() };
+  const tByD = d => FCS.termine().find(t => t.d === d);
+  const ofT = d => Z.list.filter(x => x.b === 'termin:' + d);
+  const mineOf = d => { const m = FCS.board.mine(); const o = ofT(d).find(x => m[x.id] && m[x.id].pw); return o ? { id: o.id, pw: m[o.id].pw } : null; };
+  const wtag = d => FCS.fmtDate(d, 1).split(',')[0];
+  let live = null;
+  const say = t => { if (!live) return; live.textContent = ''; setTimeout(() => { live.textContent = t; }, 40); };
+
+  function avatars(list, ownId, max) {
+    const show = list.slice(0, max), more = list.length - show.length;
+    const names = list.map(x => x.n).join(', ');
+    return `<span class="zu-av" role="img" aria-label="Zusagen: ${esc(names)}">${show.map(x => `<i class="${x.id === ownId ? 'me' : ''}" style="--c:${colOf(x.n)}" data-zid="${esc(x.id)}">${esc(ini(x.n))}</i>`).join('')}${more > 0 ? `<i class="more">+${more}</i>` : ''}</span>`;
+  }
+  const slotOf = box => box && box.classList.contains('t-crew') ? $(`[data-zu-act="${box.dataset.zu}"]`) : null;
+  function zuBox(box) {
+    const d = box.dataset.zu, t = d && tByD(d), big = box.classList.contains('zu-big'), slot = slotOf(box);
+    const cls = (k, on) => box.classList.toggle(k, !!on);
+    const setSlot = h => { if (slot) slot.innerHTML = h; };
+    cls('is-load', Z.st === 'load'); cls('is-err', Z.st === 'err');
+    if (!t || !FCS.board.on() || Z.st === 'idle') { box.hidden = true; setSlot(''); return; }
+    if (Z.st === 'load') { box.hidden = false; setSlot(''); box.innerHTML = '<span class="zu-sk" aria-hidden="true"><i></i><i></i><i></i></span><span class="zu-skb" aria-hidden="true"></span><span class="sr">Zusagen werden geladen</span>'; return; }
+    if (Z.st === 'err') { box.hidden = !big; setSlot(''); if (big) box.innerHTML = '<p class="zu-err">Gerade nicht erreichbar, versuch es gleich nochmal.</p><button class="zu-retry" type="button" data-zu-retry>Nochmal</button>'; return; }
+    const list = ofT(d), own = mineOf(d), n = list.length, busy = Z.busy === d, ownId = own && own.id;
+    const shownN = Z.seen.has(box) || !anim() ? n : 0;
+    if (t.vorbei) {
+      box.hidden = !n;
+      if (n) box.innerHTML = `<div class="zu-row">${avatars(list, ownId, 5)}<p class="zu-n"><b data-zn="${n}">${shownN}</b> ${n === 1 ? 'war' : 'waren'} dabei</p></div>`;
+      return;
+    }
+    box.hidden = false;
+    const lbl = n === 1 ? '<span class="zu-w">Pilot </span>kommt' : '<span class="zu-w">Piloten </span>kommen';
+    const count = n ? `<p class="zu-n"><b data-zn="${n}">${shownN}</b> <span>${lbl}</span></p>` : `<p class="zu-n zu-0">${big ? 'Noch niemand eingetragen. Sei die oder der Erste!' : 'Noch niemand eingetragen'}</p>`;
+    const open = Z.open === d && Z.src === box;
+    let act = '';
+    if (busy) act = `<button class="zu-go busy" type="button" disabled><span class="zu-spin" aria-hidden="true"></span>Moment …</button>`;
+    else if (own) act = `<span class="zu-me">${IC_OK}<span class="zu-w">Du bist </span>dabei</span><button class="zu-no" type="button" data-zu-no>Doch nicht</button>`;
+    else if (!open) act = `<button class="zu-go" type="button" data-zu-go aria-label="Ich bin dabei am ${esc(FCS.fmtDate(d, 1))}">${IC_GO}Ich bin dabei</button>`;
+    const nm = myName(), k = big ? 'b' : 't';
+    const MAXC = 8;
+    const chips = big && n ? `<ul class="zu-names" aria-label="Wer kommt">${list.slice(0, MAXC).map(x => `<li class="${x.id === ownId ? 'me' : ''}" style="--c:${colOf(x.n)}" data-zid="${esc(x.id)}"><i aria-hidden="true"></i>${x.id === ownId ? '<b>Du</b> · ' : ''}${esc(x.n)}</li>`).join('')}${n > MAXC ? `<li class="more">+${n - MAXC} weitere</li>` : ''}</ul>` : '';
+    const as = big && nm && !own && !open && !busy ? `<p class="zu-as">Du trägst dich als <b>${esc(nm)}</b> ein. <button type="button" data-zu-edit>Ändern</button></p>` : '';
+    const form = open ? `<form class="zu-form" data-zu-form novalidate>
+        <label class="zu-l" for="zu-in-${d}-${k}">Dein Spitzname</label>
+        <div class="zu-fr"><input class="zu-in" id="zu-in-${d}-${k}" name="n" maxlength="40" autocomplete="nickname" enterkeyhint="send" required value="${esc(nm)}" aria-describedby="zu-h-${d}-${k}"><button class="zu-ok" type="submit">Eintragen</button></div>
+        <p class="zu-hint" id="zu-h-${d}-${k}">Dein Spitzname erscheint öffentlich bei diesem Termin.</p>
+        <button class="zu-x" type="button" data-zu-x>Abbrechen</button>
+      </form>` : '';
+    const msg = Z.src === box && Z.msg ? `<p class="zu-msg${Z.msgBad ? ' bad' : ''}">${esc(Z.msg)}</p>` : '';
+    box.innerHTML = `<div class="zu-row">${!big && n ? avatars(list, ownId, 4) : ''}${count}<div class="zu-act">${act}</div></div>${chips}${as}${form}${msg}`;
+    setSlot(act);
+  }
+  const zuRender = () => $$('[data-zu]').forEach(zuBox);
+  const countTo = (el, from, to) => {
+    if (!el) return;
+    if (!anim()) { el.textContent = to; return; }
+    const o = { v: from }; gsap.to(o, { v: to, duration: Math.min(1.6, .5 + Math.abs(to - from) * .12), ease: 'expo.out', onUpdate: () => { el.textContent = Math.round(o.v); } });
+  };
+  // Selbst-Impuls: Sobald ein Abend zu sehen ist, zählt der Zähler hoch, die Avatare springen rein, der Knopf blitzt einmal
+  function intro(box) {
+    if (Z.seen.has(box)) return; Z.seen.add(box);
+    if (!anim()) return;
+    const b = $('[data-zn]', box); if (b) countTo(b, 0, +b.dataset.zn);
+    const av = $$('.zu-av i, .zu-names li', box); if (av.length) gsap.from(av, { scale: 0, opacity: 0, duration: .5, ease: 'back.out(2.4)', stagger: .06, delay: .15 });
+    const go = $('.zu-go', box); if (go && box.classList.contains('zu-big')) setTimeout(() => go.classList.add('glint'), 700);
+  }
+  function focusIn(box, sel) { if (!box) return; const el = [...$$(sel, box), ...(slotOf(box) ? $$(sel, slotOf(box)) : [])].find(x => x.offsetParent !== null); if (el) el.focus({ preventScroll: true }); }
+  async function zuLoad() {
+    if (!FCS.board.on()) return;
+    Z.st = 'load'; zuRender();
+    try { const srv = await FCS.board.list('termin:'); Z.list = [...Z.list.filter(x => x._new && !srv.some(y => y.id === x.id)), ...srv]; Z.st = 'ok'; } catch (e) { Z.st = 'err'; }
+    zuRender();
+    if (Z.st !== 'ok') return;
+    $$('[data-zu]').forEach(box => onScreen(box, v => { if (v) intro(box); }, '0px 0px -15% 0px'));
+  }
+  async function zuAdd(box, d, name) {
+    Z.busy = d; Z.src = box; Z.msg = ''; zuRender();
+    let r = { ok: false, err: 'netz' };
+    try { r = await FCS.board.add({ b: 'termin:' + d, n: name }); } catch (e) {}
+    Z.busy = '';
+    const before = ofT(d).length;
+    if (r.ok) {
+      keepName(name); Z.open = '';
+      Z.list.unshift({ id: r.id, b: 'termin:' + d, n: name, d: new Date().toISOString().slice(0, 19), _new: 1 });
+      Z.msg = `Eingetragen. Bis ${wtag(d)}!`; Z.msgBad = false; say(`Du bist dabei am ${FCS.fmtDate(d, 1)}.`);
+      zuRender();
+      $$(`[data-zu="${d}"]`).forEach(b => { countTo($('[data-zn]', b), before, before + 1); if (anim()) gsap.from($$(`[data-zid="${CSS.escape(r.id)}"]`, b), { scale: 0, opacity: 0, duration: .6, ease: 'back.out(3)' }); });
+      focusIn(box, '[data-zu-no]');
+    } else {
+      Z.msg = r.err === 'abgelehnt' ? 'Das hat nicht geklappt. Prüf deinen Spitznamen und versuch es nochmal.' : 'Gerade nicht erreichbar, versuch es gleich nochmal.'; Z.msgBad = true; say(Z.msg);
+      zuRender(); focusIn(box, '.zu-in, [data-zu-go]');
+    }
+  }
+  async function zuDel(box, d) {
+    const own = mineOf(d); if (!own) return;
+    Z.busy = d; Z.src = box; Z.msg = ''; zuRender();
+    let r = { ok: false, err: 'netz' };
+    try { r = await FCS.board.del(own.id, own.pw); } catch (e) {}
+    Z.busy = '';
+    if (r.ok) {
+      const before = ofT(d).length;
+      const gone = $$(`[data-zu="${d}"] [data-zid="${CSS.escape(own.id)}"]`);
+      const done = () => {
+        Z.list = Z.list.filter(x => x.id !== own.id);
+        Z.msg = 'Ausgetragen. Vielleicht beim nächsten Mal!'; Z.msgBad = false; say('Du bist ausgetragen.');
+        zuRender(); $$(`[data-zu="${d}"]`).forEach(b => countTo($('[data-zn]', b), before, before - 1));
+        focusIn(box, '[data-zu-go]');
+      };
+      if (anim() && gone.length) gsap.to(gone, { scale: 0, opacity: 0, duration: .35, ease: 'power2.in', onComplete: done }); else done();
+    } else {
+      Z.msg = r.err === 'code' ? 'Das ging gerade nicht. Lad die Seite neu und versuch es nochmal.' : 'Gerade nicht erreichbar, versuch es gleich nochmal.'; Z.msgBad = true; say(Z.msg);
+      zuRender(); focusIn(box, '[data-zu-no]');
+    }
+  }
+  function zusagen() {
+    const sec = $('#termine'); if (!sec || !FCS.board || !FCS.board.on()) return;
+    live = document.createElement('p'); live.className = 'sr'; live.setAttribute('role', 'status'); sec.appendChild(live);
+    sec.addEventListener('click', e => {
+      const el = e.target.closest('[data-zu-go],[data-zu-no],[data-zu-x],[data-zu-edit],[data-zu-retry]'); if (!el) return;
+      const sl = el.closest('[data-zu-act]'), box = el.closest('[data-zu]') || (sl && $(`.t-crew[data-zu="${sl.dataset.zuAct}"]`)), d = box && box.dataset.zu;
+      if (el.hasAttribute('data-zu-retry')) { zuLoad(); return; }
+      if (!d || Z.busy) return;
+      Z.msg = '';
+      if (el.hasAttribute('data-zu-go')) {
+        const nm = myName();
+        if (nm.trim().length >= 2) { zuAdd(box, d, nm); return; }
+        Z.open = d; Z.src = box; zuRender(); focusIn(box, '.zu-in');
+      } else if (el.hasAttribute('data-zu-edit')) { Z.open = d; Z.src = box; zuRender(); const i = $('.zu-in', box); if (i) { i.focus({ preventScroll: true }); i.select(); } }
+      else if (el.hasAttribute('data-zu-x')) { Z.open = ''; zuRender(); focusIn(box, '[data-zu-go]'); }
+      else if (el.hasAttribute('data-zu-no')) zuDel(box, d);
+    });
+    sec.addEventListener('submit', e => {
+      const f = e.target.closest('[data-zu-form]'); if (!f) return;
+      e.preventDefault();
+      const box = f.closest('[data-zu]'), inp = $('.zu-in', f), nm = inp.value.trim().replace(/\s+/g, ' ').slice(0, 40);
+      if (nm.length < 2) { inp.classList.add('bad'); inp.setAttribute('aria-invalid', 'true'); $('.zu-hint', f).textContent = 'Bitte gib einen Spitznamen mit mindestens 2 Zeichen ein. Er erscheint öffentlich bei diesem Termin.'; inp.focus(); return; }
+      zuAdd(box, box.dataset.zu, nm);
+    });
+    sec.addEventListener('keydown', e => { if (e.key === 'Escape' && Z.open) { const box = Z.src; Z.open = ''; zuRender(); focusIn(box, '[data-zu-go]'); } });
+    let asked = false;
+    onScreen(sec, v => { if (v && !asked) { asked = true; zuLoad(); } }, '300px 0px');
+  }
+
+  document.addEventListener('fcs:ready', () => { next(); tickets(); fotos(); hallen(); bag(); akku(); zusagen(); }, { once: true });
 })();

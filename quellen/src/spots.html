@@ -5,7 +5,7 @@
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / Spot-Karte</p>
     <h1 class="h1" data-split>Spot-Karte</h1>
-    <p class="lede sp-lede">Spots ansehen, Route starten, eigenen Spot melden.</p>
+    <p class="lede sp-lede">Spots ansehen, Route starten, bewerten und eigenen Spot melden.</p>
     <div class="btns">
       <a class="btn amber solid" href="#karte"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Zur Karte</a>
       <a class="btn" href="#einsenden"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Spot melden</a>
@@ -110,31 +110,32 @@
     <p class="mp-note" id="map-note">Die Straßenkarte lädt erst, wenn du auf „Straßenkarte laden“ tippst. Dann kommen Kartenkacheln von CARTO auf Grundlage von OpenStreetMap, dabei wird deine IP-Adresse an diese Anbieter übertragen (<a href="datenschutz.html">Datenschutz</a>).</p>
   </div>
 
-  <!-- Bewerten: ein Formular, das in den geöffneten Spot wandert -->
+  <!-- Bewerten: ein Formular, das in den geöffneten Spot wandert. Veröffentlicht sofort (FCS.board), ohne Live-Anbindung per Mail an den Vorstand -->
   <div hidden id="rate-home">
-    <form class="rateform" data-fcs-form id="rateform" novalidate>
+    <form class="rateform" id="rateform" novalidate>
       <input type="hidden" name="_subject" value="Spot-Bewertung (Flight Club Saar, Entwurf)">
       <input type="hidden" name="Formular" value="Spot bewerten">
       <input type="hidden" name="Spot" id="rate-spot">
       <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-      <p class="rf-h">Warst du dort? Tipp auf die Sterne.</p>
+      <p class="rf-h" id="rf-h">Warst du dort? Tipp auf die Sterne.</p>
       <div class="field rf-stars">
         <span class="lbl" id="rf-st">Sterne</span>
-        <div class="stars" role="radiogroup" aria-labelledby="rf-st">
+        <div class="stars" role="radiogroup" aria-labelledby="rf-h">
           <label><input type="radio" name="Sterne" value="1" required><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">1 Stern</b></label>
           <label><input type="radio" name="Sterne" value="2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">2 Sterne</b></label>
           <label><input type="radio" name="Sterne" value="3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">3 Sterne</b></label>
           <label><input type="radio" name="Sterne" value="4"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">4 Sterne</b></label>
           <label><input type="radio" name="Sterne" value="5"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg><b class="sr">5 Sterne</b></label>
         </div>
+        <span class="rf-word" id="rf-word" aria-hidden="true"></span>
         <span class="err">Bitte tipp auf die Sterne.</span>
       </div>
-      <div class="field rf-more"><label for="r-txt">Kommentar <span class="opt">freiwillig</span></label><input id="r-txt" name="Kommentar" placeholder="Ein Tipp für andere Piloten"></div>
-      <div class="field rf-more"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
-      <label class="check rf-more"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Bewertung darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-      <button class="btn solid rf-more" type="submit">Bewertung senden</button>
-      <div class="form-ok sp-ok" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><p><b>Danke!</b> Deine Bewertung erscheint nach der Freigabe durch den Vorstand.</p></div>
-      <div class="form-bad sp-bad" hidden><p><b>Das hat nicht geklappt.</b> Bitte versuch es noch einmal.</p></div>
+      <div class="field rf-more"><label for="r-txt">Kommentar <span class="opt">freiwillig</span></label><textarea id="r-txt" name="Kommentar" rows="2" maxlength="500" placeholder="Ein Tipp für andere Piloten: Parken, Hindernisse, beste Zeit"></textarea></div>
+      <div class="field rf-more"><label for="r-name">Name oder Pilotenname</label><input id="r-name" name="Name" required minlength="2" maxlength="40" autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
+      <label class="check rf-more"><input type="checkbox" name="Datenschutz" value="ja" required><span id="rf-dsgvo">Meine Angaben erscheinen öffentlich auf der Website (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+      <button class="btn solid rf-more rf-go" type="submit" id="rf-go">Bewertung veröffentlichen</button>
+      <div class="form-ok sp-ok rf-ok" id="rf-ok" hidden tabindex="-1"></div>
+      <div class="form-bad sp-bad" id="rf-bad" hidden><p><b>Das hat nicht geklappt.</b> <span id="rf-bad-t">Bitte versuch es noch einmal.</span></p></div>
     </form>
   </div>
 </section>

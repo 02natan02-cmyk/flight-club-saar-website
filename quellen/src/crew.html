@@ -155,43 +155,53 @@
   </div>
 </section>
 
-<!-- PINNWAND -->
+<!-- PINNWAND: Beiträge erscheinen sofort (FCS.board, Bereich 'pinnwand'), Löschen mit Löschcode -->
 <section class="sec cw-pin" id="pinnwand" data-toc="Pinnwand" aria-labelledby="pin-h">
   <div class="wrap">
     <header class="cw-sh">
       <h2 class="h2" id="pin-h" data-split>Pinnwand</h2>
-      <p class="lede">Neuer Kopter, gelungener Flug, Frage an alle: Schreib einen Beitrag. Der Vorstand gibt ihn frei, dann steht er hier.</p>
+      <p class="lede" id="pin-lede">Neuer Kopter, gelungener Flug, Frage an alle: Schreib einen Beitrag. Er steht sofort hier, und mit deinem Löschcode nimmst du ihn jederzeit wieder runter.</p>
     </header>
     <div class="pin-grid">
-      <div class="pin-feed" id="pin-feed">
-        <div class="nosig" id="nosig">
+      <div class="pin-col">
+        <div class="pin-bar"><p class="pin-count hud" id="pin-count" aria-live="polite"></p><a class="btn ghost pin-write" href="#pin-form" id="pin-write">Beitrag schreiben <span class="arr">→</span></a></div>
+        <div class="pin-feed" id="pin-feed" aria-busy="true">
+          <div class="pn-sk" aria-hidden="true"><i></i><b></b><b></b></div>
+          <div class="pn-sk" aria-hidden="true"><i></i><b></b><b></b></div>
+        </div>
+        <button class="btn ghost pin-more" type="button" id="pin-more" hidden>Ältere Beiträge zeigen</button>
+        <div class="nosig" id="nosig" hidden>
           <canvas id="nosig-cv" aria-hidden="true"></canvas>
           <img class="nosig-logo" src="assets/img/logo.svg" alt="" aria-hidden="true" width="768" height="515">
           <div class="nosig-in">
             <p class="nosig-ch hud" aria-hidden="true">SUCHE <b id="ns-ch">R1</b> · <span id="ns-f">5658</span> MHz</p>
             <p class="nosig-h">Kein Signal</p>
-            <p class="nosig-t">Die ersten Beiträge erscheinen nach Freigabe.</p>
+            <p class="nosig-t" id="nosig-t">Noch kein Beitrag. Schreib den ersten, er erscheint sofort.</p>
             <a class="btn" href="#pin-form" id="ns-go">Ersten Beitrag schreiben <span class="arr">→</span></a>
           </div>
           <div class="osd-frame" aria-hidden="true"><i></i></div>
         </div>
       </div>
-      <form class="panel sendform" data-fcs-form id="pin-form" novalidate>
+      <form class="panel sendform pin-form" id="pin-form" novalidate>
         <h3 class="h3">Neuer Beitrag</h3>
         <input type="hidden" name="_subject" value="Neuer Pinnwand-Beitrag (Flight Club Saar, Entwurf)">
         <input type="hidden" name="Formular" value="Pinnwand: neuer Beitrag">
         <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-        <input type="file" name="attachment" id="pw-att" hidden tabindex="-1" aria-hidden="true">
-        <div class="field"><label for="pw-name">Name oder Pilotenname</label><input id="pw-name" name="Name" required autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
-        <div class="field"><label for="pw-txt">Dein Beitrag</label><textarea id="pw-txt" name="Beitrag" required maxlength="800" placeholder="Was gibt es Neues?"></textarea><span class="hint"><span id="pw-cnt">0</span> von 800 Zeichen</span><span class="err">Bitte ein paar Worte schreiben.</span></div>
-        <div class="field"><span class="lbl">Foto <small>optional</small></span>
-          <label class="drop pwdrop" id="pw-drop"><input type="file" accept="image/*" id="pw-pic" aria-label="Foto wählen"><span class="drop-in"><b>Foto wählen</b><span>oder hierher ziehen</span></span><img id="pw-prev" alt="Vorschau des Fotos" width="800" height="600" hidden></label>
+        <div class="pf-fields">
+          <div class="field"><label for="pw-name">Name oder Pilotenname</label><input id="pw-name" name="Name" required minlength="2" maxlength="40" autocomplete="nickname"><span class="err">Bitte einen Namen eingeben.</span></div>
+          <div class="field"><label for="pw-txt">Dein Beitrag</label><textarea id="pw-txt" name="Beitrag" required maxlength="800" placeholder="Was gibt es Neues?" aria-describedby="pw-cnt-h"></textarea><span class="hint" id="pw-cnt-h"><span id="pw-cnt">0</span> von 800 Zeichen</span><span class="err">Bitte ein paar Worte schreiben.</span></div>
+          <div class="field"><span class="lbl">Foto <small>optional</small></span>
+            <label class="drop pwdrop" id="pw-drop"><input type="file" accept="image/*" id="pw-pic" aria-label="Foto wählen"><span class="drop-in"><b>Foto wählen</b><span>oder hierher ziehen</span></span><img id="pw-prev" alt="Vorschau des Fotos" width="800" height="600" hidden></label>
+            <button class="pw-x" type="button" id="pw-x" hidden>Foto entfernen</button>
+            <span class="hint pw-fmsg" id="pw-fmsg" aria-live="polite"></span>
+          </div>
+          <div class="field pw-code" id="pw-code-f"><label for="pw-code">Löschcode <small>merk ihn dir</small></label><input id="pw-code" name="Löschcode" required minlength="4" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="pw-code-h"><span class="hint" id="pw-code-h">Damit kannst du den Beitrag später selbst löschen. Du darfst ihn ändern.</span><span class="err">Der Löschcode braucht mindestens 4 Zeichen.</span></div>
+          <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span id="pw-dsgvo">Meine Angaben erscheinen öffentlich auf der Website (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+          <button class="btn solid" type="submit" id="pw-go">Veröffentlichen <span class="arr">→</span></button>
+          <p class="draftnote" id="pw-draft" hidden>Der Vorstand gibt jeden Beitrag frei. Entwurf: Beiträge gehen vorerst an info@falcon-eye.de.</p>
+          <div class="form-bad" id="pw-bad" hidden><b>Das hat nicht geklappt.</b> <span id="pw-bad-t">Bitte versuch es noch einmal.</span></div>
         </div>
-        <label class="check"><input type="checkbox" name="Freigabe" value="ja" required><span>Mein Beitrag darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-        <button class="btn solid" type="submit">Beitrag senden <span class="arr">→</span></button>
-        <p class="draftnote">Der Vorstand gibt jeden Beitrag frei. Entwurf: Beiträge gehen vorerst an info@falcon-eye.de.</p>
-        <div class="form-ok" hidden><b>Danke!</b> Dein Beitrag erscheint nach der Freigabe durch den Vorstand.</div>
-        <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal.</div>
+        <div class="pin-done" id="pin-done" hidden tabindex="-1"></div>
       </form>
     </div>
   </div>

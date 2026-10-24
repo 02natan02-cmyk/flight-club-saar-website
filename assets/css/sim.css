@@ -2,15 +2,15 @@
 :root{--sim-mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,Consolas,"Liberation Mono","DejaVu Sans Mono",monospace}
 
 /* ---------- Seitenkopf: kompakt, damit die Bühne gleich darunter kommt ---------- */
-.sim-head{min-height:0;padding:112px 0 26px}
-.sim-head .h1{font-size:clamp(50px,7.2vw,104px)}
-.sim-head .lede{max-width:56ch}
+.sim-head{min-height:0;padding:104px 0 22px}
+.sim-head .h1{font-size:clamp(46px,5.8vw,86px)}
+.sim-head .lede{max-width:66ch;margin-top:10px}
 .sim-head-in{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 40px}
 .sim-head-t{min-width:0;flex:1 1 520px}
 .sim-head-b{flex:none}
 .sim-head-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 120% at 85% 10%,rgba(31,73,125,.55),transparent 60%),radial-gradient(40% 80% at 10% 100%,rgba(63,224,255,.08),transparent 70%),var(--night)}
 .sim-head-bg::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(158,196,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(158,196,255,.06) 1px,transparent 1px);background-size:46px 46px;-webkit-mask:linear-gradient(180deg,transparent,#000 40%,transparent);mask:linear-gradient(180deg,transparent,#000 40%,transparent)}
-@media (max-width:700px){.sim-head{padding:100px 0 22px}.sim-head-b{width:100%}.sim-head-b .btn{flex:1 1 auto;justify-content:center;min-height:48px}}
+@media (max-width:700px){.sim-head{padding:96px 0 18px}.sim-head-b{width:100%}.sim-head-b .btn{flex:1 1 auto;justify-content:center;min-height:48px}.sim-head-b .btn.ghost{display:none}.sim-head .crumb{margin-bottom:8px}}
 
 /* ---------- Rahmen ---------- */
 .sim{padding:16px 0 30px}
@@ -68,7 +68,7 @@
 .sim-stage.is-demo .o-tc,.sim-stage.is-demo .o-arrow{display:none}
 
 /* ---------- Werkzeugleiste in der Bühne ---------- */
-.sim-bar{position:absolute;z-index:6;left:50%;top:10px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(4,9,18,.62);border:1px solid rgba(158,196,255,.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:opacity .4s var(--ease);max-width:calc(100% - 20px)}
+.sim-bar{position:absolute;z-index:6;left:50%;top:10px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(4,9,18,.78);border:1px solid rgba(158,196,255,.22);transition:opacity .4s var(--ease);max-width:calc(100% - 20px)}
 .sim-stage.is-flying .sim-bar{opacity:.45}
 .sim-stage.is-flying .sim-bar:hover,.sim-stage .sim-bar:focus-within{opacity:1}
 .sb{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:44px;height:44px;padding:0 13px;border-radius:999px;border:0;background:transparent;color:var(--osd);font:600 15px/1 var(--hud);letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
@@ -89,7 +89,7 @@
 .st-base::before,.st-base::after{content:"";position:absolute;background:rgba(234,244,255,.22)}
 .st-base::before{left:50%;top:10%;bottom:10%;width:1px}
 .st-base::after{top:50%;left:10%;right:10%;height:1px}
-.st-knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(234,244,255,.85);box-shadow:0 0 0 3px rgba(63,224,255,.5),0 4px 14px rgba(0,0,0,.5);will-change:transform}
+.st-knob{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:rgba(234,244,255,.85);box-shadow:0 0 0 3px rgba(63,224,255,.5),0 4px 14px rgba(0,0,0,.5);will-change:transform}
 .st-zone.on .st-base{border-color:var(--sig)}
 .st-zone.on .st-knob{background:#fff}
 .st-lbl{position:absolute;bottom:10px;font:600 14px/1 var(--hud);letter-spacing:.06em;color:rgba(234,244,255,.7);text-shadow:0 1px 3px #000}
@@ -99,17 +99,18 @@
 .sim-stage.is-touch .o-br{right:auto;left:50%;bottom:14px;margin-left:10px;align-items:flex-start}
 
 /* ---------- Demo-Hinweis, Laden, Hinweise ---------- */
-.sim-cta{position:absolute;z-index:7;left:50%;bottom:clamp(18px,7%,54px);transform:translateX(-50%);display:grid;justify-items:center;gap:10px;width:min(560px,calc(100% - 24px));padding:18px 18px 16px;border-radius:var(--r);background:rgba(4,9,18,.72);border:1px solid rgba(63,224,255,.4);box-shadow:0 18px 50px rgba(0,0,0,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-align:center;transition:opacity .45s var(--ease),transform .45s var(--ease)}
+.sim-cta{position:absolute;z-index:7;left:50%;bottom:clamp(18px,7%,54px);transform:translateX(-50%);display:grid;justify-items:center;gap:10px;width:min(560px,calc(100% - 24px));padding:18px 18px 16px;border-radius:var(--r);background:rgba(4,9,18,.84);border:1px solid rgba(63,224,255,.4);box-shadow:0 18px 50px rgba(0,0,0,.45);text-align:center;transition:opacity .45s var(--ease),transform .45s var(--ease)}
 .sim-cta[hidden]{display:grid!important;opacity:0;pointer-events:none;transform:translate(-50%,16px)}
 .sim-cta-k{margin:0;display:inline-flex;align-items:center;gap:9px;font:600 15px/1 var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--sig)}
 .sim-cta-k .dot{color:var(--red);animation:blink 1s steps(2,end) infinite}
 .sim-cta .btn{min-height:50px}
 .sim-cta-h{margin:0;font-size:15px;color:#d3e1f3;max-width:46ch}
 .sim-stage.is-off .sim-cta-k .dot{animation-play-state:paused}
-.sim-help{position:absolute;z-index:7;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;width:max-content;max-width:calc(100% - 24px);padding:6px 6px 6px 16px;border-radius:14px;background:rgba(4,9,18,.8);border:1px solid rgba(255,176,32,.55);color:#ffe2a8;font-size:15px;line-height:1.4;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.sim-help{position:absolute;z-index:7;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;width:max-content;max-width:calc(100% - 24px);padding:6px 6px 6px 16px;border-radius:14px;background:rgba(4,9,18,.88);border:1px solid rgba(255,176,32,.55);color:#ffe2a8;font-size:15px;line-height:1.4}
 .sim-help[hidden]{display:none}
 .sim-help p{margin:0}
-.sim-stage.is-touch .sim-help{bottom:auto;top:120px}
+.sim-stage.is-touch .sim-help{bottom:auto;top:112px;max-width:min(460px,calc(100% - 24px))}
+@container simst (max-height:430px){.sim-stage.is-touch .sim-help{top:96px}.sim-stage.is-touch .sim-toast{top:auto;bottom:118px}}
 .sim-x{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer}
 .sim-x:hover{background:rgba(255,255,255,.1)}
 .sim-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}

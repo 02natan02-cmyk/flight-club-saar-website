@@ -149,3 +149,96 @@ main [hidden]{display:none!important}
 .cta-card .h3,.cta-card p{margin:0}
 .tri-go{font:600 13px var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--sig)}
 
+
+/* „Ich bin dabei“: Zusagen pro Abend (live) */
+.zu{display:grid;gap:10px;min-width:0}
+.zu-big{grid-column:1/-1;margin:2px 0 0;padding-top:16px;border-top:1px dashed var(--line-hi)}
+.zu-big .zu-n b{font-size:32px}
+.zu-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
+.zu-av{display:inline-flex;flex:none;padding-left:5px}
+.zu-av i{display:grid;place-items:center;width:30px;height:30px;margin-left:-5px;border-radius:50%;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 24%,#071225);box-shadow:0 0 0 2px #0b1a33;font:700 10.5px/1 var(--hud);font-style:normal;letter-spacing:.02em;color:#fff}
+.zu-av i.me{border-color:#fff;background:var(--green);color:var(--night)}
+.zu-av i.more{--c:rgba(158,196,255,.38);background:#0b1a33;color:#cfe0f5}
+.zu-n{margin:0;font:600 12.5px/1.2 var(--hud);letter-spacing:.1em;text-transform:uppercase;color:#cfe0f5}
+.zu-n b{display:inline-block;min-width:.6em;margin-right:3px;font:400 27px/1 var(--big);letter-spacing:.02em;color:#fff;vertical-align:-4px;font-variant-numeric:tabular-nums}
+.zu-n.zu-0{font:500 14.5px/1.4 var(--body);letter-spacing:0;text-transform:none;color:#b8c9e0}
+.zu-act{margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.zu-go{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--amber);background:rgba(255,176,32,.1);color:#ffd690;font:700 12px/1 var(--hud);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;cursor:pointer;overflow:hidden;isolation:isolate;transition:background .25s,color .25s,transform .25s var(--ease)}
+@media (hover:hover){.zu-go:hover{background:var(--amber);color:var(--night)}}
+.zu-go:active{transform:scale(.96)}
+.zu-go svg,.zu-me svg{flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.zu-go.glint::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 25%,rgba(255,214,144,.55) 50%,transparent 75%);transform:translateX(-130%);animation:zuglint 1.2s var(--ease) 2 .1s;pointer-events:none}
+@keyframes zuglint{to{transform:translateX(130%)}}
+.zu-go.busy{cursor:progress;background:rgba(255,176,32,.1);color:#ffd690}
+.zu-spin{flex:none;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,214,144,.3);border-top-color:#ffd690;animation:zuspin .8s linear infinite}
+@keyframes zuspin{to{transform:rotate(360deg)}}
+.zu-me{display:inline-flex;align-items:center;gap:6px;font:700 12px/1 var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--green);white-space:nowrap}
+.zu-no{min-height:44px;padding:0 4px;border:0;background:none;color:#b8c9e0;font:600 12px var(--hud);letter-spacing:.08em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;cursor:pointer;white-space:nowrap}
+.zu-no:hover{color:#fff}
+.zu-names{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.zu-names li{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 50%,transparent);background:color-mix(in srgb,var(--c) 9%,transparent);font:600 12.5px/1.2 var(--hud);letter-spacing:.04em;color:#e3eefb;overflow-wrap:anywhere}
+.zu-names li.me{border-color:var(--green);background:rgba(62,224,138,.14)}
+.zu-names li i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+.zu-names li.me b{color:var(--green)}
+.zu-names li.me i{background:var(--green);box-shadow:0 0 8px var(--green)}
+.zu-names li.more{--c:rgba(158,196,255,.6);color:#b8c9e0}
+.zu-as{margin:0;font-size:14px;line-height:1.45;color:#b8c9e0}
+.zu-as b{color:#e3eefb;font-weight:600}
+.zu-as button{display:inline-block;margin:-12px 0;padding:12px 4px;border:0;background:none;color:var(--sig);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.zu-form{display:grid;gap:8px;padding:14px;border-radius:14px;border:1px solid rgba(255,176,32,.45);background:rgba(255,176,32,.06)}
+.zu-l{font:600 12px var(--hud);letter-spacing:.14em;text-transform:uppercase;color:#ffd690}
+.zu-fr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.zu-in{width:100%;min-height:46px;padding:10px 14px;border-radius:12px;border:1px solid var(--line-hi);background:rgba(3,8,18,.7);color:var(--osd);font:400 16px/1.3 var(--body);transition:border-color .25s,box-shadow .25s}
+.zu-in:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 4px rgba(255,176,32,.18)}
+.zu-in.bad{border-color:var(--red)}
+.zu-ok{min-height:46px;padding:0 18px;border:0;border-radius:12px;background:var(--amber);color:var(--night);font:700 12.5px var(--hud);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .25s}
+.zu-ok:hover{background:#ffd690}
+.zu-hint{margin:0;font-size:14px;line-height:1.45;color:#ecd9b4}
+.zu-x{justify-self:start;min-height:44px;margin:-6px 0 -10px;padding:0 2px;border:0;background:none;color:#b8c9e0;font:600 12px var(--hud);letter-spacing:.08em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.zu-msg{margin:0;font-size:14.5px;line-height:1.45;color:#8ff0bd}
+.zu-msg.bad{color:#ffb3bb}
+.zu.is-load{display:flex;align-items:center;gap:12px;min-height:44px}
+.zu-sk{display:inline-flex;padding-left:8px}
+.zu-sk i,.zu-skb{background:#16305a;animation:zupulse 1.1s ease-in-out infinite alternate}
+.zu-sk i{width:30px;height:30px;margin-left:-8px;border-radius:50%;box-shadow:0 0 0 2px #0b1a33}
+.zu-sk i:nth-child(2){animation-delay:.15s}.zu-sk i:nth-child(3){animation-delay:.3s}
+.zu-skb{width:min(140px,40%);height:12px;border-radius:6px}
+@keyframes zupulse{from{opacity:.45}to{opacity:1}}
+.zu.is-err{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.zu-err{margin:0;font-size:14.5px;color:#ffd0d5}
+.zu-retry{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line-hi);background:none;color:var(--osd);font:600 12px var(--hud);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.zu-retry:hover{border-color:var(--sig)}
+
+/* Zusagen am Ticket: eigene Zeile unter Ort und Knöpfen */
+.t-crew{grid-column:2/-1;padding-top:10px;border-top:1px dashed var(--line)}
+.ticket:has(.t-crew:not([hidden])){row-gap:10px}
+.ticket:has(.t-crew:not([hidden])) .t-date{grid-row:span 2;align-self:stretch;align-content:center}
+.t-crew .zu-av i{width:26px;height:26px;font-size:9.5px}
+.t-crew .zu-n b{font-size:23px}
+.t-crew .zu-go{min-height:44px;padding:0 14px;font-size:11.5px}
+.t-crew .zu-sk i{width:26px;height:26px}
+.ticket.done .t-crew{border-top-color:rgba(158,196,255,.1)}
+/* „Ich bin dabei“ sitzt am PC in der Zusagen-Zeile, am Handy neben Kalender und Route */
+.t-zu{display:none}
+.t-crew .zu-go{border-color:rgba(255,176,32,.5);background:transparent}
+@media (hover:hover){.t-crew .zu-go:hover{background:var(--amber)}}
+@media (max-width:640px){
+  .t-crew{grid-column:2;padding-top:8px}
+  .ticket:has(.t-crew:not([hidden])) .t-date{grid-row:1/span 3}
+  .t-crew .zu-act{display:none}
+  .t-act{flex-wrap:wrap;align-items:center}
+  .t-zu{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-right:auto}
+  .t-zu:empty{display:none}
+  .t-zu .zu-w,.t-crew .zu-w{display:none}
+  .t-act{gap:4px}
+  .t-zu{gap:2px 6px}
+  .t-zu .zu-go{min-height:44px;padding:0 13px;font-size:11.5px;letter-spacing:.08em}
+  .t-zu .zu-me,.t-zu .zu-no{font-size:11px;letter-spacing:.06em}
+  .t-act:has(.t-zu:not(:empty)) .t-btn{width:44px;padding:0;justify-content:center}
+  .t-act:has(.t-zu:not(:empty)) .t-btn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+@media (max-width:520px){
+  .hp-big .zu-big{grid-row:5;margin:0}
+  .zu-big .zu-act{margin-left:0;width:100%}
+  .zu-big .zu-go{flex:1;justify-content:center;min-height:48px}
+}
