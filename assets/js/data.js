@@ -93,7 +93,7 @@ FCS.data = {
   highscore: { url: 'https://hook.eu1.make.com/gq3bv9u25ybq6tzu5o2l9ecf4tcnuovk' },
   // Live-Beiträge (Markt, Pinnwand, Spot-Bewertungen, Termin-Zusagen): Make-Szenario 8157184 → Datenspeicher „FCS Website-Beiträge“ + „FCS Website-Fotos“. Zugriff nur über FCS.board (fcs.js).
   // Make-Webhooks. mitglied = Mitgliedscode prüfen (Clip-Studio Premium), clips = Upload in den Vereins-OneDrive und Gyroflow (gleicher Webhook, Unterscheidung über a=)
-  api: { beitraege: 'https://hook.eu1.make.com/q8ldn199ovql1h99k95oedbgf4ko5ktl', mitglied: 'https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i', clips: '' },
+  api: { beitraege: 'https://hook.eu1.make.com/q8ldn199ovql1h99k95oedbgf4ko5ktl', mitglied: 'https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i', clips: 'https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i' },
   // Instagram @flightclubsaar, Aufrufe Stand 24.10.2026
   reels: [
     { id: 'DdRQZOsI0vS', v: 6203, d: '2026-09-14', t: 'Addicted to Dance 2026', c: 'mit @addicted2dancecontest', clip: 1 },
