@@ -79,7 +79,7 @@
   /* ======================================================================
      Bestenliste: window.FCSScores
      Server nur, wenn FCS.data.highscore.url gesetzt ist, sonst nur localStorage.
-     Abruf (a=top) nie beim Seitenladen, sondern erst nach einem Klick (Spielstart oder „Bestenliste laden“).
+     Abruf (a=top) nie beim Seitenladen, sondern erst, wenn die Bestenliste ins Bild kommt (einmal pro Sitzung) oder nach einem Klick.
      ====================================================================== */
   const SALT = 'fcs-whoop-2026';
   const LSK = { list: 'fcs-whoop-scores', queue: 'fcs-whoop-queue', name: 'fcs-whoop-name', me: 'fcs-whoop-me' };
@@ -295,7 +295,7 @@
       <form class="fcsg-form" data-h="form" novalidate>
         <label class="fcsg-lab" for="${id}-n">Dein Pilotenname</label>
         <div class="fcsg-frow">
-          <input class="fcsg-in" id="${id}-n" data-h="name" name="pilot" type="text" maxlength="16" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="done" placeholder="Spitzname, max. 16 Zeichen" aria-describedby="${id}-i ${id}-m">
+          <input class="fcsg-in" id="${id}-n" data-h="name" name="pilot" type="text" maxlength="16" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="done" placeholder="Dein Spitzname" aria-describedby="${id}-i ${id}-m">
           <button type="submit" class="btn solid fcsg-send" data-h="send">Speichern</button>
         </div>
         <p class="fcsg-note" id="${id}-i">Dein Name erscheint öffentlich in der Bestenliste. Nimm gern einen Spitznamen. <a href="datenschutz.html#bestenliste">Datenschutz</a></p>
@@ -328,7 +328,7 @@
 <div class="fcsb-me" data-b="me" hidden></div>
 <div class="fcsb-foot">
   <button type="button" class="fcsg-mini fcsb-load" data-b="load" hidden>Bestenliste laden</button>
-  <p class="fcsb-fine" data-b="fine">Die Online-Liste lädt erst, wenn du spielst oder hier tippst.</p>
+  <p class="fcsb-fine" data-b="fine">Die Online-Liste lädt, sobald du hier bist.</p>
 </div>`;
 
   /* ======================================================================== */
@@ -1408,7 +1408,7 @@
       const canLoad = Scores.online && src !== 'online';
       B_.load.hidden = !canLoad; B_.load.disabled = boardLoading;
       B_.load.textContent = boardLoading ? 'Lädt …' : src === 'offline' ? 'Nochmal laden' : 'Bestenliste laden';
-      B_.fine.textContent = !Scores.online ? 'Gespeichert wird nur in diesem Browser.' : src === 'online' ? 'Gleiche Namen stehen nur mit ihrem besten Wert in der Liste.' : src === 'offline' ? 'Die Online-Liste ist gerade nicht erreichbar.' : 'Die Online-Liste lädt erst, wenn du spielst oder hier tippst.';
+      B_.fine.textContent = !Scores.online ? 'Gespeichert wird nur in diesem Browser.' : src === 'online' ? 'Gleiche Namen stehen nur mit ihrem besten Wert in der Liste.' : src === 'offline' ? 'Die Online-Liste ist gerade nicht erreichbar.' : 'Die Online-Liste lädt, sobald du hier bist.';
       if (boardSeen) countUp(pulseMe);
     }
     function countUp(pulseMe) {
@@ -1437,7 +1437,8 @@
     if (boardEl) {
       renderBoard(Scores.cached());
       if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { io.disconnect(); boardSeen = true; countUp(false); } }, { threshold: 0.3 });
+        // Sobald die Bestenliste im Bild ist: einmal online laden (pro Sitzung zwischengespeichert), sonst sieht man nur das eigene Gerät
+        const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { io.disconnect(); boardSeen = true; if (Scores.online && !Scores.loaded) loadBoard(false); else countUp(false); } }, { threshold: 0.3 });
         io.observe(boardEl);
       } else boardSeen = true;
     }

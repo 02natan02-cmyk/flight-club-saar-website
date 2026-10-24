@@ -16,10 +16,10 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fcs.css?v=d7340379">
+<link rel="stylesheet" href="assets/css/fcs.css?v=c0a55e7f">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsClub","name":"Flight Club Saar e. V.","alternateName":"Flight Club Saar","description":"FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und Programmieren.","sport":"FPV-Drohnenfliegen","foundingDate":"2022-12-10","email":"info@flightclub-saar.de","address":{"@type":"PostalAddress","streetAddress":"Hedwigstraße 16","postalCode":"66763","addressLocality":"Dillingen","addressRegion":"Saarland","addressCountry":"DE"},"sameAs":["https://www.instagram.com/flightclubsaar/","https://www.tiktok.com/@flightclubsaar","https://www.youtube.com/@flightclubsaar"],"sponsor":{"@type":"Organization","name":"Ayedo Cloud Solutions GmbH","url":"https://ayedo.de/"}}</script>
 <link rel="modulepreload" href="assets/lib/three.module.min.js">
-<link rel="stylesheet" href="assets/css/home.css?v=6e800c4a">
+<link rel="stylesheet" href="assets/css/home.css?v=5178a29f">
 <link rel="stylesheet" href="assets/css/game.css?v=f9d30939">
 <link rel="stylesheet" href="assets/css/intro3d.css?v=0602e3b0">
 </head>
@@ -97,7 +97,7 @@
         <b class="go-h">FPV lernen</b><span class="go-p">Drohne in 3D, Schaltplan, dein erster Flug.</span><span class="go-go">Lernen <span class="arr">→</span></span>
       </a>
       <a class="go-t go-hilfe" href="hilfe.html" data-reveal>
-        <span class="go-m go-term hud" aria-hidden="true"><span>&gt; status</span><span class="warn">Arming disabled: RXLOSS</span><span>&gt; FPV-Doktor: Empfänger prüfen<i class="blink">_</i></span></span>
+        <span class="go-m go-term hud" aria-hidden="true"><span>&gt; status</span><span class="warn">Arming disabled: RXLOSS</span><span>&gt; FPV-Doktor: Kein Signal vom Empfänger. So behebst du es<i class="blink">_</i></span></span>
         <b class="go-h">Technik-Hilfe</b><span class="go-p">Kopter armt nicht? Der FPV-Doktor hilft.</span><span class="go-go">Fehler finden <span class="arr">→</span></span>
       </a>
       <a class="go-t go-studio" href="filmen.html" data-reveal>
@@ -156,10 +156,10 @@
         <div><dt><b data-count="3950">3.950</b></dt><dd>Follower auf TikTok</dd></div>
       </dl>
     </div>
-    <div class="club-show" id="show" aria-label="Drohnenshow: Leuchtpunkte formen unser Logo und Zahlen">
+    <div class="club-show" id="show" role="region" aria-label="Drohnenshow: Leuchtpunkte formen unser Logo, das Gründungsjahr, eine Sprechblase, die Buchstaben FPV und eine FPV-Brille">
       <canvas class="show-cv" id="show-cv" aria-hidden="true"></canvas>
-      <div class="show-osd hud" aria-hidden="true"><span>SWARM <b id="show-n">0</b></span><span>FORMATION <b id="show-f">1</b>/5</span></div>
-      <div class="show-cap"><p class="show-t" id="show-t" aria-live="polite">Flight Club Saar</p><p class="show-s" id="show-s">Unser Logo, geflogen von Drohnen.</p></div>
+      <div class="show-osd hud" aria-hidden="true"><span>SWARM <b id="show-n">0</b></span><span>FORMATION <b id="show-f">1/5</b></span></div>
+      <div class="show-cap"><p class="show-k hud" id="show-k">Vereinslogo</p><p class="show-t" id="show-t" aria-live="polite">Flight Club Saar</p><p class="show-s" id="show-s">Unser Vereinslogo, geflogen von Drohnen.</p></div>
       <div class="show-dots" id="show-dots" role="group" aria-label="Formation wählen"></div>
       <p class="show-hint hud" id="show-hint"><span class="only-fine">Fahr mit der Maus durch den Schwarm</span><span class="only-touch">Fahr mit dem Finger durch den Schwarm</span></p>
     </div>
@@ -196,34 +196,54 @@
   <div class="wrap"><div class="mo-dots" id="mo-dots" role="tablist" aria-label="Build, Fly, Crash, Repair, Repeat"></div></div>
 </section>
 
-<!-- 6 · DU HAST DIE FUNKE: Gas geben = vorwärts fliegen -->
+<!-- 6 · DU HAST DIE FUNKE: Gas geben, lenken, durch Gates fliegen -->
 <section class="sec flight" id="fly" data-nav="Fliegen">
   <div class="wrap fl-grid">
     <div class="fl-txt">
-      <h2 class="h2" data-split>Gib Gas.</h2>
-      <p class="lede" data-reveal>Ein echter Flug aus dem Verein durch ein altes Schiff. Schieb den linken Stick nach oben, dann fliegst du los. Je mehr Gas, desto schneller. Stick runter, und die Drohne bremst. Oder halt einfach das Bild gedrückt.</p>
-      <p class="fl-keys hud" data-reveal><span>Stick</span> hochschieben = Gas · <span>Bild</span> gedrückt halten = Vollgas · <span>PC</span> ↑ ↓ oder Leertaste</p>
-      <div class="fl-score hud" data-reveal><div><b id="fl-dist">0</b><span>Meter geflogen</span></div><div><b id="fl-top">0</b><span>km/h Spitze</span></div><div><b id="fl-lap">0</b><span>Runden</span></div></div>
+      <h2 class="h2" data-split>Gib Gas und lenk.</h2>
+      <p class="lede" data-reveal>Ein echter Flug aus dem Verein durch ein altes Schiff. Du hast die Funke: Gib Gas, lenk die Drohne und triff die leuchtenden Gates.</p>
+    </div>
+    <div class="fl-side">
+      <div class="fl-how" id="fl-how" data-reveal>
+        <p class="fl-how-h hud">So lenkst du</p>
+        <ul class="fl-how-l only-fine-b">
+          <li><span>Maus</span> aufs Bild: lenken</li>
+          <li><span>Maustaste</span> halten: Gas</li>
+          <li><span>Pfeiltasten</span> oder <span>A</span> <span>D</span>: lenken</li>
+          <li><span>W</span> <span>S</span>: Gas, <span>Leertaste</span> halten: Vollgas</li>
+        </ul>
+        <ul class="fl-how-l only-touch-b">
+          <li><span>Finger</span> aufs Bild: Gas</li>
+          <li><span>Finger ziehen</span>: lenken</li>
+          <li>Oder die Sticks: <span>links</span> Gas, <span>rechts</span> lenken</li>
+        </ul>
+      </div>
+      <div class="fl-score hud" data-reveal><div><b id="fl-gates">0</b><span>Gates getroffen</span></div><div><b id="fl-dist">0</b><span>Meter geflogen</span></div><div><b id="fl-top">0</b><span>km/h Spitze</span></div></div>
     </div>
     <div class="fl-box" data-reveal>
-      <div class="fl-screen" id="fl-screen">
-        <video class="fl-v" id="fl-v" muted playsinline loop preload="none" poster="media/schiff.webp" data-src="media/schiff.mp4"></video>
+      <div class="fl-screen" id="fl-screen" tabindex="0" role="group" aria-roledescription="Flugbild" aria-label="Flugbild. Antippen oder klicken zum Losfliegen, dann mit Maus, Finger oder Pfeiltasten lenken." aria-describedby="fl-how">
+        <div class="fl-cam" id="fl-cam"><video class="fl-v" id="fl-v" muted playsinline loop preload="none" poster="media/schiff.webp" data-src="media/schiff.mp4"></video></div>
+        <canvas class="fl-fx" id="fl-fx" aria-hidden="true"></canvas>
         <div class="fl-blur" id="fl-blur" aria-hidden="true"></div>
+        <div class="fl-flash" id="fl-flash" aria-hidden="true"></div>
         <div class="osd-frame"><i></i></div>
         <div class="osd fl-o1"><span id="fl-arm" class="fl-arm">DISARMED</span></div>
         <div class="osd fl-o2">THR <b id="fl-thr">0</b>%</div>
         <div class="osd fl-o3"><b id="fl-spd">0</b> km/h</div>
-        <div class="osd fl-o4">16.8V · <b>R4</b></div>
+        <div class="osd fl-o4">GATES <b id="fl-g2">0</b> · SERIE <b id="fl-ser">0</b></div>
+        <p class="fl-msg hud" id="fl-msg" aria-live="polite"></p>
         <i class="fl-cross" aria-hidden="true"></i>
+        <button class="btn solid fl-start" id="fl-start" type="button"><span class="dot" style="color:var(--night)"></span>Losfliegen</button>
+        <button class="fl-stop" id="fl-stop" type="button" aria-label="Flug beenden">Landen <span aria-hidden="true">×</span></button>
       </div>
       <div class="fl-radio" aria-label="Funke">
         <div class="fl-gim fl-left">
           <div class="fl-pad" id="fl-pad"><i class="fl-axis-v"></i><i class="fl-axis-h"></i><button class="fl-knob" id="fl-knob" type="button" role="slider" aria-label="Gas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></button></div>
           <span class="hud">GAS</span>
         </div>
-        <div class="fl-mid"><img src="assets/img/logo-mark.svg" alt="" width="40" height="40"><span class="hud" id="fl-hint">Stick hoch = Gas</span></div>
-        <div class="fl-gim fl-right" aria-hidden="true">
-          <div class="fl-pad"><i class="fl-axis-v"></i><i class="fl-axis-h"></i><span class="fl-knob2" id="fl-knob2"></span></div>
+        <div class="fl-mid"><img src="assets/img/logo-mark.svg" alt="" width="40" height="40"><span class="hud" id="fl-hint">Stick hoch = Gas</span><button class="fl-tiltb" id="fl-tilt" type="button" hidden>Handy neigen zum Lenken</button></div>
+        <div class="fl-gim fl-right">
+          <div class="fl-pad fl-pad2" id="fl-pad2" aria-hidden="true"><i class="fl-axis-v"></i><i class="fl-axis-h"></i><span class="fl-knob2" id="fl-knob2"></span></div>
           <span class="hud">LENKEN</span>
         </div>
       </div>
@@ -249,13 +269,14 @@
   <div class="wrap zap-grid">
     <div class="sec-head">
       <h2 class="h2" data-split>Wähl deinen Kanal.</h2>
-      <p class="lede" data-reveal>Bei uns fliegen mehrere Piloten gleichzeitig, jeder auf seinem Kanal. Schalte durch die Raceband-Kanäle und schau, wer gerade fliegt: Stay Fly, GrobsFPV, OrcaFPV und Booyaka, echte Flüge aus dem Verein. Auf den roten Kanälen bleibt die Brille dunkel, die sind in Deutschland nicht erlaubt.</p>
+      <p class="lede" data-reveal>Bei uns fliegen mehrere Piloten gleichzeitig, jeder auf seinem Kanal. Schalte durch die Raceband-Kanäle und schau, wer gerade fliegt: Stay Fly, GrobsFPV, OrcaFPV und Booyaka, echte Flüge aus dem Verein.</p>
       <div class="knob-wrap" data-reveal>
         <div class="knob" id="knob" role="slider" tabindex="0" aria-label="Kanal" aria-valuemin="1" aria-valuemax="8" aria-valuenow="4"><i></i></div>
         <div class="chbtns" id="chbtns" role="group" aria-label="Kanäle R1 bis R8"></div>
       </div>
       <p class="hud zap-hint" id="zap-hint">← Knopf drehen oder Kanal antippen →</p>
     </div>
+    <p class="zap-law" data-reveal><b>Warum sind R1, R2, R7 und R8 rot?</b> In Deutschland ist für FPV-Video nur das Band 5725 bis 5875 MHz mit höchstens 25 mW (EIRP) freigegeben, so steht es in der Allgemeinzuteilung der Bundesnetzagentur (Vfg. 91/2025). Im Raceband sind das R3 bis R6. Auf den roten Kanälen bleibt die Brille deshalb dunkel.</p>
     <div class="goggle" data-reveal>
       <div class="goggle-in">
         <video id="zap-v" muted playsinline loop preload="none"></video>
@@ -274,7 +295,7 @@
   <div class="wrap">
     <div class="sec-head">
       <h2 class="h2" data-split>Kannst du fliegen?</h2>
-      <p class="lede" data-reveal>Ein Tiny Whoop, eine dunkle Halle, leuchtende Gates: Flieg durch Kurven und an Hindernissen vorbei, bevor der Akku leer ist, und hol dir einen Platz in der Bestenliste. Am Handy steuerst du durch Kippen. In echt geht das beim Hallenfliegen.</p>
+      <p class="lede" data-reveal>Ein Tiny Whoop, eine dunkle Halle, leuchtende Gates: Flieg durch Kurven und an Hindernissen vorbei, bevor der Akku leer ist, und hol dir einen Platz in der Bestenliste. Am Handy steuerst du mit dem Finger oder durch Kippen. In echt geht das beim Hallenfliegen.</p>
     </div>
     <div class="spiel-grid">
       <div class="game-box" data-reveal><div data-game="whoop" data-board="#spiel-board"></div></div>
@@ -439,8 +460,8 @@
 <script src="assets/lib/InertiaPlugin.min.js"></script>
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
-<script src="assets/js/fcs.js?v=1c4550fb"></script>
-<script src="assets/js/home.js?v=bece6e4f"></script>
-<script src="assets/js/game.js?v=60907045"></script>
+<script src="assets/js/fcs.js?v=4782690c"></script>
+<script src="assets/js/home.js?v=35625548"></script>
+<script src="assets/js/game.js?v=5d299393"></script>
 </body>
 </html>

@@ -414,3 +414,7 @@ textarea.lv-in{min-height:72px;resize:vertical}
 .pd-more{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;padding-top:6px;border-top:1px solid var(--line)}
 .pd-more a,.pd-more button{display:inline-flex;align-items:center;min-height:44px;padding:0;border:0;background:none;color:var(--sig);font:600 12px var(--hud);letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 @media (max-width:420px){.pd-btns .btn{flex:1 1 100%;justify-content:center}.pd-code code{font-size:28px}}
+
+/* Tippflächen: mindestens 44 px, damit alles am Handy sicher zu treffen ist */
+.chip span{min-height:44px;min-width:44px;box-sizing:border-box;align-items:center;justify-content:center}
+.btn{min-height:44px}

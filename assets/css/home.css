@@ -347,6 +347,8 @@
 .club-show .show-osd{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:.22em;color:#cfe0f5}
 .club-show .show-osd b{color:var(--sig)}
 .club-show .show-cap{position:absolute;left:12px;right:12px;bottom:58px;text-align:center;pointer-events:none}
+.club-show .show-k{display:inline-block;margin:0 0 6px;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,176,32,.5);background:rgba(4,9,18,.7);font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--amber)}
+.club-show .show-k::before{content:"Die Drohnen zeigen: ";color:#cfe0f5}
 .club-show .show-t{font:400 clamp(30px,3.6vw,52px)/1 var(--big);margin:0;text-transform:uppercase;text-shadow:0 0 30px rgba(63,224,255,.5)}
 .club-show .show-s{margin:4px 0 0;font-size:14px;color:var(--mute)}
 .show-dots{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;padding:0 10px}
@@ -513,3 +515,75 @@
 /* Prüfbericht 24.10. */
 @media (max-width:700px){.hero .kicker{font-size:11px;letter-spacing:.14em;text-shadow:0 1px 8px rgba(0,0,0,.85)}}
 @media (pointer:coarse){#show-dots button,#mo-dots button{min-height:40px}}
+
+/* ===== Runde 3: Flug durchs Schiff mit Lenken und Gates ===== */
+.only-touch-b{display:none}
+@media (pointer:coarse){.only-touch-b{display:grid}.only-fine-b{display:none}}
+.fl-how{margin:18px 0 0;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(7,18,37,.6)}
+.fl-how-h{margin:0 0 8px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber)}
+.fl-how-l{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:15px;color:#d4e1f2}
+.fl-how-l span{display:inline-block;padding:1px 7px;border-radius:6px;border:1px solid var(--line-hi);font:600 12.5px/1.5 var(--hud);letter-spacing:.04em;color:var(--sig)}
+.fl-screen{transform:none;cursor:crosshair;outline-offset:3px}
+.fl-screen:focus-visible{outline:2px solid var(--sig)}
+.fl-screen.on{touch-action:none}
+.fl-cam{position:absolute;inset:0;transform:scale(1.36);transform-origin:50% 50%;will-change:transform}
+.fl-cam .fl-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fl-fx{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.fl-flash{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0}
+.fl-flash.ok{animation:flok .5s ease-out}
+.fl-flash.bad{animation:flbad .55s ease-out}
+@keyframes flok{0%{opacity:1;box-shadow:inset 0 0 0 4px rgba(62,224,138,.9),inset 0 0 90px rgba(62,224,138,.45)}100%{opacity:0;box-shadow:inset 0 0 0 4px rgba(62,224,138,0),inset 0 0 90px rgba(62,224,138,0)}}
+@keyframes flbad{0%{opacity:1;box-shadow:inset 0 0 0 5px rgba(255,75,92,.95),inset 0 0 120px rgba(255,75,92,.55)}100%{opacity:0;box-shadow:inset 0 0 0 5px rgba(255,75,92,0),inset 0 0 120px rgba(255,75,92,0)}}
+.fl-msg{position:absolute;left:0;right:0;top:22%;z-index:5;margin:0;text-align:center;font:700 clamp(18px,2.6vw,30px)/1 var(--hud);letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 0 14px rgba(0,0,0,.9);opacity:0;transform:translateY(6px);transition:opacity .25s,transform .35s var(--ease);pointer-events:none}
+.fl-msg.on{opacity:1;transform:none}
+.fl-msg.ok{color:var(--green)}.fl-msg.bad{color:var(--red)}.fl-msg.info{font-size:clamp(12px,1.3vw,15px);letter-spacing:.16em;color:var(--amber)}
+.fl-o4{bottom:16px;right:18px}
+.fl-start{position:absolute;inset:0;margin:auto;width:max-content;height:max-content;z-index:6;box-shadow:0 10px 40px -8px rgba(0,0,0,.8)}
+.fl-screen.on .fl-start{opacity:0;pointer-events:none;visibility:hidden}
+.fl-screen.ask .fl-start{animation:flpulse 1.6s ease-in-out infinite}
+@keyframes flpulse{0%,100%{box-shadow:0 0 0 0 rgba(63,224,255,.55)}50%{box-shadow:0 0 0 14px rgba(63,224,255,0)}}
+.fl-stop{position:absolute;left:50%;top:12px;z-index:6;margin-left:-58px;width:116px;min-height:36px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:rgba(4,9,18,.72);color:#fff;font:600 12px var(--hud);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;display:none}
+.fl-stop:hover{border-color:var(--sig)}
+.fl-screen.on .fl-stop{display:block}
+.fl-pad2{touch-action:none;cursor:move}
+.fl-knob2{transition:none}
+.fl-tiltb{margin-top:2px;min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-hi);background:rgba(4,9,18,.6);color:#cfe0f5;font:600 11px/1.2 var(--hud);letter-spacing:.08em;cursor:pointer}
+.fl-tiltb[aria-pressed=true]{background:var(--sig);color:var(--night);border-color:var(--sig)}
+.fl-screen.ask::after,.fl-screen.live::after{display:none}
+@media (max-width:520px){.fl-o4{font-size:10px!important}.fl-stop{top:8px;min-height:34px}.fl-mid .hud{font-size:10px}.fl-tiltb{font-size:10px;padding:6px 8px}}
+@media (prefers-reduced-motion:reduce){.fl-screen.ask .fl-start{animation:none}}
+.fl-how-l.only-touch-b{display:none}
+@media (pointer:coarse){.fl-how-l.only-touch-b{display:grid}.fl-how-l.only-fine-b{display:none}}
+.fl-grid{grid-template-areas:"txt box" "side box";grid-template-rows:auto 1fr;row-gap:0}
+.fl-txt{grid-area:txt;align-self:end}.fl-side{grid-area:side;align-self:start}.fl-box{grid-area:box}
+.fl-txt .lede{margin-bottom:0}
+@media (max-width:900px){.fl-grid{grid-template-areas:"txt" "box" "side";grid-template-rows:none;row-gap:20px}.fl-box{order:0}.fl-how{margin-top:0}}
+.fl-start{top:auto;bottom:clamp(34px,13%,60px)}
+
+/* ===== Runde 3: Fehler aus dem Rundgang ===== */
+/* Kanal-Zapper: Rechtsgrundlage kurz und klar */
+.zap-law{margin:16px 0 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,75,92,.35);background:rgba(255,75,92,.06);font-size:14px;line-height:1.5;color:#c9d6e6;max-width:58ch}
+.zap-law b{display:block;color:#fff;font-weight:600;margin-bottom:2px}
+/* Crew-Karte: Rückseite deckt die Vorderseite ganz ab und klappt sichtbar um */
+.mc-back{z-index:3;background:linear-gradient(140deg,#123462,#081a36 60%,#06122a);border-radius:inherit;align-content:center;gap:5px;backface-visibility:hidden}
+.mcard.flip .mc-back{opacity:1;animation:mcback .45s var(--ease)}
+@keyframes mcback{from{opacity:0;transform:perspective(600px) rotateY(-85deg)}to{opacity:1;transform:none}}
+.mc-bn{font:700 clamp(17px,1.6vw,20px)/1.1 var(--hud);text-transform:uppercase;letter-spacing:.04em;color:#fff}
+.mc-ba{font-style:normal;font:500 13px var(--hud);color:var(--sig);letter-spacing:.08em;margin-bottom:4px}
+.mc-br{margin-top:6px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#a9c3e4}
+@media (prefers-reduced-motion:reduce){.mcard.flip .mc-back{animation:none}}
+/* Crash-Karte am Handy: SIGNAL LOST oben, nicht über dem Text */
+@media (max-width:900px){.crash-osd{place-content:start center;padding-top:14%}}
+/* Ayedo: „Mission nochmal ansehen“ einzeilig und mittig am Handy */
+.ay-replay{white-space:nowrap}
+@media (max-width:760px){.ay-replay{left:0;right:0;margin-inline:auto;width:max-content;transform:none;bottom:70px}}
+.zap-grid{grid-template-areas:"head gog" "law gog";row-gap:0}
+.zap-grid>.sec-head{grid-area:head;align-self:end;margin-bottom:0}.zap-grid>.goggle{grid-area:gog}.zap-grid>.zap-law{grid-area:law;align-self:start}
+@media (max-width:900px){.zap-grid{grid-template-areas:"head" "gog" "law";row-gap:22px}.zap-law{margin-top:0}}
+/* Rückseite kompakt, damit alles in die Karte passt */
+.mc-back{padding:12px 16px;gap:2px;align-content:center;font-size:12.5px;line-height:1.4;letter-spacing:.04em}
+.mc-back .mc-bn{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-back .mc-ba{font-size:12px;margin-bottom:3px}
+.mc-back .mc-br{margin-top:4px;font-size:9.5px}
+/* Drohnenshow: Knöpfe passen am schmalen Handy in eine Zeile */
+@media (max-width:420px){.show-dots{gap:5px;padding:0 8px}.show-dots button{padding:7px 9px;letter-spacing:.08em}}
