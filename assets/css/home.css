@@ -505,3 +505,7 @@
   .deck .mcard{flex:0 0 76%;scroll-snap-align:center}
 }
 @media (max-width:700px){.horizon{display:none}.hero-in{padding-bottom:96px}}
+
+/* Link vom Spiel zum Simulator */
+.spiel-sim{margin:22px 0 0;display:flex;justify-content:center}
+.spiel-sim .btn{white-space:normal;text-align:center;line-height:1.35}

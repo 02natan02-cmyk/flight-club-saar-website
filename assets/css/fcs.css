@@ -204,7 +204,7 @@ h1,h2,h3{hyphens:auto;overflow-wrap:break-word}
 .draftbar.mini .db-t,.draftbar.mini button{opacity:0;width:0;padding:0;overflow:hidden}
 .draftbar{transition:max-width .5s var(--ease),padding .4s,opacity .3s,transform .3s var(--ease)}
 body.nav-hidden .draftbar.mini{opacity:0;transform:translateY(12px);pointer-events:none}
-.draftbar button{border:0;background:none;color:inherit;cursor:pointer;font-size:16px;line-height:1;padding:0 2px}
+.draftbar button{border:0;background:none;color:inherit;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;min-width:32px;min-height:32px;margin:-8px -8px -8px 0}
 @media (max-width:420px){.draftbar{font-size:10px;letter-spacing:.08em}}
 
 /* ---------- Mauszeiger = Vereinslogo als Mini-Quad (nur Maus) ---------- */

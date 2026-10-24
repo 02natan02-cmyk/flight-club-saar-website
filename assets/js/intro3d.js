@@ -248,7 +248,7 @@ export async function playIntro(root, opts = {}) {
       if (finished || exiting) return;
       R3 = await buildScene(THREE, {
         canvas: glCanvas, gl, stage, O, CA, CB, CINK, VB, propsW, propR, propW, motorR, ringW, S,
-        titleEl: t1, subEl: t2, titleWrap
+        titleEl: t1, subEl: t2, titleWrap, armedEl: armed
       });
       if (finished || exiting) { R3 && R3.dispose(); R3 = null; return; }
       startMain();
@@ -432,7 +432,7 @@ async function buildScene(T, C) {
   punch.frustumCulled = false; punch.renderOrder = 1000; scene.add(punch);
 
   /* ---------- Licht ---------- */
-  scene.add(new T.HemisphereLight(0x9cc4ff, 0x06080d, 1.5));
+  scene.add(new T.HemisphereLight(0x9cc4ff, 0x2a3c58, 1.7));
   const key = new T.DirectionalLight(0xffffff, 2.6); key.position.set(2.2, 3.5, 7); scene.add(key);
   const rimA = new T.DirectionalLight(new T.Color().setRGB(CA[0], CA[1], CA[2], T.SRGBColorSpace), 2.2); rimA.position.set(-4, 2, -3); scene.add(rimA);
   const rimB = new T.DirectionalLight(new T.Color().setRGB(CB[0], CB[1], CB[2], T.SRGBColorSpace), 1.6); rimB.position.set(4, -1.5, -2.5); scene.add(rimB);
@@ -524,7 +524,7 @@ async function buildScene(T, C) {
   const body = new T.Group(); drone.add(body);
   const stdMat = o => track(new T.MeshStandardMaterial(Object.assign({ clippingPlanes: [clip] }, o)));
   const mCarbon = stdMat({ color: 0xffffff, map: carbonTex, roughness: 0.42, metalness: 0.35 });
-  const mDuct = stdMat({ color: 0x15191f, roughness: 0.32, metalness: 0.15 });
+  const mDuct = stdMat({ color: 0x29313b, roughness: 0.3, metalness: 0.2 });
   const mMotor = stdMat({ color: 0x2b3038, roughness: 0.28, metalness: 0.8 });
   const mBell = stdMat({ color: 0xb9c3cf, roughness: 0.22, metalness: 0.9 });
   const mBatt = stdMat({ color: 0x1d222a, roughness: 0.55, metalness: 0.1 });
@@ -853,22 +853,29 @@ async function buildScene(T, C) {
     const W = stage.clientWidth || innerWidth, H = stage.clientHeight || innerHeight;
     const portrait = H >= W * 1.05;
     // Logo: hochkant ca. 70 % der Breite, quer ca. die Hälfte der Höhe
-    const d = portrait ? Math.min(W * 0.70, H * 0.47) : Math.min(W * 0.6, H * 0.5);
+    let d = portrait ? Math.min(W * 0.70, H * 0.47) : Math.min(W * 0.6, H * 0.5);
     // Titel einpassen (gemessen in der echten Schrift)
     const t1 = C.titleEl, t2 = C.subEl;
     t1.style.fontSize = '100px'; const em = Math.max(1, t1.scrollWidth) / 100;
-    const ts = Math.max(28, Math.min(d * 0.27, (W * 0.88) / em));
-    t1.style.fontSize = ts.toFixed(1) + 'px';
     const subTxt = t2.textContent; t2.textContent = O.subtitle; t2.style.fontSize = '20px';
     const sem = Math.max(1, t2.scrollWidth) / 20; t2.textContent = subTxt;
-    const ss = Math.max(12, Math.min(16, (W * 0.9) / sem));
+    const topRes = 62, botRes = 44;                    // Platz für OSD-Zeile/ARMED oben und Knopf unten
+    let ts, ss, gap1, th, gap2, sh, block;
+    for (let i = 0; i < 4; i++) {
+      ts = Math.max(28, Math.min(d * 0.27, (W * 0.88) / em));
+      ss = Math.min(Math.max(15, ts * 0.16), 24, (W * 0.9) / sem);
+      gap1 = d * 0.1; th = ts * 0.92; gap2 = Math.max(8, ts * 0.2); sh = ss * 1.3;
+      block = d + gap1 + th + gap2 + sh;
+      if (block <= H - topRes - botRes) break;
+      d *= (H - topRes - botRes) / block;            // niedrige Querformate: Logo etwas kleiner
+    }
+    t1.style.fontSize = ts.toFixed(1) + 'px';
     t2.style.fontSize = ss.toFixed(1) + 'px';
-    const gap1 = d * 0.1, th = ts * 0.92, gap2 = Math.max(8, ts * 0.22), sh = ss * 1.3;
-    const block = d + gap1 + th + gap2 + sh;
-    const top = Math.max(H * 0.06, (H - block) / 2 - H * 0.012);
+    const top = Math.max(topRes, (H - block) / 2 - H * 0.012);
     Object.assign(L, { W, H, portrait, d, rpx: d / 2, cx: W / 2, cy: top + d / 2, titleTop: top + d + gap1, ts, ss });
     C.titleWrap.style.top = L.titleTop.toFixed(1) + 'px';
     t2.style.marginTop = gap2.toFixed(1) + 'px';
+    if (C.armedEl) C.armedEl.style.top = Math.max(38, Math.min(46, top - 30)).toFixed(0) + 'px';
     renderer.setSize(W, H, false);
     veilMat.uniforms.uRes.value.set(W * dpr, H * dpr);
     buildCam();

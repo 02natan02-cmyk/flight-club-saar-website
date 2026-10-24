@@ -34,17 +34,18 @@ MI = {
  'crew': '<circle cx="8" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M2.8 19c.9-3 2.9-4.5 5.2-4.5s4.3 1.5 5.2 4.5M13.6 15.2c.8-.6 1.8-1 2.9-1 2 0 3.6 1.3 4.3 3.8"/>',
  'markt': '<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/>',
  'start': '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M7.5 12h9"/>',
+ 'sim': '<rect x="3" y="9" width="18" height="11" rx="3"/><circle cx="8.5" cy="14.5" r="2.2"/><circle cx="15.5" cy="14.5" r="2.2"/><path d="M6.5 9V4M17.5 9V4"/>',
 }
 MENU = [
  ('Fliegen', [('hallenfliegen.html', 'halle', 'Hallenfliegen', 'Tiny Whoops im Winter. Nächster Termin: <span data-next>bald</span>'),
-              ('spots.html', 'spots', 'Spot-Karte', 'Wo wir draußen fliegen, mit Route und Regeln'),
-              ('mitglied.html', 'mitglied', 'Mitglied werden', 'Antrag online in wenigen Minuten')]),
+              ('spots.html', 'spots', 'Spot-Karte', 'Wo wir draußen fliegen, mit Route, Regeln und Bewertungen'),
+              ('simulator.html', 'sim', 'FPV-Simulator', 'Mit Funke, Controller oder Handy im Browser fliegen')]),
  ('Lernen & Filmen', [('wissen.html', 'wissen', 'FPV-Wissen', 'Drohne in 3D, Schaltplan, Kanäle, erster Flug'),
               ('hilfe.html', 'hilfe', 'Technik-Hilfe', 'Kopter armt nicht? Der FPV-Doktor hilft'),
               ('filmen.html', 'filmen', 'Clip-Studio & Filmen', 'Video hochladen, Logo drauf, runterladen. Plus Film-Ratgeber')]),
- ('Verein', [('crew.html', 'crew', 'Crew', 'Unsere Piloten, dein Profil, die Pinnwand'),
-              ('markt.html', 'markt', 'Biete/Suche', 'Kopter, Brillen und Teile von Piloten für Piloten'),
-              ('index.html', 'start', 'Startseite', 'Alles über den Flight Club Saar')]),
+ ('Verein', [('mitglied.html', 'mitglied', 'Mitglied werden', 'Antrag online in wenigen Minuten'),
+              ('crew.html', 'crew', 'Crew', 'Unsere Piloten, dein Profil, die Pinnwand'),
+              ('markt.html', 'markt', 'Biete/Suche', 'Kopter, Brillen und Teile von Pilot zu Pilot')]),
 ]
 ICONS = {
  'instagram': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
@@ -112,7 +113,7 @@ def foot():
     <div class="foot-grid">
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social">{soc}</div></div>
       <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
-      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="simulator.html">FPV-Simulator</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
       <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
