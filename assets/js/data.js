@@ -166,7 +166,7 @@ FCS.data = {
   pinnwand: [],
   // clips: { d, n:'Pilotenname', src:'media/clips/xyz.mp4', poster:'media/clips/xyz.webp', ig:'' }
   clips: [],
-  // markt: { id, art:'biete'|'suche', titel, kat, preis, zustand, t, img:[], kontakt, link, n, d:'2026-10-24' } läuft 30 Tage ab d
+  // markt: { id, art:'biete'|'suche', titel, kat, preis, zustand, ort, t, img:[], kontakt, link, n, d:'2026-10-24' }. Nur vom Vorstand eingetragene Anzeigen: Sie stehen vor den Live-Anzeigen (FCS.board) und bleiben, bis sie hier gelöscht werden
   markt: [],
   partner: [
     { n: 'Ayedo', u: 'https://ayedo.de/', ig: 'weareayedo', t: 'Sponsor und Partner seit Februar 2025. Cloud-Anbieter aus Schwalbach-Hülzweiler im Saarland.' },

@@ -1164,6 +1164,8 @@ function init() {
       pollPads();
       if (WIZ.on) wizTick(dt);
       composeInput();
+      // Abtastrate messen (4 ms), nur solange ein Controller aktiv ist
+      if (!hzTimer && PADS.idx >= 0) hzTimer = setInterval(hzPoll, 4); else if (hzTimer && PADS.idx < 0) { clearInterval(hzTimer); hzTimer = 0; }
       if (PADS.edges.length) { const e = PADS.edges.splice(0); e.forEach(btnEdge); }
       if (gl) {
         if (demo.on) { demoStep(RM ? 0 : dt); acc = 0; }
@@ -1189,7 +1191,7 @@ function init() {
   function updateRun() {
     const want = !D.hidden && (stageVis || panelVis || isFull);
     stage.classList.toggle('is-off', !(stageVis || isFull));
-    if (want && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); if (padsSupported && !hzTimer) hzTimer = setInterval(hzPoll, 4); }
+    if (want && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
     else if (!want && raf) { cancelAnimationFrame(raf); raf = 0; clearInterval(hzTimer); hzTimer = 0; KEYS.clear(); }
   }
 

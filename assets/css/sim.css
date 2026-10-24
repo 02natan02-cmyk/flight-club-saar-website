@@ -9,7 +9,6 @@
 .sim-head-t{min-width:0;flex:1 1 520px}
 .sim-head-b{flex:none}
 .sim-head-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 120% at 85% 10%,rgba(31,73,125,.55),transparent 60%),radial-gradient(40% 80% at 10% 100%,rgba(63,224,255,.08),transparent 70%),var(--night)}
-.sim-head-bg::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(158,196,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(158,196,255,.06) 1px,transparent 1px);background-size:46px 46px;-webkit-mask:linear-gradient(180deg,transparent,#000 40%,transparent);mask:linear-gradient(180deg,transparent,#000 40%,transparent)}
 @media (max-width:700px){.sim-head{padding:96px 0 18px}.sim-head-b{width:100%}.sim-head-b .btn{flex:1 1 auto;justify-content:center;min-height:48px}.sim-head-b .btn.ghost{display:none}.sim-head .crumb{margin-bottom:8px}}
 
 /* ---------- Rahmen ---------- */
@@ -78,7 +77,7 @@
 .sb[data-act=arm][aria-pressed=true]{background:var(--red);color:#fff}
 .sb[data-act=mode].acro{color:var(--amber)}
 @container simst (max-width:1060px){.sb .sb-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.sb{padding:0;width:44px}.sb[data-act=mode],.sb[data-act=craft]{width:auto;padding:0 11px}.sb[data-act=mode] .sb-t,.sb[data-act=craft] .sb-t{position:static;width:auto;height:auto;clip:auto}.sb[data-act=mode] svg,.sb[data-act=craft] svg{display:none}}
-@container simst (max-width:420px){.sim-bar{gap:1px;padding:3px}.sb{width:42px;min-width:42px}.sb[data-act=mode],.sb[data-act=craft]{padding:0 8px;font-size:14px}}
+@container simst (max-width:420px){.sim-bar{gap:1px;padding:3px}.sb[data-act=mode]{padding:0 9px}.sb[data-act=craft]{width:44px;padding:0}.sb[data-act=craft] .sb-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.sb[data-act=craft] svg{display:block}}
 
 /* ---------- Touch-Sticks ---------- */
 .sim-touch{position:absolute;inset:64px 0 0;z-index:5;display:none}
@@ -92,7 +91,7 @@
 .st-knob{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:rgba(234,244,255,.85);box-shadow:0 0 0 3px rgba(63,224,255,.5),0 4px 14px rgba(0,0,0,.5);will-change:transform}
 .st-zone.on .st-base{border-color:var(--sig)}
 .st-zone.on .st-knob{background:#fff}
-.st-lbl{position:absolute;bottom:10px;font:600 14px/1 var(--hud);letter-spacing:.06em;color:rgba(234,244,255,.7);text-shadow:0 1px 3px #000}
+.st-lbl{position:absolute;bottom:8px;font:600 15px/1 var(--hud);letter-spacing:.06em;color:rgba(234,244,255,.7);text-shadow:0 1px 3px #000}
 .st-l .st-lbl{left:16px}.st-r .st-lbl{right:16px}
 .sim-stage.is-touch .o-bl,.sim-stage.is-touch .o-br{bottom:auto;top:auto}
 .sim-stage.is-touch .o-bl{left:auto;right:50%;bottom:14px;margin-right:10px;align-items:flex-end}
@@ -100,7 +99,7 @@
 
 /* ---------- Demo-Hinweis, Laden, Hinweise ---------- */
 .sim-cta{position:absolute;z-index:7;left:50%;bottom:clamp(18px,7%,54px);transform:translateX(-50%);display:grid;justify-items:center;gap:10px;width:min(560px,calc(100% - 24px));padding:18px 18px 16px;border-radius:var(--r);background:rgba(4,9,18,.84);border:1px solid rgba(63,224,255,.4);box-shadow:0 18px 50px rgba(0,0,0,.45);text-align:center;transition:opacity .45s var(--ease),transform .45s var(--ease)}
-.sim-cta[hidden]{display:grid!important;opacity:0;pointer-events:none;transform:translate(-50%,16px)}
+.sim-cta[hidden]{display:grid!important;opacity:0;pointer-events:none;visibility:hidden;transform:translate(-50%,16px);transition:opacity .45s var(--ease),transform .45s var(--ease),visibility 0s .45s}
 .sim-cta-k{margin:0;display:inline-flex;align-items:center;gap:9px;font:600 15px/1 var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--sig)}
 .sim-cta-k .dot{color:var(--red);animation:blink 1s steps(2,end) infinite}
 .sim-cta .btn{min-height:50px}
@@ -176,8 +175,8 @@
 .sim-live{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .sim-stick{position:relative;aspect-ratio:1;border-radius:14px;border:1px solid var(--line-hi);background:linear-gradient(rgba(158,196,255,.14),rgba(158,196,255,.14)) 50% 0/1px 100% no-repeat,linear-gradient(90deg,rgba(158,196,255,.14),rgba(158,196,255,.14)) 0 50%/100% 1px no-repeat,rgba(3,8,18,.6)}
 .sim-stick i{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--sig);box-shadow:0 0 12px var(--sig);will-change:transform}
-.sim-stick span{position:absolute;left:0;right:0;bottom:-24px;text-align:center;font:600 13px var(--hud);letter-spacing:.06em;color:var(--mute);text-transform:uppercase}
-.sim-live{margin-bottom:16px}
+.sim-stick span{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font:600 15px var(--hud);letter-spacing:.06em;color:var(--mute);text-transform:uppercase}
+.sim-live{margin-bottom:20px}
 .sim-chans{display:grid;gap:6px}
 .sim-ch{display:grid;grid-template-columns:52px minmax(0,1fr) 56px;align-items:center;gap:10px;font:700 15px var(--sim-mono);font-variant-numeric:tabular-nums}
 .sim-ch b{font-weight:700;color:#bcd0ea}
@@ -190,7 +189,7 @@
 .sim-rate{margin:0;font:600 15px var(--sim-mono);color:var(--mute)}
 .sim-rate b{color:var(--green)}
 .sim-btns{gap:8px}
-.sim-btn{padding:12px 16px;font-size:13px;min-height:46px}
+.sim-btn{padding:12px 16px;font-size:15px;letter-spacing:.06em;min-height:46px}
 .sim-btn:disabled{opacity:.45;cursor:not-allowed}
 .sim-check{padding:10px 12px}
 .sim-check span{font-size:15px}
@@ -200,7 +199,7 @@
 .sim-keys div{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:baseline}
 .sim-keys dt{font:600 15px var(--hud);color:#fff}
 .sim-keys dd{margin:0;font-size:15px;color:#c9d8ec;line-height:1.45}
-kbd{display:inline-block;min-width:26px;padding:3px 7px;border-radius:7px;border:1px solid var(--line-hi);border-bottom-width:3px;background:rgba(3,8,18,.7);font:700 13px/1.2 var(--sim-mono);text-align:center;color:#fff}
+kbd{display:inline-block;min-width:28px;padding:3px 7px 5px;border-radius:7px;border:1px solid var(--line-hi);box-shadow:inset 0 -3px 0 rgba(158,196,255,.22);background:rgba(3,8,18,.7);font:700 15px/1.2 var(--sim-mono);text-align:center;color:#fff}
 
 /* Rates-Tabelle */
 .sim-rt{display:grid;grid-template-columns:86px repeat(3,minmax(0,1fr));gap:6px 8px;align-items:center}
@@ -221,7 +220,7 @@ kbd{display:inline-block;min-width:26px;padding:3px 7px;border-radius:7px;border
 /* Assistent */
 .sim-wiz{display:grid;gap:10px;padding:16px;border-radius:16px;border:1px solid rgba(63,224,255,.5);background:radial-gradient(120% 80% at 50% 0%,rgba(63,224,255,.1),transparent 60%),rgba(3,8,18,.7)}
 .sim-wiz[hidden]{display:none}
-.sim-wiz-n{margin:0;font:600 13px var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.sim-wiz-n{margin:0;font:600 15px var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
 .sim-wiz-n b{color:var(--sig)}
 .sim-wiz-t{margin:0;font:700 20px/1.2 var(--hud);outline:none}
 .sim-wiz-d{margin:0;font-size:15px;line-height:1.5;color:#d3e1f3}
@@ -243,7 +242,7 @@ kbd{display:inline-block;min-width:26px;padding:3px 7px;border-radius:7px;border
 @keyframes wz-up{0%,100%{transform:none}40%,70%{transform:translateY(-26px)}}
 @keyframes wz-sw{50%{fill:var(--amber)}}
 .sim-raw{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px 10px}
-.sim-raw .rw{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:6px;font:700 13px var(--sim-mono);color:var(--mute)}
+.sim-raw .rw{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:6px;font:700 15px var(--sim-mono);color:var(--mute)}
 .sim-raw .rw.hit{color:var(--sig)}
 .sim-raw .rw i{position:relative;height:8px;border-radius:5px;background:rgba(158,196,255,.16)}
 .sim-raw .rw i::after{content:"";position:absolute;top:-2px;width:4px;height:12px;margin-left:-2px;border-radius:2px;background:#fff;left:var(--x,50%)}
@@ -285,7 +284,7 @@ kbd{display:inline-block;min-width:26px;padding:3px 7px;border-radius:7px;border
   .sim-rt{grid-template-columns:74px repeat(3,minmax(0,1fr));gap:6px}
   .sim-keys div{grid-template-columns:96px minmax(0,1fr)}
   .sim-cta{padding:14px 12px 12px}
-  .sim-cta .btn{padding:14px 16px;font-size:13px}
+  .sim-cta .btn{padding:14px 14px;font-size:15px;letter-spacing:.06em}
 }
 @container simst (max-width:620px){
   .sim-osd .o-tl,.sim-osd .o-tr{top:64px}

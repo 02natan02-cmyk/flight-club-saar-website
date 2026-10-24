@@ -289,7 +289,7 @@ details.pf-more>.fold-in{display:grid;gap:14px;padding:0 16px 16px}
 .lv-a svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .lv-a:hover,.lv-a[aria-expanded=true]{color:#fff;background:rgba(255,255,255,.06)}
 .lv-a[data-lv=del][aria-expanded=true]{color:#ffb3bb}
-.lv-mine{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:rgba(62,224,138,.16);border:1px solid rgba(62,224,138,.55);font:700 10.5px/1.2 var(--hud);letter-spacing:.12em;text-transform:uppercase;color:#8ff0bd}
+.lv-mine{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:rgba(62,224,138,.16);border:1px solid rgba(62,224,138,.55);font:700 11px/1.2 var(--hud);letter-spacing:.12em;text-transform:uppercase;color:#8ff0bd}
 .lv-pan{margin-top:10px}
 .lv-f{display:grid;gap:10px;padding:14px;border-radius:14px;border:1px solid var(--line-hi);background:rgba(2,6,14,.62)}
 .lv-f[data-lv-f=del]{border-color:rgba(255,75,92,.5)}
@@ -358,6 +358,9 @@ textarea.lv-in{min-height:72px;resize:vertical}
 .pin-feed{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 18px;align-items:start;min-width:0;padding-top:8px}
 @media (max-width:620px){.pin-feed{grid-template-columns:minmax(0,1fr);gap:22px}}
 .pin-feed>.lv-err,.pin-feed>.pn-clips{grid-column:1/-1}
+/* Masonry über JS (ResizeObserver): 4-px-Reihen, jede Karte bekommt ihre Höhe als Spanne */
+.pin-feed.masonry{grid-auto-rows:4px;row-gap:0}
+.pin-feed.masonry>*{margin-bottom:22px}
 .pn{position:relative;display:grid;gap:12px;min-width:0;padding:20px 16px 8px;border-radius:6px 6px 16px 16px;background:linear-gradient(180deg,#14305a,#0c1d3b 70%);border:1px solid rgba(158,196,255,.24);box-shadow:0 22px 34px -20px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.06);transform:rotate(var(--r,0deg));transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .3s}
 @media (hover:hover){.pn:hover{transform:rotate(0deg) translateY(-4px);box-shadow:0 30px 44px -22px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.06)}}
 .pn:focus-within{transform:rotate(0deg)}
@@ -390,7 +393,7 @@ textarea.lv-in{min-height:72px;resize:vertical}
 /* Formular und Erfolgskarte */
 .pin-form .pf-fields{display:grid;gap:14px}
 .pin-form.sent .pf-fields{display:none}
-.pin-form .field label small,.pin-form .lbl small{margin-left:6px;font:500 10.5px var(--hud);letter-spacing:.1em;text-transform:none;color:#a9bcd6}
+.pin-form .field label small,.pin-form .lbl small{margin-left:6px;font:500 11.5px var(--hud);letter-spacing:.1em;text-transform:none;color:#a9bcd6}
 .pw-x{justify-self:start;min-height:44px;padding:0;border:0;background:none;color:#ff9aa5;font:600 12px var(--hud);letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .pw-fmsg{color:#ff9aa5}
 .pw-fmsg:empty{display:none}

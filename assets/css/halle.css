@@ -213,7 +213,7 @@ main [hidden]{display:none!important}
 .t-crew{grid-column:2/-1;padding-top:10px;border-top:1px dashed var(--line)}
 .ticket:has(.t-crew:not([hidden])){row-gap:10px}
 .ticket:has(.t-crew:not([hidden])) .t-date{grid-row:span 2;align-self:stretch;align-content:center}
-.t-crew .zu-av i{width:26px;height:26px;font-size:9.5px}
+.t-crew .zu-av i{width:28px;height:28px;font-size:10.5px}
 .t-crew .zu-n b{font-size:23px}
 .t-crew .zu-go{min-height:44px;padding:0 14px;font-size:11.5px}
 .t-crew .zu-sk i{width:26px;height:26px}

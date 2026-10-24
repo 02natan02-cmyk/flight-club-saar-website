@@ -152,9 +152,10 @@ export async function playIntro(root, opts = {}) {
   htmlEl.style.overflow = 'hidden';
 
   /* --- Zustand, Aufräumen --- */
-  let finished = false, exiting = false, ready3d = false, THREE = null, R3 = null, mainTl = null, exitTl = null;
+  let finished = false, exiting = false, ready3d = false, THREE = null, R3 = null, mainTl = null;
   let resolveFn; const done = new Promise(r => (resolveFn = r));
-  const t0 = performance.now();
+  const t0 = performance.now(), timing = { start: t0 };
+  if (opts.debug) { window.FCSIntro3D = window.FCSIntro3D || {}; window.FCSIntro3D.timing = timing; }
   const cleanups = [];
   const on = (el, ev, fn, o) => { el.addEventListener(ev, fn, o); cleanups.push(() => el.removeEventListener(ev, fn, o)); };
   const S = { exit: 0 };
@@ -164,7 +165,7 @@ export async function playIntro(root, opts = {}) {
   function teardown() {
     cleanups.splice(0).forEach(f => { try { f(); } catch (e) {} });
     try { bootTl.kill(); } catch (e) {}
-    try { mainTl && mainTl.kill(); exitTl && exitTl.kill(); } catch (e) {}
+    try { mainTl && mainTl.kill(); } catch (e) {}
     if (R3) { try { R3.dispose(); } catch (e) {} R3 = null; }
     try { const lc = gl.getExtension('WEBGL_lose_context'); lc && lc.loseContext(); } catch (e) {}
     stage.remove();
@@ -173,6 +174,7 @@ export async function playIntro(root, opts = {}) {
   }
   function finish() {
     if (finished) return; finished = true;
+    timing.end = performance.now();
     reveal();
     teardown();
     root.classList.add('gone');
@@ -186,7 +188,8 @@ export async function playIntro(root, opts = {}) {
   }
 
   /* --- Boot: analoges Rauschen (gedämpft) + OSD --- */
-  const stopNoise = startNoise(noiseCv);
+  let noiseOn = true; const stopNoiseRaw = startNoise(noiseCv);
+  const stopNoise = () => { if (noiseOn) { noiseOn = false; stopNoiseRaw(); } };
   cleanups.push(stopNoise);
   const plug = ['ScrambleTextPlugin'].map(n => window[n]).filter(Boolean);
   if (plug.length) try { gsap.registerPlugin(...plug); } catch (e) {}
@@ -200,22 +203,25 @@ export async function playIntro(root, opts = {}) {
     .fromTo($('.i3d-b2'), { opacity: 0 }, { opacity: 1, duration: 0.06 }, 0.36)
     .to(boot, { opacity: 0.45, duration: 0.08, repeat: -1, yoyo: true, repeatDelay: 0.32, ease: 'none' }, 0.75); // wartet notfalls auf three.js
 
-  /* --- Überspringen --- */
+  /* --- Überspringen: Ausgang läuft nach Uhrzeit (max. 0,4 s), auch wenn Bilder hängen --- */
+  const EXIT_MS = 340;
+  function fadeOut(els, ms) { els.forEach(el => { el.style.transition = `opacity ${ms}ms ease-in`; el.style.opacity = '0'; }); }
   function skip() {
     if (finished || exiting) return;
+    timing.skip = performance.now();
     const T = mainTl ? mainTl.time() : 0;
+    exiting = true; reveal();
     if (!ready3d || !mainTl || T < 1.05) {     // noch keine 3D-Szene sichtbar: kurz ausblenden
-      exiting = true; reveal();
-      exitTl = gsap.timeline({ onComplete: finish }).to(stage, { opacity: 0, duration: 0.32, ease: 'power2.in' });
       if (mainTl) mainTl.pause();
+      bootTl.pause();
+      fadeOut([stage], 300);
+      const id = setTimeout(finish, 330); cleanups.push(() => clearTimeout(id));
       return;
     }
-    if (T >= TL.portal) { mainTl.timeScale(2.4); return; }
-    exiting = true; reveal();
-    S.exitFromT = T;
-    exitTl = gsap.timeline({ onComplete: finish })
-      .to(S, { exit: 1, duration: 0.38, ease: 'power2.in' }, 0)
-      .to([titleWrap, osd, boot], { opacity: 0, duration: 0.18, ease: 'power1.in' }, 0);
+    if (T >= TL.portal) { mainTl.timeScale(2.6); const id = setTimeout(finish, 400); cleanups.push(() => clearTimeout(id)); return; }
+    S.exitStart = performance.now();
+    fadeOut([titleWrap, osd, boot], 180);
+    const id = setTimeout(finish, EXIT_MS + 60); cleanups.push(() => clearTimeout(id));   // Sicherheitsnetz: nie länger als 0,4 s
   }
   if (skipBtn) on(skipBtn, 'click', e => { e.stopPropagation(); skip(); });
   on(window, 'keydown', e => {
@@ -291,8 +297,10 @@ export async function playIntro(root, opts = {}) {
       if (finished || !R3) return;
       const now = performance.now(), gap = now - last; last = now;
       const T = mainTl.time();
+      if (S.exitStart) { S.exit = clamp01((now - S.exitStart) / EXIT_MS); S.exit = S.exit * S.exit; }
       const a = performance.now();
       R3.render(T, S, revealed); stats.renders = (stats.renders || 0) + 1;
+      if (S.exitStart && S.exit >= 1) { finish(); return; }
       const ms = performance.now() - a;
       if (T > TL.bootEnd && T < TL.end) {
         stats.frames++; stats.renderMs += ms; stats.maxRenderMs = Math.max(stats.maxRenderMs, ms);
@@ -300,6 +308,7 @@ export async function playIntro(root, opts = {}) {
         R3.adapt(gap);
       }
       const live = T >= 1.04 || exiting; if (live !== isLive) { isLive = live; stage.classList.toggle('live', live); }
+      if (T > 1.2 && noiseOn && !seeked) stopNoise();
       // OSD-Werte aus der Zeit (deterministisch)
       const ft = Math.max(0, T - TL.bootEnd), sec = Math.floor(ft);
       const tm = '00:0' + Math.min(9, sec); if (osdTm.textContent !== tm) osdTm.textContent = tm;
@@ -326,7 +335,7 @@ export async function playIntro(root, opts = {}) {
       window.FCSIntro3D.debug = {
         ready: true, stats, tl: mainTl,
         seek(T) { seeked = true; bootTl.pause(); mainTl.pause(); mainTl.time(T, false); R3.render(T, S, revealed); return T; },
-        skip, layout: () => R3.layoutInfo(), r3: () => R3
+        skip, layout: () => R3.layoutInfo(), r3: () => R3, S
       };
     }
   }
@@ -482,7 +491,7 @@ async function buildScene(T, C) {
       if(dot(vW.xy,uScanDir)<uScanC)discard;
       float vAng=atan(vL.y,vL.x);
       float d=abs(mod(vAng-1.5707963+3.14159265,6.2831853)-3.14159265);   // Abstand vom oberen Punkt 0..pi
-      float lim=uDraw*3.1416;float soft=uHalo>0.?.22:.025;float lit=smoothstep(lim+soft,lim-soft,d)*smoothstep(0.,.04,uDraw);
+      float soft=uHalo>0.?.22:.025;float lim=uDraw*(3.1416+soft*2.);float lit=smoothstep(lim+soft,lim-soft,d)*smoothstep(0.,.04,uDraw);
       float head=exp(-max(lim-d,0.)*7.)*lit*(1.-smoothstep(.97,1.,uDraw));
       float side=smoothstep(-.55,.55,cos(vAng));
       vec3 col=mix(uA,uB,side);col+=vec3(.25)*(1.-abs(side*2.-1.));

@@ -444,6 +444,14 @@
     if (!clips.length) return '';
     return `<div class="pn-clips"><p class="pin-sub">Clips aus der Crew</p><div class="clipgrid">${clips.map(c => `<figure class="clipc" style="margin:0"><video src="${esc(c.src)}"${c.poster ? ` poster="${esc(c.poster)}"` : ''} controls playsinline preload="none"></video><figcaption><b>${esc(c.n)}</b><br><span>${deDate(c.d)}</span>${c.ig ? ` · <a href="${SOC.ig[1](encodeURIComponent(handle(c.ig)))}" target="_blank" rel="noopener">@${esc(handle(c.ig))}</a>` : ''}</figcaption></figure>`).join('')}</div></div>`;
   }
+  let pnRO = null;
+  function pnMasonry() {
+    const feed = $('#pin-feed'); if (!feed || !('ResizeObserver' in window)) return;
+    const ROW = 4, GAP = 22;
+    const span = el => { el.style.gridRowEnd = 'span ' + Math.max(1, Math.ceil((el.offsetHeight + GAP) / ROW)); };
+    if (!pnRO) { pnRO = new ResizeObserver(es => es.forEach(e => { if (e.target.isConnected) span(e.target); })); feed.classList.add('masonry'); }
+    [...feed.children].forEach(el => { span(el); pnRO.observe(el); });
+  }
   function pnMeta() {
     const all = pnAll(), more = $('#pin-more'), cnt = $('#pin-count'), ns = $('#nosig'), feed = $('#pin-feed');
     const rest = all.length - PN.shown;
@@ -452,6 +460,8 @@
     const empty = PN.st !== 'load' && PN.st !== 'err' && !all.length && !(D.clips || []).length;
     if (ns) ns.hidden = !empty;
     if (feed) feed.hidden = empty;
+    const wr = $('#pin-write'); if (wr) wr.hidden = empty;
+    pnMasonry();
   }
   function pnRender() {
     const feed = $('#pin-feed'); if (!feed) return;

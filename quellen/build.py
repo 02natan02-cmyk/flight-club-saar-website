@@ -17,7 +17,7 @@ PAGES = [
   ('filmen.html', 'Clip-Studio & FPV filmen · Flight Club Saar e. V.', 'Clip-Studio: Video hochladen, Vereinslogo drauf, runterladen oder einsenden. Dazu der Film-Ratgeber für FPV: Kameras, ND-Filter, Schnitt, Musik.', 'filmen', ['studio', 'filmen']),
   ('simulator.html', 'FPV-Simulator · Flight Club Saar e. V.', 'FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.', 'sim', ['three', 'sim']),
   ('crew.html', 'Crew · Flight Club Saar e. V.', 'Die Piloten des Flight Club Saar, dein Profil mit Social-Links und die Pinnwand der Crew.', 'crew', ['crew']),
-  ('markt.html', 'Biete/Suche · Flight Club Saar e. V.', 'Die Biete/Suche-Wand des Vereins: Kopter, Brillen und Teile von Piloten für Piloten. Kostenlos, vom Vorstand geprüft.', 'markt', ['markt']),
+  ('markt.html', 'Biete/Suche · Flight Club Saar e. V.', 'Die Biete/Suche-Wand des Vereins: Kopter, Brillen und Teile von Pilot zu Pilot. Kostenlos einstellen und mit Löschcode selbst wieder löschen.', 'markt', ['markt']),
   ('impressum.html', 'Impressum · Flight Club Saar e. V.', 'Impressum des Flight Club Saar e. V.', '', ['recht']),
   ('datenschutz.html', 'Datenschutz · Flight Club Saar e. V.', 'Datenschutzerklärung des Flight Club Saar e. V.', '', ['recht']),
 ]

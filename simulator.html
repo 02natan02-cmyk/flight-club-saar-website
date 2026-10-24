@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=befd523c">
-<link rel="stylesheet" href="assets/css/sim.css?v=6a4f067c">
+<link rel="stylesheet" href="assets/css/sim.css?v=58aeb771">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -65,7 +65,7 @@
           <div class="o-arrow" data-o="arrow"><svg viewBox="0 0 40 40"><path d="M8 30L20 8l12 22-12-6z"/></svg><b data-o="arrown">1</b></div>
         </div>
 
-        <div class="sim-bar" role="toolbar" aria-label="Simulator-Steuerung">
+        <div class="sim-bar" role="group" aria-label="Simulator-Steuerung">
           <button type="button" class="sb" data-act="arm" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg><span class="sb-t">Armen</span></button>
           <button type="button" class="sb" data-act="mode"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 12l4-4"/></svg><span class="sb-t" data-mode-t>Angle</span></button>
           <button type="button" class="sb" data-act="craft"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg><span class="sb-t" data-craft-t>Whoop</span></button>
@@ -95,7 +95,7 @@
         <div class="sim-load" data-load><span class="sim-spin" aria-hidden="true"></span>Halle wird aufgebaut …</div>
         <div class="sim-nogl" data-nogl hidden>
           <h3 class="h3">3D geht hier leider nicht</h3>
-          <p>Dein Browser kann kein WebGL anzeigen. Probier eine aktuelle Version von Chrome, Edge, Firefox oder Safari und schalte in den Browser-Einstellungen die Hardware-Beschleunigung ein. Den Funken-Test rechts kannst du trotzdem nutzen.</p>
+          <p>Dein Browser kann kein WebGL anzeigen. Probier eine aktuelle Version von Chrome, Edge, Firefox oder Safari und schalte in den Browser-Einstellungen die Hardware-Beschleunigung ein. Den Funken-Test in den Einstellungen kannst du trotzdem nutzen.</p>
         </div>
       </div>
 
@@ -116,7 +116,7 @@
             <span class="sim-src-dot" aria-hidden="true"></span>
             <div><b data-src-n>Tastatur</b><span data-src-s>Klick in die Bühne, dann W, A, S, D und Pfeiltasten.</span></div>
           </div>
-          <p class="sim-note" data-pad-hint>Funke per USB anstecken bzw. Controller koppeln und einen Stick bewegen oder Knopf drücken. Browser zeigen Controller erst nach einer Eingabe.</p>
+          <p class="sim-note" data-pad-hint>Funke per USB anstecken oder Controller koppeln, dann einen Stick bewegen oder einen Knopf drücken. Browser zeigen Controller erst nach einer Eingabe.</p>
           <div class="sim-field" data-pad-pick hidden>
             <label for="sim-pad">Controller</label>
             <select id="sim-pad" class="sim-sel" data-pad-sel></select>
@@ -413,7 +413,7 @@
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=55bb5b0a"></script>
+<script src="assets/js/data.js?v=55188713"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -423,6 +423,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=27c61f1e"></script>
-<script src="assets/js/sim.js?v=11585a7a" type="module"></script>
+<script src="assets/js/sim.js?v=95c6d293" type="module"></script>
 </body>
 </html>
