@@ -325,3 +325,10 @@ html.sim-hidecur .cdrone,html.sim-hidecur .cdot,html.sim-hidecur .cd-lock{opacit
   .sim-noise{animation:none}
   .sim-wiz-pic *{animation:none!important}
 }
+
+/* ---------- Zustände ---------- */
+.sim-stage.is-demo .sim-touch{display:none}
+.sim-angle[hidden],.sim-field[hidden],.sim-btn[hidden]{display:none}
+.sim-stage.is-flying .st-lbl{opacity:0;transition:opacity .6s}
+.sim-btn.pulse{animation:sim-pulse 1.6s ease-in-out infinite}
+@keyframes sim-pulse{50%{box-shadow:0 0 0 6px rgba(63,224,255,.25)}}

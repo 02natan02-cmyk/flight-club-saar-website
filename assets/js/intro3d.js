@@ -449,15 +449,16 @@ async function buildScene(T, C) {
     uA: U(V3(CA)), uB: U(V3(CB)), uInk: U(V3(CINK)), uDraw: U(0), uPulse: U(0), uWhite: U(0), uGain: U(1), uTime: U(0),
     uScanDir, uScanC, uHalo: U(0), uFlash: U(0)
   };
-  const ringVS = `varying float vAng;varying vec3 vN,vV,vW;
-    void main(){vec4 wp=modelMatrix*vec4(position,1.);vW=wp.xyz;vAng=atan(position.y,position.x);
+  const ringVS = `varying vec2 vL;varying vec3 vN,vV,vW;
+    void main(){vec4 wp=modelMatrix*vec4(position,1.);vW=wp.xyz;vL=position.xy;
       vN=normalize(mat3(modelMatrix)*normal);vV=normalize(cameraPosition-wp.xyz);gl_Position=projectionMatrix*viewMatrix*wp;}`;
   const ringFS = `uniform vec3 uA,uB,uInk;uniform float uDraw,uPulse,uWhite,uGain,uTime,uHalo,uFlash,uScanC;uniform vec2 uScanDir;
-    varying float vAng;varying vec3 vN,vV,vW;
+    varying vec2 vL;varying vec3 vN,vV,vW;
     void main(){
       if(dot(vW.xy,uScanDir)<uScanC)discard;
+      float vAng=atan(vL.y,vL.x);
       float d=abs(mod(vAng-1.5707963+3.14159265,6.2831853)-3.14159265);   // Abstand vom oberen Punkt 0..pi
-      float lim=uDraw*3.1416;float lit=smoothstep(lim+.025,lim-.025,d);
+      float lim=uDraw*3.1416;float soft=uHalo>0.?.22:.025;float lit=smoothstep(lim+soft,lim-soft,d)*smoothstep(0.,.04,uDraw);
       float head=exp(-max(lim-d,0.)*7.)*lit*(1.-smoothstep(.97,1.,uDraw));
       float side=smoothstep(-.55,.55,cos(vAng));
       vec3 col=mix(uA,uB,side);col+=vec3(.25)*(1.-abs(side*2.-1.));
@@ -574,17 +575,17 @@ async function buildScene(T, C) {
 
   /* ---------- Flugbahn (zeitbasiert) und Lage aus Schub = Beschleunigung + Schwerkraft ---------- */
   const pathKeys = [
-    { t: 1.00, v: [-3.4, 1.7, -38] },
-    { t: 1.55, v: [-1.7, 0.75, -18] },
-    { t: 1.95, v: [-0.55, 0.14, -6.8] },
+    { t: 1.00, v: [-9.0, -2.1, -17.5] },
+    { t: 1.45, v: [-4.7, -1.0, -10.2] },
+    { t: 1.85, v: [-1.55, -0.32, -4.7] },
     { t: 2.25, v: [0.0, -0.05, 0.0] },
-    { t: 2.47, v: [0.16, -0.32, 2.35] },
-    { t: 2.70, v: [0.12, 0.3, 3.45] },
-    { t: 2.95, v: [0.0, 1.45, 3.05] },
-    { t: 3.20, v: [-0.12, 2.05, 1.75] },
-    { t: 3.46, v: [-0.08, 1.62, 0.6] },
-    { t: 3.78, v: [0.0, 0.72, 0.55] },
-    { t: 4.08, v: [0.0, 0.16, 0.26] },
+    { t: 2.47, v: [0.14, -0.18, 2.45] },
+    { t: 2.70, v: [0.1, 0.45, 3.65] },
+    { t: 2.95, v: [0.0, 1.55, 3.15] },
+    { t: 3.20, v: [-0.1, 2.12, 1.85] },
+    { t: 3.46, v: [-0.06, 1.66, 0.68] },
+    { t: 3.78, v: [0.0, 0.76, 0.52] },
+    { t: 4.08, v: [0.0, 0.17, 0.25] },
     { t: TL.stop, v: [0, 0, 0], ease: true }
   ];
   const path = makeTrack(pathKeys);
@@ -959,7 +960,8 @@ async function buildScene(T, C) {
   const vis0 = [];
   scene.traverse(o => { vis0.push([o, o.visible]); o.visible = true; });
   placeCamera(TL.bootEnd, 0);
-  try { if (renderer.compileAsync) await renderer.compileAsync(scene, camera); else renderer.compile(scene, camera); } catch (e) { renderer.compile(scene, camera); }
+  const parallel = !!gl.getExtension('KHR_parallel_shader_compile');
+  try { if (parallel && renderer.compileAsync) await renderer.compileAsync(scene, camera); else renderer.compile(scene, camera); } catch (e) { renderer.compile(scene, camera); }
   vis0.forEach(([o, v]) => (o.visible = v));
 
   function dispose() {

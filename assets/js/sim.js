@@ -237,28 +237,31 @@ function init() {
   /* Texturen mit Schrift (nach dem Laden der Vereinsschrift) */
   function textTextures(logo) {
     const big = '"Bebas Neue","Chakra Petch",Impact,sans-serif', hud = '"Chakra Petch",ui-monospace,monospace';
+    /* Beim zweiten Aufruf (Schrift geladen) in dieselben Canvas malen und nur auffrischen */
+    const cnvK = (key, w, h, idx) => { const t = idx == null ? TEX[key] : TEX[key] && TEX[key][idx]; if (t) { const c = t.image, x = c.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.textAlign = 'left'; x.clearRect(0, 0, w, h); return [c, x]; } return cnv(w, h); };
+    const put = (key, c, idx) => { if (idx == null) { if (TEX[key]) TEX[key].needsUpdate = true; else TEX[key] = tex(c); } else { TEX[key] = TEX[key] || []; if (TEX[key][idx]) TEX[key][idx].needsUpdate = true; else TEX[key][idx] = tex(c); } };
     // Banner an der Stirnwand
-    { const [c, x] = cnv(1024, 192); const g = x.createLinearGradient(0, 0, 1024, 0); g.addColorStop(0, '#0b1a33'); g.addColorStop(1, '#10244a'); x.fillStyle = g; x.fillRect(0, 0, 1024, 192);
+    { const [c, x] = cnvK('banner', 1024, 192); const g = x.createLinearGradient(0, 0, 1024, 0); g.addColorStop(0, '#0b1a33'); g.addColorStop(1, '#10244a'); x.fillStyle = g; x.fillRect(0, 0, 1024, 192);
       x.fillStyle = '#3fe0ff'; x.fillRect(0, 184, 1024, 8);
       if (logo) { try { x.drawImage(logo, 28, 22, 148, 148); } catch (e) { } }
       x.fillStyle = '#fff'; x.font = `400 112px ${big}`; x.textBaseline = 'middle'; x.fillText('FLIGHT CLUB SAAR', 200, 82);
       x.fillStyle = '#3fe0ff'; x.font = `600 34px ${hud}`; x.fillText('BRILLE AN, WELT AUS!  ·  E. V.', 204, 152);
-      TEX.banner = tex(c); }
+      put('banner', c); }
     // Startmatte
-    { const [c, x] = cnv(256, 256); x.fillStyle = '#10244a'; x.fillRect(0, 0, 256, 256); x.strokeStyle = '#3fe0ff'; x.lineWidth = 10; x.strokeRect(10, 10, 236, 236);
+    { const [c, x] = cnvK('start', 256, 256); x.fillStyle = '#10244a'; x.fillRect(0, 0, 256, 256); x.strokeStyle = '#3fe0ff'; x.lineWidth = 10; x.strokeRect(10, 10, 236, 236);
       if (logo) { try { x.globalAlpha = .9; x.drawImage(logo, 78, 40, 100, 100); x.globalAlpha = 1; } catch (e) { } }
-      x.fillStyle = '#fff'; x.font = `400 74px ${big}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('START', 128, 196); TEX.start = tex(c); }
+      x.fillStyle = '#fff'; x.font = `400 74px ${big}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('START', 128, 196); put('start', c); }
     // Gate-Nummern
-    TEX.num = [];
-    for (let i = 1; i <= COURSE.length; i++) { const [c, x] = cnv(128, 128); x.fillStyle = '#071225'; x.beginPath(); x.roundRect ? x.roundRect(6, 6, 116, 116, 22) : x.rect(6, 6, 116, 116); x.fill(); x.lineWidth = 6; x.strokeStyle = '#fff'; x.stroke();
-      x.fillStyle = '#fff'; x.font = `400 96px ${big}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(i), 64, 70); TEX.num.push(tex(c)); }
+    for (let i = 1; i <= COURSE.length; i++) { const [c, x] = cnvK('num', 128, 128, i - 1); x.fillStyle = '#071225'; x.beginPath(); x.roundRect ? x.roundRect(6, 6, 116, 116, 22) : x.rect(6, 6, 116, 116); x.fill(); x.lineWidth = 6; x.strokeStyle = '#fff'; x.stroke();
+      x.fillStyle = '#fff'; x.font = `400 96px ${big}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(i), 64, 70); put('num', c, i - 1); }
     // Flagge
-    { const [c, x] = cnv(128, 384); x.clearRect(0, 0, 128, 384); x.beginPath(); x.moveTo(0, 384); x.lineTo(0, 0); x.quadraticCurveTo(110, 0, 124, 90); x.lineTo(110, 384); x.closePath();
+    { const [c, x] = cnvK('flag', 128, 384); x.clearRect(0, 0, 128, 384); x.beginPath(); x.moveTo(0, 384); x.lineTo(0, 0); x.quadraticCurveTo(110, 0, 124, 90); x.lineTo(110, 384); x.closePath();
       const g = x.createLinearGradient(0, 0, 128, 384); g.addColorStop(0, '#3fe0ff'); g.addColorStop(.55, '#1f497d'); g.addColorStop(1, '#0b1a33'); x.fillStyle = g; x.fill();
       x.save(); x.translate(62, 230); x.rotate(-Math.PI / 2); x.fillStyle = '#fff'; x.font = `400 64px ${big}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('FLIGHT CLUB', 0, 0); x.restore();
-      TEX.flag = tex(c); }
+      put('flag', c); }
     // Anzeigetafel
-    { const [c, x] = cnv(512, 240); scoreCtx = { c, x, big, hud }; drawScore(); TEX.score = scoreTex = tex(c); }
+    if (!scoreCtx) { const [c, x] = cnv(512, 240); scoreCtx = { c, x, big, hud }; drawScore(); TEX.score = scoreTex = tex(c); }
+    else drawScore();
   }
   function drawScore() {
     if (!scoreCtx) return; const { c, x, big, hud } = scoreCtx;
@@ -395,7 +398,7 @@ function init() {
         const fg = bars.map(([x, y, w, hh]) => geo(new THREE.BoxGeometry(w, hh, .12), new THREE.Matrix4().multiplyMatrices(M, mtx(x, y, 0))));
         add(merge(fg), g.frame);
         bars.forEach(([x, y, w, hh]) => addOBB(new THREE.Matrix4().multiplyMatrices(M, mtx(x, y, 0)), w / 2, hh / 2, .06));
-        const gl = add(new THREE.PlaneGeometry(2.7, 2.7), g.glow); gl.applyMatrix4(M);
+        const gw = add(new THREE.PlaneGeometry(2.7, 2.7), g.glow); gw.applyMatrix4(M);
         if (d.t !== 'dive') {
           // Pfosten vom Boden bis zum Rahmen, mit Absperrband
           for (const s of [-1, 1]) {
@@ -420,7 +423,7 @@ function init() {
           const p = c.clone().addScaledVector(rad, .8), m = new THREE.Matrix4().makeBasis(tng, rad, new THREE.Vector3().crossVectors(tng, rad)).setPosition(p);
           addOBB(m, .19, .055, .055);
         }
-        const gl = add(new THREE.PlaneGeometry(2.7, 2.7), g.glow); gl.applyMatrix4(M);
+        const gw = add(new THREE.PlaneGeometry(2.7, 2.7), g.glow); gw.applyMatrix4(M);
         const top = c.y - .86; if (top > .05) { metalG.push(geo(new THREE.CylinderGeometry(.03, .03, top, 8), mtx(c.x, top / 2, c.z))); addOBB(mtx(c.x, top / 2, c.z), .035, top / 2, .035); }
         metalG.push(geo(new THREE.CylinderGeometry(.28, .3, .04, 16), mtx(c.x, .02, c.z)));
         signLocal = new THREE.Vector3(0, 1.22, 0);
@@ -516,16 +519,13 @@ function init() {
     camera = new THREE.PerspectiveCamera(80, 1.6, .025, 120);
     hemi = new THREE.HemisphereLight(0xfff4e2, 0x5d5446, 2.3); scene.add(hemi);
     sun = new THREE.DirectionalLight(0xffffff, 1.2); sun.position.set(5, 20, 9); scene.add(sun);
-    makeTextures(); buildHall(); buildCourse(); buildPath(); buildQuads();
+    makeTextures(); textTextures(null); buildHall(); buildCourse(); buildPath(); buildQuads();
     return true;
   }
   /* Schrift-Texturen, sobald die Vereinsschrift und das Logo geladen sind */
   function lateTextures() {
     const logo = new Image(); let done = false;
-    const go = () => { if (done) return; done = true; run('Texte', () => {
-      textTextures(logo.complete && logo.naturalWidth ? logo : null);
-      scene.traverse(o => { if (o.material && o.material.userData && o.material.userData.late) { o.material.map = TEX[o.material.userData.late]; o.material.needsUpdate = true; } });
-    }); };
+    const go = () => { if (done) return; done = true; run('Texte', () => textTextures(logo.complete && (logo.naturalWidth || logo.width) ? logo : null)); };
     logo.onload = logo.onerror = () => { const f = D.fonts && D.fonts.load ? Promise.all([D.fonts.load('400 100px "Bebas Neue"'), D.fonts.load('600 30px "Chakra Petch"')]) : Promise.resolve(); f.then(go, go); setTimeout(go, 2500); };
     logo.src = 'assets/img/logo-mark.svg';
   }
@@ -763,8 +763,8 @@ function init() {
     const zr = zones.l.getBoundingClientRect(); if (!zr.width) return;
     TCH.R = clamp(Math.min(zr.width * 2, zr.height + 64) * .14, 46, 78);
     stage.style.setProperty('--sr', (TCH.R * 2) + 'px');
-    if (TCH.l.id == null) placeStick('l', zr.width * .42, zr.height - TCH.R - 22 + (TCH.thr * 2 - 1) * TCH.R * 0);
-    if (TCH.r.id == null) placeStick('r', zr.width * .58, zr.height - TCH.R - 22);
+    if (TCH.l.id == null) placeStick('l', TCH.R + 30, zr.height - TCH.R - 24);
+    if (TCH.r.id == null) placeStick('r', zr.width - TCH.R - 30, zr.height - TCH.R - 24);
     drawSticks();
   }
   function placeStick(s, x, y) { TCH[s].bx = x; TCH[s].by = y; }
@@ -806,7 +806,7 @@ function init() {
   function setTouch(on) { stage.classList.toggle('is-touch', on); if (on) { IN.src = 'touch'; requestAnimationFrame(stickLayout); updateSrc(); } }
 
   /* ---------- Gamepad API ---------- */
-  const PADS = { st: {}, maps: store.get('fcs-sim-pads', {}), sel: 'auto', idx: -1, hz: 0, hzList: [], lastTs: 0, timer: 0 };
+  const PADS = { st: {}, maps: store.get('fcs-sim-pads', {}), sel: 'auto', idx: -1, hz: 0, hzList: [], lastTs: 0, timer: 0, edges: [] };
   if (!PADS.maps || typeof PADS.maps !== 'object') PADS.maps = {};
   const padsSupported = !!navigator.getGamepads;
   const getPads = () => { try { return padsSupported ? [...navigator.getGamepads()].filter(Boolean) : []; } catch (e) { return []; } };
@@ -847,9 +847,9 @@ function init() {
       if (act) st.last = tnow;
       if (PADS.sel === 'auto' ? act && (big || PADS.idx === gp.index) : PADS.sel === String(gp.index)) { if (PADS.idx !== gp.index) { PADS.idx = gp.index; updateSrc(); } }
       if (gp.index === PADS.idx && !WIZ.on) {
+        const wasLive = live;
         if (act && big) { activity('pad'); }
-        if (isStd(gp) && !padMap(gp) && IN.src === 'pad') edges.forEach(btnEdge);
-        else if (IN.src === 'pad' && edges.includes(9)) start(false);
+        if (wasLive && IN.src === 'pad') { if (isStd(gp) && !padMap(gp)) PADS.edges.push(...edges); else if (edges.includes(9)) PADS.edges.push(9); }
       }
     }
     // getrennte Geräte aufräumen
@@ -889,10 +889,12 @@ function init() {
     IN.lastAct = performance.now();
     if (src !== IN.src) { IN.src = src; if (src === 'touch') setTouch(true); else if (src === 'pad' || (src === 'key' && FINE)) stage.classList.remove('is-touch'); updateSrc(); }
     if (demo.on && src !== 'touch') takeover();
-    if (src !== 'touch' && FINE) D.documentElement.classList.add('sim-hidecur');
+    if (src !== 'touch' && FINE && overStage) D.documentElement.classList.add('sim-hidecur');
   }
+  let overStage = false;
+  stage.addEventListener('pointerenter', () => { overStage = true; });
   stage.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') D.documentElement.classList.remove('sim-hidecur'); });
-  stage.addEventListener('pointerleave', () => D.documentElement.classList.remove('sim-hidecur'));
+  stage.addEventListener('pointerleave', () => { overStage = false; D.documentElement.classList.remove('sim-hidecur'); });
   function composeInput() {
     const s = IN.src === 'pad' && PADS.idx >= 0 ? PADIN : IN.src === 'touch' ? TCH : KB;
     IN.thr = s.thr; IN.yaw = s.yaw; IN.pitch = s.pitch; IN.roll = s.roll;
@@ -959,7 +961,6 @@ function init() {
     btns.full.setAttribute('aria-pressed', String(on));
     if (on) {
       app.classList.remove('panel-open');
-      if (W.innerWidth <= 1100) app.classList.add('no-panel');
       const req = app.requestFullscreen || app.webkitRequestFullscreen;
       if (req) { try { const p = req.call(app, { navigationUI: 'hide' }); if (p && p.then) p.then(lockLandscape, () => { }); else lockLandscape(); } catch (e) { } }
       try { stage.focus({ preventScroll: true }); } catch (e) { }
@@ -1146,7 +1147,7 @@ function init() {
   /* =====================================================================
      Schleife
      ===================================================================== */
-  let raf = 0, last = 0, acc = 0, hzTimer = 0, panelT = 0;
+  let raf = 0, last = 0, acc = 0, hzTimer = 0, panelT = 0, idleR = 0;
   function frame(t) {
     raf = requestAnimationFrame(frame);
     let dt = (t - last) / 1000; last = t;
@@ -1157,6 +1158,7 @@ function init() {
       pollPads();
       if (WIZ.on) wizTick(dt);
       composeInput();
+      if (PADS.edges.length) { const e = PADS.edges.splice(0); e.forEach(btnEdge); }
       if (gl) {
         if (demo.on) { demoStep(RM ? 0 : dt); acc = 0; }
         else if (live) {
@@ -1170,7 +1172,8 @@ function init() {
           if (!P.armed && !P.crashed && performance.now() - IN.lastAct > 75000 && D.activeElement !== stage && !isFull && !WIZ.on) backToDemo();
         }
         animGates(dt, t / 1000);
-        if (stageVis || isFull) { render(demo.on ? 1 : clamp(acc / STEP, 0, 1), dt); qualityTick(dt); }
+        idleR -= dt;
+        if ((stageVis || isFull) && (demo.on || live || idleR <= 0)) { idleR = .5; render(demo.on ? 1 : clamp(acc / STEP, 0, 1), dt); qualityTick(dt); }
       } else qualityTick(dt);
       osdTick(dt);
       panelT -= dt; if (panelT <= 0) { panelT = 1 / 30; panelTick(); }
@@ -1354,7 +1357,7 @@ function init() {
     wizBtn.disabled = !gp; $('[data-map-reset]', panel).disabled = !(gp && padMap(gp));
     if (gp && padMap(gp)) wizBtn.classList.remove('pulse');
     const ch = $('[data-cta-h]', stage);
-    if (ch) ch.textContent = IN.src === 'pad' && gp ? `${padName(gp)} ist bereit: Beweg einen Stick oder drück einen Knopf.` : COARSE && !FINE ? 'Tipp aufs Handy-Vollbild: Zwei Touch-Sticks, Handy quer halten.' : 'Tastatur, Touch, Controller oder Funke: Du kannst sofort loslegen.';
+    if (ch) ch.textContent = IN.src === 'pad' && gp ? `${padName(gp)} ist bereit: Beweg einen Stick oder drück einen Knopf.` : COARSE && !FINE ? 'Am Handy startet der Simulator im Vollbild mit zwei Touch-Sticks. Halt es dabei quer.' : 'Tastatur, Touch, Controller oder Funke: Du kannst sofort loslegen.';
   }
   function fillPadSelect() {
     const list = getPads();
