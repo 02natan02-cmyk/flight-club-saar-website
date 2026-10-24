@@ -1,0 +1,153 @@
+# Gyroflow-Station des Flight Club Saar
+# Startet nur auf Anstoß von Make (workflow_dispatch mit der Auftragsnummer).
+# Holt den Clip aus dem Vereins-OneDrive, stabilisiert ihn mit dem echten Gyroflow (CPU, ohne Bildschirm)
+# und lädt das Ergebnis wieder in den OneDrive. Adressen werden im Protokoll maskiert.
+name: Gyroflow-Station
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Auftragsnummer (16 Zeichen)
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: gyroflow-${{ inputs.job }}
+  cancel-in-progress: false
+env:
+  HOOK: https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i
+  GYROFLOW_TAG: v1.6.3
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - name: Auftrag holen
+        id: auftrag
+        env:
+          JOB: ${{ inputs.job }}
+        run: |
+          set -euo pipefail
+          [[ "$JOB" =~ ^[0-9a-f]{16}$ ]] || { echo "Ungültige Auftragsnummer"; exit 1; }
+          curl -sS -X POST "$HOOK" --data-urlencode a=job --data-urlencode id="$JOB" -o job.json
+          python3 - <<'PY'
+          import json, base64, os, sys
+          try:
+              j = json.load(open('job.json'))
+          except Exception:
+              print('Kein gültiger Auftrag (schon in Arbeit oder unbekannt)'); sys.exit(1)
+          if not j.get('ok'):
+              print('Auftrag abgelehnt'); sys.exit(1)
+          for k in ('dl', 'up'):
+              print(f"::add-mask::{j[k]}")
+          opt = {}
+          try:
+              opt = json.loads(base64.b64decode(j.get('opt') or '').decode() or '{}')
+          except Exception:
+              opt = {}
+          open('dl.txt', 'w').write(j['dl']); open('up.txt', 'w').write(j['up'])
+          json.dump(opt, open('opt.json', 'w'))
+          print('Datei:', j.get('fn', '?'), '| Optionen:', json.dumps(opt))
+          PY
+      - name: Gyroflow und Werkzeuge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libxkbcommon0 libxkbcommon-x11-0 libegl1 libgl1 libfontconfig1 libdbus-1-3 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libxcb-xinerama0 libxcb-randr0 libxcb-render-util0 libxcb-image0 libva2 libvdpau1 ocl-icd-libopencl1 pocl-opencl-icd ffmpeg libc++1 libc++abi1 libunwind8 libxcb-xkb1 libxcb-util1 libx11-xcb1 libsm6 libice6 >/dev/null
+          gh release download "$GYROFLOW_TAG" -R gyroflow/gyroflow --pattern '*inux64.tar.gz' -D gf
+          tar xzf gf/*.tar.gz -C gf
+          test -x gf/Gyroflow/gyroflow
+      - name: Clip laden
+        run: |
+          set -euo pipefail
+          mkdir -p clip
+          curl -sS -L --retry 5 --retry-delay 5 -o clip/eingang.mp4 "$(cat dl.txt)"
+          ls -la clip
+          ffprobe -v error -show_entries format=duration:stream=codec_name,width,height,r_frame_rate -of compact clip/eingang.mp4 | head -6
+      - name: Stabilisieren
+        id: render
+        run: |
+          set -uo pipefail
+          python3 - <<'PY'
+          import json, subprocess
+          o = json.load(open('opt.json'))
+          # Optionen aus dem Clip-Studio: glaettung 0-100 (oder glatt 0-1), horizont an/aus, zoom dynamisch/statisch/aus, aufl original/1080
+          if 'glatt' in o:
+              glatt = float(o.get('glatt') or 0.5)
+          else:
+              glatt = float(o.get('glaettung', 50) or 50) / 100.0
+          glatt = min(max(glatt, 0.05), 1.0)
+          horizont = 100.0 if o.get('horizont') else 0.0
+          zoom = {'dynamisch': 4.0, 'statisch': -1.0, 'aus': 0.0}.get(str(o.get('zoom', 'dynamisch')), 4.0)
+          preset = {"version": 2, "stabilization": {"method": "Default", "smoothing_params": [{"name": "smoothness", "value": glatt}], "horizon_lock_amount": horizont, "horizon_lock_roll": 0.0, "adaptive_zoom_window": zoom}}
+          w = h = 0
+          try:
+              out = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', 'clip/eingang.mp4'], capture_output=True, text=True).stdout.strip().split(',')
+              w, h = int(out[0]), int(out[1])
+          except Exception:
+              pass
+          aufl = o.get('aufl', 'original')
+          ausgabe = {"codec": "H.264/AVC", "use_gpu": False, "audio": True, "bitrate": 100 if max(w, h) >= 3000 else 60}
+          if aufl == '1080' and w and h:
+              s = 1920 / max(w, h)
+              ausgabe.update({"output_width": int(round(w * s / 2) * 2), "output_height": int(round(h * s / 2) * 2), "bitrate": 40})
+          json.dump(preset, open('preset.json', 'w')); json.dump(ausgabe, open('ausgabe.json', 'w'))
+          print('Preset', json.dumps(preset)); print('Ausgabe', json.dumps(ausgabe))
+          PY
+          export QT_QPA_PLATFORM=offscreen
+          START=$(date +%s)
+          ./gf/Gyroflow/gyroflow "$PWD/clip/eingang.mp4" --preset "$(cat preset.json)" -p "$(cat ausgabe.json)" -f -t _stabilisiert 2>&1 | grep -v "\[ERROR\] No cached wgpu\|OpenCL error init_backends\|Failed to initialize wgpu" | tail -40
+          echo "Dauer: $(( $(date +%s) - START )) s"
+          test -s clip/eingang_stabilisiert.mp4 || { echo "Kein Ergebnis"; exit 1; }
+          ls -la clip
+      - name: Ergebnis hochladen
+        env:
+          JOB: ${{ inputs.job }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, json, time, urllib.request, urllib.error
+          up = open('up.txt').read().strip()
+          p = 'clip/eingang_stabilisiert.mp4'; size = os.path.getsize(p)
+          C = 327680 * 30
+          item = None
+          with open(p, 'rb') as f:
+              pos = 0
+              while pos < size:
+                  f.seek(pos); data = f.read(min(C, size - pos)); end = pos + len(data) - 1
+                  for versuch in range(6):
+                      req = urllib.request.Request(up, data=data, method='PUT', headers={'Content-Range': f'bytes {pos}-{end}/{size}', 'Content-Length': str(len(data))})
+                      try:
+                          with urllib.request.urlopen(req, timeout=300) as r:
+                              body = r.read().decode() or '{}'
+                              if r.status in (200, 201):
+                                  item = json.loads(body).get('id')
+                              break
+                      except urllib.error.HTTPError as e:
+                          if e.code == 416 or e.code >= 500:
+                              time.sleep(2 ** versuch); continue
+                          raise
+                      except Exception:
+                          time.sleep(2 ** versuch)
+                  pos = end + 1
+                  print(f'{pos * 100 // size} %')
+          if not item:
+              raise SystemExit('Upload ohne Datei-ID')
+          open('item.txt', 'w').write(item)
+          PY
+          curl -sS -X POST "$HOOK" --data-urlencode a=fertig --data-urlencode id="$JOB" --data-urlencode item="$(cat item.txt)"
+      - name: Fehler melden
+        # Nur wenn dieser Lauf den Auftrag wirklich übernommen hat (sonst gehört er einem anderen Lauf).
+        if: failure() && steps.auftrag.outcome == 'success'
+        env:
+          JOB: ${{ inputs.job }}
+          RENDER: ${{ steps.render.outcome }}
+        run: |
+          if [ "$RENDER" = "failure" ]; then
+            MSG="Gyroflow konnte den Clip nicht stabilisieren. Meist fehlen die Gyro-Daten in der Datei: Bei DJI O3/O4/Avata muss EIS (RockSteady) aus sein, bei GoPro HyperSmooth aus. Kameras ohne Gyro-Daten brauchen das Blackbox-Log dazu."
+          else
+            MSG="Technischer Fehler beim Laden oder Speichern des Clips. Bitte lade ihn später noch einmal hoch."
+          fi
+          curl -sS -X POST "$HOOK" --data-urlencode a=fehler --data-urlencode id="$JOB" --data-urlencode msg="$MSG" || true
