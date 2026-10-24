@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="de" class="no-js">
+<head>
+<meta charset="utf-8">
+<script data-fe="intro">try{var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="back_forward")sessionStorage.removeItem("fcs-intro")}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FPV-Simulator · Flight Club Saar e. V.</title>
+<meta name="description" content="FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#040912">
+<link rel="canonical" href="https://02natan02-cmyk.github.io/flight-club-saar-website/simulator.html">
+<meta property="og:type" content="website"><meta property="og:locale" content="de_DE"><meta property="og:site_name" content="Flight Club Saar e. V.">
+<meta property="og:title" content="FPV-Simulator · Flight Club Saar e. V."><meta property="og:description" content="FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.">
+<meta property="og:url" content="https://02natan02-cmyk.github.io/flight-club-saar-website/simulator.html"><meta property="og:image" content="https://02natan02-cmyk.github.io/flight-club-saar-website/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fcs.css?v=befd523c">
+<link rel="stylesheet" href="assets/css/sim.css?v=76e2809b">
+</head>
+<body>
+<a class="sr" href="#inhalt">Zum Inhalt springen</a>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
+  <nav class="nav-links" aria-label="Hauptmenü"><a href="hallenfliegen.html">Hallenfliegen</a><a href="spots.html">Spots</a><a href="wissen.html">FPV-Wissen</a><a href="hilfe.html">Technik-Hilfe</a><a href="filmen.html">Clip-Studio</a><a href="crew.html">Crew</a></nav>
+  <a class="btn solid nav-cta" href="mitglied.html">Mitglied werden</a>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Übersicht</span></button>
+</header>
+<div class="menu" id="menu" aria-label="Übersicht aller Seiten"><div class="menu-in wrap"><div class="mg"><p class="mg-h">Fliegen</p><div class="mg-t"><a class="mt" href="hallenfliegen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V10l9-6 9 6v10"/><path d="M8 20v-6h8v6"/><circle cx="12" cy="9.5" r="1.4"/></svg><b>Hallenfliegen</b><span>Tiny Whoops im Winter. Nächster Termin: <span data-next>bald</span></span></a><a class="mt" href="spots.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg><b>Spot-Karte</b><span>Wo wir draußen fliegen, mit Route und Regeln</span></a><a class="mt" href="mitglied.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.8-1.7 2-2.4 3.2-2.4s2.4.7 3.2 2.4M14.5 10h4M14.5 13.5h3"/></svg><b>Mitglied werden</b><span>Antrag online in wenigen Minuten</span></a></div></div><div class="mg"><p class="mg-h">Lernen & Filmen</p><div class="mg-t"><a class="mt" href="wissen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M7 10.5V15c0 1.7 2.2 3 5 3s5-1.3 5-3v-4.5"/></svg><b>FPV-Wissen</b><span>Drohne in 3D, Schaltplan, Kanäle, erster Flug</span></a><a class="mt" href="hilfe.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3.5 17.5 6.5 20.5l5.7-5.7a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.6-.6-2.6 2.6-2.2z"/></svg><b>Technik-Hilfe</b><span>Kopter armt nicht? Der FPV-Doktor hilft</span></a><a class="mt" href="filmen.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/><circle cx="9.5" cy="12" r="2.4"/></svg><b>Clip-Studio & Filmen</b><span>Video hochladen, Logo drauf, runterladen. Plus Film-Ratgeber</span></a></div></div><div class="mg"><p class="mg-h">Verein</p><div class="mg-t"><a class="mt" href="crew.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M2.8 19c.9-3 2.9-4.5 5.2-4.5s4.3 1.5 5.2 4.5M13.6 15.2c.8-.6 1.8-1 2.9-1 2 0 3.6 1.3 4.3 3.8"/></svg><b>Crew</b><span>Unsere Piloten, dein Profil, die Pinnwand</span></a><a class="mt" href="markt.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/></svg><b>Biete/Suche</b><span>Kopter, Brillen und Teile von Piloten für Piloten</span></a><a class="mt" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M7.5 12h9"/></svg><b>Startseite</b><span>Alles über den Flight Club Saar</span></a></div></div><p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V. · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p></div></div>
+<main id="inhalt">
+<section class="pagehead sim-head" aria-labelledby="sim-h1">
+  <div class="sim-head-bg" aria-hidden="true"></div>
+  <div class="wrap sim-head-in">
+    <div class="sim-head-t">
+      <p class="crumb"><a href="index.html">Start</a> / Simulator</p>
+      <h1 class="h1" id="sim-h1">FPV-Simulator</h1>
+      <p class="lede">Flieg mit deiner Funke, einem PlayStation- oder Xbox-Controller, am Handy oder mit der Tastatur durch unsere Turnhalle. Direkt im Browser, ohne Installation.</p>
+    </div>
+    <div class="btns sim-head-b">
+      <button type="button" class="btn solid" data-sim-start>Simulator starten <span class="arr" aria-hidden="true">→</span></button>
+      <a class="btn ghost" href="#funken">Welche Funke geht?</a>
+    </div>
+  </div>
+</section>
+
+<section class="sim" id="simulator" data-toc="Simulator" aria-labelledby="sim-h2">
+  <h2 class="sr" id="sim-h2">Simulator mit Einstellungen</h2>
+  <div class="sim-wrap">
+    <div class="sim-app" data-sim-app>
+      <!-- Bühne -->
+      <div class="sim-stage" tabindex="0" role="application" aria-roledescription="FPV-Simulator" aria-label="FPV-Simulator, Turnhalle mit acht Gates" aria-describedby="sim-keys">
+        <canvas class="sim-canvas" aria-hidden="true"></canvas>
+        <div class="sim-analog" aria-hidden="true"><i class="sim-noise"></i></div>
+        <div class="sim-flash" aria-hidden="true"></div>
+
+        <div class="sim-osd" aria-hidden="true">
+          <div class="o-tl"><span data-o="mode">ANGLE</span><span data-o="craft">WHOOP</span></div>
+          <div class="o-tr"><span data-o="bat">4.20V</span><span data-o="gate">GATE 0/8</span></div>
+          <div class="o-tc"><b data-o="lap">0:00.00</b><span data-o="laps">LAST --:--.-- · BEST --:--.--</span></div>
+          <div class="o-bl"><span data-o="thr">THR 0%</span><span data-o="spd">0 KM/H</span><span data-o="alt">ALT 0.0M</span></div>
+          <div class="o-br"><span data-o="fps">-- FPS</span><span data-o="hz">IN -- HZ</span><span data-o="time">0:00</span></div>
+          <div class="o-c"><i class="o-cross"></i><i class="o-hor" data-o="hor"></i></div>
+          <p class="o-msg" data-o="msg"></p>
+          <div class="o-arrow" data-o="arrow"><svg viewBox="0 0 40 40"><path d="M8 30L20 8l12 22-12-6z"/></svg><b data-o="arrown">1</b></div>
+        </div>
+
+        <div class="sim-bar" role="toolbar" aria-label="Simulator-Steuerung">
+          <button type="button" class="sb" data-act="arm" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg><span class="sb-t">Armen</span></button>
+          <button type="button" class="sb" data-act="mode"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 12l4-4"/></svg><span class="sb-t" data-mode-t>Angle</span></button>
+          <button type="button" class="sb" data-act="craft"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg><span class="sb-t" data-craft-t>Whoop</span></button>
+          <button type="button" class="sb" data-act="view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="sb-t" data-view-t>FPV</span></button>
+          <button type="button" class="sb" data-act="reset"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg><span class="sb-t">Reset</span></button>
+          <button type="button" class="sb" data-act="panel" aria-expanded="true" aria-controls="sim-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg><span class="sb-t">Einstellungen</span></button>
+          <button type="button" class="sb" data-act="full" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="sb-t">Vollbild</span></button>
+        </div>
+
+        <div class="sim-touch" aria-hidden="true">
+          <div class="st-zone st-l" data-zone="l"><div class="st-base"><i class="st-knob"></i></div><span class="st-lbl">Gas · Gieren</span></div>
+          <div class="st-zone st-r" data-zone="r"><div class="st-base"><i class="st-knob"></i></div><span class="st-lbl">Nicken · Rollen</span></div>
+        </div>
+
+        <div class="sim-cta" data-cta>
+          <p class="sim-cta-k"><span class="dot" aria-hidden="true"></span> Demo-Flug läuft</p>
+          <button type="button" class="btn solid" data-sim-start>Steig ein: Simulator starten <span class="arr" aria-hidden="true">→</span></button>
+          <p class="sim-cta-h" data-cta-h>Tastatur, Touch, Controller oder Funke: Du kannst sofort loslegen.</p>
+        </div>
+
+        <div class="sim-help" data-help hidden>
+          <p data-help-t></p>
+          <button type="button" class="sim-x" data-help-x><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="sr">Hinweis schließen</span></button>
+        </div>
+
+        <p class="sim-toast" role="status" aria-live="polite" data-toast></p>
+        <div class="sim-load" data-load><span class="sim-spin" aria-hidden="true"></span>Halle wird aufgebaut …</div>
+        <div class="sim-nogl" data-nogl hidden>
+          <h3 class="h3">3D geht hier leider nicht</h3>
+          <p>Dein Browser kann kein WebGL anzeigen. Probier eine aktuelle Version von Chrome, Edge, Firefox oder Safari und schalte in den Browser-Einstellungen die Hardware-Beschleunigung ein. Den Funken-Test rechts kannst du trotzdem nutzen.</p>
+        </div>
+      </div>
+
+      <!-- Einstellungen -->
+      <aside class="sim-panel" id="sim-panel" aria-label="Einstellungen">
+        <div class="sim-panel-top">
+          <div class="sim-tabs" role="tablist" aria-label="Einstellungen">
+            <button type="button" role="tab" id="sim-t1" aria-controls="sim-p1" aria-selected="true">Steuerung</button>
+            <button type="button" role="tab" id="sim-t2" aria-controls="sim-p2" aria-selected="false" tabindex="-1">Flugmodus &amp; Rates</button>
+            <button type="button" role="tab" id="sim-t3" aria-controls="sim-p3" aria-selected="false" tabindex="-1">Kamera</button>
+          </div>
+          <button type="button" class="sim-x sim-panel-x" data-panel-x><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="sr">Einstellungen schließen</span></button>
+        </div>
+
+        <!-- Steuerung -->
+        <div class="sim-pane" role="tabpanel" id="sim-p1" aria-labelledby="sim-t1" tabindex="0">
+          <div class="sim-src" data-src>
+            <span class="sim-src-dot" aria-hidden="true"></span>
+            <div><b data-src-n>Tastatur</b><span data-src-s>Klick in die Bühne, dann W, A, S, D und Pfeiltasten.</span></div>
+          </div>
+          <p class="sim-note" data-pad-hint>Funke per USB anstecken bzw. Controller koppeln und einen Stick bewegen oder Knopf drücken. Browser zeigen Controller erst nach einer Eingabe.</p>
+          <div class="sim-field" data-pad-pick hidden>
+            <label for="sim-pad">Controller</label>
+            <select id="sim-pad" class="sim-sel" data-pad-sel></select>
+          </div>
+
+          <div class="sim-live" aria-hidden="true">
+            <div class="sim-stick" data-stick="l"><i></i><span>Gas · Gieren</span></div>
+            <div class="sim-stick" data-stick="r"><i></i><span>Nicken · Rollen</span></div>
+          </div>
+          <div class="sim-chans" data-chans aria-hidden="true"></div>
+          <p class="sim-rate">Eingabe <b data-in-hz>--</b> Hz · Bild <b data-in-fps>--</b> fps</p>
+
+          <div class="btns sim-btns">
+            <button type="button" class="btn solid sim-btn" data-wiz-open>Funke einrichten</button>
+            <button type="button" class="btn ghost sim-btn" data-map-reset>Zuordnung zurücksetzen</button>
+          </div>
+
+          <div class="sim-field">
+            <label for="sim-dz">Totzone <output data-out="dz">5 %</output></label>
+            <input type="range" id="sim-dz" class="sim-range" min="0" max="20" step="1" value="5" data-set="dz">
+          </div>
+
+          <!-- Assistent -->
+          <div class="sim-wiz" data-wiz hidden>
+            <p class="sim-wiz-n">Schritt <b data-wiz-i>1</b> von <b data-wiz-c>8</b></p>
+            <h3 class="sim-wiz-t" data-wiz-t tabindex="-1">Sticks loslassen</h3>
+            <p class="sim-wiz-d" data-wiz-d></p>
+            <svg class="sim-wiz-pic" data-wiz-pic viewBox="0 0 220 110" aria-hidden="true">
+              <rect x="6" y="6" width="208" height="98" rx="22" class="wz-body"/>
+              <rect x="30" y="20" width="70" height="70" rx="12" class="wz-gim"/>
+              <rect x="120" y="20" width="70" height="70" rx="12" class="wz-gim"/>
+              <circle cx="65" cy="55" r="9" class="wz-dot" data-wz="l"/>
+              <circle cx="155" cy="55" r="9" class="wz-dot" data-wz="r"/>
+              <rect x="98" y="10" width="24" height="10" rx="4" class="wz-sw" data-wz="sw"/>
+            </svg>
+            <div class="sim-raw" data-wiz-raw aria-hidden="true"></div>
+            <p class="sim-wiz-ok" data-wiz-ok aria-live="polite"></p>
+            <div class="btns sim-btns">
+              <button type="button" class="btn solid sim-btn" data-wiz-next>Weiter</button>
+              <button type="button" class="btn ghost sim-btn" data-wiz-skip>Überspringen</button>
+              <button type="button" class="btn ghost sim-btn" data-wiz-cancel>Abbrechen</button>
+            </div>
+          </div>
+
+          <details class="fold sim-fold">
+            <summary>Tastatur, Touch und Controller</summary>
+            <div class="fold-in">
+              <dl class="sim-keys" id="sim-keys">
+                <div><dt><kbd>W</kbd> <kbd>S</kbd></dt><dd>Gas hoch und runter (bleibt stehen)</dd></div>
+                <div><dt><kbd>A</kbd> <kbd>D</kbd></dt><dd>Gieren, also um die Hochachse drehen</dd></div>
+                <div><dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Nicken: nach vorne und hinten</dd></div>
+                <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Rollen: zur Seite kippen</dd></div>
+                <div><dt><kbd>Umschalt</kbd></dt><dd>gedrückt halten für vollen Ausschlag</dd></div>
+                <div><dt><kbd>Leertaste</kbd></dt><dd>Armen und Disarmen</dd></div>
+                <div><dt><kbd>R</kbd> <kbd>M</kbd> <kbd>C</kbd> <kbd>F</kbd></dt><dd>Reset, Flugmodus, Kamera, Vollbild</dd></div>
+                <div><dt>Touch</dt><dd>Linker Stick: Gas bleibt stehen, Gieren federt zurück. Rechter Stick federt ganz zurück.</dd></div>
+                <div><dt>Controller</dt><dd>Mode 2. Kreuz oder A armt, Kreis oder B Reset, Dreieck oder Y Flugmodus, Viereck oder X Kamera.</dd></div>
+              </dl>
+            </div>
+          </details>
+        </div>
+
+        <!-- Flugmodus & Rates -->
+        <div class="sim-pane" role="tabpanel" id="sim-p2" aria-labelledby="sim-t2" tabindex="0" hidden>
+          <fieldset class="sim-fs">
+            <legend>Flugmodus</legend>
+            <div class="sim-seg">
+              <label><input type="radio" name="sim-mode" value="angle" data-set="mode"><span>Angle</span></label>
+              <label><input type="radio" name="sim-mode" value="acro" data-set="mode"><span>Acro</span></label>
+            </div>
+            <p class="sim-note sm" data-mode-note></p>
+          </fieldset>
+          <fieldset class="sim-fs">
+            <legend>Kopter</legend>
+            <div class="sim-seg">
+              <label><input type="radio" name="sim-craft" value="whoop" data-set="craft"><span>Tiny Whoop (Halle)</span></label>
+              <label><input type="radio" name="sim-craft" value="five" data-set="craft"><span>5 Zoll Freestyle</span></label>
+            </div>
+          </fieldset>
+
+          <div class="sim-angle" data-angle-box>
+            <div class="sim-field">
+              <label for="sim-maxang">Maximaler Winkel <output data-out="maxAngle">55°</output></label>
+              <input type="range" id="sim-maxang" class="sim-range" min="20" max="80" step="1" value="55" data-set="maxAngle">
+            </div>
+            <div class="sim-field">
+              <label for="sim-level">Selbst-Ausrichten <output data-out="level">7</output></label>
+              <input type="range" id="sim-level" class="sim-range" min="2" max="12" step="1" value="7" data-set="level">
+            </div>
+          </div>
+
+          <div class="sim-rates" data-rates-box>
+            <h3 class="sim-h3">Rates</h3>
+            <div class="sim-rt" role="group" aria-label="Rates je Achse">
+              <span></span><b>Roll</b><b>Pitch</b><b>Yaw</b>
+              <span>RC Rate</span>
+              <input type="number" inputmode="decimal" min="0.1" max="2.55" step="0.01" data-rate="roll.rc" aria-label="RC Rate Roll">
+              <input type="number" inputmode="decimal" min="0.1" max="2.55" step="0.01" data-rate="pitch.rc" aria-label="RC Rate Pitch">
+              <input type="number" inputmode="decimal" min="0.1" max="2.55" step="0.01" data-rate="yaw.rc" aria-label="RC Rate Yaw">
+              <span>Super Rate</span>
+              <input type="number" inputmode="decimal" min="0" max="0.95" step="0.01" data-rate="roll.sr" aria-label="Super Rate Roll">
+              <input type="number" inputmode="decimal" min="0" max="0.95" step="0.01" data-rate="pitch.sr" aria-label="Super Rate Pitch">
+              <input type="number" inputmode="decimal" min="0" max="0.95" step="0.01" data-rate="yaw.sr" aria-label="Super Rate Yaw">
+              <span>Expo</span>
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="roll.ex" aria-label="Expo Roll">
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="pitch.ex" aria-label="Expo Pitch">
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="yaw.ex" aria-label="Expo Yaw">
+              <span>max °/s</span>
+              <output data-max="roll">0</output><output data-max="pitch">0</output><output data-max="yaw">0</output>
+            </div>
+            <canvas class="sim-curve" data-curve width="340" height="170" role="img" aria-label="Rate-Kurven für Roll, Pitch und Yaw: Stickweg nach rechts, Drehrate nach oben"></canvas>
+            <div class="btns sim-btns">
+              <button type="button" class="btn ghost sim-btn" data-preset="soft">Sanft</button>
+              <button type="button" class="btn ghost sim-btn" data-preset="std">Standard</button>
+              <button type="button" class="btn ghost sim-btn" data-preset="fast">Schnell</button>
+            </div>
+          </div>
+
+          <h3 class="sim-h3">Gas</h3>
+          <div class="sim-field">
+            <label for="sim-tmid">Gas-Mitte <output data-out="thrMid">50 %</output></label>
+            <input type="range" id="sim-tmid" class="sim-range" min="20" max="80" step="1" value="50" data-set="thrMid">
+          </div>
+          <div class="sim-field">
+            <label for="sim-texpo">Gas-Expo <output data-out="thrExpo">0 %</output></label>
+            <input type="range" id="sim-texpo" class="sim-range" min="0" max="100" step="1" value="0" data-set="thrExpo">
+          </div>
+          <p class="sim-note sm">Schwebegas mit diesem Kopter: ungefähr <b data-hover>41 %</b></p>
+
+          <h3 class="sim-h3">Deine Bestzeiten</h3>
+          <ul class="sim-best" data-best></ul>
+          <button type="button" class="btn ghost sim-btn" data-best-clear>Bestzeiten löschen</button>
+        </div>
+
+        <!-- Kamera -->
+        <div class="sim-pane" role="tabpanel" id="sim-p3" aria-labelledby="sim-t3" tabindex="0" hidden>
+          <fieldset class="sim-fs">
+            <legend>Ansicht</legend>
+            <div class="sim-seg">
+              <label><input type="radio" name="sim-view" value="fpv" data-set="view"><span>FPV-Kamera</span></label>
+              <label><input type="radio" name="sim-view" value="chase" data-set="view"><span>Von hinten</span></label>
+            </div>
+          </fieldset>
+          <div class="sim-field">
+            <label for="sim-tilt">Uptilt im <span data-tilt-mode>Angle</span>-Modus <output data-out="tilt">10°</output></label>
+            <input type="range" id="sim-tilt" class="sim-range" min="0" max="45" step="1" value="10" data-set="tilt">
+          </div>
+          <div class="sim-field">
+            <label for="sim-fov">Sichtfeld (FOV) <output data-out="fov">110°</output></label>
+            <input type="range" id="sim-fov" class="sim-range" min="80" max="140" step="1" value="110" data-set="fov">
+          </div>
+          <fieldset class="sim-fs">
+            <legend>Hallenlicht</legend>
+            <div class="sim-seg">
+              <label><input type="radio" name="sim-light" value="on" data-set="light"><span>Licht an</span></label>
+              <label><input type="radio" name="sim-light" value="off" data-set="light"><span>Licht aus</span></label>
+            </div>
+          </fieldset>
+          <label class="check sim-check"><input type="checkbox" data-set="analog"><span>Analog-Look: Rauschen und Vignette wie bei einer analogen Brille</span></label>
+          <label class="check sim-check"><input type="checkbox" data-set="osd"><span>OSD anzeigen</span></label>
+          <fieldset class="sim-fs">
+            <legend>Bildqualität</legend>
+            <div class="sim-seg four">
+              <label><input type="radio" name="sim-q" value="auto" data-set="quality"><span>Auto</span></label>
+              <label><input type="radio" name="sim-q" value="2" data-set="quality"><span>Hoch</span></label>
+              <label><input type="radio" name="sim-q" value="1" data-set="quality"><span>Mittel</span></label>
+              <label><input type="radio" name="sim-q" value="0" data-set="quality"><span>Niedrig</span></label>
+            </div>
+            <p class="sim-note sm" data-q-note>Auto senkt die Qualität, wenn die Bildrate fällt.</p>
+          </fieldset>
+        </div>
+      </aside>
+    </div>
+    <p class="sim-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>Alles läuft lokal in deinem Browser. Es wird nichts gesendet, Einstellungen und Bestzeiten bleiben auf deinem Gerät.</p>
+  </div>
+</section>
+
+<section class="sec sim-sec" id="funken" data-toc="Funken" aria-labelledby="funken-h">
+  <div class="wrap sim-cols">
+    <div class="sim-cols-h">
+      <h2 class="h2" id="funken-h">Welche Funke geht?</h2>
+      <p class="lede">Fast jede Funke mit USB-C meldet sich am Rechner als Joystick. Dann fliegst du hier mit deinen echten Sticks, in Angle oder Acro.</p>
+      <button type="button" class="btn ghost" data-wiz-jump>Funke einrichten <span class="arr" aria-hidden="true">→</span></button>
+    </div>
+    <div class="sim-folds">
+      <details class="fold">
+        <summary>Funke per USB-C (EdgeTX, OpenTX, FreedomTX)</summary>
+        <div class="fold-in">
+          <p>Radiomaster, Jumper, TBS Tango und Mambo und viele andere: Steck die Funke per USB-C-Kabel an den Rechner und schalte sie ein. Fragt sie nach dem USB-Modus, wähl <b>USB Joystick (HID)</b>. Der Browser sieht sie dann wie einen Gamecontroller.</p>
+          <p>Danach einmal <b>Funke einrichten</b> drücken und den Schritten folgen, das dauert eine halbe Minute. Nimm am besten das Modell, mit dem du auch echt fliegst: Dann sitzen Arm- und Modus-Schalter an derselben Stelle. Am Android-Handy klappt es oft auch mit einem USB-C-Kabel.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>DJI FPV Remote Controller 2 und 3</summary>
+        <div class="fold-in">
+          <p>Steck die Fernsteuerung per USB-C an den Rechner. Sie meldet sich als Joystick. Dann <b>Funke einrichten</b> drücken und den Schritten folgen, der Assistent findet Achsen, Richtung und Weg selbst.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>PlayStation- und Xbox-Controller</summary>
+        <div class="fold-in">
+          <p>Per Bluetooth oder Kabel koppeln, das geht auch am iPhone, iPad und Android-Handy. Die Belegung ist Mode 2 wie bei den meisten Simulatoren: linker Stick Gas und Gieren, rechter Stick Nicken und Rollen.</p>
+          <p>Kreuz oder A armt, Kreis oder B setzt zurück, Dreieck oder Y wechselt den Flugmodus, Viereck oder X die Kamera. Der Gas-Stick federt in die Mitte zurück, Mitte heißt hier also halbes Gas. Mit einer echten Funke fliegt es sich deutlich genauer.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>ExpressLRS als Bluetooth-Joystick</summary>
+        <div class="fold-in">
+          <p>Viele ExpressLRS-Sender ab Version 3 können sich als Bluetooth-Controller melden. Starte im ELRS-Lua-Skript auf der Funke den Punkt <b>BLE Joystick</b> und kopple die Funke dann am Rechner oder Android-Handy wie einen Controller. Danach <b>Funke einrichten</b>.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>iPhone und iPad</summary>
+        <div class="fold-in">
+          <p>Am iPhone und iPad erkennen alle Browser nur Controller, die Apple unterstützt, also zum Beispiel PlayStation- und Xbox-Controller. Funken per Kabel oder Bluetooth gehen dort leider nicht. Flieg dann mit einem Controller oder mit den Touch-Sticks.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>Wird nichts erkannt?</summary>
+        <div class="fold-in">
+          <ul class="sim-list">
+            <li>Einen Stick bewegen oder einen Knopf drücken. Browser zeigen Controller erst nach einer Eingabe.</li>
+            <li>An der Funke <b>USB Joystick (HID)</b> wählen, nicht USB Storage und nicht USB Serial.</li>
+            <li>Kabel tauschen: Manche USB-C-Kabel laden nur und übertragen keine Daten.</li>
+            <li>Chrome und Edge klappen am zuverlässigsten, Firefox und Safari gehen meistens auch.</li>
+            <li>Achse falsch herum oder vertauscht? Einfach <b>Funke einrichten</b>, der Assistent erkennt das selbst.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>Ist das nicht zu laggy?</summary>
+        <div class="fold-in">
+          <p>Nein, solange dein Gerät flüssig läuft. Der Simulator liest die Sticks bei jedem Bild direkt vor der Physik-Berechnung. Bei 60 Bildern pro Sekunde kommen so höchstens rund 17 Millisekunden dazu, an einem 120-Hz-Bildschirm die Hälfte. Die Physik selbst rechnet 240-mal pro Sekunde. Bluetooth braucht ein paar Millisekunden mehr als ein Kabel.</p>
+          <p>Unten rechts im OSD siehst du live die Bildrate (FPS) und wie oft neue Stick-Werte ankommen (Hz). So prüfst du selbst, ob alles flüssig ist.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec sim-sec sim-sec-b" id="tipps" data-toc="Tipps" aria-labelledby="tipps-h">
+  <div class="wrap sim-cols">
+    <div class="sim-cols-h">
+      <h2 class="h2" id="tipps-h">Tipps zum Fliegen</h2>
+      <p class="lede">Vom ersten Schweben bis zur sauberen Runde. Und danach ab in die echte Halle.</p>
+      <a class="btn ghost" href="hallenfliegen.html">Termine Hallenfliegen <span class="arr" aria-hidden="true">→</span></a>
+    </div>
+    <div class="sim-folds">
+      <details class="fold">
+        <summary>Angle oder Acro?</summary>
+        <div class="fold-in">
+          <p>Im <b>Angle</b>-Modus gibt der Stick den Neigungswinkel vor. Lässt du los, richtet sich der Kopter von selbst gerade aus. Perfekt zum Reinkommen.</p>
+          <p>Im <b>Acro</b>-Modus gibt der Stick die Drehgeschwindigkeit vor. Der Kopter bleibt in jeder Lage, bis du gegensteuerst. So fliegen die meisten FPV-Piloten, denn nur so gehen Flips, Rolls und flüssige Kurven.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>Schweben lernen</summary>
+        <div class="fold-in">
+          <p>Starte im Angle-Modus mit dem Tiny Whoop. Schieb das Gas langsam hoch, bis er abhebt (bei ungefähr 40 %), und versuch auf einer Höhe zu bleiben. Dann flieg die erste Runde: Das nächste Gate leuchtet hell, die Zahl darüber zeigt die Reihenfolge, die Linie auf dem Boden die Strecke.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>Rates verstehen</summary>
+        <div class="fold-in">
+          <p><b>RC Rate</b> bestimmt, wie schnell der Kopter rund um die Stickmitte dreht. <b>Super Rate</b> macht die äußeren Stickwege schneller, ohne die Mitte nervös zu machen. <b>Expo</b> macht die Mitte noch weicher. Die Zahl <b>max °/s</b> zeigt, wie schnell er bei vollem Ausschlag dreht. Gerechnet wird mit derselben Formel wie in Betaflight.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>Uptilt und Sichtfeld</summary>
+        <div class="fold-in">
+          <p>Je schneller du fliegst, desto weiter neigst du die Kamera nach oben. In der Halle reichen 10 bis 25 Grad, draußen beim schnellen Fliegen eher 30 Grad und mehr. Ein größeres Sichtfeld zeigt mehr von der Halle, lässt aber alles schneller wirken.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>Vom Simulator in die Halle</summary>
+        <div class="fold-in">
+          <p>Wenn du im Simulator sicher Runden drehst, komm zum <a href="hallenfliegen.html">Hallenfliegen</a> vorbei. Hilfe beim Einstellen deines echten Kopters gibt es bei der <a href="hilfe.html">Technik-Hilfe</a>, die Grundlagen bei <a href="wissen.html">FPV-Wissen</a>.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social"><a href="https://www.instagram.com/flightclubsaar/" target="_blank" rel="noopener" aria-label="Instagram @flightclubsaar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="TikTok @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.2v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.6a5.9 5.9 0 1 0 5 5.8V9.1a7.4 7.4 0 0 0 4.3 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5z"/></svg></a><a href="https://www.youtube.com/@flightclubsaar" target="_blank" rel="noopener" aria-label="YouTube @flightclubsaar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a></div></div>
+      <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+    </div>
+    <div class="foot-big" aria-hidden="true">Brille an</div>
+    <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
+  </div>
+</footer>
+<script src="assets/js/data.js?v=55bb5b0a"></script>
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/lib/ScrollTrigger.min.js"></script>
+<script src="assets/lib/SplitText.min.js"></script>
+<script src="assets/lib/ScrambleTextPlugin.min.js"></script>
+<script src="assets/lib/Draggable.min.js"></script>
+<script src="assets/lib/InertiaPlugin.min.js"></script>
+<script src="assets/lib/DrawSVGPlugin.min.js"></script>
+<script src="assets/lib/MotionPathPlugin.min.js"></script>
+<script src="assets/js/fcs.js?v=27c61f1e"></script>
+<script src="assets/js/sim.js?v=970de211" type="module"></script>
+</body>
+</html>

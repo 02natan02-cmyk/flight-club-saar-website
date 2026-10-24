@@ -358,11 +358,13 @@
     const fromTray = br && br.width && br.top < innerHeight + 40 && br.bottom > -40;
     if (!gs() || RM || !im || !im.ok) { s.a = 1; pulse(s); return s; }
     // Liegt die Leiste außer Sicht (Handy), fliegt der Sticker vom oberen Bühnenrand herein
-    const fx = fromTray ? br.left + br.width / 2 : sr.left + sr.width * x, fy = fromTray ? br.top + br.height / 2 : sr.top - 40;
-    const g = document.createElement('div'); g.className = 'dragghost'; g.style.margin = '0'; g.innerHTML = `<img src="${def(k).src}" alt="">`; document.body.appendChild(g);
+    // Mit Seiten-Koordinaten, damit der fliegende Sticker beim Scrollen mitwandert
+    const ox = scrollX, oy = scrollY;
+    const fx = (fromTray ? br.left + br.width / 2 : sr.left + sr.width * x) + ox, fy = (fromTray ? br.top + br.height / 2 : sr.top - 40) + oy;
+    const g = document.createElement('div'); g.className = 'dragghost fly'; g.style.margin = '0'; g.innerHTML = `<img src="${def(k).src}" alt="">`; document.body.appendChild(g);
     const tw = s.w * sr.width;
     gs().fromTo(g, { x: fx, y: fy, width: fromTray ? br.width * .7 : tw * .5, height: fromTray ? br.width * .7 : tw * .5 * im.ar, xPercent: -50, yPercent: -50, rotation: -30, opacity: fromTray ? 1 : 0 },
-      { x: sr.left + x * sr.width, y: sr.top + y * sr.height, width: tw, height: tw * im.ar, rotation: r || 0, opacity: 1, duration: .85, ease: 'expo.inOut',
+      { x: sr.left + x * sr.width + ox, y: sr.top + y * sr.height + oy, width: tw, height: tw * im.ar, rotation: r || 0, opacity: 1, duration: .85, ease: 'expo.inOut',
         onComplete: () => { g.remove(); s.a = 1; } });
     return s;
   }
@@ -581,10 +583,10 @@
     closeSend();
     video.loop = false; video.muted = true; const mute = $('#st-mute'); if (mute) mute.setAttribute('aria-pressed', 'false');
     video.src = S.url;
-    if (!inView(stage)) go($('#st-steps') || wrap, -100);
     try { await once(video, 'loadeddata', 15000); }
     catch (e) {
       S.vw = 16; S.vh = 9; S.dur = 0; layout(); tlDraw(); goState(); steps();
+      if (!inView(stage)) go($('#st-steps') || wrap, -100);
       err('Dein Browser kann dieses Video nicht abspielen. Das passiert zum Beispiel mit HEVC-Videos vom iPhone in manchen Browsern. Du kannst es trotzdem ohne Sticker an den Verein schicken.', '<button class="btn" type="button" id="err-send">Ohne Sticker schicken</button>');
       const es = $('#err-send'); if (es) es.addEventListener('click', () => openSend(f, 'direkt'));
       return;
@@ -599,6 +601,7 @@
     const trim = $('#st-trim'); if (trim) trim.hidden = false;
     tlDraw(); strip(S.url); sumLine(); goState(); steps();
     if (window.ScrollTrigger) ScrollTrigger.refresh();
+    if (!inView(stage)) go($('#st-steps') || wrap, -100);
     S.userPaused = false; video.play().catch(() => {});
     // Hinweis: weiter mit Schritt 2
     flash($('#st-b2'));
@@ -627,8 +630,8 @@
       if (br.top > innerHeight || br.bottom < 0 || sr.bottom < 0 || sr.top > innerHeight) return;
       const g = document.createElement('div'); g.className = 'ghostcur'; g.innerHTML = `<img src="${def(b.dataset.k).src}" alt="">`; document.body.appendChild(g);
       gs().timeline({ onComplete: () => g.remove() })
-        .fromTo(g, { x: br.left + br.width / 2, y: br.top + br.height / 2, scale: .4, opacity: 0 }, { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' })
-        .to(g, { x: sr.left + sr.width * .5, y: sr.top + sr.height * .55, rotation: -8, duration: 1.2, ease: 'power3.inOut' })
+        .fromTo(g, { x: br.left + br.width / 2 + scrollX, y: br.top + br.height / 2 + scrollY, scale: .4, opacity: 0 }, { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' })
+        .to(g, { x: sr.left + sr.width * .5 + scrollX, y: sr.top + sr.height * .55 + scrollY, rotation: -8, duration: 1.2, ease: 'power3.inOut' })
         .to(g, { scale: 1.3, opacity: 0, duration: .4, ease: 'power2.in' });
     };
     run(); hintLoop = setInterval(run, 7000);
@@ -907,9 +910,10 @@
       bx.hidden = false;
     }
     const p = $('#cf-pilot'); if (p && !p.value && S.ln.name.trim() && S.ln.name !== 'Dein Pilotenname') p.value = S.ln.name.trim();
-    if (gs() && !RM) gs().from(form, { y: 14, opacity: 0, duration: .55, ease: 'expo.out', clearProps: 'all' });
-    setTimeout(() => { if (!inView(form)) go(form, -120); if (p) p.focus({ preventScroll: true }); }, 60);
-    if (window.ScrollTrigger) setTimeout(() => ScrollTrigger.refresh(), 200);
+    // Erst neu messen, dann scrollen: ein späteres refresh() würde das sanfte Scrollen abbrechen
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+    if (gs() && !RM) gs().from(form, { y: 14, opacity: 0, duration: .55, ease: 'expo.out', clearProps: 'transform,opacity' });
+    setTimeout(() => { const r = form.getBoundingClientRect(); if (r.top < 60 || r.top > innerHeight * .55) go(form, -130); if (p) p.focus({ preventScroll: true }); }, 60);
   }
   function waLinks() {
     const p = ($('#cf-pilot') || {}).value || '';

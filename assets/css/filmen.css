@@ -64,11 +64,14 @@
 .fm-ch-l{margin:0;font-size:clamp(15.5px,1.3vw,18px);line-height:1.55;color:#c9d8ec;max-width:62ch}
 @media (max-width:860px){.fm-ch{grid-template-columns:minmax(0,1fr)}}
 .fm-more{margin-top:clamp(12px,1.6vw,16px)}
-details.fm-more>summary{font-size:clamp(14px,1.25vw,16px);letter-spacing:.06em;padding:16px 20px}
-details.fm-more>.fold-in{display:grid;gap:clamp(14px,2vw,22px)}
+details.fm-more{border:0;background:none;border-radius:0;overflow:visible}
+details.fm-more>summary{font-size:clamp(14px,1.25vw,16px);letter-spacing:.06em;padding:16px 20px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,rgba(16,36,74,.5),rgba(8,18,38,.6));transition:border-color .25s,background-color .25s}
+details.fm-more>summary:hover{border-color:rgba(63,224,255,.45)}
+details.fm-more[open]>summary{margin-bottom:16px;border-color:rgba(63,224,255,.45)}
+details.fm-more>.fold-in{display:grid;gap:clamp(14px,2vw,22px);padding:0}
 .fm-more .fm-two,.fm-more .fm-ndtips,.fm-more .fm-lenscards,.fm-more .fm-vs,.fm-more .fm-stabtips,.fm-more .fm-alt,.fm-more .fm-subh,.fm-more .fm-styles,.fm-more .fm-exp,.fm-more .fm-rule,.fm-more .fm-colgrid{margin:0}
 .fm-more-l{margin:0;color:#c9d8ec;max-width:70ch}
-@media (max-width:620px){details.fm-more>summary{padding:14px 16px}details.fm-more>.fold-in{padding:0 12px 14px}}
+@media (max-width:620px){details.fm-more>summary{padding:14px 16px}}
 .fm-clap{position:relative;display:inline-block;width:30px;height:24px;margin-top:8px;border-radius:3px;background:repeating-linear-gradient(135deg,#fff 0 5px,#0b1324 5px 10px) top/100% 7px no-repeat,#0b1324;border:1.5px solid #fff;flex:none}
 .fm-clap i{position:absolute;left:-1.5px;right:-1.5px;top:-8px;height:7px;border:1.5px solid #fff;border-radius:2px;background:repeating-linear-gradient(-45deg,#fff 0 5px,#0b1324 5px 10px);transform-origin:0 100%;transform:rotate(-24deg);transition:transform .35s cubic-bezier(.6,0,.4,1.4)}
 .fm-slate.snap .fm-clap i{transform:rotate(0)}
@@ -490,7 +493,7 @@ fieldset legend{margin-bottom:8px;padding:0}
 .fm-ck-st{margin:0;font-size:13px;letter-spacing:.2em;color:var(--amber)}
 .fm-ck-st.ok{color:var(--green)}
 .fm-ck-groups{position:relative;display:grid;gap:12px}
-.fm-ck-groups .fm-hint{right:0;top:-6px}
+.fm-ck-groups .fm-hint{right:10px;top:auto;bottom:-16px}
 .fm-ck-g .check.scan{border-color:rgba(63,224,255,.7);box-shadow:0 0 0 1px rgba(63,224,255,.35) inset,0 0 18px rgba(63,224,255,.18)}
 .fm-ck-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .fm-ck-tabs button{display:grid;justify-items:center;gap:3px;padding:10px 6px;border-radius:12px;border:1px solid var(--line-hi);background:rgba(3,8,18,.55);color:#cfe0f5;font:700 13px/1.15 var(--hud);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:border-color .25s,background-color .25s,color .25s}
@@ -553,7 +556,7 @@ fieldset legend{margin-bottom:8px;padding:0}
 .fm-ask span{margin-top:4px;font:600 10.5px var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--sig)}
 .fm-ask a:hover,.fm-ask a:focus-visible,.fm-ask a.hot{border-color:var(--sig);transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(63,224,255,.7)}
 .fm-ask a:hover img,.fm-ask a:focus-visible img,.fm-ask a.hot img{opacity:.9;transform:scale(1.06)}
-@media (max-width:620px){.fm-ask{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.fm-ask a{min-height:112px;padding:10px 10px 11px;border-radius:12px}.fm-ask b{font-size:13.5px}.fm-ask span{font-size:9.5px;letter-spacing:.1em}.fm-ask .fm-hint{top:-40px;right:0}}
+@media (max-width:620px){.fm-ask{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.fm-ask a{min-height:112px;padding:10px 10px 11px;border-radius:12px}.fm-ask b{font-size:13.5px}.fm-ask span{font-size:9.5px;letter-spacing:.1em}.fm-ask .fm-hint{top:auto;bottom:-16px;right:auto;left:50%;translate:-50% 0}}
 
 /* Kompaktere Werkzeuge im sichtbaren Teil der Kapitel */
 .fm-sim,.fm-fov,.fm-shake,.fm-ndcalc,.fm-moves{margin-top:0}

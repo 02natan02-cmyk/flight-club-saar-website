@@ -96,6 +96,7 @@ main [hidden]{display:none!important}
 .ghostcur img{width:100%;height:100%;object-fit:contain}
 .dragghost{position:fixed;left:0;top:0;z-index:300;pointer-events:none;width:96px;height:96px;margin:-48px 0 0 -48px;filter:drop-shadow(0 12px 22px rgba(0,0,0,.6));opacity:.92}
 .dragghost img{width:100%;height:100%;object-fit:contain}
+.dragghost.fly,.ghostcur{position:absolute}
 
 /* Transport */
 .st-transport{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
@@ -242,7 +243,8 @@ details.st-opt>.fold-in{display:grid;gap:14px;padding:0 16px 16px}
 .sf-file svg{width:22px;height:22px;fill:none;stroke:var(--sig);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .sf-file .tag{font-style:normal}
 .sf-hidden{display:block}
-.sf-hidden:not(.bad){height:0;overflow:hidden;margin:-7px 0}
+.sf-hidden:not(.bad){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.st-b3 .sendform{position:relative}
 .field input.sr{width:1px!important;height:1px!important;padding:0!important;border:0!important;min-height:0!important}
 .sendform .field label small{font-weight:500;letter-spacing:.08em;color:var(--mute);text-transform:none}
 .sf-collab{margin:-4px 0 0;font-size:14px;line-height:1.5;color:#c9d8ec}
@@ -278,6 +280,10 @@ details.st-opt>.fold-in{display:grid;gap:14px;padding:0 16px 16px}
 .tkc>span:not(.tk-ic){font-size:14.5px;line-height:1.5;color:#c9d8ec}
 .tkc em{font:600 12px var(--hud);font-style:normal;letter-spacing:.1em;color:var(--sig)}
 .st-tk-more .fold-in{display:grid;gap:12px}
+details.st-tk-more{border:0;background:none;border-radius:0;overflow:visible}
+details.st-tk-more>summary{border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,rgba(16,36,74,.5),rgba(8,18,38,.6));font-size:clamp(14px,1.25vw,16px);letter-spacing:.06em;padding:16px 20px}
+details.st-tk-more[open]>summary{margin-bottom:12px;border-color:rgba(63,224,255,.45)}
+details.st-tk-more>.fold-in{padding:0}
 .st-tk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media (max-width:760px){.st-tk-grid{grid-template-columns:minmax(0,1fr)}}
 .st-tk-grid article{padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(3,8,18,.45)}

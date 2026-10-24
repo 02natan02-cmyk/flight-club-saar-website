@@ -247,6 +247,16 @@
     let j = {}; try { j = await res.json(); } catch (e) {}
     return { ok: res.ok && String(j.success) !== 'false', j };
   };
+  // Kurze Nachricht an den Vorstand ohne sichtbares Formular (z. B. „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
+  FCS.notify = async (subject, fields = {}) => {
+    const mail = (D.verein || {}).formMail || 'info@falcon-eye.de';
+    const body = Object.assign({ _subject: subject, _template: 'table', _captcha: 'false', Seite: location.href }, fields);
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/' + mail, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });
+      let j = {}; try { j = await res.json(); } catch (e) {}
+      return { ok: res.ok && String(j.success) !== 'false' };
+    } catch (e) { return { ok: false }; }
+  };
   function forms() {
     $$('form[data-fcs-form]').forEach(f => {
       f.addEventListener('submit', async e => {
@@ -276,6 +286,78 @@
     if (first) { first.focus({ preventScroll: true }); FCS.scrollTo(first, -160); return false; }
     return true;
   }
+  /* ---------- Live-Beiträge (Make: Markt, Pinnwand, Spots, Termine) ----------
+     FCS.board.list(b)            → [{id,b,art,kat,titel,t,preis,zustand,ort,kontakt,link,n,ig,st,th,nf,d}] neueste zuerst; b ist ein Präfix ('markt', 'pinnwand', 'spot:', 'spot:eiweiler', 'termin:')
+     FCS.board.add(fields, files) → {ok, id, pw}  fields: b (Pflicht), n (Pflicht), pw (Löschcode, sonst automatisch), titel, t, art, kat, preis, zustand, ort, kontakt, link, ig, st
+                                    files: bis zu 3 Bild-Dateien; werden im Browser verkleinert (720 px, Vorschaubild 200 px)
+     FCS.board.del(id, pw)        → {ok} oder {ok:false, err:'code'}
+     FCS.board.foto(id, i)        → Bild-URL (direkt in <img src> nutzbar, wird vom Browser gecacht)
+     FCS.board.mine()             → {id: {pw, b, t}} Beiträge, die auf diesem Gerät erstellt wurden (Löschcode gemerkt) */
+  FCS.board = (() => {
+    const url = () => ((D.api || {}).beitraege || '');
+    const KEY = 'fcs-meine-beitraege';
+    const cache = new Map();
+    const sig = (ms) => { const c = new AbortController(); setTimeout(() => c.abort(), ms); return c.signal; };
+    const hex = async (t) => { const b = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); };
+    const mine = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } };
+    const remember = (id, v) => { try { const m = mine(); if (v) m[id] = v; else delete m[id]; localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} };
+    const code = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const r = crypto.getRandomValues(new Uint8Array(6)); return [...r].map(x => a[x % a.length]).join(''); };
+    const shrink = (file, max, q) => new Promise((res, rej) => {
+      const im = new Image(), u = URL.createObjectURL(file);
+      im.onload = () => {
+        const s = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+        const cv = document.createElement('canvas'); cv.width = Math.round(im.naturalWidth * s); cv.height = Math.round(im.naturalHeight * s);
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(u);
+        let d = cv.toDataURL('image/webp', q); if (!d.startsWith('data:image/webp')) d = cv.toDataURL('image/jpeg', q);
+        res(d);
+      };
+      im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('bild')); };
+      im.src = u;
+    });
+    async function list(b = '', { fresh = false } = {}) {
+      if (!url()) return [];
+      const ck = 'fcs-b:' + b;
+      if (!fresh) {
+        if (cache.has(ck)) return cache.get(ck);
+        try { const s = JSON.parse(sessionStorage.getItem(ck) || 'null'); if (s && Date.now() - s.at < 120000) { cache.set(ck, s.list); return s.list; } } catch (e) {}
+      }
+      const r = await fetch(url() + '?a=list&b=' + encodeURIComponent(b), { signal: sig(12000), credentials: 'omit' });
+      const j = await r.json(); const out = Array.isArray(j.list) ? j.list.filter(x => x && x.id) : [];
+      cache.set(ck, out); try { sessionStorage.setItem(ck, JSON.stringify({ at: Date.now(), list: out })); } catch (e) {}
+      return out;
+    }
+    const drop = () => { cache.clear(); try { Object.keys(sessionStorage).filter(k => k.startsWith('fcs-b:')).forEach(k => sessionStorage.removeItem(k)); } catch (e) {} };
+    async function add(fields, files = []) {
+      if (!url()) return { ok: false, err: 'aus' };
+      const f = Object.assign({}, fields); f.pw = String(f.pw || '').trim() || code();
+      const p = new URLSearchParams();
+      Object.entries(f).forEach(([k, v]) => { if (v != null && v !== '') p.append(k, String(v)); });
+      p.set('a', 'add'); p.set('web', ''); p.set('k', (await hex(`${f.b}|${f.n}|fcs-beitrag-2026`)).slice(0, 10));
+      const imgs = [...files].filter(Boolean).slice(0, 3);
+      if (imgs.length) {
+        // Größen passend zu den Grenzen im Make-Szenario: Vorschaubild < 40 000 Zeichen, Foto < 180 000 Zeichen
+        const fit = async (file, steps, limit) => { let d = ''; for (const [mx, q] of steps) { d = await shrink(file, mx, q); if (d.length < limit) return d; } return d.length < limit ? d : ''; };
+        const th = await fit(imgs[0], [[200, .55], [160, .45], [120, .4]], 38000); if (th) p.set('th', th);
+        let n = 0;
+        for (let i = 0; i < imgs.length; i++) { const d = await fit(imgs[i], [[720, .62], [720, .5], [600, .45], [480, .4]], 170000); if (!d) continue; p.set('m', d.slice(5, d.indexOf(';'))); p.set('f' + n++, d.slice(d.indexOf(',') + 1)); }
+      }
+      let txt = '';
+      try { const r = await fetch(url(), { method: 'POST', body: p, signal: sig(30000), credentials: 'omit' }); txt = await r.text(); } catch (e) { return { ok: false, err: 'netz' }; }
+      let j = {}; try { j = JSON.parse(txt); } catch (e) { return { ok: false, err: 'abgelehnt' }; }
+      if (j.ok && j.id) { remember(j.id, { pw: f.pw, b: f.b, t: f.titel || f.t || '', d: new Date().toISOString().slice(0, 10) }); drop(); return { ok: true, id: j.id, pw: f.pw }; }
+      return { ok: false, err: 'abgelehnt' };
+    }
+    async function del(id, pw) {
+      if (!url()) return { ok: false, err: 'aus' };
+      let j = {};
+      try { const r = await fetch(url() + '?a=del&id=' + encodeURIComponent(id) + '&pw=' + encodeURIComponent(String(pw || '').trim()), { signal: sig(15000), credentials: 'omit' }); j = JSON.parse(await r.text()); } catch (e) { return { ok: false, err: 'netz' }; }
+      if (j.ok) { remember(id, null); drop(); }
+      return j.ok ? { ok: true } : { ok: false, err: j.err || 'code' };
+    }
+    const foto = (id, i = 0) => url() + '?a=foto&id=' + encodeURIComponent(id) + '&i=' + i;
+    return { list, add, del, foto, mine, code, on: () => !!url() };
+  })();
+
   FCS.validate = validate;
   FCS.checks = {
     iban: (v) => {
