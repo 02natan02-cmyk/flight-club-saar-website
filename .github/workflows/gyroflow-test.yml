@@ -26,13 +26,12 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq libxkbcommon0 libxkbcommon-x11-0 libegl1 libgl1 libfontconfig1 libdbus-1-3 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libxcb-xinerama0 libxcb-randr0 libxcb-render-util0 libxcb-image0 libva2 libvdpau1 ocl-icd-libopencl1 pocl-opencl-icd ffmpeg xvfb libc++1 libc++abi1 libunwind8 libxcb-xkb1 libxcb-util1 libx11-xcb1 libsm6 libice6 >/dev/null
           pip install -q gdown
-      - name: Testclip DJI Avata (Gyroflow-Testdaten)
+      - name: Testclip GoPro Hero 6 (Gyroflow-Testdaten)
         run: |
           mkdir clips && cd clips
-          gdown -q 1s8BkMyyFq1aqnfIGlyRSvhm0KFXzdYbW -O avata.mp4
+          gdown -q 1_gEzRlw9B38FEf3xdxxEsS9G4v_kavNX -O avata.mp4
           ls -la
           ffprobe -v error -show_entries format=duration:stream=index,codec_type,codec_name,width,height,r_frame_rate -of compact avata.mp4 | head -10
-          ffmpeg -v error -y -i avata.mp4 -t 8 -map 0 -c copy -copy_unknown -map_metadata 0 kurz.mp4 || true
           ls -la
       - name: Stabilisieren (ohne Bildschirm)
         run: |
@@ -47,6 +46,7 @@ jobs:
           timeout 1500 "$BIN" "$PWD/clips/avata.mp4" -f -t _stab -p "{ 'codec': 'H.264/AVC', 'output_width': 1920, 'output_height': 1080 }" > out/render.txt 2>&1; echo "Exit $?" >> out/render.txt
           echo "Dauer: $(( $(date +%s) - START )) s" >> out/render.txt
           cat out_missing.txt >> out/render.txt
+          ffprobe -v error -show_entries format=duration,size:stream=codec_name,width,height,r_frame_rate -of compact clips/avata.mp4 >> out/render.txt
           ls -la clips >> out/render.txt
           nproc >> out/render.txt
           tail -40 out/render.txt
