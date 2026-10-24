@@ -91,3 +91,6 @@ main [hidden]{display:none!important}
 .welcome-card{perspective:1200px;width:min(100%,560px)}
 .welcome-card canvas{width:100%;height:auto;border-radius:20px;box-shadow:0 40px 80px -30px rgba(63,224,255,.45)}
 @media (prefers-reduced-motion:reduce){.mg-live canvas{transition:none}}
+
+/* Tippflächen: mindestens 44 px */
+.btn{min-height:44px}

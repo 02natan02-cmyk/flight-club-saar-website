@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=d7340379">
-<link rel="stylesheet" href="assets/css/hilfe.css?v=4da5e6b3">
+<link rel="stylesheet" href="assets/css/hilfe.css?v=6203c90e">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -85,7 +85,7 @@
         <div class="th-doc-top">
           <p class="th-doc-id" id="doc-title"><span class="dot"></span>FPV-Doktor</p>
           <svg class="th-pulse" viewBox="0 0 160 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 12H52l5-8 7 17 6-14 5 7 4-2h81"/></svg>
-          <p class="th-doc-db"><span data-kb-n>20</span> Themen · <span data-flag-n>26</span> Flags</p>
+          <p class="th-doc-db"><span data-kb-n>20</span> Themen · <span data-flag-n>30</span> Flags</p>
           <button type="button" class="th-restart">Neu starten</button>
         </div>
         <div class="th-log" id="doc-log" role="log" aria-live="polite" aria-labelledby="doc-title" tabindex="0" data-lenis-prevent></div>
@@ -117,7 +117,7 @@
         <div class="th-flagchips" role="group" aria-labelledby="flagchips-l">
           <p class="lbl" id="flagchips-l">Häufige Flags</p>
           <div class="th-fchips"></div>
-          <button type="button" class="th-fmore" aria-expanded="false">Alle 26 Flags zeigen</button>
+          <button type="button" class="th-fmore" aria-expanded="false">Alle 30 Flags zeigen</button>
         </div>
         </div>
       </details>
@@ -136,13 +136,17 @@
         <legend><b>1</b> Deine Brille oder dein Empfänger</legend>
         <div class="th-opts">
           <label class="th-opt" style="--c:#3fe0ff"><input type="radio" name="cmp-rx" value="an"><span><i></i>Analoge Brille oder Analog-Empfänger<small>Analog</small></span></label>
-          <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-rx" value="dg2"><span><i></i>DJI Goggles 2<small>DJI</small></span></label>
-          <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-rx" value="dgi"><span><i></i>DJI Goggles Integra<small>DJI</small></span></label>
           <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-rx" value="dg3"><span><i></i>DJI Goggles 3<small>DJI</small></span></label>
           <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-rx" value="dgn3"><span><i></i>DJI Goggles N3<small>DJI</small></span></label>
-          <label class="th-opt" style="--c:#c78bff"><input type="radio" name="cmp-rx" value="wsg"><span><i></i>Walksnail Avatar Brille<small>Walksnail</small></span></label>
+          <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-rx" value="dg2"><span><i></i>DJI Goggles 2<small>DJI</small></span></label>
+          <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-rx" value="dgi"><span><i></i>DJI Goggles Integra<small>DJI</small></span></label>
+          <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-rx" value="dv2"><span><i></i>DJI FPV Goggles V2<small>DJI</small></span></label>
+          <label class="th-opt" style="--c:#c78bff"><input type="radio" name="cmp-rx" value="wsx"><span><i></i>Walksnail Goggles X<small>Walksnail</small></span></label>
+          <label class="th-opt" style="--c:#c78bff"><input type="radio" name="cmp-rx" value="wsl"><span><i></i>Walksnail Goggles L<small>Walksnail</small></span></label>
+          <label class="th-opt" style="--c:#c78bff"><input type="radio" name="cmp-rx" value="wsg"><span><i></i>Walksnail Avatar HD Goggles (erste Version)<small>Walksnail</small></span></label>
           <label class="th-opt" style="--c:#c78bff"><input type="radio" name="cmp-rx" value="wsv"><span><i></i>Walksnail Avatar VRX<small>Walksnail</small></span></label>
-          <label class="th-opt" style="--c:#3ee08a"><input type="radio" name="cmp-rx" value="hzg"><span><i></i>HDZero Goggle<small>HDZero</small></span></label>
+          <label class="th-opt" style="--c:#3ee08a"><input type="radio" name="cmp-rx" value="hz2"><span><i></i>HDZero Goggle 2<small>HDZero</small></span></label>
+          <label class="th-opt" style="--c:#3ee08a"><input type="radio" name="cmp-rx" value="hzg"><span><i></i>HDZero Goggle (erste Version)<small>HDZero</small></span></label>
           <label class="th-opt" style="--c:#3ee08a"><input type="radio" name="cmp-rx" value="hzv"><span><i></i>HDZero VRX<small>HDZero</small></span></label>
         </div>
       </fieldset>
@@ -171,6 +175,7 @@
         </svg>
         <div class="th-verdict" aria-live="polite">
           <b class="th-big">Wählen</b>
+          <span class="th-sub" hidden></span>
           <p class="th-why">Links die Brille, rechts den Sender am Kopter.</p>
         </div>
         <p class="th-cmp-hint"><span class="dot"></span> <span class="th-cmp-hint-t">Probier es aus: wähl deine Kombination</span></p>
@@ -182,12 +187,13 @@
           <label class="th-opt" style="--c:#3fe0ff"><input type="radio" name="cmp-tx" value="an"><span><i></i>Analog-VTX 5,8 GHz<small>Analog</small></span></label>
           <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-tx" value="o3"><span><i></i>DJI O3 Air Unit<small>DJI</small></span></label>
           <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-tx" value="o4"><span><i></i>DJI O4 Air Unit<small>DJI</small></span></label>
+          <label class="th-opt" style="--c:#ff7a59"><input type="radio" name="cmp-tx" value="o4p"><span><i></i>DJI O4 Air Unit Pro<small>DJI</small></span></label>
           <label class="th-opt" style="--c:#c78bff"><input type="radio" name="cmp-tx" value="ws"><span><i></i>Walksnail Avatar VTX<small>Walksnail</small></span></label>
           <label class="th-opt" style="--c:#3ee08a"><input type="radio" name="cmp-tx" value="hz"><span><i></i>HDZero VTX<small>HDZero</small></span></label>
         </div>
       </fieldset>
     </div>
-    <p class="th-cmp-note" data-reveal>Ohne Gewähr. Hersteller ändern Kompatibilität mit neuer Firmware. Vor dem Kauf immer die aktuelle Liste des Herstellers prüfen.</p>
+    <p class="th-cmp-note" data-reveal>Stand: Oktober 2026, Firmware-Updates können das ändern.</p>
   </div>
 </section>
 
@@ -455,7 +461,7 @@
 <script src="assets/lib/InertiaPlugin.min.js"></script>
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
-<script src="assets/js/fcs.js?v=27c61f1e"></script>
-<script src="assets/js/hilfe.js?v=d25dc434"></script>
+<script src="assets/js/fcs.js?v=1c4550fb"></script>
+<script src="assets/js/hilfe.js?v=3840f160"></script>
 </body>
 </html>

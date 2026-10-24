@@ -282,7 +282,7 @@
               <p class="ws-tk">Das brauchst du</p>
               <ul class="ws-li"><li>Beschleunigungssensor kalibrieren: Drohne gerade hinlegen, dann auf Kalibrieren tippen.</li><li>Drohne in der Hand kippen: Das Modell muss genauso mitkippen.</li><li>Hier stehen auch die Arming-Sperren, also warum die Drohne gerade nicht armt.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
-              <ul class="ws-li bad"><li>Das Modell kippt falsch herum: Board-Ausrichtung im Tab Konfiguration prüfen.</li><li>Auf einem schiefen Tisch kalibriert: Die Drohne driftet im Angle-Modus.</li></ul>
+              <ul class="ws-li bad"><li>Das Modell kippt falsch herum: Board-Ausrichtung im Tab Sensors prüfen. Dort hilft der Assistent „Auto-detect board alignment“.</li><li>Auf einem schiefen Tisch kalibriert: Die Drohne driftet im Angle-Modus.</li></ul>
               <p class="ws-links"><a href="hilfe.html#flagtool">Arming-Sperre nachschlagen <span aria-hidden="true">→</span></a></p>
             </div>
           </div>
@@ -339,12 +339,12 @@
             </div>
             <div class="ws-txt">
               <h3 class="h3">Konfiguration</h3>
-              <p>Grundeinstellungen: wie der Flugcontroller eingebaut ist, wie die Drohne heißt und ab welcher Schräglage sie armt.</p>
+              <p>Grundeinstellungen: wie die Drohne heißt, ab welcher Schräglage sie armt und welche Funktionen an sind (z. B. OSD). Wie der Flugcontroller eingebaut ist, stellst du seit Betaflight 2026.6 im Tab Sensors ein. Hier kannst du es gleich ausprobieren.</p>
               <p class="ws-tk">Das brauchst du</p>
-              <ul class="ws-li"><li>Board-Ausrichtung: Zeigt der Pfeil auf dem Flugcontroller nach vorne, bleibt sie auf 0.</li><li>Ist der Flugcontroller gedreht eingebaut, trägst du den Winkel ein und prüfst im Tab Einrichtung, ob das Modell richtig mitkippt.</li><li>„Zum Armen maximal zulässiger Winkel“: Steht die Drohne schräger (Standard 25°), armt sie nicht.</li></ul>
+              <ul class="ws-li"><li>Board-Ausrichtung (Tab Sensors): Zeigt der Pfeil auf dem Flugcontroller nach vorne, bleibt sie auf 0.</li><li>Ist der Flugcontroller gedreht eingebaut, trägst du den Winkel bei Yaw ein oder lässt ihn vom Assistenten „Auto-detect board alignment“ erkennen. Dann im Tab Einrichtung prüfen, ob das Modell richtig mitkippt.</li><li>„Copter Name“ unter Personalisierung: Der Name erscheint im OSD.</li><li>„Zum Armen maximal zulässiger Winkel“: Steht die Drohne schräger (Standard 25°), armt sie nicht.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
               <ul class="ws-li bad"><li>Flugcontroller gedreht eingebaut, Ausrichtung nicht angepasst: Die Drohne flippt beim Start.</li></ul>
-              <p class="ws-cli">In der CLI: <code>align_board_yaw</code> · <code>small_angle</code> · <code>craft_name</code> <span class="ws-ver-tag">Ort im Menü je nach Version anders</span></p>
+              <p class="ws-cli">In der CLI: <code>align_board_yaw</code> · <code>small_angle</code> · <code>craft_name</code> <span class="ws-ver-tag">App 2026.6: Name und Armwinkel im Tab Konfiguration, Ausrichtung im Tab Sensors</span></p>
             </div>
           </div>
 
@@ -367,7 +367,7 @@
             </div>
             <div class="ws-txt">
               <h3 class="h3">Failsafe</h3>
-              <p>Bestimmt, was passiert, wenn das Funksignal abreißt.</p>
+              <p>Bestimmt, was passiert, wenn das Funksignal abreißt. In der App 2026.6 erscheint dieser Tab erst, wenn du unten in der Seitenleiste den Expertenmodus einschaltest.</p>
               <p class="ws-tk">Das brauchst du</p>
               <ul class="ws-li"><li>Stufe 1: Betaflight wartet kurz, ob das Signal zurückkommt. Standard sind 1,5 Sekunden.</li><li>Stufe 2: Standard ist Drop, die Motoren gehen sofort aus und die Drohne fällt. Möglich sind auch Landen oder die GPS-Rettung, die ein GPS braucht.</li><li>Testen: Props ab, armen, Funke ausschalten. Die Motoren müssen stoppen.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
@@ -486,7 +486,7 @@
               <h3 class="h3">Motoren</h3>
               <p>Motorprotokoll, Drehrichtung und der Motortest.</p>
               <p class="ws-tk">Das brauchst du</p>
-              <ul class="ws-li"><li>Protokoll DShot, meist DShot600.</li><li>Bidirektionales DShot an und die Zahl der Motorpole eintragen (die meisten Motoren haben 14). Dann läuft der RPM-Filter gegen Vibrationen. Dein ESC muss das können.</li><li>Reihenfolge und Drehrichtung mit dem Motortest prüfen, nur ohne Propeller. Standard ist Props in.</li></ul>
+              <ul class="ws-li"><li>Protokoll: Standard ist DSHOT600. Das können alle ESCs mit BLHeli_S, Bluejay, BLHeli_32 und AM32.</li><li>Bidirektionales DShot an und die Zahl der Motorpole eintragen (die meisten Motoren haben 14). Dann läuft der RPM-Filter gegen Vibrationen. Dein ESC muss das können.</li><li>Reihenfolge und Drehrichtung mit dem Motortest prüfen, nur ohne Propeller. Standard ist Props in.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
               <ul class="ws-li bad"><li>Motoren in falscher Reihenfolge oder Richtung: Die Drohne flippt beim Start.</li><li>Bidirektionales DShot an, aber der ESC kann es nicht: Arming-Sperre <code>DSHOT_TELEM</code> (in alten Versionen <code>RPMFILTER</code>).</li></ul>
               <p class="ws-cli">In der CLI: <code>motor_pwm_protocol</code> · <code>dshot_bidir</code> · <code>motor_poles</code> · <code>yaw_motors_reversed</code></p>
@@ -522,7 +522,7 @@
               <p class="ws-tk">Das brauchst du</p>
               <ul class="ws-li"><li>Akkuspannung, am besten pro Zelle, dazu Flugzeit und Warnungen.</li><li>Link-Qualität zeigt, wie gut die Funkverbindung gerade ist.</li><li>Elemente an den Rand schieben, damit die Mitte frei bleibt.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
-              <ul class="ws-li bad"><li>Kein OSD bei digitalem Video: Die MSP-Einstellungen für dein Videosystem fehlen. Schau in die Anleitung des Herstellers.</li></ul>
+              <ul class="ws-li bad"><li>Kein OSD bei digitalem Video: Im Tab Anschlüsse fehlt beim UART des digitalen Senders die Peripherie „VTX (MSP + Displayport)“, oder das Videoformat im OSD-Tab steht nicht auf HD. Bei DJI zusätzlich in der Brille „Custom OSD“ einschalten.</li></ul>
             </div>
           </div>
 
@@ -542,7 +542,7 @@
               <h3 class="h3">Blackbox</h3>
               <p>Ein Flugdatenschreiber: Er zeichnet Gyro, Sticks und Motoren auf.</p>
               <p class="ws-tk">Das brauchst du</p>
-              <ul class="ws-li"><li>Für den Anfang nicht nötig. Spannend, wenn du tunen oder einen Fehler finden willst.</li><li>Gespeichert wird je nach Flugcontroller im Flash-Speicher oder auf einer SD-Karte.</li><li>Auswerten im Blackbox Explorer, seit 2026.6 auch als eigener Tab in der App.</li></ul>
+              <ul class="ws-li"><li>Für den Anfang nicht nötig. Spannend, wenn du tunen oder einen Fehler finden willst.</li><li>Gespeichert wird im Flash-Speicher des Flugcontrollers oder, wenn er einen Kartenslot hat, auf der SD-Karte.</li><li>Auswerten im Blackbox Explorer, seit 2026.6 auch als eigener Tab in der App.</li></ul>
               <p class="ws-tk amber">Typische Fehler</p>
               <ul class="ws-li bad"><li>Speicher voll: Es wird nichts mehr aufgezeichnet. Vor der Testrunde löschen.</li></ul>
             </div>
@@ -573,7 +573,7 @@
       </div>
       <p class="ws-hint ws-hint-tabs" aria-hidden="true">Reiter antippen</p>
     </div>
-    <p class="ws-note">Namen und Orte in der App können sich je nach Version und Sprache unterscheiden. Die Befehle für die CLI sind für Betaflight 2026.6 geprüft (<a href="https://github.com/betaflight/betaflight/tree/2026.6.2" target="_blank" rel="noopener">Quelltext</a>, <a href="https://www.expresslrs.org/quick-start/receivers/configuring-fc/" target="_blank" rel="noopener">ExpressLRS-Doku</a>).</p>
+    <p class="ws-note">Alle Namen und Orte gelten für die Betaflight App 2026.6 mit Betaflight 2026.6. In der deutschen App heißen manche Tabs länger, z. B. „Grundkonfiguration des Copters“ (Konfiguration), „PID-Einstellungen“, „Flugschreiber“ (Blackbox) und „Kommandozeile“ (CLI). Die Befehle für die CLI sind für Betaflight 2026.6 geprüft (<a href="https://github.com/betaflight/betaflight/tree/2026.6.2" target="_blank" rel="noopener">Quelltext</a>, <a href="https://www.expresslrs.org/quick-start/receivers/configuring-fc/" target="_blank" rel="noopener">ExpressLRS-Doku</a>).</p>
   </div>
 </section>
 
@@ -787,7 +787,7 @@
 <script src="assets/lib/InertiaPlugin.min.js"></script>
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
-<script src="assets/js/fcs.js?v=27c61f1e"></script>
+<script src="assets/js/fcs.js?v=1c4550fb"></script>
 <script src="assets/js/werkstatt.js?v=5ab6b329"></script>
 </body>
 </html>

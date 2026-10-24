@@ -587,7 +587,7 @@
     catch (e) {
       S.vw = 16; S.vh = 9; S.dur = 0; layout(); tlDraw(); goState(); steps();
       if (!inView(stage)) go($('#st-steps') || wrap, -100);
-      err('Dein Browser kann dieses Video nicht abspielen. Das passiert zum Beispiel mit HEVC-Videos vom iPhone in manchen Browsern. Du kannst es trotzdem ohne Sticker an den Verein schicken.', '<button class="btn" type="button" id="err-send">Ohne Sticker schicken</button>');
+      err('Dein Browser kann dieses Video nicht abspielen. Das passiert vor allem mit HEVC-Videos (H.265) vom iPhone in Chrome, Firefox oder Edge auf Geräten ohne passenden Video-Chip. Am iPhone stellst du unter Einstellungen, Kamera, Formate auf „Maximale Kompatibilität“, dann filmt es in H.264. Du kannst das Video auch ohne Sticker an den Verein schicken.', '<button class="btn" type="button" id="err-send">Ohne Sticker schicken</button>');
       const es = $('#err-send'); if (es) es.addEventListener('click', () => openSend(f, 'direkt'));
       return;
     }

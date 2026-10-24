@@ -93,7 +93,7 @@
   function review() {
     const f = form(), fd = new FormData(f), skip = ['_subject', '_honey', 'Formular'];
     const rows = []; const seen = {};
-    for (const [k, v] of fd.entries()) { if (skip.includes(k) || v instanceof Blob || !String(v).trim()) continue; if (/Unterschrift/.test(k)) continue; if (k === 'IBAN') { rows.push([k, v.slice(0, 4) + ' •••• •••• ' + v.slice(-4)]); continue; } if (seen[k]) { seen[k][1] += ', ' + v; continue; } const r = [k, String(v)]; seen[k] = r; rows.push(r); }
+    for (const [k, v] of fd.entries()) { if (skip.includes(k) || v instanceof Blob || !String(v).trim()) continue; if (/Unterschrift/.test(k)) continue; if (k === 'IBAN') { const q = String(v).replace(/\s/g, ''); rows.push([k, q.slice(0, 4) + ' •••• •••• ' + q.slice(-4)]); continue; } if (seen[k]) { seen[k][1] += ', ' + v; continue; } const r = [k, String(v)]; seen[k] = r; rows.push(r); }
     const fmtD = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v) ? v.split('-').reverse().join('.') : v;
     $('#review').innerHTML = rows.filter(r => !/einverstanden|anerkannt|Risiko|richtig|Datenschutz/.test(r[0])).map(([k, v]) => `<div><span>${esc(k)}</span><b>${esc(fmtD(v))}</b></div>`).join('') +
       '<p class="rv-edit">Etwas falsch? Tipp oben auf einen Schritt, um ihn zu ändern.</p>';
@@ -172,6 +172,7 @@
     const d = new Date(), today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     $('#a-udat').value = today;
     $('#a-ein').value = today;
+    $('#a-geb').max = today; $('#a-geb').min = '1900-01-01';
     $('#glid').textContent = D.verein.glaeubigerId;
     $('#a-geb').addEventListener('change', u18);
     $$('input[name=Mitgliedschaft]').forEach(i => i.addEventListener('change', summary));
@@ -191,6 +192,14 @@
       if (!check($('.step[data-step="5"]'))) { e.stopImmediatePropagation(); e.preventDefault(); }
     }, true);
     f._extra = () => (sigDirty ? { Unterschrift: sigBlob() } : {});
+    // Sicherheitsnetz: Nimmt der Mailweg den Unterschrift-Anhang nicht an, geht der Antrag ohne Bild raus
+    // und der Vorstand liest in der Mail, dass die Unterschrift nachgeholt werden muss
+    const send0 = FCS.send;
+    FCS.send = async (form, extra = {}) => {
+      let r = await send0(form, extra).catch(() => ({ ok: false }));
+      if (!r.ok && form === f && extra.Unterschrift) r = await send0(form, { Unterschrift: 'Das Bild der Unterschrift konnte nicht angehängt werden, bitte beim Vorstand persönlich nachholen' }).catch(() => ({ ok: false }));
+      return r;
+    };
     f.addEventListener('fcs:sent', () => {
       const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), alias = $('#a-alias').value.trim();
       $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias);

@@ -134,7 +134,7 @@
     const okc = D.crew.filter(c => c.ok), rest = D.crew.length - okc.length;
     const cards = okc.map((c, i) => {
       const name = c.n || c.a, alias = c.n ? c.a : '';
-      const back = [c.seit ? `<span>FPV seit <b>${c.seit}</b></span>` : '', c.stil ? `<span>Stil <b>${c.stil}</b></span>` : '', c.ort ? `<span>Aus <b>${c.ort}</b></span>` : ''].filter(Boolean).join('') || '<span>Mitglied im Flight Club Saar</span>';
+      const back = `<strong class="mc-bn">${name}</strong>${alias ? `<em class="mc-ba">${alias}</em>` : ''}` + ([c.seit ? `<span>FPV seit <b>${c.seit}</b></span>` : '', c.stil ? `<span>Stil <b>${c.stil}</b></span>` : '', c.ort ? `<span>Aus <b>${c.ort}</b></span>` : ''].filter(Boolean).join('') || '<span>Mitglied im Flight Club Saar</span>') + `<span class="mc-br">${c.r || 'Mitglied'} · Crew 2026</span>`;
       return `<div class="mcard${c.v ? ' v' : ''}" tabindex="0" role="button" title="Antippen dreht die Karte um">
         <div class="mc-top"><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Mitgliedskarte<br><b>2026</b></span></div>
         ${c.img ? `<img class="mc-ph" src="${c.img}" alt="" loading="lazy" width="400" height="400">` : ''}<div class="mc-name">${name}</div><div class="mc-alias">${alias || ''}</div>
@@ -143,10 +143,12 @@
     }).join('') + (rest > 0 ? `<div class="mcard more" tabindex="0" role="button" title="Antippen dreht die Karte um"><div class="mc-top"><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Mitgliedskarte<br><b>2026</b></span></div><div class="mc-name">+${rest}</div><div class="mc-alias">weitere Piloten</div><div class="mc-bot"><span>Flight Club Saar e. V.</span><span class="mc-role">Crew 2026</span></div><div class="mc-back"><span>Dabei, bezahlt, <b>ohne Namen</b> auf der Website</span></div><i class="mc-shine"></i></div>` : '') + `<a class="mcard free" href="mitglied.html"><b>+ Du?</b><span>Dein Platz ist frei</span></a>`;
     deck.innerHTML = cards;
     const all = $$('.mcard', deck);
+    const flip = (c, on) => { c.classList.toggle('flip', on); c.setAttribute('aria-pressed', c.classList.contains('flip')); };
     all.forEach(c => {
       if (c.classList.contains('free')) return;
-      c.addEventListener('click', () => c.classList.toggle('flip'));
-      c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.classList.toggle('flip'); } });
+      c.setAttribute('aria-pressed', 'false');
+      c.addEventListener('click', () => flip(c));
+      c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(c); } });
       if (FCS.fine && window.gsap) {
         c.addEventListener('pointermove', e => { const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; gsap.to(c, { rotateY: x * 18, rotateX: -y * 14, duration: .4 }); c.style.setProperty('--sx', (x * 120) + '%'); });
         c.addEventListener('pointerleave', () => gsap.to(c, { rotateY: 0, rotateX: 0, duration: .8, ease: 'elastic.out(1,.5)' }));
@@ -155,7 +157,7 @@
     if (window.gsap && window.ScrollTrigger && !RM) {
       gsap.from(all, { y: 120, rotateX: -50, rotateZ: (i) => (i % 2 ? 6 : -6), opacity: 0, stagger: .07, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: deck, start: 'top 80%', once: true,
         onEnter: () => { // Selbst-Impuls: die erste Karte dreht sich einmal um
-          const f = all[0]; setTimeout(() => { f.classList.add('flip'); setTimeout(() => f.classList.remove('flip'), 1600); }, 1700);
+          const f = all[0]; setTimeout(() => { flip(f, true); setTimeout(() => flip(f, false), 1800); }, 1700);
         } } });
     }
     deck.addEventListener('click', () => { const h = $('#crew-hint'); if (h) h.style.opacity = 0; }, { once: true });
@@ -256,12 +258,13 @@
      Die Punkte sitzen gleichmäßig verteilt, die Kontur bekommt extra Punkte, damit man die Form in einer Sekunde erkennt. */
   async function show() {
     const box = $('#show'), cv = $('#show-cv'); if (!box || !cv) return;
-    const cx = cv.getContext('2d'), cap = $('.show-cap', box);
+    const cx = cv.getContext('2d'), cap = $('.show-cap', box), dotsEl = $('#show-dots');
     const N = SMALL ? 620 : 980;
     let W = 0, H = 0, top = 40, bot = 0; const dpr = Math.min(devicePixelRatio || 1, 2);
     // Freie Fläche für die Formation: unter der OSD-Zeile, über der Beschriftung
-    const size = () => { const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      top = Math.min(56, H * .1); bot = cap ? Math.max(H * .5, cap.offsetTop - 12) : H * .72; };
+    const area = () => { if (cap && dotsEl) cap.style.bottom = (dotsEl.offsetHeight + 22) + 'px';   // Beschriftung immer über den Knöpfen, auch wenn sie umbrechen
+      top = Math.max(58, Math.min(70, H * .1)); bot = cap ? Math.max(H * .45, cap.offsetTop - 12) : H * .72; };
+    const size = () => { const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); area(); };
     size();
     const spr = (c, r) => { const s = document.createElement('canvas'); s.width = s.height = r * 2; const g = s.getContext('2d'); const gr = g.createRadialGradient(r, r, 0, r, r, r); gr.addColorStop(0, '#fff'); gr.addColorStop(.25, c); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, r * 2, r * 2); return s; };
     const SC = spr('rgba(63,224,255,.9)', 9), SA = spr('rgba(255,176,32,.9)', 9), SW = spr('rgba(234,244,255,.9)', 9);
@@ -309,21 +312,21 @@
           g.lineWidth = 12; g.beginPath(); g.moveTo(w - 128, h * .27); g.lineTo(w - 112, h * .05); g.stroke(); g.beginPath(); g.arc(w - 111, h * .06, 13, 0, 7); g.fill(); }, 2.1), n: 'Brille', k: 'FPV-Brille', t: 'Brille an. Welt aus.', u: 'Unser Motto, geflogen als FPV-Brille.' }
     ];
     const dots = $('#show-dots');
-    dots.innerHTML = F.map((f, i) => `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="Formation ${i + 1}: ${f.k}">${f.n}</button>`).join('');
+    dots.innerHTML = F.map((f, i) => `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="${f.n} (Formation ${i + 1}: ${f.k})">${f.n}</button>`).join('');
     const P = Array.from({ length: N }, (_, i) => ({ x: Math.random() * W, y: H + Math.random() * 60, vx: 0, vy: 0, k: .04 + Math.random() * .04, c: i % 11 === 0 ? SA : i % 5 === 0 ? SW : SC, ph: Math.random() * 6.28 }));
     let fi = 0, mx = -999, my = -999, vis = false, running = false, userUntil = 0;
     // Formation in die freie Fläche einpassen, mittig
     const target = (f, p) => { const s = F[f].s, aw = W * .86, ah = Math.max(80, bot - top) * .94; const bw = Math.min(aw, ah * s.aspect), bh = bw / s.aspect; return [(W - bw) / 2 + p[0] * bw, top + (bot - top - bh) / 2 + p[1] * bh]; };
     const setF = (f, user) => { fi = (f + F.length) % F.length; if (user) userUntil = Date.now() + 9000;
       $('#show-t').textContent = F[fi].t; $('#show-s').textContent = F[fi].u; $('#show-f').textContent = (fi + 1) + '/' + F.length; $('#show-k').textContent = F[fi].k;
-      $$('button', dots).forEach((b, k) => b.setAttribute('aria-pressed', k === fi));
+      $$('button', dots).forEach((b, k) => b.setAttribute('aria-pressed', k === fi)); area();
       if (window.gsap && !RM) gsap.fromTo(['#show-t', '#show-k'], { opacity: 0, y: 14, filter: 'blur(6px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .5, stagger: .05 }); };
     dots.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) setF(+b.dataset.i, true); });
     const pt = e => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; const h = $('#show-hint'); if (h) h.classList.add('gone'); };
     box.addEventListener('pointermove', pt); box.addEventListener('pointerdown', pt);
     box.addEventListener('pointerleave', () => { mx = my = -999; });
     ['pointerup', 'pointercancel'].forEach(t => box.addEventListener(t, e => { if (e.pointerType !== 'mouse') mx = my = -999; }));
-    $('#show-n').textContent = N; setF(0);
+    $('#show-n').textContent = N; setF(0); size();
     new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis && !running) { running = true; loop(); } }, { threshold: .05 }).observe(box);
     new ResizeObserver(size).observe(cv);
     // Selbst-Impuls: Formationen wechseln von allein (genug Zeit zum Lesen)
@@ -348,54 +351,234 @@
     }
   }
 
-  /* ---------- Du hast die Funke: Gas geben = vorwärts fliegen ---------- */
+  /* ---------- Du hast die Funke: Gas geben, lenken, durch Gates fliegen ----------
+     Lenken verschiebt und neigt das Kamerabild (wie eine Drohne, die sich in die Kurve legt).
+     Leuchtende Gates kommen auf dich zu: Fadenkreuz rein = Treffer, sonst „Daneben“.
+     Die Seite scrollt normal weiter. Tasten und Wischen werden erst abgefangen, wenn du bewusst losfliegst. */
   function fly() {
-    const v = $('#fl-v'), knob = $('#fl-knob'), pad = $('#fl-pad'), scr = $('#fl-screen'); if (!v || !knob) return;
-    const k2 = $('#fl-knob2'), blur = $('#fl-blur'), hint = $('#fl-hint');
-    const out = { thr: $('#fl-thr'), spd: $('#fl-spd'), arm: $('#fl-arm'), dist: $('#fl-dist'), top: $('#fl-top'), lap: $('#fl-lap') };
-    let thr = 0, want = 0, user = false, vis = false, dist = 0, top = 0, laps = 0, lastT = 0, demo = null;
-    const setThr = (x, fromUser) => { want = Math.max(0, Math.min(1, x)); if (fromUser && !user) { user = true; if (demo) demo.kill(); scr.classList.add('live'); if (hint) hint.textContent = 'Du fliegst!'; } };
-    const yToThr = e => { const r = pad.getBoundingClientRect(); return 1 - (e.clientY - r.top - 18) / (r.height - 36); };
-    let drag = false;
-    pad.addEventListener('pointerdown', e => { drag = true; pad.setPointerCapture(e.pointerId); setThr(yToThr(e), true); e.preventDefault(); });
-    pad.addEventListener('pointermove', e => { if (drag) setThr(yToThr(e), true); });
-    ['pointerup', 'pointercancel'].forEach(t => pad.addEventListener(t, () => drag = false));
-    knob.addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); setThr(want + .1, true); } if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); setThr(want - .1, true); } if (e.key === 'Home') setThr(0, true); if (e.key === 'End') setThr(1, true); });
-    // Tastatur, solange der Flug im Bild ist
-    addEventListener('keydown', e => { if (!vis || /input|textarea|select/i.test(e.target.tagName)) return; if (e.key === 'ArrowUp') { e.preventDefault(); setThr(want + .12, true); } if (e.key === 'ArrowDown') { e.preventDefault(); setThr(want - .12, true); } });
-    // Aufs Bild drücken und halten = Vollgas, loslassen = zurück auf den Stick (Scrollen der Seite bleibt frei)
-    let hold = false;
-    scr.addEventListener('pointerdown', e => { if (e.button > 0) return; hold = true; setThr(want, true); });
-    ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => scr.addEventListener(t, () => hold = false));
-    scr.addEventListener('contextmenu', e => e.preventDefault());
-    addEventListener('keydown', e => { if (vis && e.code === 'Space' && !/input|textarea|select|button|a/i.test(e.target.tagName)) { e.preventDefault(); hold = true; setThr(want, true); } });
-    addEventListener('keyup', e => { if (e.code === 'Space') hold = false; });
-    v.addEventListener('timeupdate', () => { if (v.currentTime < lastT - 2) { laps++; out.lap.textContent = laps; } lastT = v.currentTime; });
-    new IntersectionObserver(es => { vis = es[0].isIntersecting;
-      if (vis) { if (!v.src) { v.src = v.dataset.src; v.load(); }
-        // Selbst-Impuls: der Stick geht einmal von allein hoch, dann bist du dran
-        if (!user && !demo && window.gsap && !RM) { const o = { t: 0 }; demo = gsap.timeline({ delay: .8, onComplete: () => { demo = null; if (!user && hint) hint.textContent = 'Jetzt du: Stick hoch!'; scr.classList.add('ask'); } })
-          .to(o, { t: .55, duration: 1.1, ease: 'power2.out', onUpdate: () => want = o.t }).to(o, { t: .55, duration: 2.2 }).to(o, { t: 0, duration: .9, ease: 'power2.in', onUpdate: () => want = o.t }); }
-      } else v.pause(); }, { threshold: .35 }).observe(scr);
-    let last = performance.now();
-    const tick = now => {
-      const dt = Math.min(.1, (now - last) / 1000); last = now;
-      const goal = hold ? Math.max(want, .95) : want; thr += (goal - thr) * Math.min(1, dt * (hold ? 3 : 6));
-      const rate = .25 + thr * 1.85;
-      if (vis) {
-        if (thr > .04) { if (v.paused && v.readyState >= 2) v.play().catch(() => {}); if (Math.abs(v.playbackRate - rate) > .02) v.playbackRate = rate; }
-        else if (!v.paused) v.pause();
-      }
-      const kmh = thr > .04 ? Math.round(thr * 118) : 0; dist += kmh / 3.6 * dt; if (kmh > top) top = kmh;
-      knob.style.setProperty('--y', (1 - thr)); knob.setAttribute('aria-valuenow', Math.round(thr * 100));
-      if (k2) k2.style.transform = `translate(${Math.sin(now / 900) * 10 * thr}px, ${Math.cos(now / 1300) * 6 * thr}px)`;
-      out.thr.textContent = Math.round(thr * 100); out.spd.textContent = kmh; out.dist.textContent = Math.round(dist); out.top.textContent = top;
-      out.arm.textContent = thr > .04 ? 'ARMED' : 'DISARMED'; out.arm.classList.toggle('on', thr > .04);
-      if (blur) blur.style.opacity = Math.max(0, thr - .45) * 1.6;
-      scr.style.setProperty('--shake', thr > .7 ? (thr - .7) * 3 : 0);
-      requestAnimationFrame(tick);
+    const v = $('#fl-v'), knob = $('#fl-knob'), pad = $('#fl-pad'), scr = $('#fl-screen'); if (!v || !knob || !scr) return;
+    const cam = $('#fl-cam'), fx = $('#fl-fx'), g = fx.getContext('2d'), pad2 = $('#fl-pad2'), k2 = $('#fl-knob2'), blur = $('#fl-blur'), flashEl = $('#fl-flash');
+    const hint = $('#fl-hint'), msgEl = $('#fl-msg'), startB = $('#fl-start'), stopB = $('#fl-stop'), tiltB = $('#fl-tilt'), box = scr.closest('.fl-box');
+    const out = { thr: $('#fl-thr'), spd: $('#fl-spd'), arm: $('#fl-arm'), dist: $('#fl-dist'), top: $('#fl-top'), gates: $('#fl-gates'), g2: $('#fl-g2'), ser: $('#fl-ser') };
+    const TOUCH = matchMedia('(pointer: coarse)').matches;
+    const clamp = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x, DEG = Math.PI / 180;
+    const SCALE = 1.36, ROLL = RM ? 2 : 6, D0 = 44, F0 = 7, GAP = 26;
+    let W = 0, H = 0;
+    const size = () => { const r = scr.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; fx.width = Math.round(W * d); fx.height = Math.round(H * d); g.setTransform(d, 0, 0, d, 0, 0); };
+    size(); new ResizeObserver(size).observe(scr);
+
+    /* Zustand */
+    let thr = 0, want = 0, hold = 0, active = false, started = false, vis = false, running = false;
+    let dist = 0, top = 0, hits = 0, serie = 0, roll = 0, shake = 0, msgT = 0, demoT = -1, demoEnd = 0;
+    const aim = { x: 0, y: 0, vx: 0, vy: 0 };
+    const inp = { mouse: null, stick: null, drag: null, tilt: null, auto: null };
+    const keys = { l: 0, r: 0, u: 0, d: 0 };
+    const KEYS = { ArrowLeft: 'l', KeyA: 'l', ArrowRight: 'r', KeyD: 'r', ArrowUp: 'u', ArrowDown: 'd' };
+    const gates = []; let sinceGate = 0, lastU = 0, lastV = 0;
+
+    /* Wohin gelenkt wird: Autopilot (Vorführung) > Tasten > Finger > Stick > Neigen > Maus */
+    const goal = () => {
+      if (inp.auto) return inp.auto;
+      const kx = keys.r - keys.l, ky = keys.d - keys.u;
+      if (kx || ky) return { x: kx * .9, y: ky * .8 };
+      return inp.drag || inp.stick || inp.tilt || inp.mouse || { x: 0, y: 0 };
     };
-    requestAnimationFrame(tick);
+    const AX = () => W * .3, AY = () => H * .36, R0 = () => Math.min(W * .12, H * .24);
+    const proj = gt => { const p = F0 / (F0 + Math.max(-3, gt.d)), MX = W * .12, MY = H * .07;
+      return { x: W / 2 - aim.x * MX * (1 - p) + (gt.u - aim.x) * AX() * p, y: H / 2 - aim.y * MY * (1 - p) + (gt.v - aim.y) * AY() * p, r: R0() * p, p }; };
+    const offBy = gt => Math.hypot((gt.u - aim.x) * AX(), (gt.v - aim.y) * AY());
+    const lined = gt => offBy(gt) < R0() * .92;
+    const spawn = (u, v, d) => {
+      if (u == null) { u = clamp(lastU + (Math.random() * 2 - 1) * .95, -.85, .85); if (Math.abs(u - lastU) < .25) u = clamp(u + (u >= lastU ? .3 : -.3), -.85, .85); v = clamp(lastV + (Math.random() * 2 - 1) * .6, -.55, .55); }
+      lastU = u; lastV = v; gates.push({ u, v, d: d || D0, done: 0, hit: false, fade: 0 }); sinceGate = 0;
+    };
+    const say = (t, kind) => { msgEl.textContent = t; msgEl.className = 'fl-msg hud on ' + (kind || ''); msgT = 1.1; };
+    const flashIt = kind => { flashEl.className = 'fl-flash'; void flashEl.offsetWidth; flashEl.className = 'fl-flash ' + kind; };
+    const judge = gt => {
+      gt.done = 1; gt.hit = lined(gt);
+      if (gt.hit) { hits++; serie++; say(serie > 1 ? 'GATE! Serie ' + serie : 'GATE!', 'ok'); flashIt('ok'); if (active && TOUCH && navigator.vibrate) navigator.vibrate(14); }
+      else { serie = 0; say('Daneben', 'bad'); flashIt('bad'); shake = RM ? 0 : .4; if (active && TOUCH && navigator.vibrate) navigator.vibrate([30, 40, 30]); }
+      if (demoT >= 0 && !demoEnd) demoEnd = demoT + 1.1;
+    };
+
+    /* Losfliegen und Landen */
+    const resetRun = () => { dist = 0; top = 0; hits = 0; serie = 0; gates.length = 0; sinceGate = GAP * .55; };
+    const stopDemo = () => { if (demoT < 0) return; demoT = -1; demoEnd = 0; inp.auto = null; gates.length = 0; };
+    function activate(fromButton) {
+      if (!active) {
+        active = true; stopDemo(); scr.classList.add('on'); scr.classList.remove('ask');
+        if (!started) { started = true; resetRun(); }
+        if (want < .3) want = .45;                     // gleich los: Reisegas, lenken kannst du sofort
+        if (hint) hint.textContent = TOUCH ? 'Ziehen = lenken' : 'Maus = lenken';
+        say(TOUCH ? 'Finger ziehen = lenken' : 'Maus aufs Bild = lenken', 'info');
+      }
+      if (fromButton || !TOUCH) try { scr.focus({ preventScroll: true }); } catch (e) {}
+      if (!running && vis) { running = true; requestAnimationFrame(tick); }
+    }
+    function deactivate() {
+      if (!active) return;
+      active = false; scr.classList.remove('on'); keys.l = keys.r = keys.u = keys.d = 0; hold = 0; want = 0;
+      inp.drag = inp.stick = inp.tilt = null; tiltOff(); dragId = null;
+      startB.lastChild.textContent = 'Weiterfliegen'; if (hint) hint.textContent = 'Stick hoch = Gas';
+    }
+    startB.addEventListener('click', () => activate(true));
+    stopB.addEventListener('click', () => { deactivate(); try { startB.focus({ preventScroll: true }); } catch (e) {} });
+    document.addEventListener('pointerdown', e => { if (active && !box.contains(e.target)) deactivate(); }, true);
+
+    /* Maus: Zeiger auf dem Bild = Richtung, Taste halten = Vollgas */
+    scr.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const r = scr.getBoundingClientRect();
+      inp.mouse = { x: clamp(((e.clientX - r.left) / r.width - .5) * 2.3, -1, 1), y: clamp(((e.clientY - r.top) / r.height - .5) * 2.3, -1, 1) }; });
+    scr.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { inp.mouse = null; if (hold === 1) hold = 0; } });
+    /* Finger: erst ein bewusstes Antippen startet (bis dahin scrollt die Seite normal), dann Finger drauf = Gas, ziehen = lenken */
+    let dragId = null, dx0 = 0, dy0 = 0, tap = null;
+    scr.addEventListener('pointerdown', e => {
+      if (e.target.closest('button')) return;
+      if (e.pointerType === 'mouse') { if (e.button > 0) return; activate(); hold = 1; return; }
+      if (!active) { tap = { x: e.clientX, y: e.clientY, t: performance.now() }; return; }
+      dragId = e.pointerId; dx0 = e.clientX; dy0 = e.clientY; hold = .78; inp.drag = { x: 0, y: 0 };
+      try { scr.setPointerCapture(e.pointerId); } catch (err) {}
+      e.preventDefault();
+    });
+    scr.addEventListener('pointermove', e => { if (e.pointerId !== dragId) return; inp.drag = { x: clamp((e.clientX - dx0) / 62, -1, 1), y: clamp((e.clientY - dy0) / 52, -1, 1) }; });
+    const endPtr = e => {
+      if (e.pointerType === 'mouse') { if (hold === 1) hold = 0; return; }
+      if (e.pointerId === dragId) { dragId = null; inp.drag = null; hold = 0; }
+      if (tap && e.type === 'pointerup' && !e.target.closest('button') && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) < 12 && performance.now() - tap.t < 600) activate();
+      tap = null;
+    };
+    ['pointerup', 'pointercancel'].forEach(t => scr.addEventListener(t, endPtr));
+    scr.addEventListener('contextmenu', e => e.preventDefault());
+
+    /* Linker Stick: Gas (bleibt stehen wie bei einer echten Funke) */
+    const yToThr = e => { const r = pad.getBoundingClientRect(); return 1 - (e.clientY - r.top - 18) / (r.height - 36); };
+    let gasDrag = false;
+    pad.addEventListener('pointerdown', e => { gasDrag = true; pad.setPointerCapture(e.pointerId); activate(); want = clamp(yToThr(e)); e.preventDefault(); });
+    pad.addEventListener('pointermove', e => { if (gasDrag) want = clamp(yToThr(e)); });
+    ['pointerup', 'pointercancel'].forEach(t => pad.addEventListener(t, () => gasDrag = false));
+    knob.addEventListener('keydown', e => {
+      const d = { ArrowUp: .1, ArrowRight: .1, ArrowDown: -.1, ArrowLeft: -.1 }[e.key];
+      if (d) { e.preventDefault(); activate(); want = clamp(want + d); }
+      if (e.key === 'Home') { want = 0; e.preventDefault(); } if (e.key === 'End') { activate(); want = 1; e.preventDefault(); }
+    });
+    /* Rechter Stick: lenken, federt zurück in die Mitte */
+    let stId = null;
+    const stAt = e => { const r = pad2.getBoundingClientRect(), R = r.width / 2 - 18; return { x: clamp((e.clientX - r.left - r.width / 2) / R, -1, 1), y: clamp((e.clientY - r.top - r.height / 2) / R, -1, 1) }; };
+    pad2.addEventListener('pointerdown', e => { stId = e.pointerId; pad2.setPointerCapture(e.pointerId); activate(); inp.stick = stAt(e); e.preventDefault(); });
+    pad2.addEventListener('pointermove', e => { if (e.pointerId === stId) inp.stick = stAt(e); });
+    ['pointerup', 'pointercancel'].forEach(t => pad2.addEventListener(t, e => { if (e.pointerId === stId) { stId = null; inp.stick = null; } }));
+
+    /* Tastatur: nur während du fliegst (sonst scrollen Pfeile und Leertaste die Seite wie immer) */
+    addEventListener('keydown', e => {
+      if (!active || e.target === knob || (e.target.closest && e.target.closest('input,textarea,select'))) return;
+      const k = KEYS[e.code];
+      if (k) { keys[k] = 1; e.preventDefault(); return; }
+      if (e.code === 'KeyW') { want = clamp(want + .1); e.preventDefault(); }
+      else if (e.code === 'KeyS') { want = clamp(want - .1); e.preventDefault(); }
+      else if (e.code === 'Space' && !(e.target.closest && e.target.closest('button,a'))) { hold = 1; e.preventDefault(); }
+      else if (e.code === 'Escape') deactivate();
+    });
+    addEventListener('keyup', e => { const k = KEYS[e.code]; if (k) keys[k] = 0; if (e.code === 'Space' && hold === 1) hold = 0; });
+    addEventListener('blur', () => { keys.l = keys.r = keys.u = keys.d = 0; if (hold === 1) hold = 0; });
+    scr.addEventListener('keydown', e => { if (!active && (e.code === 'Enter' || e.code === 'Space') && e.target === scr) { e.preventDefault(); activate(true); } });
+
+    /* Handy neigen (iOS fragt nach Erlaubnis, deshalb nur auf Knopfdruck) */
+    let t0 = null, tiltOn = false;
+    const onOri = e => {
+      if (e.gamma == null || e.beta == null) return;
+      const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+      let lr = e.gamma, fb = e.beta; if (ang === 90) { lr = e.beta; fb = -e.gamma; } else if (ang === -90 || ang === 270) { lr = -e.beta; fb = e.gamma; }
+      if (!t0) t0 = [lr, fb];
+      inp.tilt = { x: clamp((lr - t0[0]) / 20, -1, 1), y: clamp((fb - t0[1]) / 20, -1, 1) };
+    };
+    function tiltOff() { if (!tiltOn) return; tiltOn = false; removeEventListener('deviceorientation', onOri); inp.tilt = null; tiltB.textContent = 'Handy neigen zum Lenken'; tiltB.setAttribute('aria-pressed', 'false'); }
+    if (TOUCH && 'DeviceOrientationEvent' in window && tiltB) {
+      tiltB.hidden = false; tiltB.setAttribute('aria-pressed', 'false');
+      tiltB.addEventListener('click', async () => {
+        if (tiltOn) { tiltOff(); return; }
+        const DOE = window.DeviceOrientationEvent;
+        try { if (typeof DOE.requestPermission === 'function' && (await DOE.requestPermission()) !== 'granted') { tiltB.textContent = 'Neigen nicht erlaubt'; return; } } catch (err) { tiltB.textContent = 'Neigen nicht möglich'; return; }
+        tiltOn = true; t0 = null; addEventListener('deviceorientation', onOri); activate();
+        tiltB.textContent = 'Neigen aus'; tiltB.setAttribute('aria-pressed', 'true'); say('Handy neigen = lenken', 'info');
+      });
+    }
+
+    /* Sichtbarkeit: Schleife läuft nur, solange der Flug im Bild ist */
+    new IntersectionObserver(es => {
+      vis = es[0].isIntersecting;
+      if (vis) {
+        if (!v.src) { v.src = v.dataset.src; v.load(); }
+        if (!running) { running = true; last = performance.now(); requestAnimationFrame(tick); }
+        // Selbst-Impuls: einmal vorfliegen, durch ein Gate lenken, dann bist du dran
+        if (!started && demoT < 0 && !RM && !scr.dataset.demo) { scr.dataset.demo = 1; demoT = 0; demoEnd = 0; gates.length = 0; spawn(.62, -.24, 34); }
+      } else { v.pause(); deactivate(); }
+    }, { threshold: .35 }).observe(scr);
+    if (RM) scr.classList.add('ask');
+
+    let last = performance.now(), shown = '';
+    function tick(now) {
+      if (!vis) { running = false; return; }
+      const dt = Math.min(.05, Math.max(0, (now - last) / 1000)); last = now;
+      // Vorführung: Gas hoch, auf das Gate zielen, Treffer, Gas weg
+      if (demoT >= 0) {
+        demoT += dt; want = demoT < 1 ? .5 * Math.min(1, demoT) : .5;
+        inp.auto = demoT > .45 ? { x: .62, y: -.24 } : { x: 0, y: 0 };
+        if (demoEnd && demoT > demoEnd) { want = 0; inp.auto = null; demoT = -1; demoEnd = 0; scr.classList.add('ask'); if (hint) hint.textContent = 'Jetzt du!'; }
+      }
+      // Gas
+      const gl = Math.max(want, hold); thr += (gl - thr) * Math.min(1, dt * (gl > thr ? 4 : 5));
+      const kmh = thr > .04 ? thr * 118 : 0, mps = kmh / 3.6;
+      if (thr > .04) { if (v.paused && v.readyState >= 2) v.play().catch(() => {}); const rate = .25 + thr * 1.85; if (Math.abs(v.playbackRate - rate) > .02) v.playbackRate = rate; }
+      else if (!v.paused) v.pause();
+      if (active || demoT >= 0) { dist += mps * dt; if (kmh > top) top = Math.round(kmh); }
+      // Lenken: weiche Feder, direkt, aber nicht zappelig
+      const T = goal(), w = 8.5, z = .92;
+      aim.vx += (w * w * (T.x - aim.x) - 2 * z * w * aim.vx) * dt; aim.vy += (w * w * (T.y - aim.y) - 2 * z * w * aim.vy) * dt;
+      aim.x = clamp(aim.x + aim.vx * dt, -1.1, 1.1); aim.y = clamp(aim.y + aim.vy * dt, -1.1, 1.1);
+      roll = clamp(-(aim.x * ROLL * .7 + aim.vx * ROLL * .12), -ROLL, ROLL);
+      shake = Math.max(0, shake - dt);
+      const sx = shake ? (Math.random() - .5) * shake * 22 : 0, sy = shake ? (Math.random() - .5) * shake * 14 : 0;
+      cam.style.transform = `translate3d(${(-aim.x * W * .12 + sx).toFixed(1)}px,${(-aim.y * H * .07 + sy).toFixed(1)}px,0) rotate(${roll.toFixed(2)}deg) scale(${SCALE})`;
+      // Gates kommen näher, je mehr Gas
+      if ((active || demoT >= 0) && mps > 0) { sinceGate += mps * dt; if (active && sinceGate > GAP && gates.filter(x => !x.done).length < 3) spawn(); }
+      for (let i = gates.length - 1; i >= 0; i--) { const gt = gates[i]; gt.d -= mps * dt; if (!gt.done && gt.d <= 0) judge(gt); if (gt.done) { gt.fade += dt; if (gt.fade > .6) gates.splice(i, 1); } }
+      draw();
+      // Anzeigen
+      if (msgT > 0) { msgT -= dt; if (msgT <= 0) msgEl.classList.remove('on'); }
+      knob.style.setProperty('--y', 1 - thr); knob.setAttribute('aria-valuenow', Math.round(thr * 100));
+      if (k2) k2.style.transform = `translate(${(aim.x * 36).toFixed(1)}px,${(aim.y * 36).toFixed(1)}px)`;
+      const s = [Math.round(thr * 100), Math.round(kmh), Math.round(dist), top, hits, serie].join();
+      if (s !== shown) { shown = s; out.thr.textContent = Math.round(thr * 100); out.spd.textContent = Math.round(kmh); out.dist.textContent = Math.round(dist); out.top.textContent = top; out.gates.textContent = hits; out.g2.textContent = hits; out.ser.textContent = serie;
+        out.arm.textContent = thr > .04 ? 'ARMED' : 'DISARMED'; out.arm.classList.toggle('on', thr > .04); }
+      if (blur) blur.style.opacity = Math.max(0, thr - .5) * 1.6;
+      requestAnimationFrame(tick);
+    }
+    function draw() {
+      g.clearRect(0, 0, W, H); if (!gates.length) return;
+      g.save(); g.translate(W / 2, H / 2); g.rotate(roll * DEG); g.translate(-W / 2, -H / 2);
+      const next = gates.filter(x => !x.done).sort((a, b) => a.d - b.d)[0];
+      gates.slice().sort((a, b) => b.d - a.d).forEach(gt => {
+        const q = proj(gt); if (q.p < .12) return;
+        let a = Math.min(1, (D0 + 2 - gt.d) / 9); if (gt.done) a *= Math.max(0, 1 - gt.fade / .55);
+        const col = gt.done ? (gt.hit ? '62,224,138' : '255,75,92') : gt === next && lined(gt) ? '62,224,138' : '255,176,32';
+        const r = q.r * (gt.done && gt.hit ? 1 + gt.fade * 1.6 : 1);
+        g.shadowColor = `rgba(${col},${a})`; g.shadowBlur = 6 + 16 * q.p;
+        g.strokeStyle = `rgba(${col},${a})`; g.lineWidth = Math.max(1.5, 8 * q.p);
+        g.beginPath(); g.arc(q.x, q.y, r, 0, 7); g.stroke();
+        g.shadowBlur = 0; g.lineWidth = Math.max(1, 2.4 * q.p); g.strokeStyle = `rgba(255,255,255,${a * .55})`;
+        g.beginPath(); g.arc(q.x, q.y, r * .84, 0, 7); g.stroke();
+        // LEDs am Ring
+        g.fillStyle = `rgba(255,255,255,${a * .9})`; for (let k = 0; k < 8; k++) { const t = k / 8 * 6.283; g.beginPath(); g.arc(q.x + Math.cos(t) * r, q.y + Math.sin(t) * r, Math.max(1, 2.6 * q.p), 0, 7); g.fill(); }
+      });
+      // Richtungspfeil zum nächsten Gate, solange das Fadenkreuz noch nicht drin ist
+      if (next && next.d < D0 - 6 && !lined(next)) {
+        const dx = (next.u - aim.x) * AX(), dy = (next.v - aim.y) * AY(), L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, cx0 = W / 2 + ux * 40, cy0 = H / 2 + uy * 40;
+        g.strokeStyle = 'rgba(255,176,32,.95)'; g.lineWidth = 3; g.shadowColor = 'rgba(255,176,32,.8)'; g.shadowBlur = 8;
+        g.beginPath(); g.moveTo(cx0 - ux * 8 - uy * 8, cy0 - uy * 8 + ux * 8); g.lineTo(cx0 + ux * 4, cy0 + uy * 4); g.lineTo(cx0 - ux * 8 + uy * 8, cy0 - uy * 8 - ux * 8); g.stroke();
+      }
+      g.restore();
+    }
+    // Für Tests: Zustand ablesen
+    FCS._fly = () => ({ active, thr: +thr.toFixed(2), want, aim: [+aim.x.toFixed(2), +aim.y.toFixed(2)], roll: +roll.toFixed(2), gates: gates.map(x => ({ u: +x.u.toFixed(2), v: +x.v.toFixed(2), d: +x.d.toFixed(1), done: x.done, hit: x.hit })), hits, serie, dist: Math.round(dist), demo: demoT, running });
   }
 
   /* ---------- Kanal-Zapper ---------- */
@@ -406,8 +589,9 @@
     const legal = f => f >= 5725 && f <= 5875;
     wrap.innerHTML = R.map((f, i) => `<button type="button" aria-pressed="${i === 3}" class="${legal(f) ? '' : 'ill'}" data-ch="${i}">R${i + 1}</button>`).join('');
     const cx = nz.getContext('2d'); nz.width = 160; nz.height = 100; const img = cx.createImageData(160, 100);
-    let noiseOn = false; const noise = () => { if (!noiseOn) return; for (let i = 0; i < img.data.length; i += 4) { const q = Math.random() * 255 | 0; img.data[i] = img.data[i + 1] = img.data[i + 2] = q; img.data[i + 3] = 255; } cx.putImageData(img, 0, 0); requestAnimationFrame(noise); };
-    let ch = 3, started = false, manual = false;
+    let noiseOn = false, gogOn = false, noiseRun = false; const noise = () => { if (noiseRun) return; noiseRun = true; noiseStep(); };
+    const noiseStep = () => { if (!noiseOn || !gogOn) { noiseRun = false; return; } for (let i = 0; i < img.data.length; i += 4) { const q = Math.random() * 255 | 0; img.data[i] = img.data[i + 1] = img.data[i + 2] = q; img.data[i + 3] = 255; } cx.putImageData(img, 0, 0); requestAnimationFrame(noiseStep); };
+    let ch = 3, started = false, manual = false, zTok = 0;
     const set = (i, user) => {
       ch = (i + 8) % 8; const f = R[ch], ok = legal(f);
       $$('button', wrap).forEach((b, k) => b.setAttribute('aria-pressed', k === ch));
@@ -416,9 +600,10 @@
       $('#zap-ch').textContent = `R${ch + 1} · ${f} MHz`; $('#zap-pilot').textContent = ok ? (kp ? kp.a.toUpperCase() : `PILOT ${ch + 1}`) : 'KEIN PILOT';
       $('#zap-t').textContent = ok && kp && kp.o ? kp.o.toUpperCase() : 'FLIGHT CLUB SAAR';
       const lg = $('#zap-legal'); lg.textContent = ok ? '25 mW · DE OK' : 'IN DE NICHT ERLAUBT'; lg.classList.toggle('bad', !ok);
-      noiseOn = true; nz.style.opacity = 1; noise();
+      noiseOn = true; nz.style.opacity = 1; noise(); const tok = ++zTok;
       setTimeout(() => {
-        if (ok) { const kp2 = (D.kanal || []).find(k => k.ch === ch + 1); v.src = kp2 ? kp2.clip : CL[ch]; v.play().catch(() => {}); setTimeout(() => { noiseOn = false; nz.style.opacity = 0; }, 260); }
+        if (tok !== zTok) return;   // inzwischen anderer Kanal gewählt
+        if (ok) { const kp2 = (D.kanal || []).find(k => k.ch === ch + 1), src = kp2 ? kp2.clip : CL[ch]; if (v.getAttribute('src') !== src) v.src = src; if (gogOn) v.play().catch(() => {}); setTimeout(() => { if (tok === zTok) { noiseOn = false; nz.style.opacity = 0; } }, 260); }
         else { v.pause(); v.removeAttribute('src'); v.load(); nz.style.opacity = .9; }
       }, RM ? 0 : 220);
       if (user && !manual) { manual = true; const h = $('#zap-hint'); if (h) h.style.opacity = 0; }
@@ -430,7 +615,7 @@
     knob.addEventListener('pointerdown', e => { drag = true; knob.setPointerCapture(e.pointerId); });
     knob.addEventListener('pointermove', e => { if (!drag) return; let a = ang(e); if (a < -180) a += 360; if (a > 180) a -= 360; const i = Math.max(0, Math.min(7, Math.round((a + 157.5) / 45))); if (i !== ch) set(i, true); });
     ['pointerup', 'pointercancel'].forEach(t => knob.addEventListener(t, () => drag = false));
-    new IntersectionObserver(es => { const on = es[0].isIntersecting; if (on && !started) { started = true; set(3); if (!RM) { setTimeout(() => !manual && set(4), 1800); setTimeout(() => !manual && set(7), 3300); setTimeout(() => !manual && set(3), 4800); } } if (!on) v.pause(); else if (v.src) v.play().catch(() => {}); }, { threshold: .3 }).observe($('.goggle'));
+    new IntersectionObserver(es => { const on = es[0].isIntersecting; const was = gogOn; gogOn = on; if (on && !was && noiseOn) noise(); if (on && !started) { started = true; set(3); if (!RM) { setTimeout(() => !manual && set(4), 1800); setTimeout(() => !manual && set(7), 3300); setTimeout(() => !manual && set(3), 4800); } } if (!on) v.pause(); else if (v.src) v.play().catch(() => {}); }, { threshold: .3 }).observe($('.goggle'));
   }
 
   /* ---------- Galerie-Ring ---------- */
@@ -568,7 +753,7 @@
     const setBeat = i => { if (i === cur) return; cur = i; step.textContent = i + 1; title.textContent = BEATS[i][0]; sub.textContent = BEATS[i][1]; if (window.gsap && !RM) gsap.fromTo([title, sub], { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .5, stagger: .06, overwrite: true }); };
     setBeat(0);
     const hello = $('.ay-hello'), rock = $('.ay-rock'), thr = $('.ay-thrust'), tools = $('.ay-tools'), jug = $('.ay-jug'), dir = $('.ay-dir'), fpv = $('.ay-fpv'), quad = $('.ay-quad'), gs = $$('.g', gear);
-    if (!window.gsap || !window.ScrollTrigger || RM) { dir.style.opacity = 1; end.style.opacity = 1; end.style.visibility = 'visible'; setBeat(5); return; }
+    if (!window.gsap || !window.ScrollTrigger || RM) { dir.style.opacity = 1; end.style.opacity = 1; end.style.visibility = 'visible'; setBeat(5); const cp = $('.ay-copy', sec); if (cp) cp.style.opacity = 0; return; }
     const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' } });
     // 1 · Hallo
     tl.addLabel('b1').fromTo(hello, { opacity: 0, xPercent: 60, rotate: 12 }, { opacity: 1, xPercent: 0, rotate: 0, duration: 1, ease: 'back.out(1.6)' })

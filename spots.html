@@ -18,7 +18,7 @@
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=d7340379">
 <link rel="stylesheet" href="assets/lib/leaflet.css">
-<link rel="stylesheet" href="assets/css/spots.css?v=5dea0a93">
+<link rel="stylesheet" href="assets/css/spots.css?v=e20e51a2">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -99,35 +99,43 @@
   </div>
 </section>
 
-<!-- 2 · Karte: Radar (ohne Klick) oder Straßenkarte (nach Klick) + Spot-Liste -->
+<!-- 2 · Karte: Saarland-Radar (ohne Klick) oder Straßenkarte/Satellit (nach Klick) + Spot-Liste -->
 <section class="sec sp-sec sp-map" id="karte" data-toc="Karte" aria-labelledby="karte-h">
   <div class="wrap">
     <div class="mp-head">
       <h2 class="h2 sp-h2" id="karte-h" data-split>Unsere Spots</h2>
-      <p class="mp-intro">Tipp auf einen Punkt oder einen Spot in der Liste, er wird auf der Karte markiert. Mit „Route“ führt dich Google Maps hin.</p>
+      <p class="mp-intro">Tipp auf einen Punkt, dann öffnet sich der Spot mit Route und Bewertungen. Ziehen und zoomen geht auch. Mit „Route“ führt dich Google Maps hin.</p>
     </div>
 
     <div class="mp-bar">
       <div class="chips mp-filters" id="filters" role="group" aria-label="Spots nach Art filtern"></div>
       <div class="mp-view" role="group" aria-label="Kartenansicht">
-        <button class="mp-vbtn" type="button" id="view-radar" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l6.4-6.4"/></svg>Radar</button>
-        <button class="mp-vbtn" type="button" id="map-load" aria-pressed="false" aria-describedby="map-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg><span id="map-load-t">Straßenkarte laden</span></button>
+        <button class="mp-vbtn" type="button" data-view="radar" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l6.4-6.4"/></svg><span>Radar</span></button>
+        <button class="mp-vbtn" type="button" data-view="osm" aria-pressed="false" aria-describedby="map-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg><span>Straßen&shy;karte</span></button>
+        <button class="mp-vbtn" type="button" data-view="sat" aria-pressed="false" aria-describedby="map-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M3 9l4-4 3 3-4 4zM21 15l-4 4-3-3 4-4zM12 4.5a7.5 7.5 0 0 1 7.5 7.5"/></svg><span>Satellit</span></button>
       </div>
     </div>
 
     <div class="mp-grid">
       <div class="mp-box" id="mapbox">
-        <!-- Radar: läuft ohne fremde Server -->
-        <div class="radar" id="radar" role="group" aria-label="Radar mit allen Spots">
+        <!-- Radar: eigene Saarland-Karte, läuft ohne fremde Server -->
+        <div class="radar" id="radar" role="group" aria-roledescription="Karte" aria-label="Saarland-Karte mit allen Spots" aria-describedby="radar-help" tabindex="0">
           <canvas id="radar-cv" aria-hidden="true"></canvas>
+          <div class="radar-sweep" id="radar-sweep" aria-hidden="true"></div>
           <div class="radar-pins" id="radar-pins"></div>
           <div class="radar-osd hud" aria-hidden="true"><span>SAARLAND · <b id="radar-n">3</b> SPOTS</span><span id="radar-read">000°</span></div>
+          <div class="radar-zoom" role="group" aria-label="Karte zoomen">
+            <button type="button" id="rz-in" aria-label="Hineinzoomen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            <button type="button" id="rz-out" aria-label="Herauszoomen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+            <button type="button" id="rz-fit" aria-label="Ganzes Saarland zeigen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+          </div>
           <div class="radar-scale hud" id="radar-scale" aria-hidden="true"><i></i><span></span></div>
           <span class="radar-n hud" aria-hidden="true">N</span>
+          <p class="sr" id="radar-help">Ziehen verschiebt die Karte. Zoomen mit zwei Fingern, mit Strg und Mausrad, mit den Tasten Plus und Minus oder mit den Knöpfen. Pfeiltasten verschieben. Die Punkte sind die Spots.</p>
         </div>
         <!-- Straßenkarte: Leaflet, lädt erst nach Klick -->
         <div class="leaf" id="leaf" hidden></div>
-        <div class="mp-load" id="map-wait" hidden><span class="mp-spin" aria-hidden="true"></span>Straßenkarte lädt …</div>
+        <div class="mp-load" id="map-wait" hidden><span class="mp-spin" aria-hidden="true"></span>Karte lädt …</div>
         <div class="mp-fail" id="map-fail" role="alert" hidden>
           <p><b>Karte konnte nicht laden.</b> Hier die Route bei Google Maps:</p>
           <div class="mp-fail-b" id="map-fail-b"></div>
@@ -139,7 +147,7 @@
       </div>
       <ul class="sp-list" id="spotlist" aria-label="Alle Spots"></ul>
     </div>
-    <p class="mp-note" id="map-note">Die Straßenkarte lädt erst, wenn du auf „Straßenkarte laden“ tippst. Dann kommen Kartenkacheln von CARTO auf Grundlage von OpenStreetMap, dabei wird deine IP-Adresse an diese Anbieter übertragen (<a href="datenschutz.html">Datenschutz</a>).</p>
+    <p class="mp-note" id="map-note">Das Radar zeichnen wir selbst, ohne fremde Server (Kartendaten: OpenStreetMap-Mitwirkende, Natural Earth, GeoNames, GADM). „Straßenkarte“ und „Satellit“ laden erst nach deinem Tipp Kartenkacheln von OpenStreetMap beziehungsweise Esri. Dabei wird deine IP-Adresse an den Anbieter übertragen (<a href="datenschutz.html#extern">Datenschutz</a>).</p>
   </div>
 
   <!-- Bewerten: ein Formular, das in den geöffneten Spot wandert. Veröffentlicht sofort (FCS.board), ohne Live-Anbindung per Mail an den Vorstand -->
@@ -257,7 +265,7 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/lib/leaflet.js"></script>
-<script src="assets/js/fcs.js?v=27c61f1e"></script>
-<script src="assets/js/spots.js?v=ce403e7c"></script>
+<script src="assets/js/fcs.js?v=1c4550fb"></script>
+<script src="assets/js/spots.js?v=a375dc7f"></script>
 </body>
 </html>

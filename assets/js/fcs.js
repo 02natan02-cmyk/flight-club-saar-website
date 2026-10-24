@@ -327,7 +327,7 @@
       return out;
     }
     const drop = () => { cache.clear(); try { Object.keys(sessionStorage).filter(k => k.startsWith('fcs-b:')).forEach(k => sessionStorage.removeItem(k)); } catch (e) {} };
-    async function add(fields, files = []) {
+    async function add(fields, files = [], opts = {}) {
       if (!url()) return { ok: false, err: 'aus' };
       const f = Object.assign({}, fields); f.pw = String(f.pw || '').trim() || code();
       const p = new URLSearchParams();
@@ -344,7 +344,7 @@
       let txt = '';
       try { const r = await fetch(url(), { method: 'POST', body: p, signal: sig(30000), credentials: 'omit' }); txt = await r.text(); } catch (e) { return { ok: false, err: 'netz' }; }
       let j = {}; try { j = JSON.parse(txt); } catch (e) { return { ok: false, err: 'abgelehnt' }; }
-      if (j.ok && j.id) { remember(j.id, { pw: f.pw, b: f.b, t: f.titel || f.t || '', d: new Date().toISOString().slice(0, 10) }); drop(); return { ok: true, id: j.id, pw: f.pw }; }
+      if (j.ok && j.id) { if (opts.merken !== false) remember(j.id, { pw: f.pw, b: f.b, t: f.titel || f.t || '', d: new Date().toISOString().slice(0, 10) }); drop(); return { ok: true, id: j.id, pw: f.pw }; }
       return { ok: false, err: 'abgelehnt' };
     }
     async function del(id, pw) {

@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=d7340379">
-<link rel="stylesheet" href="assets/css/sim.css?v=58aeb771">
+<link rel="stylesheet" href="assets/css/sim.css?v=0793f40d">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -35,11 +35,11 @@
     <div class="sim-head-t">
       <p class="crumb"><a href="index.html">Start</a> / Simulator</p>
       <h1 class="h1" id="sim-h1">FPV-Simulator</h1>
-      <p class="lede">Flieg mit Funke, Controller, Touch oder Tastatur durch unsere Turnhalle. Direkt im Browser, ohne Installation.</p>
+      <p class="lede">Flieg mit Funke, Controller, Touch oder Tastatur durch unsere Turnhalle. Frei herumfliegen oder ein gewertetes Rennen gegen die Crew, direkt im Browser.</p>
     </div>
     <div class="btns sim-head-b">
       <button type="button" class="btn solid" data-sim-start>Simulator starten <span class="arr" aria-hidden="true">→</span></button>
-      <a class="btn ghost" href="#funken">Welche Funke geht?</a>
+      <a class="btn ghost" href="#bestenliste">Bestenliste</a>
     </div>
   </div>
 </section>
@@ -49,41 +49,109 @@
   <div class="sim-wrap">
     <div class="sim-app" data-sim-app>
       <!-- Bühne -->
-      <div class="sim-stage" tabindex="0" role="application" aria-roledescription="FPV-Simulator" aria-label="FPV-Simulator, Turnhalle mit acht Gates" aria-describedby="sim-keys">
+      <div class="sim-stage" tabindex="0" role="application" aria-roledescription="FPV-Simulator" aria-label="FPV-Simulator, Turnhalle mit acht Toren" aria-describedby="sim-keys">
         <canvas class="sim-canvas" aria-hidden="true"></canvas>
         <div class="sim-analog" aria-hidden="true"><i class="sim-noise"></i></div>
         <div class="sim-flash" aria-hidden="true"></div>
 
         <div class="sim-osd" aria-hidden="true">
           <div class="o-tl"><span data-o="mode">ANGLE</span><span data-o="craft">WHOOP</span></div>
-          <div class="o-tr"><span data-o="bat">4.20V</span><span data-o="gate">GATE 0/8</span></div>
-          <div class="o-tc"><b data-o="lap">0:00.00</b><span data-o="laps">LAST --:--.-- · BEST --:--.--</span></div>
+          <div class="o-tr"><span data-o="bat">4.20V</span><span data-o="gate">TOR 0/8</span></div>
+          <div class="o-tc"><b data-o="lap">0:00.00</b><span data-o="laps">LAST --:--.-- · BEST --:--.--</span><span class="o-delta" data-o="delta"></span></div>
           <div class="o-bl"><span data-o="thr">THR 0%</span><span data-o="spd">0 KM/H</span><span data-o="alt">ALT 0.0M</span></div>
           <div class="o-br"><span data-o="fps">-- FPS</span><span data-o="hz">IN -- HZ</span><span data-o="time">0:00</span></div>
           <div class="o-c"><i class="o-cross"></i><i class="o-hor" data-o="hor"></i></div>
           <p class="o-msg" data-o="msg"></p>
           <div class="o-arrow" data-o="arrow"><svg viewBox="0 0 40 40"><path d="M8 30L20 8l12 22-12-6z"/></svg><b data-o="arrown">1</b></div>
+          <div class="o-ghost" data-o="ghost"><i></i><span data-o="ghostn">GEIST</span></div>
         </div>
+        <div class="sim-count" data-cd aria-hidden="true"><b data-cdn></b></div>
 
         <div class="sim-bar" role="group" aria-label="Simulator-Steuerung">
+          <button type="button" class="sb sb-race" data-act="race" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4.5L17 13H5"/></svg><span class="sb-t">Rennen</span></button>
+          <button type="button" class="sb" data-act="lb" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a3 3 0 0 0 3 4M16 6h2.5a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7"/></svg><span class="sb-t">Bestenliste</span></button>
           <button type="button" class="sb" data-act="arm" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg><span class="sb-t">Armen</span></button>
           <button type="button" class="sb" data-act="mode"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 12l4-4"/></svg><span class="sb-t" data-mode-t>Angle</span></button>
           <button type="button" class="sb" data-act="craft"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg><span class="sb-t" data-craft-t>Whoop</span></button>
           <button type="button" class="sb" data-act="view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="sb-t" data-view-t>FPV</span></button>
-          <button type="button" class="sb" data-act="reset"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg><span class="sb-t">Reset</span></button>
+          <button type="button" class="sb" data-act="reset"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg><span class="sb-t" data-reset-t>Reset</span></button>
           <button type="button" class="sb" data-act="panel" aria-expanded="true" aria-controls="sim-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg><span class="sb-t">Einstellungen</span></button>
           <button type="button" class="sb" data-act="full" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="sb-t">Vollbild</span></button>
         </div>
 
         <div class="sim-touch" aria-hidden="true">
-          <div class="st-zone st-l" data-zone="l"><div class="st-base"><i class="st-knob"></i></div><span class="st-lbl">Gas · Gieren</span></div>
+          <div class="st-zone st-l" data-zone="l"><div class="st-base"><i class="st-knob"></i></div><span class="st-lbl" data-st-lbl>Gas · Gieren</span></div>
           <div class="st-zone st-r" data-zone="r"><div class="st-base"><i class="st-knob"></i></div><span class="st-lbl">Nicken · Rollen</span></div>
         </div>
 
         <div class="sim-cta" data-cta>
           <p class="sim-cta-k"><span class="dot" aria-hidden="true"></span> Demo-Flug läuft</p>
-          <button type="button" class="btn solid" data-sim-start>Steig ein: Simulator starten <span class="arr" aria-hidden="true">→</span></button>
+          <div class="sim-cta-b">
+            <button type="button" class="btn solid" data-sim-start>Freiflug starten <span class="arr" aria-hidden="true">→</span></button>
+            <button type="button" class="btn solid amber" data-race-start><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4.5L17 13H5"/></svg>Rennen fliegen</button>
+          </div>
           <p class="sim-cta-h" data-cta-h>Tastatur, Touch, Controller oder Funke: Du kannst sofort loslegen.</p>
+        </div>
+
+        <!-- Rennen: Startkarte -->
+        <div class="sim-card" data-rcard role="dialog" aria-modal="false" aria-labelledby="sim-rc-h" hidden>
+          <div class="sim-card-a">
+            <p class="sim-card-k">Gewertetes Rennen</p>
+            <h3 class="sim-card-h" id="sim-rc-h" tabindex="-1">3 Runden durch die Halle</h3>
+            <ul class="sim-rules">
+              <li>Flieg die Tore 1 bis 8 der Reihe nach, das helle Tor ist dran.</li>
+              <li>Verpasst du ein Tor, zählt die Runde nicht.</li>
+              <li>Hebst du vor dem GO ab, ist es ein Fehlstart.</li>
+              <li>Nach einem Crash geht es am letzten Tor weiter, die Uhr läuft.</li>
+            </ul>
+            <p class="sim-card-best" data-rc-best></p>
+          </div>
+          <div class="sim-card-c">
+            <div class="sim-card-row">
+              <div class="sim-seg" role="radiogroup" aria-label="Kopter">
+                <label><input type="radio" name="sim-rc-craft" value="whoop" data-rc="craft"><span>Whoop</span></label>
+                <label><input type="radio" name="sim-rc-craft" value="five" data-rc="craft"><span>5 Zoll</span></label>
+              </div>
+              <div class="sim-seg" role="radiogroup" aria-label="Flugmodus">
+                <label><input type="radio" name="sim-rc-mode" value="angle" data-rc="mode"><span>Angle</span></label>
+                <label><input type="radio" name="sim-rc-mode" value="acro" data-rc="mode"><span>Acro</span></label>
+              </div>
+            </div>
+            <div class="sim-ghostpick" role="radiogroup" aria-label="Geist zum Mitfliegen" data-rc-ghosts></div>
+            <div class="sim-card-b">
+              <button type="button" class="btn solid" data-rc-go>Los: Countdown <span class="arr" aria-hidden="true">→</span></button>
+              <button type="button" class="btn ghost" data-open-lb>Bestenliste</button>
+            </div>
+            <p class="sim-card-hint" data-rc-hint>Leertaste oder Enter startet. Zurück zum Freiflug mit der Flagge oben.</p>
+          </div>
+        </div>
+
+        <!-- Rennen: Ergebnis -->
+        <div class="sim-card sim-res" data-rres role="dialog" aria-modal="false" aria-labelledby="sim-rr-h" hidden>
+          <div class="sim-card-a">
+            <p class="sim-card-k" data-rr-k>Ziel!</p>
+            <h3 class="sim-res-t" id="sim-rr-h" tabindex="-1"><span class="sr">Gesamtzeit </span><b data-rr-total>0:00.00</b></h3>
+            <ol class="sim-res-laps" data-rr-laps aria-label="Rundenzeiten"></ol>
+            <div class="sim-card-b">
+              <button type="button" class="btn solid" data-rr-again>Nochmal <span class="arr" aria-hidden="true">→</span></button>
+              <button type="button" class="btn ghost" data-open-lb>Bestenliste</button>
+              <button type="button" class="btn ghost" data-rr-free>Freiflug</button>
+            </div>
+          </div>
+          <div class="sim-card-c">
+            <p class="sim-res-badge" data-rr-badge hidden></p>
+            <p class="sim-res-cmp" data-rr-cmp></p>
+            <div class="sim-res-up" data-rr-up></div>
+          </div>
+        </div>
+
+        <!-- Bestenliste in der Bühne -->
+        <div class="sim-lbx" data-lbx role="dialog" aria-modal="false" aria-labelledby="sim-lbx-h" hidden>
+          <div class="sim-lbx-top">
+            <h3 class="sim-lbx-h" id="sim-lbx-h" tabindex="-1">Bestenliste · 3 Runden</h3>
+            <button type="button" class="sim-x" data-lbx-x><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="sr">Bestenliste schließen</span></button>
+          </div>
+          <div class="lb" data-lb="stage"></div>
         </div>
 
         <div class="sim-help" data-help hidden>
@@ -134,11 +202,6 @@
             <button type="button" class="btn ghost sim-btn" data-map-reset>Zuordnung zurücksetzen</button>
           </div>
 
-          <div class="sim-field">
-            <label for="sim-dz">Totzone <output data-out="dz">5 %</output></label>
-            <input type="range" id="sim-dz" class="sim-range" min="0" max="20" step="1" value="5" data-set="dz">
-          </div>
-
           <!-- Assistent -->
           <div class="sim-wiz" data-wiz hidden>
             <p class="sim-wiz-n">Schritt <b data-wiz-i>1</b> von <b data-wiz-c>8</b></p>
@@ -161,19 +224,44 @@
             </div>
           </div>
 
+          <div class="sim-field">
+            <label for="sim-dz">Totzone in der Stickmitte <output data-out="dz">4 %</output></label>
+            <input type="range" id="sim-dz" class="sim-range" min="0" max="20" step="1" value="4" data-set="dz">
+          </div>
+
+          <fieldset class="sim-fs">
+            <legend>Achse umkehren (Funke und Controller)</legend>
+            <div class="sim-inv">
+              <label class="sim-tg"><input type="checkbox" data-inv="thr"><span>Gas</span></label>
+              <label class="sim-tg"><input type="checkbox" data-inv="yaw"><span>Gieren</span></label>
+              <label class="sim-tg"><input type="checkbox" data-inv="pitch"><span>Nicken</span></label>
+              <label class="sim-tg"><input type="checkbox" data-inv="roll"><span>Rollen</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="sim-fs">
+            <legend>Stick-Belegung am Controller</legend>
+            <div class="sim-seg">
+              <label><input type="radio" name="sim-padmode" value="2" data-set="padMode"><span>Mode 2: Gas links</span></label>
+              <label><input type="radio" name="sim-padmode" value="1" data-set="padMode"><span>Mode 1: Gas rechts</span></label>
+            </div>
+          </fieldset>
+
           <details class="fold sim-fold">
             <summary>Tastatur, Touch und Controller</summary>
             <div class="fold-in">
               <dl class="sim-keys" id="sim-keys">
-                <div><dt><kbd>W</kbd> <kbd>S</kbd></dt><dd>Gas hoch und runter (bleibt stehen)</dd></div>
+                <div><dt><kbd>W</kbd> <kbd>S</kbd></dt><dd>Gas hoch und runter. Mit Schwebe-Hilfe: steigen und sinken, loslassen hält die Höhe.</dd></div>
                 <div><dt><kbd>A</kbd> <kbd>D</kbd></dt><dd>Gieren, also um die Hochachse drehen</dd></div>
                 <div><dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Nicken: nach vorne und hinten</dd></div>
                 <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Rollen: zur Seite kippen</dd></div>
                 <div><dt><kbd>Umschalt</kbd></dt><dd>gedrückt halten für vollen Ausschlag</dd></div>
-                <div><dt><kbd>Leertaste</kbd></dt><dd>Armen und Disarmen</dd></div>
-                <div><dt><kbd>R</kbd> <kbd>M</kbd> <kbd>C</kbd> <kbd>F</kbd></dt><dd>Reset, Flugmodus, Kamera, Vollbild</dd></div>
+                <div><dt><kbd>Leertaste</kbd></dt><dd>Armen und Disarmen, im Rennen: Countdown starten</dd></div>
+                <div><dt><kbd>R</kbd></dt><dd>Reset. Im Rennen: am letzten Tor weiter</dd></div>
+                <div><dt><kbd>N</kbd> <kbd>B</kbd></dt><dd>Rennen neu starten, Bestenliste</dd></div>
+                <div><dt><kbd>M</kbd> <kbd>C</kbd> <kbd>F</kbd></dt><dd>Flugmodus, Kamera, Vollbild</dd></div>
                 <div><dt>Touch</dt><dd>Linker Stick: Gas bleibt stehen, Gieren federt zurück. Rechter Stick federt ganz zurück.</dd></div>
-                <div><dt>Controller</dt><dd>Mode 2. Kreuz oder A armt, Kreis oder B Reset, Dreieck oder Y Flugmodus, Viereck oder X Kamera.</dd></div>
+                <div><dt>Controller</dt><dd>Kreuz oder A armt und startet, Kreis oder B Reset, Dreieck oder Y Flugmodus, Viereck oder X Kamera, Start beginnt das Rennen neu.</dd></div>
               </dl>
             </div>
           </details>
@@ -195,9 +283,11 @@
               <label><input type="radio" name="sim-craft" value="whoop" data-set="craft"><span>Tiny Whoop (Halle)</span></label>
               <label><input type="radio" name="sim-craft" value="five" data-set="craft"><span>5 Zoll Freestyle</span></label>
             </div>
+            <p class="sim-note sm" data-craft-note></p>
           </fieldset>
 
           <div class="sim-angle" data-angle-box>
+            <label class="check sim-check"><input type="checkbox" data-set="hoverHelp"><span><b>Schwebe-Hilfe:</b> Gas-Mitte hält die Höhe, darüber steigst du, darunter sinkst du.</span></label>
             <div class="sim-field">
               <label for="sim-maxang">Maximaler Winkel <output data-out="maxAngle">55°</output></label>
               <input type="range" id="sim-maxang" class="sim-range" min="20" max="80" step="1" value="55" data-set="maxAngle">
@@ -207,25 +297,45 @@
               <input type="range" id="sim-level" class="sim-range" min="2" max="12" step="1" value="7" data-set="level">
             </div>
           </div>
+          <label class="check sim-check"><input type="checkbox" data-set="airmode"><span><b>Airmode:</b> volle Kontrolle über die Lage auch bei null Gas, wie in Betaflight</span></label>
 
           <div class="sim-rates" data-rates-box>
             <h3 class="sim-h3">Rates</h3>
-            <div class="sim-rt" role="group" aria-label="Rates je Achse">
+            <div class="sim-seg" role="radiogroup" aria-label="Rate-Typ">
+              <label><input type="radio" name="sim-rtype" value="bf" data-set="rateType"><span>Betaflight</span></label>
+              <label><input type="radio" name="sim-rtype" value="actual" data-set="rateType"><span>Actual</span></label>
+            </div>
+            <div class="sim-rt" role="group" aria-label="Betaflight-Rates je Achse" data-rt="bf">
               <span></span><b>Roll</b><b>Pitch</b><b>Yaw</b>
               <span>RC Rate</span>
-              <input type="number" inputmode="decimal" min="0.1" max="2.55" step="0.01" data-rate="roll.rc" aria-label="RC Rate Roll">
-              <input type="number" inputmode="decimal" min="0.1" max="2.55" step="0.01" data-rate="pitch.rc" aria-label="RC Rate Pitch">
-              <input type="number" inputmode="decimal" min="0.1" max="2.55" step="0.01" data-rate="yaw.rc" aria-label="RC Rate Yaw">
+              <input type="number" inputmode="decimal" min="0.01" max="2.55" step="0.01" data-rate="roll.rc" aria-label="RC Rate Roll">
+              <input type="number" inputmode="decimal" min="0.01" max="2.55" step="0.01" data-rate="pitch.rc" aria-label="RC Rate Pitch">
+              <input type="number" inputmode="decimal" min="0.01" max="2.55" step="0.01" data-rate="yaw.rc" aria-label="RC Rate Yaw">
               <span>Super Rate</span>
-              <input type="number" inputmode="decimal" min="0" max="0.95" step="0.01" data-rate="roll.sr" aria-label="Super Rate Roll">
-              <input type="number" inputmode="decimal" min="0" max="0.95" step="0.01" data-rate="pitch.sr" aria-label="Super Rate Pitch">
-              <input type="number" inputmode="decimal" min="0" max="0.95" step="0.01" data-rate="yaw.sr" aria-label="Super Rate Yaw">
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="roll.sr" aria-label="Super Rate Roll">
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="pitch.sr" aria-label="Super Rate Pitch">
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="yaw.sr" aria-label="Super Rate Yaw">
               <span>Expo</span>
               <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="roll.ex" aria-label="Expo Roll">
               <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="pitch.ex" aria-label="Expo Pitch">
               <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-rate="yaw.ex" aria-label="Expo Yaw">
               <span>max °/s</span>
               <output data-max="roll">0</output><output data-max="pitch">0</output><output data-max="yaw">0</output>
+            </div>
+            <div class="sim-rt" role="group" aria-label="Actual-Rates je Achse" data-rt="actual" hidden>
+              <span></span><b>Roll</b><b>Pitch</b><b>Yaw</b>
+              <span>Mitte °/s</span>
+              <input type="number" inputmode="numeric" min="10" max="1000" step="5" data-ratea="roll.c" aria-label="Center Sensitivity Roll">
+              <input type="number" inputmode="numeric" min="10" max="1000" step="5" data-ratea="pitch.c" aria-label="Center Sensitivity Pitch">
+              <input type="number" inputmode="numeric" min="10" max="1000" step="5" data-ratea="yaw.c" aria-label="Center Sensitivity Yaw">
+              <span>Max °/s</span>
+              <input type="number" inputmode="numeric" min="10" max="1998" step="10" data-ratea="roll.m" aria-label="Max Rate Roll">
+              <input type="number" inputmode="numeric" min="10" max="1998" step="10" data-ratea="pitch.m" aria-label="Max Rate Pitch">
+              <input type="number" inputmode="numeric" min="10" max="1998" step="10" data-ratea="yaw.m" aria-label="Max Rate Yaw">
+              <span>Expo</span>
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-ratea="roll.ex" aria-label="Expo Roll">
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-ratea="pitch.ex" aria-label="Expo Pitch">
+              <input type="number" inputmode="decimal" min="0" max="1" step="0.01" data-ratea="yaw.ex" aria-label="Expo Yaw">
             </div>
             <canvas class="sim-curve" data-curve width="340" height="170" role="img" aria-label="Rate-Kurven für Roll, Pitch und Yaw: Stickweg nach rechts, Drehrate nach oben"></canvas>
             <div class="btns sim-btns">
@@ -244,9 +354,9 @@
             <label for="sim-texpo">Gas-Expo <output data-out="thrExpo">0 %</output></label>
             <input type="range" id="sim-texpo" class="sim-range" min="0" max="100" step="1" value="0" data-set="thrExpo">
           </div>
-          <p class="sim-note sm">Schwebegas mit diesem Kopter: ungefähr <b data-hover>41 %</b></p>
+          <p class="sim-note sm" data-hover-note>Schwebegas mit diesem Kopter: ungefähr <b data-hover>41 %</b></p>
 
-          <h3 class="sim-h3">Deine Bestzeiten</h3>
+          <h3 class="sim-h3">Deine Bestzeiten auf diesem Gerät</h3>
           <ul class="sim-best" data-best></ul>
           <button type="button" class="btn ghost sim-btn" data-best-clear>Bestzeiten löschen</button>
         </div>
@@ -261,9 +371,10 @@
             </div>
           </fieldset>
           <div class="sim-field">
-            <label for="sim-tilt"><span>Uptilt im <span data-tilt-mode>Angle</span>-Modus</span> <output data-out="tilt">10°</output></label>
-            <input type="range" id="sim-tilt" class="sim-range" min="0" max="45" step="1" value="10" data-set="tilt">
+            <label for="sim-tilt"><span>Kamerawinkel <span data-tilt-mode>Whoop · Angle</span></span> <output data-out="tilt">8°</output></label>
+            <input type="range" id="sim-tilt" class="sim-range" min="0" max="50" step="1" value="8" data-set="tilt">
           </div>
+          <p class="sim-note sm">Gespeichert je Kopter und Flugmodus. Üblich: 5 Zoll 20 bis 30 Grad, Whoop 5 bis 15 Grad.</p>
           <div class="sim-field">
             <label for="sim-fov">Sichtfeld (FOV) <output data-out="fov">110°</output></label>
             <input type="range" id="sim-fov" class="sim-range" min="80" max="140" step="1" value="110" data-set="fov">
@@ -277,6 +388,7 @@
           </fieldset>
           <label class="check sim-check"><input type="checkbox" data-set="analog"><span>Analog-Look: Rauschen und Vignette wie bei einer analogen Brille</span></label>
           <label class="check sim-check"><input type="checkbox" data-set="osd"><span>OSD anzeigen</span></label>
+          <label class="check sim-check"><input type="checkbox" data-set="sound"><span>Töne: Tore, Countdown, Runden und Ziel</span></label>
           <fieldset class="sim-fs">
             <legend>Bildqualität</legend>
             <div class="sim-seg four">
@@ -289,8 +401,40 @@
           </fieldset>
         </div>
       </aside>
+
+      <!-- Löschen, Code vergessen, Melden -->
+      <dialog class="sim-dlg" data-dlg aria-labelledby="sim-dlg-h">
+        <div class="sim-dlg-in">
+          <h3 class="sim-dlg-h" id="sim-dlg-h" data-dlg-h tabindex="-1">Eintrag löschen</h3>
+          <p class="sim-dlg-s" data-dlg-s></p>
+          <div class="sim-dlg-body" data-dlg-body></div>
+          <p class="sim-dlg-msg" data-dlg-msg role="status" aria-live="polite"></p>
+          <div class="sim-dlg-b">
+            <button type="button" class="btn solid" data-dlg-ok>Löschen</button>
+            <button type="button" class="btn ghost" data-dlg-x>Abbrechen</button>
+          </div>
+          <button type="button" class="sim-linkbtn" data-dlg-alt hidden>Code vergessen?</button>
+        </div>
+      </dialog>
     </div>
-    <p class="sim-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>Alles läuft lokal in deinem Browser. Es wird nichts gesendet, Einstellungen und Bestzeiten bleiben auf deinem Gerät.</p>
+    <p class="sim-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg><span>Der Simulator läuft in deinem Browser, Einstellungen und Bestzeiten bleiben auf deinem Gerät. Gesendet wird nur, wenn du eine Rennzeit in die Bestenliste einträgst: dein Name, die Zeiten und dein Flugweg als Geist.</span></p>
+  </div>
+</section>
+
+<section class="sec sim-lbsec" id="bestenliste" data-toc="Bestenliste" aria-labelledby="lb-h">
+  <div class="wrap">
+    <div class="lb-head">
+      <div class="lb-head-t">
+        <p class="sim-kick">Gewertetes Rennen · 3 Runden</p>
+        <h2 class="h2" id="lb-h">Bestenliste: Fliegst du schneller als die Crew?</h2>
+        <p class="lede">Drei Runden durch die Halle, gewertet nach Gesamtzeit. Whoop und 5 Zoll, Angle und Acro haben je eine eigene Liste, pro Pilot zählt die beste Zeit.</p>
+      </div>
+      <div class="lb-head-b">
+        <button type="button" class="btn solid" data-race-start>Rennen fliegen <span class="arr" aria-hidden="true">→</span></button>
+        <p class="lb-tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20V10a6 6 0 0 1 12 0v10l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5z"/><circle cx="10" cy="10.5" r=".9"/><circle cx="14" cy="10.5" r=".9"/></svg>Tipp auf den Geist bei einem Eintrag, dann fliegt seine Bestzeit neben dir mit.</p>
+      </div>
+    </div>
+    <div class="lb lb-page" data-lb="page"></div>
   </div>
 </section>
 
@@ -306,7 +450,7 @@
         <summary>Funke per USB-C (EdgeTX, OpenTX, FreedomTX)</summary>
         <div class="fold-in">
           <p>Radiomaster, Jumper, TBS Tango und Mambo und viele andere: Steck die Funke per USB-C-Kabel an den Rechner und schalte sie ein. Fragt sie nach dem USB-Modus, wähl <b>USB Joystick (HID)</b>. Der Browser sieht sie dann wie einen Gamecontroller.</p>
-          <p>Danach einmal <b>Funke einrichten</b> drücken und den Schritten folgen, das dauert eine halbe Minute. Nimm am besten das Modell, mit dem du auch echt fliegst: Dann sitzen Arm- und Modus-Schalter an derselben Stelle. Am Android-Handy klappt es oft auch mit einem USB-C-Kabel.</p>
+          <p>Danach einmal <b>Funke einrichten</b> drücken und den Schritten folgen, das dauert eine halbe Minute. Der Assistent findet jede Achse, ihre Richtung, die Mitte und beide Endpunkte. Nimm am besten das Modell, mit dem du auch echt fliegst: Dann sitzen Arm- und Modus-Schalter an derselben Stelle. Am Android-Handy klappt es oft auch mit einem USB-C-Kabel.</p>
         </div>
       </details>
       <details class="fold">
@@ -318,8 +462,8 @@
       <details class="fold">
         <summary>PlayStation- und Xbox-Controller</summary>
         <div class="fold-in">
-          <p>Per Bluetooth oder Kabel koppeln, das geht auch am iPhone, iPad und Android-Handy. Die Belegung ist Mode 2 wie bei den meisten Simulatoren: linker Stick Gas und Gieren, rechter Stick Nicken und Rollen.</p>
-          <p>Kreuz oder A armt, Kreis oder B setzt zurück, Dreieck oder Y wechselt den Flugmodus, Viereck oder X die Kamera. Der Gas-Stick federt in die Mitte zurück, Mitte heißt hier also halbes Gas. Mit einer echten Funke fliegt es sich deutlich genauer.</p>
+          <p>Per Bluetooth oder Kabel koppeln, das geht auch am iPhone, iPad und Android-Handy. Standard ist Mode 2 wie bei den meisten Simulatoren: linker Stick Gas und Gieren, rechter Stick Nicken und Rollen. Mode 1 stellst du in den Einstellungen unter Steuerung um.</p>
+          <p>Kreuz oder A armt, Kreis oder B setzt zurück, Dreieck oder Y wechselt den Flugmodus, Viereck oder X die Kamera. Der Gas-Stick federt in die Mitte zurück. Im Angle-Modus mit Schwebe-Hilfe passt das genau: Mitte hält die Höhe. Mit einer echten Funke fliegt es sich deutlich genauer.</p>
         </div>
       </details>
       <details class="fold">
@@ -342,14 +486,14 @@
             <li>An der Funke <b>USB Joystick (HID)</b> wählen, nicht USB Storage und nicht USB Serial.</li>
             <li>Kabel tauschen: Manche USB-C-Kabel laden nur und übertragen keine Daten.</li>
             <li>Chrome und Edge klappen am zuverlässigsten, Firefox und Safari gehen meistens auch.</li>
-            <li>Achse falsch herum oder vertauscht? Einfach <b>Funke einrichten</b>, der Assistent erkennt das selbst.</li>
+            <li>Achse falsch herum oder vertauscht? Einfach <b>Funke einrichten</b>, der Assistent erkennt das selbst. Einzelne Achsen drehst du unter <b>Achse umkehren</b> um.</li>
           </ul>
         </div>
       </details>
       <details class="fold">
         <summary>Ist das nicht zu laggy?</summary>
         <div class="fold-in">
-          <p>Nein, solange dein Gerät flüssig läuft. Der Simulator liest die Sticks bei jedem Bild direkt vor der Physik-Berechnung. Bei 60 Bildern pro Sekunde kommen so höchstens rund 17 Millisekunden dazu, an einem 120-Hz-Bildschirm die Hälfte. Die Physik selbst rechnet 240-mal pro Sekunde. Bluetooth braucht ein paar Millisekunden mehr als ein Kabel.</p>
+          <p>Nein, solange dein Gerät flüssig läuft. Der Simulator liest die Sticks bei jedem Bild direkt vor der Physik-Berechnung. Bei 60 Bildern pro Sekunde kommen so höchstens rund 17 Millisekunden dazu, an einem 120-Hz-Bildschirm die Hälfte. Die Physik selbst rechnet 500-mal pro Sekunde in festen Schritten, unabhängig von der Bildrate. Bluetooth braucht ein paar Millisekunden mehr als ein Kabel.</p>
           <p>Unten rechts im OSD siehst du live die Bildrate (FPS) und wie oft neue Stick-Werte ankommen (Hz). So prüfst du selbst, ob alles flüssig ist.</p>
         </div>
       </details>
@@ -368,26 +512,33 @@
       <details class="fold">
         <summary>Angle oder Acro?</summary>
         <div class="fold-in">
-          <p>Im <b>Angle</b>-Modus gibt der Stick den Neigungswinkel vor. Lässt du los, richtet sich der Kopter von selbst gerade aus. Perfekt zum Reinkommen.</p>
+          <p>Im <b>Angle</b>-Modus gibt der Stick den Neigungswinkel vor. Lässt du los, richtet sich der Kopter von selbst gerade aus. Mit der Schwebe-Hilfe hält die Gas-Mitte die Höhe. Perfekt zum Reinkommen.</p>
           <p>Im <b>Acro</b>-Modus gibt der Stick die Drehgeschwindigkeit vor. Der Kopter bleibt in jeder Lage, bis du gegensteuerst. So fliegen die meisten FPV-Piloten, denn nur so gehen Flips, Rolls und flüssige Kurven.</p>
         </div>
       </details>
       <details class="fold">
         <summary>Schweben lernen</summary>
         <div class="fold-in">
-          <p>Starte im Angle-Modus mit dem Tiny Whoop. Schieb das Gas langsam hoch, bis er abhebt (bei ungefähr 40 %), und versuch auf einer Höhe zu bleiben. Dann flieg die erste Runde: Das nächste Gate leuchtet hell, die Zahl darüber zeigt die Reihenfolge, die Linie auf dem Boden die Strecke.</p>
+          <p>Starte im Angle-Modus mit dem Tiny Whoop und der Schwebe-Hilfe. Schieb das Gas über die Mitte, bis er abhebt, und lass es dann in der Mitte stehen: Er hält die Höhe. Dann flieg die erste Runde. Das nächste Tor leuchtet hell, die Zahl darüber zeigt die Reihenfolge, die Linie auf dem Boden die Strecke.</p>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>Gewertetes Rennen und Bestenliste</summary>
+        <div class="fold-in">
+          <p>Tipp oben auf die <b>Flagge</b> oder auf <b>Rennen fliegen</b>. Du startest von der Startkiste, nach 3, 2, 1 und GO läuft die Uhr. Drei gültige Runden durch alle acht Tore, dann bist du im Ziel. Verpasst du ein Tor, zählt diese Runde nicht und du fliegst eine mehr. Bei einem Crash geht es am letzten Tor weiter.</p>
+          <p>Ist es deine beste Zeit, kannst du sie mit deinem Namen in die Bestenliste eintragen. Dabei wird auch dein Flugweg gespeichert: Andere können dann gegen deinen Geist fliegen. Mit dem Löschcode, den sich dein Gerät merkt, nimmst du deinen Eintrag jederzeit wieder heraus.</p>
         </div>
       </details>
       <details class="fold">
         <summary>Rates verstehen</summary>
         <div class="fold-in">
-          <p><b>RC Rate</b> bestimmt, wie schnell der Kopter rund um die Stickmitte dreht. <b>Super Rate</b> macht die äußeren Stickwege schneller, ohne die Mitte nervös zu machen. <b>Expo</b> macht die Mitte noch weicher. Die Zahl <b>max °/s</b> zeigt, wie schnell er bei vollem Ausschlag dreht. Gerechnet wird mit derselben Formel wie in Betaflight.</p>
+          <p><b>RC Rate</b> bestimmt, wie schnell der Kopter rund um die Stickmitte dreht. <b>Super Rate</b> macht die äußeren Stickwege schneller, ohne die Mitte nervös zu machen. <b>Expo</b> macht die Mitte noch weicher. Die Zahl <b>max °/s</b> zeigt, wie schnell er bei vollem Ausschlag dreht. Gerechnet wird mit denselben Formeln wie in Betaflight, auch für <b>Actual</b>-Rates: Dort stellst du die Drehrate in der Mitte und bei vollem Ausschlag direkt in Grad pro Sekunde ein.</p>
         </div>
       </details>
       <details class="fold">
-        <summary>Uptilt und Sichtfeld</summary>
+        <summary>Kamerawinkel und Sichtfeld</summary>
         <div class="fold-in">
-          <p>Je schneller du fliegst, desto weiter neigst du die Kamera nach oben. In der Halle reichen 10 bis 25 Grad, draußen beim schnellen Fliegen eher 30 Grad und mehr. Ein größeres Sichtfeld zeigt mehr von der Halle, lässt aber alles schneller wirken.</p>
+          <p>Je schneller du fliegst, desto weiter neigst du die Kamera nach oben. Mit dem Whoop in der Halle reichen 5 bis 15 Grad, mit dem 5 Zoll eher 20 bis 30 Grad. Ein größeres Sichtfeld zeigt mehr von der Halle, lässt aber alles schneller wirken.</p>
         </div>
       </details>
       <details class="fold">
@@ -422,7 +573,7 @@
 <script src="assets/lib/InertiaPlugin.min.js"></script>
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
-<script src="assets/js/fcs.js?v=27c61f1e"></script>
-<script src="assets/js/sim.js?v=8a3f9f7c" type="module"></script>
+<script src="assets/js/fcs.js?v=1c4550fb"></script>
+<script src="assets/js/sim.js?v=2b4dc3fc" type="module"></script>
 </body>
 </html>
