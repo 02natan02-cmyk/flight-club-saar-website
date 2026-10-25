@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=c0a55e7f">
-<link rel="stylesheet" href="assets/css/studio.css?v=af844ff4">
+<link rel="stylesheet" href="assets/css/studio.css?v=f68a886e">
 <link rel="stylesheet" href="assets/css/filmen.css?v=7c6125f9">
 </head>
 <body>
@@ -102,8 +102,8 @@
     <div class="st-club" id="st-club">
       <div class="st-club-in">
         <span class="st-club-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg></span>
-        <p class="st-club-t" id="st-club-t"><b>Premium für Mitglieder:</b> Auto-Schnitt im Takt, eigene Musik, dein Piloten-Tag und Gyroflow. Kein GoPro- oder CapCut-Abo nötig und kein Gyroflow am eigenen PC: alles im Mitgliedsbeitrag.</p>
-        <div class="st-club-b" id="st-club-b"><button class="btn solid" type="button" id="mc-open">Mitgliedscode eingeben</button><a class="btn ghost" href="mitglied.html">Mitglied werden <span class="arr">→</span></a></div>
+        <p class="st-club-t" id="st-club-t"><b>Premium für Mitglieder:</b> <span class="cl-l">Auto-Schnitt im Takt, eigene Musik, dein Piloten-Tag und Gyroflow. Kein GoPro- oder CapCut-Abo nötig und kein Gyroflow am eigenen PC: alles im Mitgliedsbeitrag.</span><span class="cl-s">Auto-Schnitt, Musik, Tag und Gyroflow, ohne Abo.</span></p>
+        <div class="st-club-b" id="st-club-b"><button class="btn solid" type="button" id="mc-open">Code eingeben</button><a class="btn ghost" href="mitglied.html">Mitglied werden <span class="arr">→</span></a></div>
       </div>
       <p class="st-lockmsg" id="st-lockmsg" hidden></p>
       <form class="st-code" id="mc-form" novalidate hidden>
@@ -119,7 +119,7 @@
         <li class="now"><button type="button" data-step="1" aria-current="step"><b>1</b><span>Clips</span><small>Video oder bis zu 5 Clips</small></button></li>
         <li><button type="button" data-step="2"><b>2</b><span>Schneiden</span><small>Zuschneiden oder Auto-Schnitt</small></button></li>
         <li><button type="button" data-step="3"><b>3</b><span>Musik</span><small>Takt und Bässe erkannt</small></button></li>
-        <li><button type="button" data-step="4"><b>4</b><span>Look &amp; Logo</span><small>Farbe, Logo, Sticker, Tag</small></button></li>
+        <li><button type="button" data-step="4"><b>4</b><span><i class="s-l">Look &amp; </i>Logo</span><small>Farbe, Logo, Sticker, Tag</small></button></li>
         <li><button type="button" data-step="5"><b>5</b><span>Fertig</span><small>Speichern oder einsenden</small></button></li>
       </ol>
     </nav>
@@ -199,8 +199,8 @@
           <div id="p2-trim">
             <p class="st-help">Zieh unter dem Video die gelben Griffe. Für genaue Schnitte nimmst du die Knöpfe hier oder die Pfeiltasten am Griff (mit Umschalt springt es eine Sekunde).</p>
             <div class="fine">
-              <div class="fine-row tl-fine"><span class="hud">Anfang</span><button class="btn ghost" type="button" data-fine="a-" aria-label="Anfang 0,1 Sekunden früher">−0,1 s</button><button class="btn ghost" type="button" data-fine="a=" aria-label="Anfang an die aktuelle Stelle">Hier</button><button class="btn ghost" type="button" data-fine="a+" aria-label="Anfang 0,1 Sekunden später">+0,1 s</button></div>
-              <div class="fine-row tl-fine"><span class="hud">Ende</span><button class="btn ghost" type="button" data-fine="b-" aria-label="Ende 0,1 Sekunden früher">−0,1 s</button><button class="btn ghost" type="button" data-fine="b=" aria-label="Ende an die aktuelle Stelle">Hier</button><button class="btn ghost" type="button" data-fine="b+" aria-label="Ende 0,1 Sekunden später">+0,1 s</button></div>
+              <div class="fine-row tl-fine"><span class="hud">Anfang</span><button class="btn ghost" type="button" data-fine="a-" aria-label="Anfang −0,1 s früher">−0,1 s</button><button class="btn ghost" type="button" data-fine="a=" aria-label="Anfang hier setzen">Hier</button><button class="btn ghost" type="button" data-fine="a+" aria-label="Anfang +0,1 s später">+0,1 s</button></div>
+              <div class="fine-row tl-fine"><span class="hud">Ende</span><button class="btn ghost" type="button" data-fine="b-" aria-label="Ende −0,1 s früher">−0,1 s</button><button class="btn ghost" type="button" data-fine="b=" aria-label="Ende hier setzen">Hier</button><button class="btn ghost" type="button" data-fine="b+" aria-label="Ende +0,1 s später">+0,1 s</button></div>
             </div>
             <p class="st-help small">„Hier“ setzt Anfang oder Ende an die Stelle, an der das Video gerade steht.</p>
           </div>
@@ -239,7 +239,7 @@
           <div class="mu" id="mu-box" hidden>
             <p class="mu-h"><b id="mu-name">Musik</b><span class="hud" id="mu-bpm"></span></p>
             <canvas class="mu-wave" id="mu-wave" tabindex="0" aria-label="Wellenform mit Takt-Raster. Tippen oder ziehen setzt den Startpunkt, Pfeiltasten springen einen Takt weiter."></canvas>
-            <div class="mu-row"><button class="btn ghost" type="button" id="mu-prev" aria-label="Start einen Takt früher">‹ Takt</button><span class="hud mu-st">Start <b id="mu-start-o">0:00,0</b></span><button class="btn ghost" type="button" id="mu-next" aria-label="Start einen Takt später">Takt ›</button><button class="btn ghost" type="button" id="mu-first">Erster Bass</button></div>
+            <div class="mu-row"><button class="btn ghost" type="button" id="mu-prev" aria-label="‹ Takt: Start einen Takt früher">‹ Takt</button><span class="hud mu-st">Start <b id="mu-start-o">0:00,0</b></span><button class="btn ghost" type="button" id="mu-next" aria-label="Takt ›: Start einen Takt später">Takt ›</button><button class="btn ghost" type="button" id="mu-first">Erster Bass</button></div>
             <label class="rng"><span>Musik</span><input type="range" id="mu-vol" min="0" max="100" value="90"><output id="mu-vol-o">90 %</output></label>
             <label class="rng"><span>Originalton</span><input type="range" id="mu-orig" min="0" max="100" value="20"><output id="mu-orig-o">20 %</output></label>
             <label class="rng"><span>Einblenden</span><input type="range" id="mu-fin" min="0" max="30" value="5"><output id="mu-fin-o">0,5 s</output></label>
@@ -350,10 +350,12 @@
                 <div class="field"><label for="snd-name">Name oder Pilotenname</label><input id="snd-name" required maxlength="40" autocomplete="nickname"><span class="err">Bitte deinen Namen eingeben.</span></div>
                 <div class="field"><label for="snd-ig">Instagram-Name <small>optional</small></label><input id="snd-ig" placeholder="@deinname" autocomplete="off" maxlength="40"></div>
               </div>
+              <div class="field"><label for="snd-extra">Weitere Datei <small>optional, zum Beispiel Blackbox-Log oder .gcsv für Gyroflow</small></label><input type="file" id="snd-extra" multiple></div>
               <div class="field"><label for="snd-msg">Nachricht <small>optional</small></label><textarea id="snd-msg" maxlength="400" rows="2" placeholder="Wo bist du geflogen, mit welchem Kopter?"></textarea></div>
               <p class="sf-collab">Mit deinem Instagram-Namen verlinken wir dich, wenn wir den Clip posten. Postest du selbst, lad einfach @flightclubsaar als Mitwirkenden ein.</p>
               <label class="check"><input type="checkbox" id="snd-ok" required><span>Das Video ist von mir, erkennbare Personen sind einverstanden, Kennzeichen und Hausnummern sind nicht zu erkennen, und ich habe beim Flug die Regeln eingehalten. Der Verein darf den Clip prüfen und auf Website und Kanälen zeigen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
               <button class="btn amber solid sf-go" type="submit" id="snd-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>Hochladen</button>
+              <p class="snd-state" id="snd-state" role="status" aria-live="polite"></p>
               <div class="snd-up" id="snd-up" hidden></div>
               <div class="form-ok" id="snd-ok-msg" hidden><b>Angekommen, danke!</b> Der Vorstand schaut sich deinen Clip an, bevor er online geht. <button class="linkbtn" type="button" id="snd-again">Noch einen schicken</button></div>
               <div class="reach" id="reach"><p class="reach-h">So viele folgen dem Verein</p><div class="reach-g" id="reach-g"></div><p class="reach-s hud" id="reach-s"></p></div>
@@ -372,16 +374,16 @@
                 <label class="chip"><input type="radio" name="gy-zoom" value="statisch"><span>Zoom fest</span></label>
                 <label class="chip"><input type="radio" name="gy-zoom" value="aus"><span>Kein Zoom, Ränder sichtbar</span></label>
               </div>
-              <div class="field"><label for="gy-log">Gyro-Datei oder Blackbox-Log <small>nur wenn deine Kamera keine Gyro-Daten ins Video schreibt</small></label><input type="file" id="gy-log" accept=".gcsv,.bbl,.bfl,.csv,.txt"></div>
+              <p class="st-note">Schreibt deine Kamera keine Gyro-Daten ins Video (RunCam: .gcsv-Datei, sonst Blackbox-Log .bbl, .bfl oder .csv), schick die Datei oben bei „An den Verein schicken“ mit und schreib in die Nachricht „Gyroflow“.</p>
             </div>
             <details class="fold gy-cams"><summary>Welche Kameras schreiben Gyro-Daten mit?</summary><div class="fold-in">
               <ul class="gy-list">
                 <li><b>DJI:</b> Avata, Avata 2, O3 Air Unit, O4 Air Unit, Neo, Action 2 (ab Firmware v01.04.0510), Action 4, 5 und 6 und Osmo Nano. Dafür die Bildstabilisierung (RockSteady, EIS) ausschalten und das Sichtfeld auf „Wide“ stellen. O3 und O4 weich gelagert einbauen. Nicht dabei: DJI FPV und Action 3.</li>
                 <li><b>GoPro:</b> Hero 5 Black und neuer. Ab Hero 8 darf HyperSmooth an bleiben, bei der Hero 7 Black muss es aus sein. Am besten mit dem Objektiv „Wide“ filmen.</li>
                 <li><b>Insta360:</b> One R, One RS, Go 2, Go 3, Go 3S, Ace, Ace Pro, SMO 4K und Caddx Peanut. Manche Modelle speichern die Bewegungsdaten nur im FreeFrame-Modus.</li>
-                <li><b>RunCam:</b> Thumb, Thumb Pro, Thumb Pro-W, Thumb 2 und 5 Orange. Sie speichern die Gyro-Daten als eigene .gcsv-Datei neben dem Video: die lädst du oben bei „Gyro-Datei“ mit hoch. Bildstabilisierung und Verzeichnungskorrektur ausschalten.</li>
+                <li><b>RunCam:</b> Thumb, Thumb Pro, Thumb Pro-W, Thumb 2 und 5 Orange. Sie speichern die Gyro-Daten als eigene .gcsv-Datei neben dem Video: die schickst du über „An den Verein schicken“ mit. Bildstabilisierung und Verzeichnungskorrektur ausschalten.</li>
                 <li><b>Sony:</b> die meisten neueren Modelle.</li>
-                <li><b>Alle anderen Kameras:</b> das Blackbox-Log deines Flugcontrollers (.bbl, .bfl oder .csv) mit hochladen.</li>
+                <li><b>Alle anderen Kameras:</b> das Blackbox-Log deines Flugcontrollers (.bbl, .bfl oder .csv) über „An den Verein schicken“ mitschicken.</li>
               </ul>
               <p class="st-help small">Quellen: Gyroflow-Dokumentation zu <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/dji" target="_blank" rel="noopener">DJI</a>, <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/gopro" target="_blank" rel="noopener">GoPro</a>, <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/insta360" target="_blank" rel="noopener">Insta360</a>, <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/runcam" target="_blank" rel="noopener">RunCam</a> und die <a href="https://docs.gyroflow.xyz/app/readme/features" target="_blank" rel="noopener">Liste aller Kameras</a> (Stand Oktober 2026).</p>
             </div></details>
@@ -1292,7 +1294,7 @@
       <a class="btn" href="wissen.html">FPV-Wissen <span class="arr">→</span></a>
       <a class="btn ghost" href="hilfe.html">Technik-Hilfe</a>
     </div>
-    <p class="fm-credits hud" aria-hidden="true">Ein Ratgeber des Flight Club Saar e. V. · Filme: Falcon Eye · Stand 24.10.2026</p>
+    <p class="fm-credits hud" aria-hidden="true">Ein Ratgeber des Flight Club Saar e. V. · Filme: Mitglieder des Vereins · Stand 25.10.2026</p>
   </div>
 </section>
 
@@ -1306,10 +1308,10 @@
       <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
-    <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Falcon Eye</span></div>
+    <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Mitglieder des Vereins · Website: <a href="https://falcon-eye.de/" target="_blank" rel="noopener">Falcon Eye</a></span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=4ddfe86e"></script>
+<script src="assets/js/data.js?v=af5aea61"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -1319,7 +1321,7 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=4782690c"></script>
-<script src="assets/js/studio.js?v=117b1816"></script>
+<script src="assets/js/studio.js?v=6b0d48e9"></script>
 <script src="assets/js/filmen.js?v=014166e0"></script>
 </body>
 </html>
