@@ -243,6 +243,9 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
 .fcsg-mini.fcsg-snd .w{opacity:.25;transition:opacity .25s}
 .fcsg-mini.fcsg-snd.on{border-color:var(--sig,#3fe0ff);color:var(--sig,#3fe0ff)}
 .fcsg-mini.fcsg-snd.on .w{opacity:1}
+.fcsg-mini.fcsg-mus.on{border-color:var(--sig,#3fe0ff);color:var(--sig,#3fe0ff)}
+.fcsg-snd-start{background:rgba(4,9,18,.55)}
+.fcsg-ui-start .fcsg-card{max-width:680px}
 .fcsg-sr{position:absolute!important;width:1px;height:1px;margin:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ---------- Bestenliste ---------- */
