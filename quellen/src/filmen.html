@@ -332,7 +332,7 @@
 
           <div class="gybox" data-prem data-lockmsg="gyro">
             <h4>Mit Gyroflow stabilisieren <em class="prem-tag" data-prem-lock><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Mitglieder</em></h4>
-            <p class="st-help">Gyroflow nimmt die Bewegungsdaten deiner Kamera und macht wackelige Aufnahmen butterweich. Dein Original geht an den Verein, wird dort stabilisiert, und du bekommst hier den Link zum Herunterladen.</p>
+            <p class="st-help">Gyroflow nimmt die Bewegungsdaten deiner Kamera und macht wackelige Aufnahmen butterweich. Dein Original geht an den Verein, dort wird nur dein Schnitt stabilisiert, und du bekommst hier den Link: als MP4, das auf jedem Handy läuft.</p>
             <div class="gy-grid">
               <div class="field"><label for="gy-clip">Clip</label><select id="gy-clip"><option value="">Noch kein Clip gewählt</option></select></div>
               <label class="rng"><span>Glättung</span><input type="range" id="gy-smooth" min="0" max="100" value="50"><output id="gy-smooth-o">50 %</output></label>
@@ -342,6 +342,12 @@
                 <label class="chip"><input type="radio" name="gy-zoom" value="statisch"><span>Zoom fest</span></label>
                 <label class="chip"><input type="radio" name="gy-zoom" value="aus"><span>Kein Zoom, Ränder sichtbar</span></label>
               </div>
+              <div class="chips" role="radiogroup" aria-label="Qualität">
+                <label class="chip"><input type="radio" name="gy-q" value="social" checked><span>Social Media (empfohlen)</span></label>
+                <label class="chip"><input type="radio" name="gy-q" value="original"><span>Volle Auflösung</span></label>
+              </div>
+              <p class="st-note gy-cut" id="gy-cut" aria-live="polite"></p>
+              <label class="check"><input type="checkbox" id="gy-ganz"><span>Ganzes Video stabilisieren (statt nur deinen Schnitt)</span></label>
               <p class="st-note">Schreibt deine Kamera keine Gyro-Daten ins Video (RunCam: .gcsv-Datei, sonst Blackbox-Log .bbl, .bfl oder .csv), schick die Datei oben bei „An den Verein schicken“ mit und schreib in die Nachricht „Gyroflow“.</p>
             </div>
             <details class="fold gy-cams"><summary>Welche Kameras schreiben Gyro-Daten mit?</summary><div class="fold-in">

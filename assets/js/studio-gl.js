@@ -209,15 +209,16 @@ export function compositor(canvas) {
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       return true;
     },
-    /* Helligkeit eines kleinen Rasters lesen (Selbsttest gegen schwarze Bilder) */
+    /* Helligkeit eines kleinen Rasters lesen (Selbsttest gegen schwarze oder einfarbige Bilder) */
     luma() {
       const w = canvas.width, h = canvas.height, px = new Uint8Array(4);
-      let mx = 0, sum = 0, n = 0;
+      let mx = 0, mn = 255, sum = 0, sq = 0, n = 0;
       for (let y = 1; y < 6; y++) for (let x = 1; x < 6; x++) {
         gl.readPixels(Math.floor(w * x / 6), Math.floor(h * y / 6), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
-        const l = .2126 * px[0] + .7152 * px[1] + .0722 * px[2]; mx = Math.max(mx, l); sum += l; n++;
+        const l = .2126 * px[0] + .7152 * px[1] + .0722 * px[2]; mx = Math.max(mx, l); mn = Math.min(mn, l); sum += l; sq += l * l; n++;
       }
-      return { max: mx, mean: sum / n };
+      const m = sum / n;
+      return { max: mx, min: mn, mean: m, std: Math.sqrt(Math.max(0, sq / n - m * m)), range: mx - mn };
     },
     destroy() { try { const e = gl.getExtension('WEBGL_lose_context'); if (e) e.loseContext(); } catch (e) {} }
   };
