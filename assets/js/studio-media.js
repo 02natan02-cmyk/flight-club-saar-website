@@ -1,8 +1,8 @@
 /* Flight Club Saar · Clip-Studio: Medien-Motor (wird von studio.js erst bei Bedarf geladen)
    - probe(): Format-Steckbrief jeder Datei (Codec, Bit-Tiefe, HDR, Drehung, Bildrate, Ton), auch wenn der Browser sie nicht abspielen kann
-   - lumaAt(): Selbsttest gegen schwarze Bilder über zwei Dekodier-Wege ('draw' und 'copy')
+   - lumaAt(): Selbsttest gegen schwarze oder einfarbige Bilder über vier Dekodier-Wege ('draw', 'cpu', 'copy', 'sw')
    - clipAudio()/mixAudio(): Originalton und Musik werden mit der Web-Audio-API sauber gemischt
-   - render(): Export in Originalqualität (bis 4K) über WebCodecs, Ausgabe direkt in Blob-Stücke statt in den Arbeitsspeicher */
+   - render(): Export in Originalqualität (bis 4K) über WebCodecs, MP4 mit Fast Start; verify() prüft die fertige Datei */
 import * as M from '../lib/mediabunny.min.mjs';
 export { M };
 
@@ -48,7 +48,19 @@ export async function probe(file) {
   return o;
 }
 
-/* ---------- Bild zeichnen: 'draw' = direkt, 'copy' = über RGBA-Kopie (hilft, wenn der Grafikchip schwarze Bilder liefert) ---------- */
+/* ---------- Bild zeichnen: mehrere Wege, weil manche Handys (z. B. Samsung mit HEVC oder HDR) auf dem
+   Grafikchip-Canvas eine leere Fläche statt des Bildes liefern.
+   'draw' = direkt auf den Grafikchip-Canvas · 'cpu' = auf einen Canvas im Arbeitsspeicher
+   'copy' = über eine RGBA-Kopie in sRGB (rechnet HDR und 10 Bit auf normales SDR um) · 'sw' = Software-Dekoder ---------- */
+export const WAYS = ['draw', 'cpu', 'copy', 'sw'];
+export const cpuWay = mode => mode === 'cpu' || mode === 'sw';
+export function sinkFor(track, mode) { return new M.VideoSampleSink(track, mode === 'sw' ? { hardwareAcceleration: 'prefer-software' } : {}); }
+export function canvas(w, h, mode) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  return [c, c.getContext('2d', cpuWay(mode) ? { alpha: false, willReadFrequently: true } : { alpha: false })];
+}
+const FLAT = '#2f0d33';
+const flagged = (key, mode) => (TEST()[key] || []).includes(mode);
 async function toRGBA(s) {
   const opt = { format: 'RGBA', colorSpace: 'srgb' };
   const buf = new Uint8Array(s.allocationSize(opt));
@@ -56,38 +68,56 @@ async function toRGBA(s) {
   const r = s.visibleRect || { width: s.codedWidth, height: s.codedHeight };
   return new M.VideoSample(buf, { format: 'RGBA', codedWidth: r.width, codedHeight: r.height, timestamp: s.timestamp, duration: s.duration, rotation: s.rotation });
 }
-export async function drawTo(ctx, s, crop, mode) {
-  if (mode === 'copy') { const r = await toRGBA(s); try { r.drawWithFit(ctx, crop ? { fit: 'fill', crop } : { fit: 'cover' }); } finally { r.close(); } return; }
-  s.drawWithFit(ctx, crop ? { fit: 'fill', crop } : { fit: 'cover' });
+/* test: Name eines Testschalters (FCS_STUDIO_TEST.flat / .flatExport), der für diesen Weg eine leere lila Fläche simuliert */
+export async function drawTo(ctx, s, crop, mode, test) {
+  const fit = crop ? { fit: 'fill', crop } : { fit: 'cover' };
+  if (test && flagged(test, mode)) { ctx.fillStyle = FLAT; ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); return; }
+  if (mode === 'copy') { const r = await toRGBA(s); try { r.drawWithFit(ctx, fit); } finally { r.close(); } return; }
+  s.drawWithFit(ctx, fit);
 }
 export function lumaOf(ctx, w, h) {
-  const d = ctx.getImageData(0, 0, w, h).data; let mx = 0, sum = 0;
-  for (let i = 0; i < d.length; i += 4) { const l = .2126 * d[i] + .7152 * d[i + 1] + .0722 * d[i + 2]; if (l > mx) mx = l; sum += l; }
-  return { max: mx, mean: sum / (d.length / 4) };
+  const d = ctx.getImageData(0, 0, w, h).data, n = d.length / 4;
+  let mx = 0, mn = 255, sum = 0, sq = 0, r = 0, g = 0, b = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const l = .2126 * d[i] + .7152 * d[i + 1] + .0722 * d[i + 2];
+    if (l > mx) mx = l; if (l < mn) mn = l; sum += l; sq += l * l; r += d[i]; g += d[i + 1]; b += d[i + 2];
+  }
+  const mean = sum / n;
+  return { max: mx, min: mn, mean, std: Math.sqrt(Math.max(0, sq / n - mean * mean)), range: mx - mn, rgb: [r / n, g / n, b / n].map(Math.round) };
 }
+/* Echtes Bild: nicht schwarz und nicht einfarbig. Eine gleichmäßige Fläche (lila, grün, grau) ist kein Videobild. */
+export const real = l => !!(l && l.max >= 8 && (l.std >= 1.5 || l.range >= 10));
+const withTimeout = (p, ms) => Promise.race([p, new Promise(res => setTimeout(() => res(null), ms))]);
+/* Selbsttest eines Weges: gezeichnet wird auf dieselbe Canvas-Art wie beim Export (groß, Grafikchip oder Arbeitsspeicher),
+   danach auf 24 × 24 verkleinert und ausgewertet. */
 export async function lumaAt(file, times, mode) {
-  const v = await inp(file).getPrimaryVideoTrack(); const sink = new M.VideoSampleSink(v);
+  const v = await inp(file).getPrimaryVideoTrack(); const sink = sinkFor(v, mode);
+  let dw = 1280, dh = 720; try { dw = await v.getDisplayWidth(); dh = await v.getDisplayHeight(); } catch (e) {}
+  const k = Math.min(1, 1280 / Math.max(dw, dh)), [big, bx] = canvas(Math.max(2, Math.round(dw * k)), Math.max(2, Math.round(dh * k)), mode);
   const c = document.createElement('canvas'); c.width = c.height = 24; const x = c.getContext('2d', { willReadFrequently: true });
   const out = [];
   for (const t of times) {
-    let s = null; try { s = await sink.getSample(t); } catch (e) {}
+    let s = null; try { s = await withTimeout(sink.getSample(t), 8000); } catch (e) {}
     if (!s) { out.push(null); continue; }
-    try { x.fillStyle = '#000'; x.fillRect(0, 0, 24, 24); await drawTo(x, s, null, mode); out.push(lumaOf(x, 24, 24)); }
-    catch (e) { out.push(null); }
+    try {
+      bx.fillStyle = '#000'; bx.fillRect(0, 0, big.width, big.height); await drawTo(bx, s, null, mode, 'flat');
+      x.fillStyle = '#000'; x.fillRect(0, 0, 24, 24); x.drawImage(big, 0, 0, 24, 24); out.push(lumaOf(x, 24, 24));
+    } catch (e) { out.push(null); }
     finally { s.close(); }
   }
-  if ((TEST().black || []).includes(mode)) return out.map(l => l && { max: 0, mean: 0 });
+  big.width = big.height = 1;
+  if (flagged('black', mode)) return out.map(l => l && { max: 0, min: 0, mean: 0, std: 0, range: 0 });
   return out;
 }
 
 /* ---------- Vorschaubilder für die Zeitleiste ---------- */
 export async function thumbs(file, times, w, h, mode, onThumb) {
-  const v = await inp(file).getPrimaryVideoTrack(); const sink = new M.VideoSampleSink(v);
+  const v = await inp(file).getPrimaryVideoTrack(); const sink = sinkFor(v, mode);
   let k = 0;
   for await (const s of sink.samplesAtTimestamps(times)) {
     const i = k++;
     if (!s) continue;
-    try { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); await drawTo(x, s, null, mode); onThumb(i, c); }
+    try { const [c, x] = canvas(w, h, mode); await drawTo(x, s, null, mode); onThumb(i, c); }
     catch (e) {} finally { s.close(); }
   }
 }
@@ -162,11 +192,25 @@ export async function mixAudio(plan) {
   return await ctx.startRendering();
 }
 
-/* ---------- Kodierer wählen ---------- */
+/* ---------- Kodierer wählen ----------
+   H.264 zuerst (spielt in jeder Galerie, auf jedem Samsung und in WhatsApp), lieber etwas kleiner als in einem exotischen Format.
+   sizes: Liste von [W, H, bitrate], größte zuerst */
 export async function encodable(W, H, fps, bitrate) {
   const list = TEST().vcodecs || ['avc', 'hevc', 'vp9', 'av1'];
   for (const c of list) {
     try { if (await M.canEncodeVideo(c, { width: W, height: H, bitrate, frameRate: fps })) return c; } catch (e) {}
+  }
+  return null;
+}
+export async function pickEncoder(sizes, fps) {
+  const list = TEST().vcodecs || ['avc', 'hevc', 'vp9', 'av1'];
+  const first = list.includes('avc') ? ['avc'] : [], rest = list.filter(c => c !== 'avc');
+  for (const group of [first, rest]) {
+    for (const [W, H, bitrate] of sizes) {
+      for (const c of group) {
+        try { if (await M.canEncodeVideo(c, { width: W, height: H, bitrate, frameRate: fps })) return { vc: c, W, H, bitrate }; } catch (e) {}
+      }
+    }
   }
   return null;
 }
@@ -213,20 +257,27 @@ function blobTarget() {
           cuts: [{ f, d, type }] (Übergang beim Bild f zur Szene i, d Bilder lang),
           look: {id, k}, fadeFrames, gl (Compositor auf einem Canvas W×H) | null, cssLook(id,k) für den 2D-Ersatz,
           overlay(ctx, t), audio: AudioBuffer | null, signal: AbortSignal }
-   hooks: { progress(p), frameCheck(f, ctx) } */
+   hooks: { progress(p), frameCheck(f, ctx, seg, {src, gl, fade}) }
+   Das MP4 ist nicht fragmentiert, das Inhaltsverzeichnis (moov) steht vorne (Fast Start): Galerie-Apps zeigen sofort Länge und Bild. */
+const MEM_LIMIT = 260 * 1048576;
 export async function render(job, hooks = {}) {
   const { W, H, fps, frames, segs } = job;
-  const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d', { alpha: false })]; };
-  const [outC, out] = mk(), scratch = [mk(), mk()];
-  const target = blobTarget();
+  const [outC, out] = canvas(W, H, 'draw');
+  const scr = { gpu: [], cpu: [] };
+  const scratch = i => { const kind = cpuWay(segs[i].mode) ? 'cpu' : 'gpu', k = i % 2; return scr[kind][k] || (scr[kind][k] = canvas(W, H, kind === 'cpu' ? 'cpu' : 'draw')); };
+  const dur = frames / fps;
+  const est = (job.bitrate * dur + (job.audio ? 192000 * dur : 0)) / 8;
+  const inMem = est < MEM_LIMIT;
+  const target = inMem ? null : blobTarget();
+  const buf = inMem ? new M.BufferTarget() : null;
   const Fmt = job.fmt === 'mov' ? M.MovOutputFormat : M.Mp4OutputFormat;
-  const output = new M.Output({ format: new Fmt({ fastStart: false }), target: target.t });
+  const output = new M.Output({ format: new Fmt({ fastStart: inMem ? 'in-memory' : 'reserve' }), target: inMem ? buf : target.t });
   const vsrc = new M.CanvasSource(outC, { codec: job.vc, quality: new M.Quality({ bitrate: job.bitrate, bitrateMode: 'variable' }), keyFrameInterval: 2, latencyMode: 'quality' });
-  output.addVideoTrack(vsrc, { frameRate: fps });
+  output.addVideoTrack(vsrc, inMem ? { frameRate: fps } : { frameRate: fps, maximumPacketCount: frames + 16 });
   let asrc = null;
   if (job.audio && job.ac) {
     asrc = new M.AudioBufferSource(job.ac.startsWith('pcm') ? { codec: job.ac } : { codec: job.ac, quality: new M.Quality({ bitrate: 192000 }) });
-    output.addAudioTrack(asrc);
+    output.addAudioTrack(asrc, inMem ? {} : { maximumPacketCount: Math.ceil(job.audio.duration * job.audio.sampleRate / 256) + 64 });
   }
   const tracks = new Map();
   const track = async f => { if (!tracks.has(f)) tracks.set(f, await inp(f).getPrimaryVideoTrack()); return tracks.get(f); };
@@ -246,11 +297,11 @@ export async function render(job, hooks = {}) {
   const pull = async i => {
     const s = segs[i];
     if (iters[i] === 'done') return;
-    if (!iters[i]) { const sink = new M.VideoSampleSink(await track(s.file)); iters[i] = { it: sink.samplesAtTimestamps(s.times)[Symbol.asyncIterator](), n: 0 }; }
+    if (!iters[i]) { const sink = sinkFor(await track(s.file), s.mode); iters[i] = { it: sink.samplesAtTimestamps(s.times)[Symbol.asyncIterator](), n: 0 }; }
     const I = iters[i], r = await I.it.next(); I.n++;
     if (!r.done && r.value) {
-      const x = scratch[i % 2][1];
-      try { await drawTo(x, r.value, s.crop, s.mode); } finally { r.value.close(); }
+      const x = scratch(i)[1];
+      try { await drawTo(x, r.value, s.crop, s.mode, 'flatExport'); } finally { r.value.close(); }
     }
     if (r.done || I.n >= s.times.length) { try { await I.it.return(); } catch (e) {} iters[i] = 'done'; }
   };
@@ -266,11 +317,13 @@ export async function render(job, hooks = {}) {
       if (inTr) await pull(seg - 1);
       const t = f / fps;
       const fade = job.fadeFrames > 0 ? Math.max(0, (f - (frames - job.fadeFrames)) / job.fadeFrames) : 0;
-      const A = inTr ? scratch[(seg - 1) % 2][0] : scratch[seg % 2][0], B = inTr ? scratch[seg % 2][0] : null;
+      const A = inTr ? scratch(seg - 1)[0] : scratch(seg)[0], B = inTr ? scratch(seg)[0] : null;
       const tr = inTr ? { type: cut.type, p: (f - cut.f + .5) / cut.d, seed: f % 97 } : null;
-      if ((inTr || look || fade > 0) && job.gl && job.gl.ok && !job.gl.lost) {
+      const useGL = !!((inTr || look || fade > 0) && job.gl && job.gl.ok && !job.gl.lost);
+      if (useGL) {
         job.gl.render({ A, B, tr, look, fade });
         out.drawImage(job.gl.canvas, 0, 0, W, H);
+        if (flagged('flatExport', 'gl')) { out.fillStyle = FLAT; out.fillRect(0, 0, W, H); }
       } else {
         // 2D-Ersatz ohne WebGL: Blende als Überblendung, Blitz als weiße Fläche, Look per Canvas-Filter
         if (look && 'filter' in out && job.cssLook) out.filter = job.cssLook(look.id, look.k);
@@ -284,7 +337,7 @@ export async function render(job, hooks = {}) {
         if ('filter' in out) out.filter = 'none';
         if (fade > 0) { out.fillStyle = '#000'; out.globalAlpha = fade; out.fillRect(0, 0, W, H); out.globalAlpha = 1; }
       }
-      if (hooks.frameCheck) hooks.frameCheck(f, out, seg);
+      if (hooks.frameCheck) hooks.frameCheck(f, out, seg, { src: scratch(seg)[0], gl: useGL, fade, last: f === frames - 1 });
       if (job.overlay) { out.save(); job.overlay(out, t); out.restore(); }
       await vsrc.add(t, 1 / fps);
       await pushAudio(t + 2);
@@ -297,7 +350,23 @@ export async function render(job, hooks = {}) {
     for (const I of iters) if (I && I !== 'done') { try { await I.it.return(); } catch (er) {} }
     try { await output.cancel(); } catch (er) {}
     throw e;
+  } finally {
+    for (const k of ['gpu', 'cpu']) for (const c of scr[k]) if (c) c[0].width = c[0].height = 1;
   }
   const mime = job.fmt === 'mov' ? 'video/quicktime' : 'video/mp4';
-  return { blob: await target.blob(mime), mime, ext: job.fmt === 'mov' ? 'mov' : 'mp4' };
+  const blob = inMem ? new Blob([buf.buffer], { type: mime }) : await target.blob(mime);
+  return { blob, mime, ext: job.fmt === 'mov' ? 'mov' : 'mp4', fastStart: inMem ? 'in-memory' : 'reserve' };
+}
+
+/* ---------- Fertige Datei nachprüfen: Länge und Bildanzahl stimmen? (wird vor dem Speichern aufgerufen) ---------- */
+export async function verify(blob, expect) {
+  const i = new M.Input({ source: new M.BlobSource(blob), formats: M.ALL_FORMATS });
+  try {
+    const v = await i.getPrimaryVideoTrack(); if (!v) return { ok: false, why: 'keine Videospur' };
+    const dur = await v.computeDuration(), st = await v.computePacketStats();
+    const tol = Math.max(.15, 3 / expect.fps);
+    const ok = Math.abs(dur - expect.dur) <= tol && st.packetCount >= Math.floor(expect.frames * .98) && st.packetCount <= expect.frames + 2;
+    return { ok, dur, frames: st.packetCount, why: ok ? '' : `Länge ${dur.toFixed(2)} s statt ${expect.dur.toFixed(2)} s, ${st.packetCount} statt ${expect.frames} Bilder` };
+  } catch (e) { return { ok: false, why: String(e && e.message || e) }; }
+  finally { try { i.dispose(); } catch (e) {} }
 }

@@ -72,7 +72,9 @@
   const isAudio = f => /^audio\//.test(f.type) || /\.(mp3|m4a|aac|wav|ogg|opus|flac)$/i.test(f.name);
   const lsGet = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-  const nb = l => !!(l && l.max >= 10);
+  // Echtes Bild: nicht schwarz und nicht einfarbig (Samsung lieferte beim Export eine gleichmäßige lila Fläche)
+  const nb = l => !!(l && l.max >= 8 && (l.std == null || l.std >= 1.5 || l.range >= 10));
+  const flatL = l => !!(l && !nb(l));
   const ICON = {
     star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg>',
     lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
@@ -237,36 +239,44 @@
     if (info.canDecode) {
       try {
         const M = await media();
-        c.lum.draw = await M.lumaAt(c.file, times, 'draw');
-        if (!c.lum.draw.some(nb)) c.lum.copy = await M.lumaAt(c.file, times, 'copy');
+        // Wege der Reihe nach testen, beim ersten mit echtem Bild aufhören
+        for (const w of M.WAYS) { c.lum[w] = await M.lumaAt(c.file, times, w); if (c.lum[w].some(nb)) break; }
       } catch (e) { console.info('Clip-Studio: Selbsttest WebCodecs', e && e.message); }
     }
     c.tested = true; evalClip(c);
   }
+  const WAYS = ['draw', 'cpu', 'copy', 'sw'];
   function evalClip(c) {
     const L = c.lum, el = c.elSamples.length >= 2 ? c.elSamples : null;
-    const anyOk = (L.draw && L.draw.some(nb)) || (L.copy && L.copy.some(nb)) || (el && el.some(nb));
-    const allKnown = (!c.info || !c.info.canDecode || L.draw) && el;
-    c.ref = anyOk ? true : allKnown ? false : null;
-    c.elBlack = !!(el && !el.some(nb) && c.ref === true);
+    const wc = WAYS.find(w => L[w] && L[w].some(nb)) || null, elOk = !!(el && el.some(nb));
+    const wcDone = !c.info || !c.info.canDecode || WAYS.every(w => L[w]) || !!wc || (c.tested && !wc);
+    c.ref = wc || elOk ? true : (wcDone && el) ? false : null;
+    c.elBlack = !!(el && !elOk && c.ref === true);
     if (c.elBlack) c.glBad = true;
     const before = c.mode;
-    if (c.info && c.info.canDecode && L.draw) c.mode = L.draw.some(nb) || c.ref === false ? 'draw' : (L.copy && L.copy.some(nb)) ? 'copy' : (el && el.some(nb)) ? 'element' : 'draw';
-    else if (c.state === 'ok') c.mode = c.elBlack ? null : 'element';
-    if (before === 'draw' && c.mode === 'copy' && !c._thumbing) { c.thumbs = []; thumbsFor(c); }
+    // Kein Weg mit echtem Bild und auch die Vorschau ist leer: nichts exportieren (sonst entsteht ein leeres Video)
+    if (wc) c.mode = wc;
+    else if (c.state === 'ok') c.mode = c.elBlack || c.ref === false ? null : 'element';
+    else if (c.info && c.info.canDecode && !c.tested) c.mode = 'draw';
+    else c.mode = null;
+    if (before !== c.mode && WAYS.includes(c.mode) && before !== null && !c._thumbing && c.thumbs.length) { c.thumbs = []; thumbsFor(c); }
     renderClips();
+  }
+  function k24() { return sampleEl.c || (sampleEl.c = (() => { const x = document.createElement('canvas'); x.width = x.height = 24; return x.getContext('2d', { willReadFrequently: true }); })()); }
+  function lum24(k, n = 24) {
+    const d = k.getImageData(0, 0, n, n).data; let mx = 0, mn = 255, sum = 0, sq = 0;
+    for (let i = 0; i < d.length; i += 4) { const l = .2126 * d[i] + .7152 * d[i + 1] + .0722 * d[i + 2]; if (l > mx) mx = l; if (l < mn) mn = l; sum += l; sq += l * l; }
+    const m = sum / (n * n); return { max: mx, min: mn, mean: m, std: Math.sqrt(Math.max(0, sq / (n * n) - m * m)), range: mx - mn };
   }
   function sampleEl(c, v) {
     // Während die Vorschau läuft: drei Proben aus dem Video-Element (zeigt, ob der Browser Bilder an Canvas/WebGL weitergibt)
     if (c.elSamples.length >= 3 || !v || v.readyState < 2 || v.seeking) return;
     const now = performance.now(); if (c._lastSample && now - c._lastSample < 600) return; c._lastSample = now;
     try {
-      const k = sampleEl.c || (sampleEl.c = (() => { const x = document.createElement('canvas'); x.width = x.height = 24; return x.getContext('2d', { willReadFrequently: true }); })());
+      const k = k24();
       k.fillStyle = '#000'; k.fillRect(0, 0, 24, 24); k.drawImage(v, 0, 0, 24, 24);
-      const d = k.getImageData(0, 0, 24, 24).data; let mx = 0, sum = 0;
-      for (let i = 0; i < d.length; i += 4) { const l = .2126 * d[i] + .7152 * d[i + 1] + .0722 * d[i + 2]; mx = Math.max(mx, l); sum += l; }
-      const T = window.FCS_STUDIO_TEST; c.elSamples.push(T && (T.black || []).includes('element') ? { max: 0, mean: 0 } : { max: mx, mean: sum / 576 });
-    } catch (e) { c.elSamples.push({ max: 0, mean: 0, err: 1 }); }
+      const T = window.FCS_STUDIO_TEST; c.elSamples.push(T && (T.black || []).includes('element') ? { max: 0, mean: 0, std: 0, range: 0 } : lum24(k));
+    } catch (e) { c.elSamples.push({ max: 0, mean: 0, std: 0, range: 0, err: 1 }); }
     if (c.elSamples.length >= 2) evalClip(c);
   }
 
@@ -282,7 +292,7 @@
       else if (c.state === 'laden') st = '<span class="cl-st wait">Wird geöffnet …</span>';
       else if (c.state === 'nicht' || c.state === 'nurExport') st = `<span class="cl-st bad">${ICON.warn}${esc(c.msg)}</span>`;
       else if (c.ref === false) st = `<span class="cl-st">${ICON.ok}Läuft. Das Bild ist an den geprüften Stellen sehr dunkel oder schwarz.</span>`;
-      else if (c.mode && c.ref) st = `<span class="cl-st ok">${ICON.ok}Bild geprüft: Vorschau und Export laufen${c.mode === 'copy' ? ' (über den sicheren Weg)' : c.mode === 'element' ? ' (in Echtzeit)' : ''}</span>`;
+      else if (c.mode && c.ref) st = `<span class="cl-st ok">${ICON.ok}Bild geprüft: Vorschau und Export laufen${['cpu', 'copy', 'sw'].includes(c.mode) ? ' (über den sicheren Weg)' : c.mode === 'element' ? ' (in Echtzeit)' : ''}</span>`;
       else if (c.state === 'ok' && c.elBlack && !c.mode) st = `<span class="cl-st bad">${ICON.warn}Die Vorschau läuft, aber dieser Browser gibt die Bilder nicht zum Rechnen frei. Rechne das Video in Chrome oder Edge oder schick das Original an den Verein.</span>`;
       else st = '<span class="cl-st wait">Bild wird geprüft …</span>';
       const hdr = c.info && c.info.hdr ? '<em class="cl-b">HDR</em>' : '';
@@ -337,7 +347,7 @@
     const upd = () => { if (curClip() === c) strip(); };
     const done = () => { c._thumbing = 0; upd(); renderClips(); sbDraw(); if (c.state === 'nurExport' && c.el && c.thumbs[0]) { try { c.el.poster = c.thumbs[Math.floor(NTH / 3)].toDataURL('image/jpeg', .8); c.el.classList.add('on'); } catch (e) {} } };
     if (c.file && c.info && c.info.canDecode && c.mode !== 'element') {
-      try { const M = await media(); await M.thumbs(c.file, times, 160, 90, c.mode === 'copy' ? 'copy' : 'draw', (i, t) => { c.thumbs[i] = t; upd(); }); done(); return; } catch (e) {}
+      try { const M = await media(); await M.thumbs(c.file, times, 160, 90, WAYS.includes(c.mode) ? c.mode : 'draw', (i, t) => { c.thumbs[i] = t; upd(); }); done(); return; } catch (e) {}
     }
     if (c.state !== 'ok') { c._thumbing = 0; return; }
     // Ersatz: eigenes Video-Element springen lassen
@@ -612,7 +622,7 @@
     if (cA && !cA.demo && !cA.glChecked && A.readyState >= 2 && !A.seeking && A.currentTime > 0) {
       cA.glChecked = true; const l = GL.luma();
       const T = window.FCS_STUDIO_TEST;
-      if ((l.max < 10 || (T && (T.black || []).includes('gl'))) && cA.ref !== false) { cA.glBad = true; glc.classList.remove('on'); P.glUse = false; console.info('Clip-Studio: WebGL liefert für diesen Clip kein Bild, Vorschau läuft über das Video-Element.'); }
+      if ((!nb(l) || (T && (T.black || []).includes('gl'))) && cA.ref !== false) { cA.glBad = true; glc.classList.remove('on'); P.glUse = false; console.info('Clip-Studio: WebGL liefert für diesen Clip kein Bild, Vorschau läuft über das Video-Element.'); }
     }
   }
   function tick(mode, t) {
@@ -703,13 +713,11 @@
      ===================================================================== */
   function layout() {
     if (!wrap) return;
-    const cs = getComputedStyle(wrap), px = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-    const desk = innerWidth > 1040;
-    const maxH = Math.min(innerHeight * (desk ? .62 : .56), desk ? 620 : 540);
-    const avail = Math.max(120, wrap.clientWidth - px);
-    let w = avail, h = w / S.aspect;
-    if (h > maxH) { h = maxH; w = h * S.aspect; }
-    stage.style.width = w + 'px'; stage.style.height = h + 'px';
+    // Größe kommt aus dem CSS (max. 100 % Breite, max. Höhe in svh): kann die Seite nie verbreitern, bleibt ruhig,
+    // wenn auf Android die Adressleiste ein- und ausfährt. Hier nur das Seitenverhältnis setzen und messen.
+    stage.style.setProperty('--ar', String(S.aspect));
+    const r = stage.getBoundingClientRect();
+    const w = Math.max(60, r.width), h = Math.max(34, r.height || w / S.aspect);
     const dpr = Math.min(devicePixelRatio || 1, 2);
     const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
     if (ovc.width !== cw || ovc.height !== ch) { ovc.width = cw; ovc.height = ch; }
@@ -1472,9 +1480,9 @@
     if (S.result && S.resultSig === sig()) { saveResult(); return; }
     const segs = S.seq.segs;
     // Selbsttest abwarten
-    for (let i = 0; i < 40 && segs.some(s => s.c.file && s.c.info && s.c.info.canDecode && !s.c.tested); i++) await new Promise(r => setTimeout(r, 150));
+    for (let i = 0; i < 140 && segs.some(s => s.c.file && s.c.info && s.c.info.canDecode && !s.c.tested); i++) await new Promise(r => setTimeout(r, 150));
     const bad = segs.find(s => !s.c.mode);
-    if (bad) { failMsg(`Dieser Browser gibt die Bilder von „${bad.c.name}“ nicht zum Rechnen frei. Rechne das Video in Chrome oder Edge am PC oder schick das Original in voller Qualität an den Verein.`); return; }
+    if (bad) { failMsg(bad.c.ref === false ? `In „${bad.c.name}“ findet der Browser kein Videobild, nur eine leere Fläche. Damit kein leeres Video entsteht, rechnet das Studio hier nicht. Probier den Clip in Chrome am PC oder schick das Original in voller Qualität an den Verein.` : `Dieser Browser gibt die Bilder von „${bad.c.name}“ nicht zum Rechnen frei. Rechne das Video in Chrome oder Edge am PC oder schick das Original in voller Qualität an den Verein.`); return; }
     S.busy = true; $('#st').classList.add('busy'); pause();
     const prog = $('#prog'), fillEl = $('#bat-fill'), pt = $('#prog-t'), eta = $('#prog-eta'), goBox = $('#st-go');
     prog.hidden = false; $('#res').hidden = true; if (goBox) goBox.hidden = true;
@@ -1488,12 +1496,13 @@
     try {
       try { await (document.fonts && document.fonts.ready); } catch (e) {}
       const M = await media();
-      let { W, H } = outDims(); const fps = outFps();
-      let br = bitrate(W, H, fps), vc = await M.encodable(W, H, fps, br), note = '';
-      if (!vc) {
-        // Kleinere Stufen versuchen (manche Geräte kodieren kein 4K)
-        for (const sh of [1440, 1080, 720]) { const k = sh / Math.min(W, H); if (k >= 1) continue; const w2 = even(W * k), h2 = even(H * k); const b2 = bitrate(w2, h2, fps); const v2 = await M.encodable(w2, h2, fps, b2); if (v2) { note = `Dein Browser kodiert höchstens ${w2} × ${h2}. Das Original schickst du unten in voller Qualität an den Verein.`; W = w2; H = h2; br = b2; vc = v2; break; } }
-      }
+      const full = outDims(), fps = outFps();
+      // H.264 zuerst, notfalls in kleinerer Stufe (spielt in jeder Galerie); erst danach HEVC, VP9, AV1
+      const sizes = [[full.W, full.H, bitrate(full.W, full.H, fps)]];
+      for (const sh of [1440, 1080, 720]) { const k = sh / Math.min(full.W, full.H); if (k >= 1) continue; const w2 = even(full.W * k), h2 = even(full.H * k); sizes.push([w2, h2, bitrate(w2, h2, fps)]); }
+      const enc = await M.pickEncoder(sizes, fps);
+      let W = full.W, H = full.H, br = sizes[0][2], vc = null, note = '';
+      if (enc) { W = enc.W; H = enc.H; br = enc.bitrate; vc = enc.vc; if (W !== full.W) note = `Dein Browser kodiert auf diesem Gerät höchstens ${W} × ${H}. Das Original schickst du unten in voller Qualität an den Verein.`; }
       if (!vc && !window.MediaRecorder) throw new Error('kein-encoder');
       // Ton mischen
       set(.01, 'Ton wird gemischt');
@@ -1519,37 +1528,60 @@
       // Compositor in Ausgabegröße für Übergänge und Look
       const G = await glm(); const glCanvas = document.createElement('canvas'); glCanvas.width = W; glCanvas.height = H;
       job.gl = G.compositor(glCanvas); if (job.gl.ok) await loadLut(job.gl);
-      let out;
+      let out, live = false;
       const run = async () => {
-        if (job.segs.some(sg => sg.mode === 'element') || !vc) return renderLive(job, p => set(p), M);
-        // Bild-Selbsttest während des Exports: werden die Bilder eines Clips schwarz, obwohl er Bild hat, nimmt das Studio den nächsten Weg
+        live = job.segs.some(sg => sg.mode === 'element') || !vc;
+        if (live) return renderLive(job, p => set(p), M);
+        // Bild-Selbsttest während des Exports (vor Logo, Sticker und Schriftzug): liefert ein Weg nur eine leere,
+        // einfarbige Fläche (Samsung: lila), bricht das Studio ab und nimmt den nächsten Weg
         const probe = document.createElement('canvas'); probe.width = probe.height = 16; const pk = probe.getContext('2d', { willReadFrequently: true });
-        const blk = new Map();
+        const look16 = cv => { pk.fillStyle = '#000'; pk.fillRect(0, 0, 16, 16); pk.drawImage(cv, 0, 0, 16, 16); return M.lumaOf(pk, 16, 16); };
+        const st = new Map();
         return M.render(job, {
           progress: p => set(p),
-          frameCheck: (f, ctx, si) => {
-            const sg = job.segs[si], c = sg.clip; if (c.ref !== true || (f - sg.f0) % 15 !== 7) return;
-            pk.drawImage(ctx.canvas, 0, 0, 16, 16); const L = M.lumaOf(pk, 16, 16);
-            const st = blk.get(c) || { n: 0, b: 0 }; st.n++; if (L.max < 10) st.b++; blk.set(c, st);
-            if (st.n >= 3 && st.b === st.n) { const e = new Error('schwarz'); e.clip = c; throw e; }
+          frameCheck: (f, ctx, si, info) => {
+            const sg = job.segs[si], c = sg.clip;
+            if (c.ref === true && (f - sg.f0) % 6 === 2) {
+              const s0 = st.get(c) || { n: 0, flat: 0, real: 0, glFlat: 0 }; st.set(c, s0);
+              const L = look16(info.src); s0.n++;
+              if (nb(L)) s0.real++; else s0.flat++;
+              if (!s0.real && s0.flat >= 3) throw flatErr(c, 'decode', L);
+              if (info.gl && !(info.fade > 0) && nb(L)) { const O = look16(ctx.canvas); if (!nb(O)) { s0.glFlat++; if (s0.glFlat >= 2) throw flatErr(c, 'gl', O); } }
+            }
+            // Letztes Bild: Clips, die nie echtes Bild geliefert haben, gelten als gescheitert (kurze Szenen)
+            if (info.last) for (const [c2, s2] of st) if (!s2.real && s2.flat) throw flatErr(c2, 'decode', null);
           }
         });
       };
-      for (let tries = 0; tries < 3 && !out; tries++) {
+      const order = [...WAYS, 'element'], tried = new Map();
+      for (let tries = 0; tries < 8 && !out; tries++) {
         try { out = await run(); }
         catch (e) {
           if (e && e.name === 'AbortError') throw e;
-          if (e && e.message === 'schwarz' && e.clip) {
-            const c = e.clip; c.mode = c.mode === 'draw' ? 'copy' : c.mode === 'copy' && c.state === 'ok' && !c.elBlack ? 'element' : null;
-            console.info('Clip-Studio: Export-Selbsttest schwarz, nächster Weg:', c.mode);
-            if (!c.mode) throw new Error('schwarz-alle');
-            job.segs.forEach(sg => { if (sg.clip === c) sg.mode = c.mode; });
-            renderClips(); set(0, 'Neuer Versuch'); continue;
+          if (e && e.message === 'flach' && e.clip) {
+            const c = e.clip;
+            console.info('Clip-Studio: Export-Selbsttest: leere/einfarbige Fläche', { clip: c.name, weg: c.mode, stufe: e.stage, pixel: e.L });
+            if (e.stage === 'gl' && job.gl) { try { job.gl.destroy && job.gl.destroy(); } catch (er) {} job.gl = null; c.glBad = true; set(0, 'Neuer Versuch ohne WebGL'); continue; }
+            if (e.stage === 'canvas' && !job.liveCpu) { job.liveCpu = true; set(0, 'Neuer Versuch über den sicheren Weg'); continue; }
+            const t = tried.get(c) || new Set(); t.add(c.mode); tried.set(c, t);
+            const next = order.find(w => !t.has(w) && (w === 'element' ? c.state === 'ok' && !c.elBlack : !!(c.info && c.info.canDecode) && !(c.lum[w] && !c.lum[w].some(nb))));
+            console.info('Clip-Studio: nächster Weg:', next || 'keiner');
+            if (!next) { const e2 = new Error('leer-alle'); e2.clip = c; e2.tried = [...t]; throw e2; }
+            c.mode = next; job.segs.forEach(sg => { if (sg.clip === c) sg.mode = next; });
+            renderClips(); set(0, 'Neuer Versuch über einen anderen Weg'); continue;
           }
           throw e;
         }
       }
       if (!out) throw new Error('kein-ergebnis');
+      // Fertige Datei prüfen: Länge und Bildanzahl. Nie still ein kaputtes oder leeres Video speichern.
+      if (out.ext !== 'webm') {
+        set(1, 'Wird geprüft');
+        const chk = await M.verify(out.blob, { dur: job.frames / fps, frames: job.frames, fps, live });
+        console.info('Clip-Studio: Prüfung der fertigen Datei', chk, out.fastStart || '');
+        // Echtzeit-Weg: ist das Gerät zu langsam, fehlen einzelne Bilder (das vorige bleibt stehen), Länge muss trotzdem stimmen
+        if (!chk.ok && !(live && chk.frames >= Math.max(2, job.frames * .2) && Math.abs(chk.dur - job.frames / fps) < .5)) { const e2 = new Error('kaputt'); e2.why = chk.why; throw e2; }
+      }
       if (job.gl && job.gl.destroy) job.gl.destroy();
       doneUI(); goState();
       const pilot = (S.ln.name !== 'Dein Pilotenname' && S.ln.name.trim()) || (S.member && S.member.n) || ((($('#snd-name') || {}).value) || '') || 'clip';
@@ -1570,10 +1602,14 @@
       doneUI();
       if (e && e.name === 'AbortError') { goState(); return false; }
       console.info('Clip-Studio: Export fehlgeschlagen', e);
-      failMsg(e && e.message === 'schwarz-alle' ? 'Dieser Browser gibt die Bilder des Videos nicht zum Rechnen frei (alle drei Wege geprüft). Rechne es in Chrome oder Edge am PC oder schick das Original in voller Qualität an den Verein.' : 'Rechnen hat in diesem Browser nicht geklappt. Probier es in Chrome, Edge oder Safari in der neuesten Version, oder schick das Original in voller Qualität an den Verein.');
+      const m = e && e.message;
+      failMsg(m === 'leer-alle' ? `Dieser Browser liefert beim Rechnen von „${e.clip ? e.clip.name : 'deinem Clip'}“ nur eine leere Fläche statt des Videobilds (alle Wege geprüft). Damit du kein leeres Video bekommst, speichert das Studio nichts. Rechne es in Chrome am PC oder schick das Original in voller Qualität an den Verein.`
+        : m === 'kaputt' ? 'Die fertige Datei war unvollständig, deshalb speichert das Studio sie nicht. Tipp noch einmal auf „Video erstellen“ oder schick das Original in voller Qualität an den Verein.'
+        : 'Rechnen hat in diesem Browser nicht geklappt. Probier es in Chrome, Edge oder Safari in der neuesten Version, oder schick das Original in voller Qualität an den Verein.');
       return false;
     }
   }
+  function flatErr(c, stage, L) { const e = new Error('flach'); e.clip = c; e.stage = stage; e.L = L; return e; }
   function failMsg(t) {
     const why = $('#st-why'); if (!why) return; why.classList.add('bad');
     why.innerHTML = esc(t) + ' <button class="btn" type="button" id="fail-send">Original an den Verein schicken</button>';
@@ -1613,13 +1649,15 @@
         if (stopped) return; stopped = true; P.on = false; S.sound = wasSound; stopAll(); S.step = wasStep; S.viewSeq = mode === 'seq' ? S.viewSeq : false;
         if (e) { try { if (output) await output.cancel(); if (rec && rec.state !== 'inactive') rec.stop(); if (job._ac) job._ac.close(); } catch (er) {} reject(e); return; }
         try {
-          if (output) { await output.finalize(); resolve({ blob: new Blob([target.buffer], { type: 'video/mp4' }), mime: 'video/mp4', ext: 'mp4' }); }
+          if (output) { await output.finalize(); resolve({ blob: new Blob([target.buffer], { type: 'video/mp4' }), mime: 'video/mp4', ext: 'mp4', fastStart: 'in-memory' }); }
           else { rec.onstop = () => { if (job._ac) job._ac.close(); const type = rec._mime.split(';')[0]; resolve({ blob: new Blob(parts, { type }), mime: type, ext: type === 'video/mp4' ? 'mp4' : 'webm' }); }; rec.stop(); }
         } catch (er) { reject(er); }
       };
       if (job.signal) job.signal.addEventListener('abort', () => stop(new DOMException('abgebrochen', 'AbortError')));
       if (rec) { rec.start(500); if (job._src) job._src.start(); }
-      let black = 0, checks = 0;
+      let srcFlat = 0, outFlat = 0, checks = 0, lc = null, made = 0;
+      const T = window.FCS_STUDIO_TEST || {}, flagT = w => (T.flatExport || []).includes(w);
+      const purple = () => { out.fillStyle = '#2f0d33'; out.globalAlpha = 1; out.fillRect(0, 0, W, H); };
       const step = async () => {
         if (stopped) return;
         const r = seqAt(Math.min(P.t, total - .001)); if (!r) { stop(new Error('leer')); return; }
@@ -1630,9 +1668,27 @@
             const tr = r.prev ? { type: s.tr, p: r.p, seed: f % 97 } : null;
             const fade = job.fadeFrames > 0 ? Math.max(0, (f - (job.frames - job.fadeFrames)) / job.fadeFrames) : 0;
             const cA = r.prev ? r.prev.c : s.c;
-            if (job.gl && job.gl.ok) { job.gl.render({ A, B, ra: cropN(cA, A), rb: B ? cropN(s.c, B) : null, tr, look, fade }); out.drawImage(job.gl.canvas, 0, 0, W, H); }
-            else { const cr = cropPx(A.videoWidth, A.videoHeight, W / H, cA.pan); out.drawImage(A, cr.left, cr.top, cr.width, cr.height, 0, 0, W, H); }
-            if (f % 20 === 5 && cA.ref === true) { checks++; const k = sampleEl.c; if (k) { k.drawImage(outC, 0, 0, 24, 24); const d = k.getImageData(0, 0, 24, 24).data; let mx = 0; for (let i = 0; i < d.length; i += 4) mx = Math.max(mx, d[i], d[i + 1], d[i + 2]); if (mx < 10) black++; } if (checks >= 3 && black === checks) { stop(new Error('schwarz-alle')); return; } }
+            const useGL = !!(job.gl && job.gl.ok);
+            if (useGL) { job.gl.render({ A, B, ra: cropN(cA, A), rb: B ? cropN(s.c, B) : null, tr, look, fade }); out.drawImage(job.gl.canvas, 0, 0, W, H); if (flagT('gl')) purple(); }
+            else {
+              // 2D-Weg: Bild (optional erst auf einen Arbeitsspeicher-Canvas, falls der Grafikchip-Canvas leer bleibt), Look per Filter, Blende, Ausblenden
+              const dst = job.liveCpu ? (lc || (lc = (() => { const c2 = document.createElement('canvas'); c2.width = W; c2.height = H; return c2.getContext('2d', { alpha: false, willReadFrequently: true }); })())) : out;
+              if (look && job.cssLook && 'filter' in dst) dst.filter = job.cssLook(look.id, look.k);
+              const cr = cropPx(A.videoWidth, A.videoHeight, W / H, cA.pan); dst.globalAlpha = 1; dst.drawImage(A, cr.left, cr.top, cr.width, cr.height, 0, 0, W, H);
+              if (B && tr && B.readyState >= 2) { const p = clamp(tr.p, 0, 1), c2 = cropPx(B.videoWidth, B.videoHeight, W / H, s.c.pan); dst.globalAlpha = p * p * (3 - 2 * p); dst.drawImage(B, c2.left, c2.top, c2.width, c2.height, 0, 0, W, H); dst.globalAlpha = 1; }
+              if ('filter' in dst) dst.filter = 'none';
+              if (fade > 0) { dst.fillStyle = '#000'; dst.globalAlpha = clamp(fade, 0, 1); dst.fillRect(0, 0, W, H); dst.globalAlpha = 1; }
+              if (job.liveCpu) { out.drawImage(lc.canvas, 0, 0, W, H); if (flagT('elementCpu')) purple(); }
+              else if (flagT('element')) purple();
+            }
+            // Selbsttest: Video-Element direkt (Arbeitsspeicher) gegen das gerechnete Bild (vor Logo und Stickern)
+            if (made++ % 8 === 3 && cA.ref === true) {
+              const k = k24(); k.fillStyle = '#000'; k.fillRect(0, 0, 24, 24); k.drawImage(A, 0, 0, 24, 24); const Ls = lum24(k);
+              k.fillRect(0, 0, 24, 24); k.drawImage(outC, 0, 0, 24, 24); const Lo = lum24(k);
+              checks++; if (!nb(Ls)) srcFlat++; else if (!nb(Lo) && !(fade > 0)) outFlat++;
+              if (checks >= 3 && srcFlat === checks) { stop(flatErr(cA, 'decode', Ls)); return; }
+              if (outFlat >= 2) { stop(flatErr(cA, useGL ? 'gl' : job.liveCpu ? 'decode' : 'canvas', Lo)); return; }
+            }
             overlay(out, W, H, f / fps, false);
             if (vsrc) { try { await vsrc.add(f / fps, 1 / fps); } catch (e) { stop(e); return; } }
             lastF = f; set(Math.min(1, P.t / total));
@@ -1754,31 +1810,55 @@
   function gyroUI() {
     const go2 = $('#gy-go'); if (!go2) return;
     const sm = $('#gy-smooth'); if (sm) sm.addEventListener('input', () => { $('#gy-smooth-o').textContent = sm.value + ' %'; fill(sm); });
+    ['#gy-clip', '#gy-ganz'].forEach(q => { const e = $(q); if (e) e.addEventListener('change', gyCut); });
     go2.addEventListener('click', async () => {
       if (!isMember()) { lockHit('gyro'); return; }
       if (!apiClips()) return;
       const sel = $('#gy-clip'), c = own().find(x => String(x.id) === (sel && sel.value)) || own()[0];
       if (!c || !c.file) { const m = $('#gy-msg'); if (m) m.textContent = 'Wähl in Schritt 1 zuerst deinen Clip.'; return; }
       interact();
-      const opt = { glaettung: +$('#gy-smooth').value, horizont: $('#gy-hor').checked, zoom: ($('input[name=gy-zoom]:checked') || {}).value || 'dynamisch' };
+      // Schnitt und Qualität gehen mit: die Station stabilisiert nur von … bis (Sekunden im Original), außer „Ganzes Video“
+      const cut = gyRange(c), ganz = !!($('#gy-ganz') || {}).checked, qual = ($('input[name=gy-q]:checked') || {}).value || 'social';
+      const opt = { glaettung: +$('#gy-smooth').value, horizont: $('#gy-hor').checked, zoom: ($('input[name=gy-zoom]:checked') || {}).value || 'dynamisch', von: ganz ? 0 : cut[0], bis: ganz ? cut[2] : cut[1], ganz, qual };
       const C = await cloud(); const box = $('#gy-up'); box.hidden = false; box.innerHTML = ''; go2.disabled = true;
       const n = (S.member.n || 'Mitglied').slice(0, 40);
       const res = await runUpload(C, box, c.file, { n, zweck: 'gyroflow', opt, c: S.member.c, t: 'Gyroflow-Auftrag aus dem Clip-Studio' });
       go2.disabled = false;
       if (!res) return;
       const id = res.job;
-      if (id) { const j = jobs(); j.unshift({ id, fn: c.file.name, d: Date.now(), st: 'eingegangen', url: '', msg: '', lp: Date.now() }); saveJobs(j); }
+      if (id) { const j = jobs(); j.unshift({ id, fn: c.file.name, d: Date.now(), st: 'eingegangen', url: '', msg: '', lp: Date.now(), von: opt.von, bis: opt.bis, len: cut[2], ganz, qual }); saveJobs(j); }
       jobsUI(); pollJobs(true);
     });
+  }
+  /* Schnitt eines Clips für Gyroflow: [von, bis, Länge] in Sekunden im Original. Auto-Schnitt: von der ersten bis zur letzten Szene dieses Clips. */
+  function gyRange(c) {
+    const L = c.dur || 0; let a = 0, b = L;
+    const segs = S.seq && S.seq.segs ? S.seq.segs.filter(s => s.c === c) : [];
+    if (segs.length) { a = Math.min(...segs.map(s => s.a)); b = Math.max(...segs.map(s => s.a + s.len)); }
+    else if (c.b) { a = c.a || 0; b = c.b; }
+    a = Math.max(0, Math.round(a * 100) / 100); b = Math.min(L || b, Math.round(b * 100) / 100); if (!(b > a)) { a = 0; b = L; }
+    return [a, b, Math.round(L * 100) / 100];
+  }
+  function gyCut() {
+    const el = $('#gy-cut'); if (!el) return;
+    const sel = $('#gy-clip'), c = own().find(x => String(x.id) === (sel && sel.value)) || own().filter(x => x.file)[0];
+    if (!c || !c.dur) { el.textContent = ''; return; }
+    const [a, b, L] = gyRange(c), all = ($('#gy-ganz') || {}).checked || (a <= .05 && b >= L - .05);
+    el.textContent = all ? `Stabilisiert wird das ganze Video (${sec(L)}).` : `Stabilisiert wird nur dein Schnitt: ${tD(a)} bis ${tD(b)} (${sec(b - a)}). Das spart viel Wartezeit und Speicher.`;
   }
   function jobsUI() {
     const list = $('#jobs-list'), box = $('#jobs'); if (!list || !box) return;
     const j = jobs(); box.hidden = !j.length;
-    const lbl = { eingegangen: 'Eingegangen', wartet: 'In der Warteschlange', 'läuft': 'Wird stabilisiert', fertig: 'Fertig', fehler: 'Fehler' };
-    list.innerHTML = j.map(x => `<li class="job st-${esc(slug(x.st || 'wartet'))}"><span class="job-h"><b>${esc(x.fn)}</b><small>${new Date(x.d).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</small></span>
-      <span class="job-st hud">${esc(lbl[x.st] || x.st || 'Wartet')}</span>
-      ${x.st === 'fertig' && x.url ? `<a class="btn solid" href="${esc(x.url)}" target="_blank" rel="noopener">Stabilisiertes Video laden ↗</a>` : x.st === 'fehler' ? `<span class="job-msg">${esc(x.msg || 'Das Stabilisieren hat nicht geklappt. Der Vorstand ist informiert.')}</span>` : `<span class="job-msg">Du bekommst den Link hier. Lass die Seite offen oder schau später unter „Meine Aufträge“ nach.</span>`}
-      <button type="button" class="linkbtn job-x" data-job="${esc(x.id)}">Aus der Liste nehmen</button></li>`).join('');
+    const lbl = { eingegangen: 'Wird stabilisiert …', wartet: 'In der Warteschlange', 'läuft': 'Wird stabilisiert …', fertig: 'Fertig', fehler: 'Fehler' };
+    const DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+    list.innerHTML = j.map(x => {
+      const whole = x.ganz || (x.len && x.von <= .05 && x.bis >= x.len - .05);
+      const what = [x.von != null && x.bis != null && !whole ? `Schnitt ${tD(x.von)} bis ${tD(x.bis)}` : x.von != null ? 'ganzes Video' : '', x.qual === 'original' ? 'volle Auflösung' : x.qual ? 'Social Media' : ''].filter(Boolean).join(' · ');
+      return `<li class="job st-${esc(slug(x.st || 'wartet'))}"><span class="job-h"><b>${esc(x.fn)}</b><small>${new Date(x.d).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}${what ? ' · ' + esc(what) : ''}</small></span>
+      <span class="job-st hud">${esc(lbl[x.st] || x.st || 'Wird stabilisiert …')}</span>
+      ${x.st === 'fertig' && x.url ? `<a class="btn solid job-dl" href="${esc(x.url)}" target="_blank" rel="noopener" download>${DL}Stabilisiertes Video herunterladen</a>` : x.st === 'fertig' ? '<span class="job-msg">Fertig. Der Link kommt in einer Minute hier an.</span>' : x.st === 'fehler' ? `<span class="job-msg">${esc(x.msg || 'Das Stabilisieren hat nicht geklappt. Der Vorstand ist informiert.')}</span>` : '<span class="job-msg">Dauert je nach Länge 5 bis 30 Minuten, die Seite darf zu. Der Download-Knopf erscheint dann hier unter „Meine Aufträge“.</span>'}
+      <button type="button" class="linkbtn job-x" data-job="${esc(x.id)}">Aus der Liste nehmen</button></li>`;
+    }).join('');
   }
   let pollT = 0;
   const pollMs = () => (window.FCS_STUDIO_TEST && FCS_STUDIO_TEST.poll) || 60000;
@@ -1806,8 +1886,11 @@
   function gyroClips() {
     const sel = $('#gy-clip'); if (!sel) return;
     const list = own().filter(c => c.file);
+    const keep = sel.value;
     sel.innerHTML = list.length ? list.map((c, i) => `<option value="${c.id}">Clip ${i + 1}: ${esc(c.name)}</option>`).join('') : '<option value="">Noch kein Clip gewählt</option>';
+    if (keep && list.some(c => String(c.id) === keep)) sel.value = keep;
     sel.disabled = !list.length;
+    gyCut();
   }
 
   /* =====================================================================
@@ -2051,7 +2134,7 @@
     loadImgs(); buildTray(); trayDrag(); gestures(); keys(); timeline(); controls(); clipsUI(); autoUI(); sbUI(); musicUI(); lookUI(); stickerControls(); tagUI(); sendUI(); gyroUI(); stepsUI(); memberUI(); jobsInit();
     initGL();
     S.aspect = 16 / 9; layout();
-    let rq = 0; addEventListener('resize', () => { cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { layout(); strip(); sbDraw(); waveDraw(); }); });
+    let rq = 0, lastW = innerWidth; addEventListener('resize', () => { if (!FINE && innerWidth === lastW) return; lastW = innerWidth; cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { layout(); strip(); sbDraw(); waveDraw(); }); });
     if (document.fonts) { document.fonts.load('400 40px "Bebas Neue"').catch(() => {}); document.fonts.load('600 20px "Chakra Petch"').catch(() => {}); }
     new IntersectionObserver(es => {
       P.visible = es[0].isIntersecting;
@@ -2065,13 +2148,13 @@
     setStep(1, true); goState(); steps(); sumLine(); pendingUploads(); syncUp();
     // Diagnose für Tests auf echten Geräten: in der Konsole  await FCS.studioStatus()  aufrufen
     if (window.FCS) FCS.studioStatus = async () => {
-      const WEG = { draw: 'WebCodecs direkt', copy: 'WebCodecs über RGBA-Kopie (sicherer Weg)', element: 'Echtzeit über das Video-Element' };
-      const mx = a => a ? a.map(l => l ? Math.round(l.max) : '-').join('/') : 'nicht getestet';
+      const WEG = { draw: 'WebCodecs direkt (Grafikchip)', cpu: 'WebCodecs über den Arbeitsspeicher (sicherer Weg)', copy: 'WebCodecs über RGBA-Kopie in sRGB (sicherer Weg)', sw: 'WebCodecs mit Software-Dekoder (sicherer Weg)', element: 'Echtzeit über das Video-Element' };
+      const mx = a => a ? a.map(l => l ? `${Math.round(l.max)}${nb(l) ? '' : (l.max >= 8 ? ' einfarbig' : ' schwarz')}` : '-').join(' / ') : 'nicht getestet';
       const clips = S.clips.map((c, i) => ({ nr: i + 1, datei: c.name, format: c.info && c.info.ok ? fmtLine(c.info) : (c.info && c.info.err) || 'Beispielclip', zustand: { ok: 'spielt', nicht: 'Browser spielt die Videospur nicht', nurExport: 'nur Export (Standbild-Vorschau)', laden: 'lädt' }[c.state] || c.state,
-        selbsttest_hellste_pixel: `Element ${mx(c.elSamples)} · WebCodecs ${mx(c.lum.draw)} · Kopie ${mx(c.lum.copy)}`, bild: c.ref === true ? 'Bild vorhanden' : c.ref === false ? 'schwarz/sehr dunkel (Inhalt)' : 'noch offen',
+        selbsttest_hellste_pixel: `Element ${mx(c.elSamples)} · Grafikchip ${mx(c.lum.draw)} · Arbeitsspeicher ${mx(c.lum.cpu)} · Kopie ${mx(c.lum.copy)} · Software ${mx(c.lum.sw)}`, bild: c.ref === true ? 'Bild vorhanden' : c.ref === false ? 'nur leere Fläche, Export gesperrt' : 'noch offen',
         exportweg: WEG[c.mode] || 'keiner (Export in diesem Browser nicht möglich)', webgl_vorschau: c.glBad ? 'aus, CSS-Ersatz' : 'an' }));
       let enc = {};
-      try { const M = await media(); const { W, H } = outDims(), fps = outFps(), br = bitrate(W, H, fps); enc = { ausgabe: `${W} × ${H}, ${fps} fps, ${(br / 1e6).toFixed(0)} Mbit/s`, video_encoder: (await M.encodable(W, H, fps, br)) || 'keiner für diese Größe', audio_encoder: (await M.audioCodec()) || 'keiner (dann PCM in MOV)' }; } catch (e) { enc = { fehler: String(e && e.message) }; }
+      try { const M = await media(); const { W, H } = outDims(), fps = outFps(), br = bitrate(W, H, fps); enc = { ausgabe: `${W} × ${H}, ${fps} fps, ${(br / 1e6).toFixed(0)} Mbit/s`, video_encoder: await (async () => { const e = await M.pickEncoder([[W, H, br], [even(W * 1080 / Math.min(W, H)), even(H * 1080 / Math.min(W, H)), br]], fps); return e ? `${e.vc} ${e.W} × ${e.H}` : 'keiner für diese Größe'; })(), audio_encoder: (await M.audioCodec()) || 'keiner (dann PCM in MOV)' }; } catch (e) { enc = { fehler: String(e && e.message) }; }
       const out = { clips, ...enc, webgl: GL ? (GL.ok ? (GL.v2 ? 'WebGL 2' : 'WebGL 1') : 'nicht verfügbar') : 'noch nicht gebraucht', mitglied: isMember() ? S.member.n : 'nein', browser: navigator.userAgent };
       try { console.table(clips); } catch (e) {}
       return out;

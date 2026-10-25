@@ -102,6 +102,52 @@ jobs:
           echo "Dauer: $(( $(date +%s) - START )) s"
           test -s clip/eingang_stabilisiert.mp4 || { echo "Kein Ergebnis"; exit 1; }
           ls -la clip
+          # Fürs Handy und Social Media: nur der geschnittene Teil (von/bis), H.264 8 Bit 4:2:0, AAC, schneller Start.
+          # qual "social" (Standard): lange Seite höchstens 1920 px, etwa 12-16 Mbit/s. qual "original": volle Auflösung, höhere Qualität.
+          # HDR-Aufnahmen (HLG/PQ, z. B. Samsung) werden auf normales SDR umgerechnet, sonst spielt das Handy sie nicht ab oder sie sehen blass aus.
+          python3 - <<'PY'
+          import json, subprocess, sys
+          o = json.load(open('opt.json'))
+          def probe(f, entries):
+              r = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', entries, '-of', 'json', f], capture_output=True, text=True)
+              try:
+                  return (json.loads(r.stdout).get('streams') or [{}])[0]
+              except Exception:
+                  return {}
+          src = probe('clip/eingang.mp4', 'stream=color_transfer,pix_fmt')
+          st = probe('clip/eingang_stabilisiert.mp4', 'stream=width,height')
+          w, h = int(st.get('width') or 0), int(st.get('height') or 0)
+          qual = str(o.get('qual') or ('original' if o.get('aufl') == 'original_hq' else 'social'))
+          vf = []
+          hdr = str(src.get('color_transfer', '')) in ('arib-std-b67', 'smpte2084')
+          if hdr:
+              vf.append('zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv')
+          if qual != 'original' and w and h and max(w, h) > 1920:
+              s = 1920 / max(w, h)
+              vf.append(f'scale={int(round(w * s / 2) * 2)}:{int(round(h * s / 2) * 2)}:flags=lanczos')
+          vf.append('format=yuv420p')
+          cut = []
+          try:
+              von = max(0.0, float(o.get('von') or 0)); bis = float(o.get('bis') or 0)
+          except Exception:
+              von, bis = 0.0, 0.0
+          if not o.get('ganz') and bis > von + 0.2:
+              cut = ['-ss', f'{von:.3f}', '-to', f'{bis:.3f}']
+          enc = ['-c:v', 'libx264', '-preset', 'veryfast', '-profile:v', 'high', '-pix_fmt', 'yuv420p']
+          enc += ['-crf', '18', '-maxrate', '40M', '-bufsize', '80M'] if qual == 'original' else ['-crf', '20', '-maxrate', '16M', '-bufsize', '32M']
+          def run(filters):
+              cmd = ['ffmpeg', '-v', 'error', '-y', '-i', 'clip/eingang_stabilisiert.mp4'] + cut + ['-map', '0:v:0', '-map', '0:a:0?', '-vf', ','.join(filters), '-fpsmax', '60'] + enc + ['-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', 'clip/fertig.mp4']
+              print(' '.join(cmd)); return subprocess.run(cmd).returncode
+          rc = run(vf)
+          if rc != 0 and hdr:
+              print('HDR-Umrechnung ging nicht, ohne Umrechnung weiter')
+              rc = run([x for x in vf if not x.startswith('zscale')])
+          if rc != 0:
+              sys.exit('Umwandeln fehlgeschlagen')
+          print('Optionen:', json.dumps({'qual': qual, 'hdr': hdr, 'schnitt': cut}))
+          PY
+          test -s clip/fertig.mp4 || { echo "Kein fertiges Video"; exit 1; }
+          ffprobe -v error -show_entries format=duration,size:stream=codec_name,profile,pix_fmt,width,height -of compact clip/fertig.mp4 | head -4
       - name: Ergebnis hochladen
         env:
           JOB: ${{ inputs.job }}
@@ -110,7 +156,7 @@ jobs:
           python3 - <<'PY'
           import os, json, time, urllib.request, urllib.error
           up = open('up.txt').read().strip()
-          p = 'clip/eingang_stabilisiert.mp4'; size = os.path.getsize(p)
+          p = 'clip/fertig.mp4'; size = os.path.getsize(p)
           C = 327680 * 30
           item = None
           with open(p, 'rb') as f:
