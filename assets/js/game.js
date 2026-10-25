@@ -25,6 +25,12 @@
   const BLU = [90, 162, 255], WOOD = [196, 150, 98], HOT = [255, 255, 255], VIO = [196, 150, 255], ALU = [200, 214, 234];
   const GRN = [62, 224, 138], PINK = [255, 92, 170], ORG = [255, 128, 48], LIL = [176, 196, 255], GOLD = [255, 214, 92];
   const BEST_KEY = 'fcs-whoop-best', INV_KEY = 'fcs-whoop-inv', TRICK_KEY = 'fcs-whoop-trick', PU_KEY = 'fcs-whoop-pu';
+  const SND_KEY = 'fcs-whoop-snd', MUS_KEY = 'fcs-whoop-mus';
+  /* Stimmen-Drops: kurze MP3s in assets/audio/game/. Erst DROPS_ON = true setzen, wenn die Dateien liegen,
+     vorher wird nichts angefragt (keine 404-Meldungen). Fehlt später eine Datei, spielt das Spiel still weiter. */
+  const DROPS_ON = false;
+  const DROPS = { go: 'drop-go.mp3', fpv: 'drop-fpv.mp3', fc: 'drop-flightclub.mp3', lvl: 'drop-level.mp3' };
+  const DROP_DIR = (() => { try { const s = document.currentScript && document.currentScript.src; return s ? new URL('../audio/game/', s).href : 'assets/audio/game/'; } catch (e) { return 'assets/audio/game/'; } })();
   const MAX_S = 99975;                                 // der Server nimmt nur Punkte unter 100.000
 
   /* Level: ab Streckenmeter „at“. Level 1 bis 3 wie in Version 2, ab Level 4 neue Zutaten.
@@ -268,6 +274,7 @@
   const ICON_CENTER = SV('<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>', 18);
   const ICON_PHONE = SV('<rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/>', 14);
   const ICON_PC = SV('<rect x="2.5" y="4" width="19" height="12.5" rx="1.6"/><path d="M8.5 20.5h7M12 16.5v4"/>', 14);
+  const ICON_MUS = SV('<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>');
   const ICON_TRICK = SV('<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20.5 3.5v5h-5"/>', 22);
   const ICON_SHIELD = SV('<path d="M12 2.8 4.5 5.8v5.6c0 4.6 3.2 8.2 7.5 9.8 4.3-1.6 7.5-5.2 7.5-9.8V5.8z" fill="currentColor" fill-opacity=".25"/>', 14);
 
@@ -310,6 +317,7 @@
         <button type="button" class="btn solid fcsg-go fcsg-tilt" data-a="tilt">${ICON_PHONE}Handy kippen zum Steuern</button>
         <button type="button" class="btn ghost fcsg-mob" data-a="finger">Mit dem Finger steuern</button>
         <span class="fcsg-best">Bestwert <b data-h="best">noch keiner</b></span>
+        <button type="button" class="fcsg-mini fcsg-snd fcsg-snd-start" data-a="snd3">${ICON_SND}<span>Ton an</span></button>
       </div>
     </div>
   </div>
@@ -325,6 +333,7 @@
       <div class="fcsg-row fcsg-row-c fcsg-opts">
         <button type="button" class="fcsg-mini" data-a="swap">Mit dem Finger steuern</button>
         <button type="button" class="fcsg-mini fcsg-only-t" data-a="inv" aria-pressed="false">Hoch und runter tauschen</button>
+        <button type="button" class="fcsg-mini" data-a="mus2" aria-pressed="false">Musik an</button>
       </div>
     </div>
   </div>
@@ -365,6 +374,7 @@
 <div class="fcsg-bar">
   <p class="fcsg-keys" data-h="keys">Steuerung: Maus bewegen oder Pfeiltasten und WASD. Klick, Leertaste oder T für einen Trick. P pausiert.</p>
   <div class="fcsg-btns">
+    <button type="button" class="fcsg-mini fcsg-mus" data-a="mus">${ICON_MUS}<span>Musik an</span></button>
     <button type="button" class="fcsg-mini fcsg-snd" data-a="snd">${ICON_SND}<span>Ton an</span></button>
   </div>
 </div>
@@ -420,6 +430,7 @@
     const pops = [], parts = [], drawList = [], hits = [];
     const tilt = { have: false, raw: [0, 0], s: [0, 0], n0: [0, 0], inv: !!lsGet(INV_KEY, false), t0: 0, on: false };
     // Version 3: Akku (verbrauchte Sekunden), Power-ups, Gate-Ketten, Tricks, Wind und Meldungen
+    let invT = 0, slowT = 0, burstT = 0;                // Schild: unverwundbar, abbremsen, Platz-Effekt (Sekunden)
     let batT = 0, shield = false, x2T = 0, windNow = 0, windAmp = 0, night = 0, nightTo = 0, pus = [], puNext = 9, chainLeft = 0, chainId = 0;
     const chainHit = {};
     let trick = null, trickCd = 0, trickIdx = 0, tricks = 0, trickRow = 0, trickEndT = -9, demoTrickT = 5, lvBonus = 0;
@@ -607,7 +618,7 @@
         state = 'count';                      // vor dem Streckenbau: sonst entstünde noch eine Demo-Strecke
         score = 0; combo = 0; bestCombo = 0; lives = 3; passed = 0; flightT = 0; volt = 4.2; sag = 0; curLvl = 1; near = 0;
         crashT = 0; missT = 0; endReason = ''; pops.length = 0; hits.length = 0; submitted = false; runData = null;
-        batT = 0; shield = false; x2T = 0; puNext = 9; chainLeft = 0; trick = null; trickCd = 0; trickIdx = 0; tricks = 0; trickRow = 0;
+        batT = 0; shield = false; x2T = 0; invT = 0; slowT = 0; burstT = 0; puNext = 9; chainLeft = 0; trick = null; trickCd = 0; trickIdx = 0; tricks = 0; trickRow = 0;
         lvBonus = 0; recShown = false; rankShown = 0; rankT = 0; nightTo = 0; night = 0; trickReady = true; warped = false; windAmp = 0;
         for (const k in chainHit) delete chainHit[k];
         setLvlColor(1);
@@ -627,6 +638,7 @@
     }
     function startWith(m) {
       if (!(state === 'demo' || state === 'idle' || state === 'over')) return;
+      if (au.on) ensureAudio();                    // im Tipp: Ton wecken (Autoplay-Regeln, iOS)
       if (m !== 'tilt') { setMode(m); arm(false); return; }
       const DOE = window.DeviceOrientationEvent;
       if (DOE && typeof DOE.requestPermission === 'function') {        // iOS: Erlaubnis nach dem Tipp
@@ -642,6 +654,7 @@
       if (!(state === 'count' || state === 'play')) return;
       state = 'pause'; keys.l = keys.r = keys.u = keys.d = 0; touchId = null; msgT = 0; H_.msg.className = 'fcsg-msg';
       if (trick) { trick = null; camA = 0; trickCd = 0; }
+      musStop(false);
       H_.ptxt.textContent = why || (mode === 'tilt' ? 'Beim Weiterfliegen zählt es kurz herunter. Halte das Handy dann bequem: diese Haltung wird die neue Mitte.' : 'Dein Whoop schwebt und wartet. Akku und Punkte bleiben, wie sie sind.');
       setUI(); stopLoop(); if (W) { render(); hud(); }
       say('Pause. Weiterfliegen mit dem Knopf' + (mob ? '.' : ' oder der Taste P.'));
@@ -650,6 +663,7 @@
       if (state === 'end' || state === 'over') return;
       state = 'end'; endReason = reason; endT = reason === 'bat' ? 2.0 : 1.5;
       trick = null; camA = 0; x2T = 0;
+      musStop(true);                                      // Musik bricht mit einem Filter nach unten weg
       if (reason === 'lives') crashT = 1.5;
       msgT = 0; H_.msg.className = 'fcsg-msg'; pops.length = 0;
       setUI();
@@ -696,6 +710,7 @@
       const inside = dx < g.w / 2 - r && dy < g.h / 2 - r;
       if (state !== 'play' || crashT > 0) { if (inside && demoLike()) flash(g.bonus ? AMB : g.mv ? VIO : SIG, 0.45); return; }
       if (inside) pass(g, Math.max(dx / (g.w / 2), dy / (g.h / 2)));
+      else if (invT > 0) return;                         // nach dem Schild kurz unverwundbar: kein zweiter Treffer
       else if (dx < g.w / 2 + 0.26 + r && dy < g.h / 2 + 0.26 + r) { hits.push({ t: 'rahmen', mv: g.mv, w: +g.w.toFixed(2), dx: +(cx - g.x).toFixed(2), dy: +(cy - g.y).toFixed(2), k: +kNow.toFixed(3) }); crash('gate'); }
       else { hits.push({ t: 'verpasst', mv: g.mv, w: +g.w.toFixed(2), dx: +(cx - g.x).toFixed(2), dy: +(cy - g.y).toFixed(2), k: +kNow.toFixed(3) }); miss(); }
     }
@@ -707,7 +722,7 @@
       return Math.abs(cx - ropeX) - 0.45;
     }
     function judgeObs(o) {
-      if (state !== 'play' || crashT > 0) return;
+      if (state !== 'play' || crashT > 0 || invT > 0) return;
       let dd;
       if (o.type === 'rings') dd = Math.max(0, ringGap(o));
       else { const ddx = Math.max(o.x0 - cx, 0, cx - o.x1), ddy = Math.max(o.y0 - cy, 0, cy - o.y1); dd = Math.hypot(ddx, ddy); }
@@ -732,6 +747,7 @@
         recShown = true; msg('NEUER REKORD', 'rec', 1.4); flash(GOLD, 0.9);
         beep(1046, 0.09, 'square', 0.1); beep(1318, 0.09, 'square', 0.1, 0, 0.1); beep(1568, 0.09, 'square', 0.1, 0, 0.2); beep(2093, 0.22, 'square', 0.1, 0, 0.3);
         say('Neuer Rekord!');
+        playDrop('fc', nextBeat());
       }
       if (clock - rankT < 1.2) return;                    // Platz in der Bestenliste (nur die schon geladene Liste)
       rankT = clock;
@@ -767,14 +783,16 @@
         pulseTrick();
       }
     }
-    // Schild fängt einen Fehler ab: kein Leben weg, Kombo bleibt
-    function useShield() {
-      if (!shield) return false;
-      shield = false; flash(BLU, 1);
-      pops.push({ txt: 'SCHILD', sub: 'HÄLT · KEIN LEBEN WEG', col: BLU, t: 0 }); if (pops.length > 3) pops.shift();
-      beep(520, 0.12, 'sine', 0.18, 1040);
-      say('Das Schild hat dich gerettet.');
-      return true;
+    // Schild (Version 4): kein Absturz und kein Neustart. Kurz abbremsen („Puh“), das Schild platzt,
+    // etwa 1 Sekunde unverwundbar mit Blinken, dann einfach weiterfliegen. Leben und Kombo bleiben.
+    function shieldHit(kind) {
+      shield = false; invT = 1.0; slowT = 0.5; burstT = 0.001;
+      flash(BLU, 1); shake = Math.max(shake, 0.25);
+      pops.length = 0;
+      pops.push({ txt: 'SCHILD WEG', sub: 'PUH! WEITERFLIEGEN', col: BLU, t: 0 }); if (pops.length > 3) pops.shift();
+      hits.push({ t: 'schild', art: kind });
+      sfxShield();
+      say('Puh! Das Schild hat den ' + (kind === 'miss' ? 'Fehler' : 'Treffer') + ' abgefangen. Weiterfliegen.');
     }
     function failTrick() { if (trick) { trick.fail = true; trickRow = 0; } }
     function glow(el) { if (!el || rm) return; el.classList.remove('is-glow'); void el.offsetWidth; el.classList.add('is-glow'); }
@@ -798,19 +816,21 @@
       say(s2);
     }
     function crash(kind) {
+      if (invT > 0 || state !== 'play') return;
       failTrick();
-      const saved = useShield();
-      if (!saved) { lives--; combo = 0; }
+      if (shield) { shieldHit(kind); return; }
+      lives--; combo = 0;
       crashT = 0.95; shake = 1; v *= 0.15; vx *= -0.5; vy *= -0.5;
       gates = gates.filter((g) => g.done || g.zw - dist > 10);     // freie Bahn nach dem Absturz
       obs = obs.filter((o) => o.done || o.zw - dist > 10);
       pus = pus.filter((p) => p.done || p.zw - dist > 10);
       sfxCrash();
-      if (lives <= 0) endGame('lives'); else if (!saved) say((kind === 'obs' ? 'Hindernis getroffen.' : 'Absturz.') + ' Noch ' + lives + ' Leben.');
+      if (lives <= 0) endGame('lives'); else say((kind === 'obs' ? 'Hindernis getroffen.' : 'Absturz.') + ' Noch ' + lives + ' Leben.');
     }
     function miss() {
+      if (invT > 0 || state !== 'play') return;
       failTrick();
-      if (useShield()) { missT = 0.5; return; }
+      if (shield) { shieldHit('miss'); return; }
       lives--; combo = 0; missT = 1.0; flash(RED, 0.9); sfxMiss();
       if (lives <= 0) endGame('lives'); else say('Gate verpasst. Noch ' + lives + ' Leben.');
     }
@@ -831,6 +851,7 @@
       const wasNight = nightTo;
       nightTo = LV[l].night ? 1 : 0;
       if (nightTo !== wasNight && !rm) glitchT = 0.28;        // Licht geht aus oder wieder an
+      if (mus.run) mus.evt = l;                              // Musik: Becken, Stimme und neues Tempo ab dem nächsten Takt
       beep(880, 0.1, 'square', 0.12); beep(1320, 0.1, 'square', 0.12, 0, 0.11); beep(1760, 0.2, 'square', 0.12, 0, 0.22);
       say('Level ' + l + ': ' + LV[l].n + '. ' + LV[l].tip + '.' + (bonus ? ' Bonus ' + bonus + ' Punkte.' : ''));
     }
@@ -1053,8 +1074,8 @@
 
       if (auto) vTarget = 9;
       else if (state === 'count' || state === 'end') vTarget = 0;
-      else if (state === 'play') vTarget = crashT > 0 ? 0 : Math.min(LV[curLvl].vmax, 8 + flightT * 0.105);
-      v += (vTarget - v) * Math.min(1, dt * (vTarget > v ? 1.7 : 2.6));
+      else if (state === 'play') { const vb = Math.min(LV[curLvl].vmax, 8 + flightT * 0.105); vTarget = crashT > 0 ? 0 : slowT > 0 ? vb * 0.5 : vb; }
+      v += (vTarget - v) * Math.min(1, dt * (vTarget > v ? 1.7 : slowT > 0 ? 7 : 2.6));   // nach dem Schild sanft wieder hoch
       dist += v * dt;
       fX0 = trAt(tkX, dist); fS0 = trAt(tkS, dist);
 
@@ -1122,6 +1143,7 @@
             msg('ARMED', 'armed', 1.1); beep(1320, 0.22, 'square', 0.14); state = 'play'; setUI(); say('Scharf geschaltet. Los!');
             if (debugLvl > 1) api.level(debugLvl);        // nur mit ?gamedebug=N in der Adresse
             if (hintTrick && !pulsed && !rm) { pulsed = true; pulseTrick(); }   // Selbst-Impuls: Trick-Knopf pulsiert einmal pro Besuch
+            musStart(); playDrop('go', nextBeat());
           }
         }
       } else if (state === 'play') {
@@ -1133,6 +1155,9 @@
       }
 
       if (crashT > 0) crashT -= dt;
+      if (invT > 0) invT = Math.max(0, invT - dt);
+      if (slowT > 0) slowT = Math.max(0, slowT - dt);
+      if (burstT > 0) { burstT += dt; if (burstT > 0.7) burstT = 0; }
       if (glitchT > 0) glitchT -= dt;
       if (missT > 0) missT -= dt;
       if (flashT > 0) flashT = Math.max(0, flashT - dt * 2.8);
@@ -1666,6 +1691,39 @@
         }
         ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
       }
+      // Schild: feiner Ring, solange es hält; beim Treffer zerspringt er in Stücke mit Funken
+      const R0 = Math.min(W, H) * 0.34;
+      if (shield && isLive()) {
+        const pul = rm ? 0.22 : 0.18 + 0.08 * Math.sin(clock * 3);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.beginPath(); ctx.arc(c0, c1, R0, 0, Math.PI * 2);
+        ctx.lineWidth = 12; ctx.strokeStyle = rgba(BLU, pul * 0.35); ctx.stroke();
+        ctx.lineWidth = 2; ctx.strokeStyle = rgba(BLU, pul + 0.1); ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      if (burstT > 0 && !rm) {
+        const p = clamp(burstT / 0.7, 0, 1), e = 1 - Math.pow(1 - p, 3), a = 1 - p;
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        for (let i = 0; i < 12; i++) {                         // Ringstücke fliegen nach außen
+          const a0 = i / 12 * Math.PI * 2 + 0.08, a1 = a0 + Math.PI * 2 / 12 - 0.16, rr = R0 * (1 + e * (0.5 + 0.25 * ((i * 7) % 5) / 5)), rot = e * (i % 2 ? 0.5 : -0.5);
+          ctx.moveTo(c0 + Math.cos(a0 + rot) * rr, c1 + Math.sin(a0 + rot) * rr); ctx.arc(c0, c1, rr, a0 + rot, a1 + rot);
+        }
+        ctx.lineWidth = 3; ctx.strokeStyle = rgba([150, 200, 255], a); ctx.stroke();
+        ctx.beginPath();
+        for (let i = 0; i < 20; i++) {                         // Funken
+          const an = i / 20 * Math.PI * 2 + i * 0.37, r1 = R0 * (0.9 + e * 0.9), r2 = r1 + R0 * 0.12 * (1 - p);
+          ctx.moveTo(c0 + Math.cos(an) * r1, c1 + Math.sin(an) * r1); ctx.lineTo(c0 + Math.cos(an) * r2, c1 + Math.sin(an) * r2);
+        }
+        ctx.lineWidth = 2; ctx.strokeStyle = rgba(WHT, a); ctx.stroke();
+        ctx.lineCap = 'butt';
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      if (invT > 0 && state === 'play') {                     // unverwundbar: Rahmen blinkt
+        const on = rm ? true : Math.floor(invT * 12) % 2 === 0;
+        if (on) { ctx.lineWidth = Math.min(W, H) * 0.025; ctx.strokeStyle = rgba(BLU, rm ? 0.35 : 0.6); ctx.strokeRect(0, 0, W, H); }
+      }
       // Fadenkreuz (OSD, bleibt gerade)
       ctx.beginPath();
       ctx.moveTo(c0 - 20, c1); ctx.lineTo(c0 - 8, c1); ctx.moveTo(c0 + 8, c1); ctx.lineTo(c0 + 20, c1);
@@ -1959,10 +2017,14 @@
       });
     });
 
-    /* ---------- Ton (WebAudio, standardmäßig aus, ohne Audiodateien) ---------- */
-    const au = { on: false, ac: null };
+    /* ---------- Ton (WebAudio, ohne Audiodateien). Standard: aus. Die Wahl bleibt gespeichert. ----------
+       Aufbau: Motor (leise) + Effekte + Spielmusik → Begrenzer (schützt Handy-Lautsprecher) → Ausgang */
+    const au = { on: !!lsGet(SND_KEY, false), ac: null, drops: {}, dropsLoad: false };
     function buildAudio(ac) {
-      const master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+      const out = ac.createDynamicsCompressor();             // Begrenzer am Ende: nichts übersteuert
+      out.threshold.value = -8; out.knee.value = 4; out.ratio.value = 16; out.attack.value = 0.003; out.release.value = 0.2;
+      const outG = ac.createGain(); outG.gain.value = 0.9; out.connect(outG); outG.connect(ac.destination);
+      const master = ac.createGain(); master.gain.value = 0; master.connect(out);
       const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2000; lp.Q.value = 3; lp.connect(master);
       const o1 = ac.createOscillator(), o2 = ac.createOscillator(), o3 = ac.createOscillator();
       o1.type = 'sawtooth'; o2.type = 'sawtooth'; o3.type = 'square';
@@ -1973,22 +2035,44 @@
       const ns = ac.createBufferSource(); ns.buffer = nb; ns.loop = true;
       const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2800; bp.Q.value = 0.7;
       const ng = ac.createGain(); ng.gain.value = 0.16; ns.connect(bp); bp.connect(ng); ng.connect(master);
-      const fx = ac.createGain(); fx.gain.value = 0; fx.connect(ac.destination);
+      const fx = ac.createGain(); fx.gain.value = 0; fx.connect(out);
       o1.start(); o2.start(); o3.start(); ns.start();
-      Object.assign(au, { ac, master, lp, o1, o2, o3, fx, nb });
+      Object.assign(au, { ac, out, master, lp, o1, o2, o3, fx, nb });
+    }
+    // AudioContext nur nach einem Tipp oder Klick anlegen bzw. wecken (Autoplay-Regeln, vor allem iOS)
+    function ensureAudio() {
+      if (au.ac) { if (au.on && au.ac.state !== 'running') au.ac.resume().catch(() => {}); return true; }
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      try { buildAudio(new AC()); } catch (e) { return false; }
+      if (au.on) au.ac.resume().catch(() => {});
+      loadDrops();
+      return true;
+    }
+    function sndUI() {
+      const t = au.on ? 'Ton aus' : 'Ton an', mOn = au.on && mus.want, mt = mOn ? 'Musik aus' : 'Musik an';
+      [A_.snd, A_.snd3].forEach((b) => { b.lastChild.textContent = t; b.classList.toggle('on', au.on); });
+      A_.snd2.setAttribute('aria-label', t); A_.snd2.classList.toggle('on', au.on);
+      A_.mus.lastChild.textContent = mt; A_.mus.classList.toggle('on', mOn);
+      A_.mus2.textContent = mt; A_.mus2.setAttribute('aria-pressed', mOn ? 'true' : 'false');
+    }
+    function noSound() {
+      [A_.snd, A_.snd3, A_.mus].forEach((b) => { b.lastChild.textContent = 'Kein Ton möglich'; b.disabled = true; });
+      A_.snd2.disabled = true; A_.mus2.disabled = true;
     }
     function toggleSound() {
-      if (!au.ac) {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) { A_.snd.lastChild.textContent = 'Kein Ton möglich'; A_.snd.disabled = true; A_.snd2.disabled = true; return; }
-        try { buildAudio(new AC()); } catch (e) { return; }
-      }
-      au.on = !au.on;
-      A_.snd.lastChild.textContent = au.on ? 'Ton aus' : 'Ton an';
-      A_.snd2.setAttribute('aria-label', au.on ? 'Ton aus' : 'Ton an');
-      A_.snd.classList.toggle('on', au.on); A_.snd2.classList.toggle('on', au.on);
-      if (au.on && au.ac.state !== 'running') au.ac.resume().catch(() => {});
-      sndTick();
+      if (!ensureAudio()) { noSound(); return; }
+      au.on = !au.on; lsSet(SND_KEY, au.on);
+      if (au.on) { if (au.ac.state !== 'running') au.ac.resume().catch(() => {}); loadDrops(); if (state === 'play') musStart(); }
+      else musStop(false);
+      sndUI(); sndTick();
+    }
+    function toggleMusic() {
+      if (au.on && mus.want) { mus.want = false; lsSet(MUS_KEY, false); musStop(false); sndUI(); return; }
+      mus.want = true; lsSet(MUS_KEY, true);
+      if (!au.on) { toggleSound(); return; }                  // „Musik an“ heißt: hören wollen, also Ton mit an
+      if (ensureAudio() && state === 'play') musStart();
+      sndUI();
     }
     function sndTick() {
       if (!au.ac) return;
@@ -2000,9 +2084,10 @@
       au.o2.frequency.setTargetAtTime(base * 1.014, t, 0.06);
       au.o3.frequency.setTargetAtTime(base * 2.01, t, 0.06);
       au.lp.frequency.setTargetAtTime(900 + thr * 2600 + man * 800, t, 0.08);
-      const vol = audible ? (0.022 + thr * 0.03 + man * 0.012) * (crashT > 0 ? 0.15 : 1) * (demoLike() ? 0.55 : 1) : 0;
+      // Motor seit Version 4 deutlich leiser (45 % von vorher), damit Musik und Effekte Platz haben
+      const vol = audible ? (0.022 + thr * 0.03 + man * 0.012) * 0.45 * (crashT > 0 ? 0.15 : 1) * (demoLike() ? 0.55 : 1) : 0;
       au.master.gain.setTargetAtTime(vol, t, 0.05);
-      au.fx.gain.setTargetAtTime(au.on ? 0.5 : 0, t, 0.02);
+      au.fx.gain.setTargetAtTime(au.on ? 0.6 : 0, t, 0.02);
     }
     function beep(freq, dur, type, vol, to, delay) {
       if (!au.on || !au.ac) return;
@@ -2015,13 +2100,200 @@
     }
     function sfxGate(big) { beep(1250, 0.09, 'sine', 0.22, 1900); if (big) beep(1900, 0.12, 'sine', 0.18, 2600, 0.07); }
     function sfxMiss() { beep(330, 0.28, 'square', 0.1, 170); }
+    function noiseHit(dest, t, dur, vol, type, f0, f1, q) {
+      const ac = au.ac, s = ac.createBufferSource(), fl = ac.createBiquadFilter(), g = ac.createGain();
+      s.buffer = au.nb; s.loop = true;
+      fl.type = type; fl.frequency.setValueAtTime(f0, t); if (f1) fl.frequency.exponentialRampToValueAtTime(f1, t + dur); fl.Q.value = q || 0.8;
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      s.connect(fl); fl.connect(g); g.connect(dest);
+      s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.03);
+    }
     function sfxCrash() {
       if (!au.on || !au.ac) return;
-      const ac = au.ac, t = ac.currentTime;
-      const s = ac.createBufferSource(); s.buffer = au.nb;
-      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(6000, t); lp.frequency.exponentialRampToValueAtTime(300, t + 0.6);
-      const g = ac.createGain(); g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
-      s.connect(lp); lp.connect(g); g.connect(au.fx); s.start(t); s.stop(t + 0.75);
+      noiseHit(au.fx, au.ac.currentTime, 0.7, 0.5, 'lowpass', 6000, 300);
+    }
+    function sfxShield() {                                   // Schild platzt: Glas-Klirren und ein „Puh“ nach unten
+      if (!au.on || !au.ac) return;
+      const t = au.ac.currentTime;
+      noiseHit(au.fx, t, 0.28, 0.32, 'highpass', 5200, 0, 0.7);
+      beep(1760, 0.1, 'triangle', 0.14); beep(2637, 0.14, 'triangle', 0.1, 0, 0.05);
+      beep(820, 0.42, 'sine', 0.2, 210, 0.04);
+    }
+
+    /* ---------- Spielmusik: im Browser erzeugt, treibender Synthwave-Loop (a-Moll, Am F C G) ----------
+       Taktgenauer Planer mit Vorlauf (setTimeout plus audioCtx.currentTime): Töne werden 0,18 s im Voraus
+       auf die Audio-Uhr gelegt, deshalb bleibt das Tempo stabil, auch wenn das Bild ruckelt.
+       Tempo steigt alle zwei Level (120, 128, 136, 144, 152 BPM) und gleitet dabei über einen Takt. */
+    const MUS_VOL = 0.13;                                  // Musik liegt unter den Effekten
+    const mus = { want: lsGet(MUS_KEY, true) !== false, run: false, ac: null, bpm: 120, from: 120, to: 120, ramp: 0, step: 0, nextT: 0, timer: 0, lvl: 1, evt: 0, riser: 0, fill: -1, stopAt: 0, alt: 0, fc: 18000, log: [] };
+    const bpmFor = (l) => 120 + 8 * Math.floor((Math.max(1, l) - 1) / 2);
+    const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+    const PROG = [[45, [57, 60, 64]], [41, [57, 60, 65]], [48, [55, 60, 64]], [43, [55, 59, 62]]];   // Bass-Grundton, Akkord
+    const ARP = [0, 1, 2, 3, 4, 5, 4, 3, 0, 2, 1, 3, 5, 4, 3, 2];
+    const LEAD = [76, -1, 74, 72, 74, -1, 76, 79, 77, -1, 76, 74, 72, -1, 71, 72];                      // ab Level 9
+    function buildMusic() {
+      if (mus.ac === au.ac) return;
+      const ac = au.ac;
+      const bus = ac.createGain(); bus.gain.value = 0.0001;
+      const flt = ac.createBiquadFilter(); flt.type = 'lowpass'; flt.frequency.value = 18000; flt.Q.value = 0.8;
+      bus.connect(flt); flt.connect(au.out);
+      const drums = ac.createGain(); drums.connect(bus);
+      const duck = ac.createGain(); duck.connect(bus);                       // pumpt mit der Kick
+      const syn = ac.createGain(); syn.connect(duck);
+      const arp = ac.createGain(); arp.connect(syn);
+      const dly = ac.createDelay(1.5), dfb = ac.createGain(), dlf = ac.createBiquadFilter(), dwet = ac.createGain();
+      dly.delayTime.value = 0.375; dfb.gain.value = 0.3; dlf.type = 'lowpass'; dlf.frequency.value = 2600; dwet.gain.value = 0.5;
+      arp.connect(dly); dly.connect(dlf); dlf.connect(dfb); dfb.connect(dly); dlf.connect(dwet); dwet.connect(syn);
+      const echo = ac.createDelay(1.5), efb = ac.createGain(), ehp = ac.createBiquadFilter(), ewet = ac.createGain();   // Echo für die Stimmen
+      echo.delayTime.value = 0.375; efb.gain.value = 0.32; ehp.type = 'highpass'; ehp.frequency.value = 500; ewet.gain.value = 0.4;
+      echo.connect(ehp); ehp.connect(efb); efb.connect(echo); ehp.connect(ewet); ewet.connect(au.out);
+      Object.assign(mus, { ac, bus, flt, drums, duck, syn, arp, dly, echo });
+    }
+    function mTone(t, midi, dur, a, type, cut, dest, det) {
+      const ac = au.ac, f0 = mtof(midi), g = ac.createGain(), fl = ac.createBiquadFilter();
+      fl.type = 'lowpass'; fl.Q.value = 4;
+      fl.frequency.setValueAtTime(Math.min(16000, cut * 2.6), t); fl.frequency.exponentialRampToValueAtTime(cut, t + Math.min(dur, 0.12));
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      const o = ac.createOscillator(); o.type = type; o.frequency.setValueAtTime(f0, t); o.connect(fl); o.start(t); o.stop(t + dur + 0.02);
+      if (det) { const o2 = ac.createOscillator(); o2.type = type; o2.frequency.setValueAtTime(f0, t); o2.detune.setValueAtTime(det, t); o2.connect(fl); o2.start(t); o2.stop(t + dur + 0.02); }
+      fl.connect(g); g.connect(dest);
+    }
+    function mPad(t, notes, dur, a) {
+      const ac = au.ac, g = ac.createGain(), fl = ac.createBiquadFilter();
+      fl.type = 'lowpass'; fl.frequency.value = 1100; fl.Q.value = 0.7;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      notes.forEach((n, i) => { const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(n); o.detune.value = (i - 1) * 9; o.connect(fl); o.start(t); o.stop(t + dur + 0.02); });
+      fl.connect(g); g.connect(mus.syn);
+    }
+    function mKick(t, a) {
+      const ac = au.ac, o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(165, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.11);
+      g.gain.setValueAtTime(a, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      o.connect(g); g.connect(mus.drums); o.start(t); o.stop(t + 0.32);
+      noiseHit(mus.drums, t, 0.02, a * 0.25, 'bandpass', 3200, 0, 0.9);    // Klick, damit man die Kick auch am Handy hört
+      mus.duck.gain.setValueAtTime(0.4, t); mus.duck.gain.linearRampToValueAtTime(1, t + 0.17);
+    }
+    function mClap(t, a) {
+      noiseHit(mus.drums, t, 0.16, a, 'bandpass', 1600, 0, 0.9);
+      noiseHit(mus.drums, t + 0.012, 0.1, a * 0.6, 'bandpass', 2300, 0, 1.2);
+    }
+    function musBar(bar, t) {
+      const L = curLvl, target = bpmFor(L);
+      if (target !== mus.to) { mus.from = mus.bpm; mus.to = target; mus.ramp = 16; }      // gleitend über diesen Takt
+      if (mus.evt) {                                         // Levelwechsel: Becken und Stimme auf die Eins
+        noiseHit(mus.drums, t, 1.6, 0.2, 'highpass', 3500);
+        const k = mus.evt % 3 === 1 ? 'fc' : (mus.alt++ % 2 ? 'fpv' : 'lvl');
+        playDrop(k, t);
+        mus.evt = 0;
+      }
+      mus.lvl = L;
+      const fc = LV[L].night ? 1300 : 18000;                  // Nachtflug: dunkler Filter
+      if (fc !== mus.fc) { mus.fc = fc; mus.flt.frequency.setTargetAtTime(fc, t, 0.5); }
+      mus.dly.delayTime.setTargetAtTime(45 / mus.to, t, 0.05);        // Echo des Arpeggios: punktierte Achtel
+      mus.echo.delayTime.setTargetAtTime(45 / mus.to, t, 0.05);
+      if (L < NLV && mus.riser !== L + 1 && state === 'play') {      // Riser und Wirbel vor dem nächsten Level
+        const rem = LV[L + 1].at - (dist - courseStart), barD = 240 / mus.bpm;
+        if (rem > 0 && rem / Math.max(4, v) < barD * 1.15) {
+          mus.riser = L + 1; mus.fill = bar;
+          const ac = au.ac, s = ac.createBufferSource(), fl = ac.createBiquadFilter(), g = ac.createGain();
+          s.buffer = au.nb; s.loop = true; fl.type = 'bandpass'; fl.Q.value = 1.4;
+          fl.frequency.setValueAtTime(350, t); fl.frequency.exponentialRampToValueAtTime(7500, t + barD);
+          g.gain.setValueAtTime(0.001, t); g.gain.exponentialRampToValueAtTime(0.16, t + barD * 0.97); g.gain.exponentialRampToValueAtTime(0.0001, t + barD + 0.05);
+          s.connect(fl); fl.connect(g); g.connect(mus.drums); s.start(t); s.stop(t + barD + 0.08);
+        }
+      }
+      mus.log.push({ bar, t: +t.toFixed(3), bpm: +mus.bpm.toFixed(1), to: mus.to, lvl: L });
+      if (mus.log.length > 64) mus.log.shift();
+    }
+    function musStep(st, t) {
+      const s = st % 16, bar = Math.floor(st / 16), L = mus.lvl, P = PROG[bar % 4], ch = P[1], sx = 15 / mus.bpm;
+      const fill = mus.fill === bar && s >= 8;
+      // Schlagzeug: Kick auf jede Viertel, Clap auf 2 und 4, Hi-Hats (ab Level 5 alle Sechzehntel)
+      if (s % 4 === 0 && !(fill && s === 12)) mKick(t, 0.8);
+      if (fill) { if (s >= 12 || s % 2 === 0) mClap(t, 0.16 + (s - 8) * 0.05); }
+      else if (s === 4 || s === 12) mClap(t, 0.5);
+      if (s % 4 === 2) noiseHit(mus.drums, t, L >= 3 ? 0.14 : 0.045, L >= 3 ? 0.15 : 0.2, 'highpass', L >= 3 ? 6500 : 8000);
+      else if (L >= 5 && s % 2 === 1) noiseHit(mus.drums, t, 0.03, 0.09, 'highpass', 9000);
+      // Bass: rollende Sechzehntel zwischen den Kicks, auf der Achtel eine Oktave höher
+      if (s % 4 !== 0) mTone(t, P[0] + (s % 4 === 2 ? 12 : 0), sx * 0.92, s % 4 === 2 ? 0.34 : 0.26, 'sawtooth', 420 + L * 45, mus.syn, 7);
+      // Arpeggio mit Echo, öffnet sich mit jedem Level
+      const nt = [ch[0], ch[1], ch[2], ch[0] + 12, ch[1] + 12, ch[2] + 12][ARP[s]];
+      mTone(t, nt, sx * 0.85, 0.075, 'square', 1300 + L * 170, mus.arp);
+      if (s === 0) mPad(t, [ch[0] - 12, ch[1] - 12, ch[2] - 12], sx * 16, 0.05);
+      // Ab Level 5: Akkord-Stöße auf den Offbeats (mehr Energie)
+      if (L >= 5 && (s === 3 || s === 6 || s === 10 || s === 14)) ch.forEach((n) => mTone(t, n + 12, sx * 1.3, 0.032, 'sawtooth', 2600, mus.syn, 11));
+      // Ab Level 9: Lead-Melodie obendrauf
+      if (L >= 9 && LEAD[s] > 0) mTone(t, LEAD[s] + (bar % 2 ? 0 : -2), sx * 1.7, 0.05, 'square', 3200, mus.arp, 6);
+    }
+    function musTick() {
+      if (!mus.run || !au.ac) return;
+      const ac = au.ac;
+      if (ac.state !== 'running' && !running) { mus.run = false; return; }   // Seite im Hintergrund: Planer ruht
+      if (mus.nextT < ac.currentTime - 0.05) mus.nextT = ac.currentTime + 0.03;   // nach Hänger: nicht nachholen, weiter im Takt
+      const ahead = ac.currentTime + 0.18;
+      while (mus.nextT < ahead) {
+        if (mus.stopAt && mus.nextT >= mus.stopAt) { mus.run = false; return; }
+        if (mus.step % 16 === 0) musBar(mus.step / 16, mus.nextT);
+        musStep(mus.step, mus.nextT);
+        if (mus.ramp > 0) { mus.ramp--; mus.bpm = mus.to + (mus.from - mus.to) * (mus.ramp / 16); }
+        mus.nextT += 15 / mus.bpm; mus.step++;
+      }
+      mus.timer = setTimeout(musTick, 25);
+    }
+    function musStart() {
+      if (!au.ac || !au.on || !mus.want || state !== 'play') return;
+      if (mus.run && !mus.stopAt) return;
+      buildMusic();
+      clearTimeout(mus.timer);
+      const now = au.ac.currentTime, t = now + 0.06, g = mus.bus.gain, f = mus.flt.frequency;
+      Object.assign(mus, { run: true, stopAt: 0, step: 0, nextT: t, ramp: 0, lvl: curLvl, evt: 0, riser: 0, fill: -1 });
+      mus.bpm = mus.from = mus.to = bpmFor(curLvl);
+      mus.fc = LV[curLvl].night ? 1300 : 18000;
+      g.cancelScheduledValues(now); g.setValueAtTime(Math.max(0.0001, g.value), now); g.linearRampToValueAtTime(MUS_VOL, t + 0.3);
+      f.cancelScheduledValues(now); f.setValueAtTime(mus.fc, now);
+      musTick();
+    }
+    function musStop(sweep) {
+      if (!mus.run || !au.ac) return;
+      const now = au.ac.currentTime, g = mus.bus.gain, f = mus.flt.frequency;
+      g.cancelScheduledValues(now); g.setValueAtTime(Math.max(0.0001, g.value), now);
+      f.cancelScheduledValues(now); f.setValueAtTime(Math.max(150, f.value), now);
+      if (sweep) {                                          // Spielende: Filter fällt nach unten, Musik bricht weg
+        f.exponentialRampToValueAtTime(130, now + 0.9);
+        g.setValueAtTime(Math.max(0.0001, g.value), now + 0.5); g.exponentialRampToValueAtTime(0.0001, now + 1.3);
+        mus.stopAt = now + 1.0;
+      } else {
+        g.exponentialRampToValueAtTime(0.0001, now + 0.25);
+        mus.run = false; clearTimeout(mus.timer);
+      }
+    }
+    // Nächste Zählzeit (Viertel) auf der Audio-Uhr, damit Stimmen im Takt sitzen
+    function nextBeat() {
+      if (!mus.run || mus.stopAt) return au.ac ? au.ac.currentTime + 0.02 : 0;
+      return mus.nextT + ((4 - (mus.step % 4)) % 4) * 15 / mus.bpm;
+    }
+
+    /* ---------- Stimmen-Drops (optional, MP3 in assets/audio/game/). Erst mit DROPS_ON = true wird überhaupt angefragt. */
+    function loadDrops() {
+      if (!DROPS_ON || au.dropsLoad || !au.ac || typeof fetch !== 'function') return;
+      au.dropsLoad = true;
+      Object.keys(DROPS).forEach((k) => {
+        fetch(DROP_DIR + DROPS[k], { cache: 'force-cache' })
+          .then((r) => (r.ok ? r.arrayBuffer() : null))
+          .then((b) => (b ? new Promise((res, rej) => { const p = au.ac.decodeAudioData(b, res, rej); if (p && p.then) p.then(res, rej); }) : null))
+          .then((buf) => { if (buf) au.drops[k] = buf; })
+          .catch(() => { /* fehlt oder nicht lesbar: still weiter */ });
+      });
+    }
+    function playDrop(k, t) {
+      const b = au.drops[k];
+      if (!b || !au.on || !au.ac || !mus.want) return false;
+      if (!mus.echo) buildMusic();
+      const ac = au.ac, s = ac.createBufferSource(), hp = ac.createBiquadFilter(), g = ac.createGain();
+      s.buffer = b; hp.type = 'highpass'; hp.frequency.value = 140; g.gain.value = 0.85;
+      s.connect(hp); hp.connect(g); g.connect(au.out); g.connect(mus.echo);
+      s.start(Math.max(ac.currentTime, t || 0));
+      return true;
     }
 
     /* ---------- Schleife, Größe, Sichtbarkeit ---------- */
@@ -2076,7 +2348,7 @@
     A_.tilt.addEventListener('click', () => startWith('tilt'));
     A_.finger.addEventListener('click', () => startWith('touch'));
     A_.again.addEventListener('click', () => startWith(mode));
-    A_.resume.addEventListener('click', () => arm(true));
+    A_.resume.addEventListener('click', () => { if (au.on) ensureAudio(); arm(true); });
     A_.quit.addEventListener('click', () => { if (state !== 'pause') return; state = 'play'; endGame('quit'); showOver(); if (!rm) startLoop(); });
     A_.pz.addEventListener('click', () => pause());
     A_.recal.addEventListener('click', recal);
@@ -2084,6 +2356,9 @@
     A_.inv.addEventListener('click', () => { tilt.inv = !tilt.inv; lsSet(INV_KEY, tilt.inv); setUI(); });
     A_.snd.addEventListener('click', toggleSound);
     A_.snd2.addEventListener('click', toggleSound);
+    A_.snd3.addEventListener('click', (e) => { e.stopPropagation(); toggleSound(); });
+    A_.mus.addEventListener('click', toggleMusic);
+    A_.mus2.addEventListener('click', toggleMusic);
     A_.trick.addEventListener('click', (e) => { e.stopPropagation(); doTrick(false); });
     A_.trick.addEventListener('pointerdown', (e) => { e.stopPropagation(); });
     const mine = (e) => host.contains(e.target) || stage.contains(e.target) || e.target === document.body;
@@ -2140,7 +2415,7 @@
     setMode(mode);
     ensureTrack(ZF + 30);
     resetCourse(rm ? 9 : 14);
-    showBest(); setUI(); setLvlColor(1); trickLabel();
+    showBest(); setUI(); setLvlColor(1); trickLabel(); sndUI();
     if (DEBUG) host.setAttribute('data-debug', debugLvl ? 'level ' + debugLvl : 'an');
     // Schrift fürs Canvas nachladen, dann das stehende Bild neu zeichnen
     if (document.fonts && document.fonts.load) {
@@ -2176,13 +2451,15 @@
         if (m > 0) api.warp(m);
       },
       trick: () => doTrick(false),
+      hit(kind) { if (kind === 'miss') miss(); else crash(kind === 'gate' ? 'gate' : 'obs'); },   // nur für Tests: Treffer auslösen
+      music: () => ({ run: mus.run, want: mus.want, on: au.on, ctx: au.ac ? au.ac.state : null, bpm: +mus.bpm.toFixed(1), to: mus.to, lvl: mus.lvl, step: mus.step, now: au.ac ? +au.ac.currentTime.toFixed(3) : 0, drops: Object.keys(au.drops), dropsOn: DROPS_ON, riser: mus.riser, fillBar: mus.fill, log: mus.log.slice(-24) }),
       battery(s) { batT = clamp(BAT_T - (+s || 0), 0, BAT_T); },   // nur für Tests: verbleibende Akku-Sekunden setzen
       give(type) { if (state === 'play' && PU[type]) collect({ type }); },   // nur für Tests: Power-up sofort einsammeln
       levels: () => LV.slice(1).map((l, i) => ({ n: i + 1, name: l.n, at: l.at })),
       stats: () => ({
         state, mode, score, passed, combo, bestCombo, lives, best, level: curLvl, near,
         tricks, trickRow, trick: trick ? TRICKS[trick.i].n : null, trickCd: +trickCd.toFixed(2), nextTrick: TRICKS[trickIdx].n,
-        shield, x2: +x2T.toFixed(1), batLeft: +(BAT_T - batT).toFixed(1), wind: +windNow.toFixed(2), night: +night.toFixed(2),
+        shield, inv: +invT.toFixed(2), slow: +slowT.toFixed(2), x2: +x2T.toFixed(1), batLeft: +(BAT_T - batT).toFixed(1), wind: +windNow.toFixed(2), night: +night.toFixed(2),
         pickups: pus.filter((p) => !p.done).map((p) => p.type), lvBonus,
         next: (() => { const g = nextGate(); return g ? { x: +g.x.toFixed(2), y: +g.y.toFixed(2), dz: +(g.zw - dist).toFixed(1), w: +g.w.toFixed(2) } : null; })(),
         flightT: +flightT.toFixed(2), volt: +volt.toFixed(2), kmh: Math.round(v * 3.6),
