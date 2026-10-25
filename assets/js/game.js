@@ -215,9 +215,11 @@
       })
       .then((l) => { clearTimeout(to); return l; }, (e) => { clearTimeout(to); throw e; });
   }
-  let topCache = null;                              // Serverliste dieser Sitzung (roh)
-  try { const c = JSON.parse(sessionStorage.getItem(SS_TOP) || 'null'); if (c && Array.isArray(c.list)) topCache = c.list; } catch (e) { /* egal */ }
-  const keepTop = (list) => { topCache = list.slice(0, 500); try { sessionStorage.setItem(SS_TOP, JSON.stringify({ list: topCache, at: Date.now() })); } catch (e) { /* egal */ } };
+  let topCache = null, topAt = 0;                   // Serverliste (roh) und wann sie geholt wurde
+  const TOP_FRESH = 60000;                          // länger als 1 Minute alt: beim nächsten Blick neu holen (Natan 25.10.: andere Handys sahen neue Einträge nicht)
+  try { const c = JSON.parse(sessionStorage.getItem(SS_TOP) || 'null'); if (c && Array.isArray(c.list)) { topCache = c.list; topAt = +c.at || 0; } } catch (e) { /* egal */ }
+  const keepTop = (list) => { topCache = list.slice(0, 500); topAt = Date.now(); try { sessionStorage.setItem(SS_TOP, JSON.stringify({ list: topCache, at: topAt })); } catch (e) { /* egal */ } };
+  const topFresh = () => !!topCache && Date.now() - topAt < TOP_FRESH;
   const localList = () => rankList(lsGet(LSK.list, []));
   const queueList = () => { const q = lsGet(LSK.queue, []); return Array.isArray(q) ? q : []; };
   const merged = () => rankList((topCache || []).concat(queueList()));
@@ -234,13 +236,13 @@
   const Scores = {
     source: 'local',          // 'online' | 'local' | 'offline'
     get online() { return !!hsUrl(); },
-    get loaded() { return !!topCache; },
+    get loaded() { return topFresh(); },
     cached() { if (hsUrl() && topCache) { this.source = 'online'; return merged(); } this.source = 'local'; return localList(); },
-    top() {
+    top(force) {
       if (!hsUrl()) { this.source = 'local'; return Promise.resolve(localList()); }
-      if (topCache) return flushQueue().then((l) => { if (l) keepTop(l); this.source = 'online'; return merged(); });
+      if (!force && topFresh()) return flushQueue().then((l) => { if (l) keepTop(l); this.source = 'online'; return merged(); });
       return flushQueue().then((l) => l || hsCall({ a: 'top' })).then((l) => { keepTop(l); this.source = 'online'; return merged(); },
-        () => { this.source = 'offline'; return rankList(localList().concat(queueList())); });
+        () => { this.source = 'offline'; return topCache ? merged() : rankList(localList().concat(queueList())); });
     },
     add(e) {
       const n = cleanName(e && e.name);
@@ -702,6 +704,12 @@
       say('Spielende. ' + num(score) + ' Punkte, ' + passed + ' Gates, Level ' + curLvl + '.' + (isBest ? ' Neuer Bestwert!' : '') + (ok ? ' Du kannst deinen Namen in die Bestenliste eintragen.' : ''));
       const foc = ok && !mob ? H_.name : A_.again;
       try { foc.focus({ preventScroll: true }); } catch (e) { /* egal */ }
+      // Handy (v. a. iPhone): Namensfeld muss ohne Suchen sichtbar sein, die Tafel scrollt bei Bedarf bis dorthin
+      if (ok && mob) requestAnimationFrame(() => {
+        const mid = H_.form.closest('.fcsg-ui-mid'); if (!mid) return;
+        const ir = H_.name.getBoundingClientRect(), mr = mid.getBoundingClientRect();
+        if (ir.bottom > mr.bottom - 8) mid.scrollTop += ir.bottom - mr.bottom + 70;
+      });
       if (rm) { stopLoop(); renderStill(); }
     }
     function judge(g) {
@@ -1031,7 +1039,7 @@
       stage.parentNode.insertBefore(ph, stage);
       const wrap = document.createElement('div');
       wrap.className = host.className + ' fcsg-full';
-      wrap.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+      wrap.addEventListener('touchmove', (e) => { if (e.target && e.target.closest && e.target.closest('.fcsg-ui-mid,input,button')) return; e.preventDefault(); }, { passive: false });   // Tafeln bleiben scrollbar (iPhone)
       wrap.appendChild(stage); document.body.appendChild(wrap);
       document.documentElement.classList.add('fcsg-lock');
       full = { wrap, ph };
@@ -1944,9 +1952,9 @@
       const src = Scores.source;
       B_.src.textContent = src === 'online' ? 'Online · alle Geräte' : src === 'offline' ? 'Gerade offline · Einträge dieses Geräts' : 'Auf diesem Gerät';
       B_.src.className = 'fcsb-src is-' + src;
-      const canLoad = Scores.online && src !== 'online';
+      const canLoad = Scores.online;
       B_.load.hidden = !canLoad; B_.load.disabled = boardLoading;
-      B_.load.textContent = boardLoading ? 'Lädt …' : src === 'offline' ? 'Nochmal laden' : 'Bestenliste laden';
+      B_.load.textContent = boardLoading ? 'Lädt …' : src === 'online' ? 'Aktualisieren' : src === 'offline' ? 'Nochmal laden' : 'Bestenliste laden';
       B_.fine.textContent = !Scores.online ? 'Gespeichert wird nur in diesem Browser.' : src === 'online' ? 'Gleiche Namen stehen nur mit ihrem besten Wert in der Liste.' : src === 'offline' ? 'Die Online-Liste ist gerade nicht erreichbar.' : 'Die Online-Liste lädt, sobald du hier bist.';
       if (boardSeen) countUp(pulseMe);
     }
@@ -1971,18 +1979,23 @@
       if (boardLoading) return;
       if (Scores.loaded && !byClick) { renderBoard(Scores.cached()); return; }
       boardLoading = true; if (B_.load) { B_.load.disabled = true; B_.load.textContent = 'Lädt …'; }
-      Scores.top().then((list) => { boardLoading = false; renderBoard(list); }, () => { boardLoading = false; renderBoard(Scores.cached()); });
+      Scores.top(!!byClick).then((list) => { boardLoading = false; renderBoard(list); }, () => { boardLoading = false; renderBoard(Scores.cached()); });
     }
     if (boardEl) {
       renderBoard(Scores.cached());
       if ('IntersectionObserver' in window) {
         // Sobald die Bestenliste im Bild ist: einmal online laden (pro Sitzung zwischengespeichert), sonst sieht man nur das eigene Gerät
-        const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { io.disconnect(); boardSeen = true; if (Scores.online && !Scores.loaded) loadBoard(false); else countUp(false); } }, { threshold: 0.3 });
+        // Jedes Mal, wenn die Liste ins Bild kommt und älter als 1 Minute ist: neu holen
+        const io = new IntersectionObserver((es) => { if (!es.some((x) => x.isIntersecting)) return; const first = !boardSeen; boardSeen = true; if (Scores.online && !Scores.loaded) loadBoard(false); else if (first) countUp(false); }, { threshold: 0.3 });
         io.observe(boardEl);
+        // Zurück in den Tab (Handy lag lange herum): Liste auffrischen, wenn sie schon einmal zu sehen war
+        document.addEventListener('visibilitychange', () => { if (!document.hidden && boardSeen && Scores.online && !Scores.loaded) loadBoard(false); });
       } else boardSeen = true;
     }
 
     /* ---------- Namen eintragen ---------- */
+    // iPhone: Nach dem Öffnen der Tastatur das Feld in die Mitte holen, damit man sieht, was man tippt
+    H_.name.addEventListener('focus', () => { setTimeout(() => { try { H_.name.scrollIntoView({ block: 'center' }); } catch (e) { /* egal */ } }, 350); });
     H_.form.addEventListener('submit', (e) => {
       e.preventDefault();
       if (submitted || !runData) return;
