@@ -1,7 +1,11 @@
-/* Flight Club Saar e. V. · Mini-Spiel „Whoop-Rennen“ (Version 2)
+/* Flight Club Saar e. V. · Mini-Spiel „Whoop-Rennen“ (Version 3)
    Ein Tiny Whoop fliegt durch leuchtende Gates in der Turnhalle, Blick wie durch die FPV-Brille.
-   Neu: Kurven mit Schräglage, Höhenwechsel, bewegliche und enger werdende Gates, Hindernisse
-   (Netz, Leiter, Basketballkorb), Level 1 bis 3, Steuerung per Handy kippen, Bestenliste.
+   Version 2: Kurven mit Schräglage, Höhenwechsel, bewegliche und enger werdende Gates, Hindernisse
+   (Netz, Leiter, Basketballkorb), Steuerung per Handy kippen, Bestenliste.
+   Version 3: zehn Level (Tabelle LV), Power-ups (Akku, Schild, Punkte ×2), Tricks per Knopf, Klick oder
+   Leertaste (Flip, Spin, Powerloop) mit Trick-Kamera, Wind, kreisende Gates, Turnringe, Gate-Ketten, Nachtflug,
+   Rekord- und Platz-Meldungen. Bestenliste unverändert (Felder n|s|g|c|t|d, Prüfsumme über n|s|g|t).
+   Testabkürzung nur mit ?gamedebug in der Adresse (z. B. ?gamedebug=6 startet jede Runde in Level 6).
    Einbinden: <div data-game="whoop" data-board="#id-der-bestenliste"></div> plus assets/css/game.css und assets/js/game.js.
    Klassisches Skript, Canvas 2D (Pseudo-3D), keine Bibliotheken nötig.
    Globale Variablen: window.FCSGame (mount, instances, Testhilfe end/finish) und window.FCSScores (Bestenliste). */
@@ -13,13 +17,44 @@
   const HW = 11, HH = 7.5, ZN = 0.3, ZF = 72;            // Halle: halbe Breite, Deckenhöhe, Sichtweite (m)
   const RX = 5.2, YMIN = 0.9, YMAX = 4.6, YC = 2.75;  // Flugbereich des Whoops
   const BAT_T = 90;                                    // Sekunden bis 3.50 V = LAND NOW
-  const LOW_V = 3.62, VMAX = 17.5;
+  const LOW_V = 3.62;
   const SEG = 1, CF = 1.6;                             // Streckenraster (m), Fliehkraft in Kurven
-  const EASY_AT = 85, L2_AT = 220, L3_AT = 560;        // Streckenmeter: einfacher Anfang (ca. 10 s), Level 2, Level 3
+  const EASY_AT = 85;                                  // Streckenmeter: einfacher Anfang (ca. 10 s)
   const FOG = '#050b17', FOGC = [5, 11, 23];
   const SIG = [63, 224, 255], AMB = [255, 176, 32], RED = [255, 75, 92], WHT = [234, 244, 255];
   const BLU = [90, 162, 255], WOOD = [196, 150, 98], HOT = [255, 255, 255], VIO = [196, 150, 255], ALU = [200, 214, 234];
-  const BEST_KEY = 'fcs-whoop-best', INV_KEY = 'fcs-whoop-inv';
+  const GRN = [62, 224, 138], PINK = [255, 92, 170], ORG = [255, 128, 48], LIL = [176, 196, 255], GOLD = [255, 214, 92];
+  const BEST_KEY = 'fcs-whoop-best', INV_KEY = 'fcs-whoop-inv', TRICK_KEY = 'fcs-whoop-trick', PU_KEY = 'fcs-whoop-pu';
+  const MAX_S = 99975;                                 // der Server nimmt nur Punkte unter 100.000
+
+  /* Level: ab Streckenmeter „at“. Level 1 bis 3 wie in Version 2, ab Level 4 neue Zutaten.
+     st: Gerade zwischen Kurven (m) · km: Kurvenstärke · ss: Anteil S-Kurven · obs: Anteil Hindernisse nach einem Gate
+     mix: welche Hindernisse · mv/mv2/mv3: Anteil bewegter Gates, davon senkrecht bzw. kreisend · sc: Gate-Größe
+     vmax: Höchsttempo (m/s) · wind: Seitenwind (m Versatz) · chain: Anteil Gate-Ketten · dy: Höhenwechsel · bat: Sekunden pro Akku */
+  const MIX3 = { ladder: 0.3, hoop: 0.25, dive: 0.2, over: 0.13, under: 0.12 };
+  const LV = [null,
+    { at: 0, n: 'Jungfernflug', c: SIG, st: [26, 44], km: [0.005, 0.009], ss: 0, obs: 0, mix: null, mv: 0, mv2: 0, mv3: 0, sc: 1, vmax: 17.5, wind: 0, chain: 0, dy: 1, ylo: 1.45, yhi: 3.95, bat: 15, tip: '' },
+    { at: 220, n: 'Kurvenjagd', c: GRN, st: [16, 30], km: [0.009, 0.014], ss: 0, obs: 0.36, mix: { ladder: 0.5, over: 0.25, under: 0.25 }, mv: 0.22, mv2: 0, mv3: 0, sc: 1, vmax: 17.5, wind: 0, chain: 0, dy: 1, ylo: 1.25, yhi: 3.95, bat: 15, tip: 'Kurven, Netze, Leitern und Wackel-Gates' },
+    { at: 560, n: 'Korbleger', c: AMB, st: [10, 22], km: [0.012, 0.019], ss: 0.35, obs: 0.5, mix: MIX3, mv: 0.34, mv2: 0.4, mv3: 0, sc: 0.86, vmax: 17.5, wind: 0, chain: 0, dy: 1, ylo: 1.25, yhi: 3.95, bat: 15, tip: 'Enge Gates, Körbe und mehr Tempo' },
+    { at: 900, n: 'Durchzug', c: BLU, st: [10, 22], km: [0.012, 0.019], ss: 0.35, obs: 0.45, mix: MIX3, mv: 0.34, mv2: 0.4, mv3: 0, sc: 0.84, vmax: 18.5, wind: 1.0, chain: 0, dy: 1, ylo: 1.25, yhi: 3.95, bat: 12, tip: 'Hallentür offen: Seitenwind drückt dich weg' },
+    { at: 1250, n: 'Wechselspiel', c: VIO, st: [10, 20], km: [0.013, 0.02], ss: 0.4, obs: 0.5, mix: { ladder: 0.2, hoop: 0.18, dive: 0.12, over: 0.1, under: 0.1, rings: 0.3 }, mv: 0.5, mv2: 0.3, mv3: 0.45, sc: 0.82, vmax: 19.5, wind: 0.3, chain: 0, dy: 1, ylo: 1.25, yhi: 3.95, bat: 12, tip: 'Gates kreisen, Turnringe schwingen' },
+    { at: 1620, n: 'Split-S', c: PINK, st: [10, 20], km: [0.013, 0.02], ss: 0.4, obs: 0.55, mix: { dive: 0.3, over: 0.2, under: 0.2, hoop: 0.12, ladder: 0.06, rings: 0.12 }, mv: 0.36, mv2: 0.6, mv3: 0.25, sc: 0.8, vmax: 20.5, wind: 0.4, chain: 0, dy: 1.45, ylo: 1.1, yhi: 4.3, bat: 10, tip: 'Hoch, runter, drüber, drunter' },
+    { at: 2000, n: 'Tunnelblick', c: ORG, st: [10, 20], km: [0.013, 0.02], ss: 0.4, obs: 0.45, mix: { ladder: 0.2, hoop: 0.15, dive: 0.15, over: 0.1, under: 0.1, rings: 0.3 }, mv: 0.38, mv2: 0.4, mv3: 0.35, sc: 0.78, vmax: 21.5, wind: 0.4, chain: 0.17, dy: 1.2, ylo: 1.2, yhi: 4.1, bat: 10, tip: 'Gate-Ketten: drei enge Gates direkt hintereinander' },
+    { at: 2400, n: 'Nachtflug', c: LIL, st: [10, 20], km: [0.013, 0.021], ss: 0.4, obs: 0.5, mix: { ladder: 0.2, hoop: 0.15, dive: 0.15, over: 0.1, under: 0.1, rings: 0.3 }, mv: 0.4, mv2: 0.4, mv3: 0.35, sc: 0.78, vmax: 22.5, wind: 0.3, chain: 0.12, dy: 1.2, ylo: 1.2, yhi: 4.1, bat: 8, night: 1, tip: 'Licht aus: nur die LEDs zeigen dir den Weg' },
+    { at: 2820, n: 'Pro Spec', c: RED, st: [9, 18], km: [0.014, 0.022], ss: 0.45, obs: 0.55, mix: { ladder: 0.18, hoop: 0.16, dive: 0.16, over: 0.1, under: 0.1, rings: 0.3 }, mv: 0.45, mv2: 0.4, mv3: 0.4, sc: 0.76, vmax: 23.5, wind: 0.8, chain: 0.14, dy: 1.3, ylo: 1.15, yhi: 4.2, bat: 8, tip: 'Alles zusammen, enger und schneller' },
+    { at: 3260, n: 'Weltmeister', c: GOLD, st: [8, 16], km: [0.015, 0.023], ss: 0.5, obs: 0.6, mix: { ladder: 0.18, hoop: 0.16, dive: 0.16, over: 0.1, under: 0.1, rings: 0.3 }, mv: 0.5, mv2: 0.4, mv3: 0.45, sc: 0.74, vmax: 25, wind: 1.0, chain: 0.16, dy: 1.35, ylo: 1.15, yhi: 4.2, bat: 8, tip: 'Das letzte Level: Wie weit kommst du?' }
+  ];
+  const NLV = LV.length - 1;
+  const lvlAt = (cd) => { let l = 1; while (l < NLV && cd >= LV[l + 1].at) l++; return l; };
+  const lvRgb = (l) => 'rgb(' + LV[l].c.join(',') + ')';
+  /* Tricks: reihum Flip (seitlicher Überschlag), Spin (Yaw 360) und Powerloop. p: Grundpunkte, d: Dauer (s) */
+  const TRICKS = [{ n: 'Flip', p: 100, d: 0.6 }, { n: 'Spin', p: 150, d: 0.7 }, { n: 'Powerloop', p: 250, d: 0.9 }];
+  const TRICK_CD = 1.3;                                // Abklingzeit nach dem Trick (s)
+  /* Power-ups: Akku (mehr Flugzeit), Schild (ein Fehler ohne Folgen), Punkte ×2 (10 Sekunden) */
+  const PU = { bat: { c: GRN, n: 'Akku' }, shield: { c: BLU, n: 'Schild' }, x2: { c: PINK, n: 'Punkte ×2' } };
+  const X2_T = 10;
+  const DEBUG = (() => { try { return /[?&]gamedebug\b/.test(location.search); } catch (e) { return false; } })();
+  const DEBUG_LVL = (() => { try { const m = /[?&]gamedebug=(\d+)/.exec(location.search); return m ? Math.min(NLV, Math.max(1, +m[1])) : 0; } catch (e) { return 0; } })();
   const KEYMAP = { ArrowLeft: 'l', KeyA: 'l', ArrowRight: 'r', KeyD: 'r', ArrowUp: 'u', KeyW: 'u', ArrowDown: 'd', KeyS: 'd' };
   const DEG = Math.PI / 180;
 
@@ -39,8 +74,9 @@
   const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* privat oder gesperrt */ } };
   const loadBest = () => { const v = parseInt(lsGet(BEST_KEY, 0), 10); return v > 0 ? v : 0; };
-  // Erwartetes Tempo nach cd Streckenmetern (v = 8 + 0.105 t  ->  s = 8 t + 0.0525 t²)
-  const spAt = (cd) => { const t = (-8 + Math.sqrt(64 + 0.21 * Math.max(0, cd))) / 0.105; return Math.min(VMAX, 8 + 0.105 * t); };
+  // Erwartetes Tempo nach cd Streckenmetern (v = 8 + 0.105 t  ->  s = 8 t + 0.0525 t²), höchstens das Tempo des Levels
+  const spAt = (cd) => { const t = (-8 + Math.sqrt(64 + 0.21 * Math.max(0, cd))) / 0.105; return Math.min(LV[lvlAt(cd)].vmax, 8 + 0.105 * t); };
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
   /* Tiefenscheiben der Halle (vorne dicht, hinten weit): gezeichnet wird von hinten nach vorne */
   const NSL = 22, ZS = [];
@@ -52,6 +88,15 @@
       ceil: mixc(FOGC, [10, 20, 38], a), wall: mixc(FOGC, [11, 23, 48], a), floor: mixc(FOGC, [19, 38, 72], a),
       pad: rgba([31, 73, 125], 0.62 * a), padl: rgba(BLU, 0.5 * a * a),
       st: [rgba(WHT, 0.55 * a), rgba(BLU, 0.5 * a), rgba(AMB, 0.4 * a)]
+    });
+  }
+  const SCN = [];                                       // Nachtflug: Hallenlicht aus
+  for (let i = 0; i < NSL; i++) {
+    const a = fogA((ZS[i] + ZS[i + 1]) / 2);
+    SCN.push({
+      ceil: mixc(FOGC, [5, 9, 18], a), wall: mixc(FOGC, [6, 11, 24], a), floor: mixc(FOGC, [8, 15, 30], a),
+      pad: rgba([31, 73, 125], 0.22 * a), padl: rgba(BLU, 0.18 * a * a),
+      st: [rgba(WHT, 0.16 * a), rgba(BLU, 0.16 * a), rgba(AMB, 0.12 * a)]
     });
   }
   const STRIPES = [[9.5, 0.07, 0], [6.2, 0.05, 1], [8.1, 0.05, 2]];    // Spielfeldlinien längs: x, halbe Breite, Farbe
@@ -119,9 +164,11 @@
     return Array.from(best.values()).sort((a, b) => b.s - a.s || (a.at || '9').localeCompare(b.at || '9') || a.t - b.t);
   }
   const rankOf = (list, n) => { const k = String(n || '').toLocaleLowerCase('de-DE'); if (!k) return null; for (let i = 0; i < list.length; i++) if (list[i].n.toLocaleLowerCase('de-DE') === k) return i + 1; return null; };
+  // Nur eine Vorprüfung im Browser (der Server prüft Prüfsumme, Punkte und Mindestzeit). Seit Version 3 halten
+  // Akkus länger als 100 Sekunden, und Tricks und Level-Boni bringen Punkte ohne Gate.
   function plausible(e) {
-    return e.s > 0 && e.s < 100000 && e.s % 25 === 0 && e.t >= 5 && e.t <= 100 && e.g >= 0 && e.g <= e.t * 1.3 + 3 &&
-      e.c <= e.g && e.s <= e.g * 1100 + 100;
+    return e.s > 0 && e.s < 100000 && e.s % 25 === 0 && e.t >= 5 && e.t <= 900 && e.g >= 0 && e.g <= e.t * 2 + 5 &&
+      e.c <= e.g && e.s <= e.g * 2000 + e.t * 1000 + 12000;
   }
   // SHA-1 (Hex). Im Browser über crypto.subtle, sonst kleine Ersatzfunktion.
   function sha1js(b) {
@@ -221,6 +268,8 @@
   const ICON_CENTER = SV('<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>', 18);
   const ICON_PHONE = SV('<rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/>', 14);
   const ICON_PC = SV('<rect x="2.5" y="4" width="19" height="12.5" rx="1.6"/><path d="M8.5 20.5h7M12 16.5v4"/>', 14);
+  const ICON_TRICK = SV('<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20.5 3.5v5h-5"/>', 22);
+  const ICON_SHIELD = SV('<path d="M12 2.8 4.5 5.8v5.6c0 4.6 3.2 8.2 7.5 9.8 4.3-1.6 7.5-5.2 7.5-9.8V5.8z" fill="currentColor" fill-opacity=".25"/>', 14);
 
   let UID = 0;
   const TPL = (id) => `
@@ -231,14 +280,14 @@
     <div class="fcsg-frame"><i></i></div>
     <div class="fcsg-o fcsg-tl">
       <div class="fcsg-bat"><span class="fcsg-cell"><i data-h="cell"></i></span><span data-h="volt">4.20V</span></div>
-      <div class="fcsg-lives fcsg-play"><small>LEBEN</small><span class="fcsg-pips" data-h="lives"><i></i><i></i><i></i></span></div>
+      <div class="fcsg-lives fcsg-play"><small>LEBEN</small><span class="fcsg-pips" data-h="lives"><i></i><i></i><i></i></span><span class="fcsg-shd" data-h="shd">${ICON_SHIELD}</span></div>
     </div>
-    <div class="fcsg-o fcsg-tc"><span data-h="mode">AUTOPILOT</span><span class="fcsg-lvl fcsg-play" data-h="lvl">LVL 1</span></div>
+    <div class="fcsg-o fcsg-tc"><span data-h="mode">AUTOPILOT</span><span class="fcsg-lvl fcsg-play"><span data-h="lvl">LEVEL 1</span><span class="fcsg-lvn" data-h="lvn">Jungfernflug</span></span><span class="fcsg-prog fcsg-play"><i data-h="prog"></i></span><span class="fcsg-wind" data-h="wind"></span></div>
     <div class="fcsg-o fcsg-tr">
       <div><small>FLUGZEIT</small> <span data-h="time">00:00</span></div>
       <div><span data-h="speed">0</span> <small>KM/H</small></div>
     </div>
-    <div class="fcsg-o fcsg-bl fcsg-play"><small>PUNKTE</small><b data-h="score">0</b></div>
+    <div class="fcsg-o fcsg-bl fcsg-play"><small>PUNKTE <em class="fcsg-x2" data-h="x2"></em></small><b data-h="score">0</b></div>
     <div class="fcsg-o fcsg-br fcsg-play"><small>KOMBO</small><span><b data-h="combo">0</b><em data-h="mult"></em></span></div>
     <div class="fcsg-msg" data-h="msg"></div>
     <div class="fcsg-toast" data-h="toast"></div>
@@ -249,12 +298,13 @@
     <button type="button" class="fcsg-cb fcsg-cb-t" data-a="recal" aria-label="Mitte neu ausrichten">${ICON_CENTER}<span>Mitte</span></button>
     <button type="button" class="fcsg-cb fcsg-snd" data-a="snd2" aria-label="Ton an">${ICON_SND}</button>
   </div>
+  <button type="button" class="fcsg-trick" data-a="trick" aria-label="Trick: Flip"><span class="fcsg-trick-in">${ICON_TRICK}<b data-h="tname">Flip</b></span></button>
   <p class="fcsg-hint" aria-hidden="true"><span data-h="hint">Klicken zum Mitfliegen</span></p>
   <div class="fcsg-ui fcsg-ui-start" data-p="start">
     <div class="fcsg-card">
       <p class="fcsg-kick">Mini-Spiel · Tiny Whoop</p>
       <h3 class="fcsg-title">Whoop-Rennen</h3>
-      <p class="fcsg-txt">Brille auf: Flieg durch Kurven, leuchtende Gates und an Netz, Leiter und Korb vorbei, bevor der Akku leer ist. Drei Level, eine Bestenliste.</p>
+      <p class="fcsg-txt">Brille auf: Flieg durch Kurven und leuchtende Gates, sammle Akkus und zeig Tricks, bevor der Akku leer ist. Zehn Level, eine Bestenliste.</p>
       <div class="fcsg-row">
         <button type="button" class="btn solid fcsg-go fcsg-pc" data-a="go">Scharf schalten und fliegen</button>
         <button type="button" class="btn solid fcsg-go fcsg-tilt" data-a="tilt">${ICON_PHONE}Handy kippen zum Steuern</button>
@@ -287,9 +337,11 @@
       <dl class="fcsg-stats">
         <div><dt>Gates</dt><dd data-h="fgates">0</dd></div>
         <div><dt>Kombo</dt><dd data-h="fcombo">0</dd></div>
+        <div><dt>Tricks</dt><dd data-h="ftricks">0</dd></div>
         <div><dt>Flugzeit</dt><dd data-h="ftime">00:00</dd></div>
         <div><dt>Level</dt><dd data-h="flvl">1</dd></div>
       </dl>
+      <p class="fcsg-goal" data-h="goal"></p>
      </div>
      <div class="fcsg-ov-r">
       <form class="fcsg-form" data-h="form" novalidate>
@@ -311,7 +363,7 @@
   </div>
 </div>
 <div class="fcsg-bar">
-  <p class="fcsg-keys" data-h="keys">Steuerung: Maus bewegen oder Pfeiltasten und WASD. P pausiert.</p>
+  <p class="fcsg-keys" data-h="keys">Steuerung: Maus bewegen oder Pfeiltasten und WASD. Klick, Leertaste oder T für einen Trick. P pausiert.</p>
   <div class="fcsg-btns">
     <button type="button" class="fcsg-mini fcsg-snd" data-a="snd">${ICON_SND}<span>Ton an</span></button>
   </div>
@@ -367,6 +419,12 @@
     const keys = { l: 0, r: 0, u: 0, d: 0 };
     const pops = [], parts = [], drawList = [], hits = [];
     const tilt = { have: false, raw: [0, 0], s: [0, 0], n0: [0, 0], inv: !!lsGet(INV_KEY, false), t0: 0, on: false };
+    // Version 3: Akku (verbrauchte Sekunden), Power-ups, Gate-Ketten, Tricks, Wind und Meldungen
+    let batT = 0, shield = false, x2T = 0, windNow = 0, windAmp = 0, night = 0, nightTo = 0, pus = [], puNext = 9, chainLeft = 0, chainId = 0;
+    const chainHit = {};
+    let trick = null, trickCd = 0, trickIdx = 0, tricks = 0, trickRow = 0, trickEndT = -9, demoTrickT = 5, lvBonus = 0;
+    let hintTrick = !!lsGet(TRICK_KEY, false), hintPu = !!lsGet(PU_KEY, false), recShown = false, rankShown = 0, rankT = 0;
+    let tapT = 0, tapX = 0, tapY = 0, trickReady = true, debugLvl = DEBUG_LVL, warped = false, goalLv = '', pulsed = false;
     const demoLike = () => state === 'demo' || state === 'over' || state === 'idle';
     const isLive = () => state === 'count' || state === 'play' || state === 'end';
 
@@ -390,11 +448,11 @@
       let L, k = 0;
       if (!demo && cd < EASY_AT) L = Math.max(10, EASY_AT - cd);         // die ersten Sekunden: gerade
       else {
-        const lvl = demo ? 1 : cd < L2_AT ? 1 : cd < L3_AT ? 2 : 3;
-        if (cLastCurve && !(lvl === 3 && Math.random() < 0.35)) { L = lvl === 1 ? rand(26, 44) : lvl === 2 ? rand(16, 30) : rand(10, 22); cLastCurve = false; }
+        const P = LV[demo ? 1 : lvlAt(cd)];
+        if (cLastCurve && !(Math.random() < P.ss)) { L = rand(P.st[0], P.st[1]); cLastCurve = false; }
         else {
           L = rand(24, 40);
-          const mag = demo ? rand(0.007, 0.012) : lvl === 1 ? rand(0.005, 0.009) : lvl === 2 ? rand(0.009, 0.014) : rand(0.012, 0.019);
+          const mag = demo ? rand(0.007, 0.012) : rand(P.km[0], P.km[1]);
           cLastDir = Math.random() < 0.68 ? -cLastDir : cLastDir;
           k = mag * cLastDir; cLastCurve = true;
         }
@@ -438,17 +496,25 @@
     function newGate(zw, x, y, sc, o) {
       return Object.assign({ zw, x, y, x0: x, y0: y, w: 2.7 * sc, h: 2.0 * sc, bonus: false, mv: 0, amp: 0, om: 0, ph: 0, n: ++gateN, lvl: 1, after: null, done: false, kind: 'g' }, o || {});
     }
+    function pickMix(mix) {
+      let r = Math.random(), last = null;
+      for (const k in mix) { last = k; r -= mix[k]; if (r < 0) return k; }
+      return last;
+    }
+    const batLeft = () => BAT_T - batT;
     function spawnGate() {
       const demo = demoLike();
       const prev = gates.length ? gates[gates.length - 1] : null;
       const pend = prev ? prev.after : null;
-      const zw = lastZw + 10 + (demo ? 9 : spAt(lastZw - courseStart)) * 0.6 + (pend ? 5 : 0);
+      const inChain = !demo && chainLeft > 0;              // Gate-Kette: die nächsten Gates eng dahinter
+      const sp = demo ? 9 : spAt(lastZw - courseStart);
+      const zw = lastZw + (inChain ? 6.5 + sp * 0.22 : 10 + sp * 0.6 + (pend ? 5 + Math.max(0, sp - 17.5) * 0.6 : 0));   // ab Level 4 mehr Platz um Hindernisse
       const cd = zw - courseStart;
-      const lvl = demo ? 1 : cd < L2_AT ? 1 : cd < L3_AT ? 2 : 3;
+      const lvl = demo ? 1 : lvlAt(cd), P = LV[lvl];
       const easy = !demo && cd < EASY_AT;
       const d = demo ? 0.15 : clamp(cd / 900, 0, 1);
-      const mdx = easy ? 1.8 : lerp(2.6, 5.0, d), mdy = easy ? 0.5 : lerp(0.9, 2.0, d);
-      const ylo = lvl > 1 ? 1.25 : 1.45, yhi = 3.95;
+      const mdx = inChain ? 0.7 : easy ? 1.8 : lerp(2.6, 5.0, d), mdy = inChain ? 0.3 : easy ? 0.5 : lerp(0.9, 2.0, d) * P.dy;
+      const ylo = P.ylo, yhi = P.yhi;
       let dx = rand(-1, 1) * mdx;
       if (Math.abs(dx) < mdx * 0.3) dx = (dx < 0 ? -1 : 1) * mdx * 0.3;
       if (Math.abs(lastGx + dx) > RX - 0.7) dx = -dx;
@@ -457,23 +523,28 @@
       let x = clamp(lastGx + dx, -RX + 0.7, RX - 0.7), y = clamp(lastGy + dy, ylo, yhi);
       ensureCurves(zw + 2);
       const kg = kAt(zw);                                  // in Kurven liegt das Gate auf der Innenseite
-      if (kg) x = clamp(x + Math.sign(kg) * Math.min(2, Math.abs(kg) * 130), -RX + 0.7, RX - 0.7);
-      if (pend) y = pend === 'hoop' ? rand(2.9, 3.4) : pend === 'over' ? rand(3.2, 3.8) : (pend === 'under' || pend === 'dive') ? rand(1.15, 1.3) : y;
+      if (kg && !inChain) x = clamp(x + Math.sign(kg) * Math.min(2, Math.abs(kg) * 130), -RX + 0.7, RX - 0.7);
+      if (pend) y = pend === 'hoop' ? rand(2.9, 3.4) : pend === 'over' ? rand(3.2, 3.8) : (pend === 'under' || pend === 'dive') ? rand(1.15, 1.3) : pend === 'rings' ? rand(1.3, 1.85) : y;
+      let chain = null;
+      if (inChain) { chain = { id: chainId, i: 3 - chainLeft }; chainLeft--; }
       let after = null;                                    // Hindernis in der Lücke nach diesem Gate
-      if (!demo && lvl >= 2 && !pend && gateN > 1 && Math.random() < (lvl === 2 ? 0.36 : 0.5)) {
-        const r = Math.random();
-        after = lvl === 2 ? (r < 0.5 ? 'ladder' : r < 0.75 ? 'over' : 'under') : (r < 0.3 ? 'ladder' : r < 0.55 ? 'hoop' : r < 0.75 ? 'dive' : r < 0.88 ? 'over' : 'under');
+      if (!demo && !inChain && lvl >= 2 && !pend && gateN > 1 && Math.random() < P.obs) {
+        after = pickMix(P.mix);
         if (after === 'over' || after === 'dive') y = rand(3.3, 3.8);
         else if (after === 'under') y = rand(1.15, 1.3);
         else if (after === 'hoop') y = rand(2.9, 3.4);
+        else if (after === 'rings') y = rand(1.3, 1.85);    // Turnringe: unten durch oder seitlich vorbei
       }
-      const bonus = !demo && !easy && gateN > 2 && !after && !pend && Math.random() < 0.16;
+      if (!chain && !after && !pend && !easy && !demo && P.chain && gateN > 2 && Math.random() < P.chain) { chainId++; chain = { id: chainId, i: 0 }; chainLeft = 2; }
+      const bonus = !demo && !easy && gateN > 2 && !after && !pend && !chain && Math.random() < 0.16;
       let mv = 0;
-      if (!demo && !bonus && !after && !pend && lvl >= 2 && Math.random() < (lvl === 2 ? 0.22 : 0.34)) mv = lvl === 3 && Math.random() < 0.4 ? 2 : 1;
-      const sc = (easy ? 1.08 : 1 - 0.12 * d) * (lvl === 3 ? 0.86 : 1) * (bonus ? 0.84 : 1);
-      const g = newGate(zw, x, y, sc, { bonus, mv, lvl, after, ph: rand(0, 6.28) });
-      if (mv === 1) { g.amp = lvl === 2 ? rand(0.7, 1.2) : rand(0.9, 1.5); g.om = lvl === 2 ? rand(1.0, 1.4) : rand(1.1, 1.5); g.x0 = clamp(x, -(RX - 0.5 - g.amp), RX - 0.5 - g.amp); }
-      if (mv === 2) { g.amp = rand(0.5, 0.8); g.om = rand(1.3, 1.8); g.y0 = clamp(y, 1.35 + g.amp, 3.9 - g.amp); }
+      if (!demo && !bonus && !after && !pend && !chain && Math.random() < P.mv) { const r = Math.random(); mv = r < P.mv3 ? 3 : r < P.mv3 + (1 - P.mv3) * P.mv2 ? 2 : 1; }
+      const sc = Math.max(0.6, (easy ? 1.08 : 1 - 0.12 * d) * P.sc * (bonus ? 0.84 : 1) * (chain ? 0.92 : 1));
+      const g = newGate(zw, x, y, sc, { bonus, mv, lvl, after, chain, ph: rand(0, 6.28) });
+      const hard = Math.max(0, lvl - 3);
+      if (mv === 1) { g.amp = lvl === 2 ? rand(0.7, 1.2) : rand(0.9, 1.5 + hard * 0.05); g.om = lvl === 2 ? rand(1.0, 1.4) : rand(1.1, 1.5) + hard * 0.05; g.x0 = clamp(x, -(RX - 0.5 - g.amp), RX - 0.5 - g.amp); }
+      if (mv === 2) { g.amp = rand(0.5, 0.8); g.om = rand(1.3, 1.8) + hard * 0.04; g.y0 = clamp(y, 1.35 + g.amp, 3.9 - g.amp); }
+      if (mv === 3) { g.amp = rand(0.8, 1.25); g.ampY = rand(0.4, 0.65); g.om = rand(1.0, 1.4) + hard * 0.04; g.x0 = clamp(x, -(RX - 0.5 - g.amp), RX - 0.5 - g.amp); g.y0 = clamp(y, 1.35 + g.ampY, 3.9 - g.ampY); }
       g.x = g.x0; g.y = g.y0;
       gates.push(g);
       if (pend && prev) {
@@ -481,15 +552,29 @@
         let o;
         if (pend === 'ladder') o = { type: 'ladder', x: ox, x0: ox - 0.5, x1: ox + 0.5, y0: 0, y1: 3.05 };
         else if (pend === 'hoop') o = { type: 'hoop', x: ox, x0: ox - 0.9, x1: ox + 0.9, y0: 2.55, y1: 3.75 };
-        else o = { type: 'net', x: 0, x0: -HW, x1: HW, y0: 1.55, y1: 2.45, hint: pend === 'under' ? '▼ DRUNTER' : '▲ DRÜBER' };
+        else if (pend === 'rings') {                       // Turnringe an Seilen, schwingen quer zur Flugrichtung
+          const A = rand(1.1, 1.6) + hard * 0.05, ax = clamp(ox, -(HW - 1.4 - A), HW - 1.4 - A);
+          o = { type: 'rings', x: ax, ax, amp: A, om: rand(1.1, 1.5), ph: rand(0, 6.28), ry: rand(2.45, 2.7), x0: ax - 0.45, x1: ax + 0.45, y0: 2.2, y1: HH };
+        } else o = { type: 'net', x: 0, x0: -HW, x1: HW, y0: 1.55, y1: 2.45, hint: pend === 'under' ? '▼ DRUNTER' : '▲ DRÜBER' };
         o.zw = oz; o.done = false; o.kind = 'o';
         obs.push(o);
+      }
+      // Power-up in der Lücke vor diesem Gate: selten, leicht neben der Ideallinie
+      if (!demo && !easy && prev && !pend && !inChain && --puNext <= 0) {
+        puNext = 8 + ((Math.random() * 5) | 0);
+        const low = batLeft() < BAT_T * 0.4, r = Math.random();
+        let type = r < (low ? 0.6 : 0.4) ? 'bat' : r < (low ? 0.8 : 0.7) ? 'shield' : 'x2';
+        if (type === 'shield' && shield) type = r < 0.75 ? 'x2' : 'bat';
+        const side = Math.random() < 0.5 ? -1 : 1, off = lerp(0.45, 1.25, clamp((lvl - 1) / 6, 0, 1));
+        const px = clamp(lerp(prev.x0, g.x0, 0.5) + side * off, -RX + 0.6, RX - 0.6);
+        const py = clamp(lerp(prev.y0, g.y0, 0.5) + rand(-0.3, 0.3), 1.2, 4.1);
+        pus.push({ kind: 'p', type, zw: lerp(prev.zw, zw, 0.5), x: px, y: py, done: false, ph: rand(0, 6.28) });
       }
       lastZw = zw; lastGx = g.x0; lastGy = g.y0;
     }
     function fillCourse() { while (lastZw - dist < ZF + 6) spawnGate(); }
     function resetCourse(ahead) {
-      gates = []; obs = []; gateN = 0;
+      gates = []; obs = []; pus = []; gateN = 0; chainLeft = 0;
       lastZw = dist + ahead; lastGx = clamp(cx * 0.6, -2.5, 2.5); lastGy = clamp(cy, 1.8, 3.4);
       gates.push(newGate(lastZw, lastGx, lastGy, demoLike() ? 1 : 1.08));
       fillCourse();
@@ -522,12 +607,16 @@
         state = 'count';                      // vor dem Streckenbau: sonst entstünde noch eine Demo-Strecke
         score = 0; combo = 0; bestCombo = 0; lives = 3; passed = 0; flightT = 0; volt = 4.2; sag = 0; curLvl = 1; near = 0;
         crashT = 0; missT = 0; endReason = ''; pops.length = 0; hits.length = 0; submitted = false; runData = null;
+        batT = 0; shield = false; x2T = 0; puNext = 9; chainLeft = 0; trick = null; trickCd = 0; trickIdx = 0; tricks = 0; trickRow = 0;
+        lvBonus = 0; recShown = false; rankShown = 0; rankT = 0; nightTo = 0; night = 0; trickReady = true; warped = false; windAmp = 0;
+        for (const k in chainHit) delete chainHit[k];
+        setLvlColor(1);
         glitchT = rm ? 0 : 0.32;              // kurzer Kanalwechsel, wie beim Umschalten der Brille
         resetTrackAhead(dist + 2); courseStart = dist + 2;
         resetCourse(20); tx = cx; ty = cy;
         if (mode === 'tilt') { tilt.have = false; tilt.t0 = clock; toast('Halte das Handy bequem. So ist die Mitte.', 2.4); }
         else if (mode === 'touch') toast('Zieh mit dem Finger über das Bild.', 2.2);
-        say('Startsequenz. ' + modeText() + ' Drei Leben, drei Level, der Akku hält 90 Sekunden.');
+        say('Startsequenz. ' + modeText() + ' Drei Leben, zehn Level, der Akku hält 90 Sekunden. Akku-Symbole verlängern den Flug. ' + (mob ? 'Der Trick-Knopf' : 'Klick, Leertaste oder T') + ' zeigt einen Trick.');
         loadBoard();                          // erste Runde: Online-Bestenliste holen (Klick des Nutzers)
       }
       listenTilt(mode === 'tilt');
@@ -552,6 +641,7 @@
     function pause(why) {
       if (!(state === 'count' || state === 'play')) return;
       state = 'pause'; keys.l = keys.r = keys.u = keys.d = 0; touchId = null; msgT = 0; H_.msg.className = 'fcsg-msg';
+      if (trick) { trick = null; camA = 0; trickCd = 0; }
       H_.ptxt.textContent = why || (mode === 'tilt' ? 'Beim Weiterfliegen zählt es kurz herunter. Halte das Handy dann bequem: diese Haltung wird die neue Mitte.' : 'Dein Whoop schwebt und wartet. Akku und Punkte bleiben, wie sie sind.');
       setUI(); stopLoop(); if (W) { render(); hud(); }
       say('Pause. Weiterfliegen mit dem Knopf' + (mob ? '.' : ' oder der Taste P.'));
@@ -559,6 +649,7 @@
     function endGame(reason) {
       if (state === 'end' || state === 'over') return;
       state = 'end'; endReason = reason; endT = reason === 'bat' ? 2.0 : 1.5;
+      trick = null; camA = 0; x2T = 0;
       if (reason === 'lives') crashT = 1.5;
       msgT = 0; H_.msg.className = 'fcsg-msg'; pops.length = 0;
       setUI();
@@ -567,17 +658,25 @@
     function showOver() {
       state = 'over';
       exitFull(); listenTilt(false);
-      const isBest = score > best;
+      nightTo = 0; trick = null; trickCd = 0; toastT = 0; H_.toast.className = 'fcsg-toast';
+      const isBest = score > best && !warped;               // Testflüge mit Abkürzung zählen nicht als Bestwert
       if (isBest) { best = score; lsSet(BEST_KEY, best); }
       runData = { score, gates: passed, combo: bestCombo, time: Math.round(flightT), device: mode === 'mouse' ? 'p' : 'm' };
       H_.why.textContent = endReason === 'bat' ? 'LAND NOW · Akku leer' : endReason === 'quit' ? 'Gelandet · Runde beendet' : 'SIGNAL LOST · keine Leben mehr';
       H_.fscore.textContent = num(score); H_.fgates.textContent = String(passed);
       H_.fcombo.textContent = String(bestCombo); H_.ftime.textContent = mmss(flightT); H_.flvl.textContent = String(curLvl);
+      H_.ftricks.textContent = String(tricks);
       H_.newbest.hidden = !isBest; showBest();
+      // Ansporn: erreichtes Level, nächstes Ziel und Abstand zum nächsten Platz (nur aus der schon geladenen Liste)
+      const lvT = 'Level\u00a0' + curLvl + '\u00a0· ' + LV[curLvl].n + (curLvl < NLV ? '. Nächstes Ziel: Level\u00a0' + (curLvl + 1) + '\u00a0· ' + LV[curLvl + 1].n + '.' : '. Das ist das letzte Level!');
+      const ahead = Scores.cached().filter((e) => e.s > score);
+      const rk = ahead.length + 1, gap = ahead.length ? ahead[ahead.length - 1].s - score : 0;
+      goalLv = lvT;
+      H_.goal.textContent = lvT + (score > 0 ? (rk === 1 ? ' Das reicht für Platz 1!' : rk <= 10 ? ' Das reicht für Platz ' + rk + '. Bis Platz ' + (rk - 1) + ' fehlen ' + num(gap) + ' Punkte.' : ' Bis Platz 10 fehlen ' + num(ahead[9].s - score) + ' Punkte.') : '');
       // Namensfeld nur mit gültigem Ergebnis (Punkte und mindestens 5 Sekunden)
-      const ok = score > 0 && runData.time >= 5;
+      const ok = score > 0 && runData.time >= 5 && !warped;
       H_.form.hidden = !ok; H_.placed.hidden = ok;
-      H_.placed.textContent = ok ? '' : 'Für die Bestenliste brauchst du Punkte und mindestens 5 Sekunden Flug.';
+      H_.placed.textContent = ok ? '' : warped ? 'Testflug mit Abkürzung: kein Eintrag in die Bestenliste.' : 'Für die Bestenliste brauchst du Punkte und mindestens 5 Sekunden Flug.';
       H_.fmsg.textContent = ''; H_.send.disabled = false; H_.send.textContent = 'Speichern';
       if (ok && !H_.name.value) H_.name.value = Scores.lastName();
       A_.again.className = ok ? 'btn' : 'btn solid';
@@ -600,60 +699,212 @@
       else if (dx < g.w / 2 + 0.26 + r && dy < g.h / 2 + 0.26 + r) { hits.push({ t: 'rahmen', mv: g.mv, w: +g.w.toFixed(2), dx: +(cx - g.x).toFixed(2), dy: +(cy - g.y).toFixed(2), k: +kNow.toFixed(3) }); crash('gate'); }
       else { hits.push({ t: 'verpasst', mv: g.mv, w: +g.w.toFixed(2), dx: +(cx - g.x).toFixed(2), dy: +(cy - g.y).toFixed(2), k: +kNow.toFixed(3) }); miss(); }
     }
+    // Turnringe: Seile vom Deckenhaken zu den schwingenden Ringen. Abstand des Whoops zu Ringen und Seilen (m)
+    function ringGap(o) {
+      const rx = o.ax + Math.sin(clock * o.om + o.ph) * o.amp;
+      if (cy < o.ry - 0.3) return Math.max(o.ry - 0.3 - cy, Math.abs(cx - rx) - 0.45);
+      const ropeX = lerp(rx, o.ax, clamp((cy - o.ry) / (HH - o.ry), 0, 1));
+      return Math.abs(cx - ropeX) - 0.45;
+    }
     function judgeObs(o) {
       if (state !== 'play' || crashT > 0) return;
-      const ddx = Math.max(o.x0 - cx, 0, cx - o.x1), ddy = Math.max(o.y0 - cy, 0, cy - o.y1), dd = Math.hypot(ddx, ddy);
+      let dd;
+      if (o.type === 'rings') dd = Math.max(0, ringGap(o));
+      else { const ddx = Math.max(o.x0 - cx, 0, cx - o.x1), ddy = Math.max(o.y0 - cy, 0, cy - o.y1); dd = Math.hypot(ddx, ddy); }
       if (dd < 0.13) { hits.push({ t: o.type, x: +(cx - o.x).toFixed(2), y: +cy.toFixed(2) }); crash('obs'); return; }
       if (dd < 0.5) {                                    // knapp vorbei: kleiner Bonus
-        const mult = curMult(); near++;
-        score += 25 * mult;
-        pops.push({ txt: '+' + 25 * mult, sub: 'KNAPP!', col: WHT, t: 0 }); if (pops.length > 3) pops.shift();
+        const p = addPts(25 * curMult()); near++;
+        pops.push({ txt: '+' + p, sub: 'KNAPP!', col: WHT, t: 0 }); if (pops.length > 3) pops.shift();
         beep(2400, 0.06, 'triangle', 0.12, 3000);
       }
     }
     const curMult = () => Math.min(4, 1 + Math.floor(Math.max(0, combo - 1) / 3));
+    // Punkte gutschreiben: Power-up ×2 verdoppelt, nie über das Maximum des Servers
+    function addPts(p, noX2) {
+      const v2 = p * (x2T > 0 && !noX2 ? 2 : 1);
+      score = Math.min(MAX_S, score + v2);
+      checkRecord();
+      return v2;
+    }
+    function checkRecord() {
+      if (state !== 'play') return;
+      if (!recShown && best > 0 && score > best) {
+        recShown = true; msg('NEUER REKORD', 'rec', 1.4); flash(GOLD, 0.9);
+        beep(1046, 0.09, 'square', 0.1); beep(1318, 0.09, 'square', 0.1, 0, 0.1); beep(1568, 0.09, 'square', 0.1, 0, 0.2); beep(2093, 0.22, 'square', 0.1, 0, 0.3);
+        say('Neuer Rekord!');
+      }
+      if (clock - rankT < 1.2) return;                    // Platz in der Bestenliste (nur die schon geladene Liste)
+      rankT = clock;
+      const list = Scores.cached(); if (!list.length) return;
+      let rk = 1; for (let i = 0; i < list.length; i++) if (list[i].s > score) rk++;
+      if (!rankShown) rankShown = list.length + 1;       // zu Beginn hinter allen
+      if (rk < rankShown) {
+        rankShown = rk;
+        if (rk <= 10) { toast(rk === 1 ? 'Platz 1 der Bestenliste!' : 'Platz ' + rk + ' der Bestenliste erreicht', 1.8); say('Platz ' + rk + ' der Bestenliste.'); }
+      }
+    }
     function pass(g, off) {
       combo++; passed++; if (combo > bestCombo) bestCombo = combo;
       const mult = curMult();
       const prevMult = Math.min(4, 1 + Math.floor(Math.max(0, combo - 2) / 3));
       const perfect = off < 0.4;
-      const pts = (g.bonus ? 200 : g.mv ? 150 : 100) * mult + (perfect ? 50 * mult : 0);
-      score += pts;
-      let sub = perfect ? 'PERFEKT' : g.bonus ? 'BONUS-GATE' : g.mv ? 'WACKEL-GATE' : '';
+      let pts = addPts((g.bonus ? 200 : g.mv ? 150 : 100) * mult + (perfect ? 50 * mult : 0));
+      let sub = perfect ? 'PERFEKT' : g.bonus ? 'BONUS-GATE' : g.mv === 3 ? 'KREIS-GATE' : g.mv ? 'WACKEL-GATE' : g.chain ? 'TUNNEL ' + (g.chain.i + 1) + '/3' : '';
+      if (g.chain) {                                     // Gate-Kette: alle drei geschafft?
+        chainHit[g.chain.id] = (chainHit[g.chain.id] || 0) + 1;
+        if (g.chain.i === 2 && chainHit[g.chain.id] === 3) { pts += addPts(300 * mult); sub = 'TUNNEL KOMPLETT'; }
+      }
+      if (trick) trick.gate = true;                       // Trick durchs Gate: Extra beim Landen
       if (mult > prevMult) sub = (sub ? sub + ' · ' : '') + 'KOMBO ×' + mult;
+      if (x2T > 0) sub = (sub ? sub + ' · ' : '') + '×2';
       const col = g.bonus ? AMB : g.mv ? VIO : SIG;
       pops.push({ txt: '+' + pts, sub, col, t: 0 }); if (pops.length > 3) pops.shift();
       flash(col, perfect ? 0.95 : 0.65);
       sfxGate(perfect || g.bonus || g.mv);
+      if (!hintTrick && passed === 2) {                   // erster Hinweis auf Tricks, einmal pro Gerät
+        hintTrick = true; lsSet(TRICK_KEY, true);
+        toast(mode === 'mouse' ? 'Klick oder Leertaste für einen Trick' : mode === 'tilt' ? 'Tipp aufs Bild für einen Trick' : 'Tipp auf den Trick-Knopf für einen Trick', 3.2);
+        pulseTrick();
+      }
+    }
+    // Schild fängt einen Fehler ab: kein Leben weg, Kombo bleibt
+    function useShield() {
+      if (!shield) return false;
+      shield = false; flash(BLU, 1);
+      pops.push({ txt: 'SCHILD', sub: 'HÄLT · KEIN LEBEN WEG', col: BLU, t: 0 }); if (pops.length > 3) pops.shift();
+      beep(520, 0.12, 'sine', 0.18, 1040);
+      say('Das Schild hat dich gerettet.');
+      return true;
+    }
+    function failTrick() { if (trick) { trick.fail = true; trickRow = 0; } }
+    function glow(el) { if (!el || rm) return; el.classList.remove('is-glow'); void el.offsetWidth; el.classList.add('is-glow'); }
+    function collect(p) {
+      const P = PU[p.type];
+      let txt, sub, el, s2;
+      if (p.type === 'bat') {
+        const s = LV[curLvl].bat, got = Math.round(Math.min(s, batT));
+        batT = Math.max(0, batT - s);
+        txt = got >= 1 ? '+' + got + ' SEKUNDEN' : 'AKKU VOLL'; sub = 'AKKU'; el = H_.cell.parentNode.parentNode;
+        s2 = got >= 1 ? 'Akku: ' + got + ' Sekunden mehr Flugzeit.' : 'Akku ist schon voll.';
+      } else if (p.type === 'shield') {
+        shield = true; txt = 'SCHILD'; sub = 'EIN FEHLER OHNE FOLGEN'; el = H_.shd; s2 = 'Schild: Der nächste Fehler kostet kein Leben.';
+      } else {
+        x2T = X2_T; txt = 'PUNKTE ×2'; sub = X2_T + ' SEKUNDEN'; el = H_.x2; s2 = 'Punkte mal zwei für ' + X2_T + ' Sekunden.';
+      }
+      const pts = addPts(100);
+      pops.push({ txt, sub: sub + ' · +' + pts, col: P.c, t: 0 }); if (pops.length > 3) pops.shift();
+      flash(P.c, 1); glow(el);
+      beep(660, 0.08, 'sine', 0.2, 990); beep(990, 0.08, 'sine', 0.18, 1480, 0.08); beep(1480, 0.16, 'sine', 0.16, 1980, 0.16);
+      say(s2);
     }
     function crash(kind) {
-      lives--; combo = 0; crashT = 0.95; shake = 1; v *= 0.15; vx *= -0.5; vy *= -0.5;
+      failTrick();
+      const saved = useShield();
+      if (!saved) { lives--; combo = 0; }
+      crashT = 0.95; shake = 1; v *= 0.15; vx *= -0.5; vy *= -0.5;
       gates = gates.filter((g) => g.done || g.zw - dist > 10);     // freie Bahn nach dem Absturz
       obs = obs.filter((o) => o.done || o.zw - dist > 10);
+      pus = pus.filter((p) => p.done || p.zw - dist > 10);
       sfxCrash();
-      if (lives <= 0) endGame('lives'); else say((kind === 'obs' ? 'Hindernis getroffen.' : 'Absturz.') + ' Noch ' + lives + ' Leben.');
+      if (lives <= 0) endGame('lives'); else if (!saved) say((kind === 'obs' ? 'Hindernis getroffen.' : 'Absturz.') + ' Noch ' + lives + ' Leben.');
     }
     function miss() {
+      failTrick();
+      if (useShield()) { missT = 0.5; return; }
       lives--; combo = 0; missT = 1.0; flash(RED, 0.9); sfxMiss();
       if (lives <= 0) endGame('lives'); else say('Gate verpasst. Noch ' + lives + ' Leben.');
     }
+    function setLvlColor(l) {
+      host.style.setProperty('--lc', lvRgb(l));
+      if (full) full.wrap.style.setProperty('--lc', lvRgb(l));
+    }
     function levelUp(l) {
+      const from = curLvl;
       curLvl = l;
-      msg('LEVEL ' + l, 'lvl', 1.5);
-      toast(l === 2 ? 'Kurven, Netze, Leitern und Wackel-Gates' : 'Enge Gates, Körbe und mehr Tempo', 2.6);
-      flash(AMB, 0.8);
+      setLvlColor(l);
+      let bonus = 0;
+      for (let i = from + 1; i <= l; i++) bonus += 250 * (i - 1);
+      if (bonus && state === 'play') { addPts(bonus, true); lvBonus += bonus; }
+      msg('LEVEL ' + l, 'lvl', 1.7, LV[l].n);
+      toast(LV[l].tip + (bonus ? ' · +' + num(bonus) + ' Punkte' : ''), 2.8);
+      flash(LV[l].c, 0.85);
+      const wasNight = nightTo;
+      nightTo = LV[l].night ? 1 : 0;
+      if (nightTo !== wasNight && !rm) glitchT = 0.28;        // Licht geht aus oder wieder an
       beep(880, 0.1, 'square', 0.12); beep(1320, 0.1, 'square', 0.12, 0, 0.11); beep(1760, 0.2, 'square', 0.12, 0, 0.22);
-      say('Level ' + l + '.');
+      say('Level ' + l + ': ' + LV[l].n + '. ' + LV[l].tip + '.' + (bonus ? ' Bonus ' + bonus + ' Punkte.' : ''));
     }
     function flash(c, a) { flashC = c; flashA = a; flashT = 1; }
-    function msg(text, extra, dur) {
+    function msg(text, extra, dur, sub) {
       H_.msg.textContent = text;
+      if (sub) { const s = document.createElement('small'); s.textContent = sub; H_.msg.appendChild(s); }
       H_.msg.className = 'fcsg-msg ' + (extra || '');
       void H_.msg.offsetWidth;                     // Animation neu starten
       H_.msg.className = 'fcsg-msg on pop ' + (extra || '');
       msgT = dur || 0.6;
     }
     function toast(text, dur) { H_.toast.textContent = text; H_.toast.className = 'fcsg-toast on'; toastT = dur || 2; }
+
+    /* ---------- Tricks: Flip, Spin, Powerloop (reihum) ---------- */
+    let camA = 0, cam = null;                       // Trick-Kamera: Sichtbarkeit und zuletzt gezeigter Trick
+    function pulseTrick() {
+      const b = A_.trick; b.classList.remove('is-pulse'); void b.offsetWidth; b.classList.add('is-pulse');
+    }
+    function trickLabel() {
+      const n = TRICKS[trickIdx].n;
+      if (hc.tname !== n) { hc.tname = n; H_.tname.textContent = n; A_.trick.setAttribute('aria-label', 'Trick: ' + n); }
+    }
+    function doTrick(auto) {
+      if (trick || trickCd > 0) return false;
+      if (auto ? state !== 'demo' : state !== 'play') return false;
+      const T = TRICKS[trickIdx];
+      trick = { i: trickIdx, t: 0, d: T.d, gate: false, fail: !auto && crashT > 0, auto: !!auto, dir: Math.random() < 0.5 ? -1 : 1, ok: false };
+      cam = trick;
+      trickIdx = (trickIdx + 1) % TRICKS.length;
+      trickCd = T.d + (auto ? 0 : TRICK_CD);
+      trickLabel();
+      beep(260, T.d * 0.9, 'sawtooth', 0.05, 900);
+      return true;
+    }
+    function landTrick() {
+      const tr = trick, T = TRICKS[tr.i];
+      trick = null;
+      if (tr.auto) { tr.ok = true; return; }
+      if (tr.fail || state !== 'play') {
+        trickRow = 0;
+        pops.push({ txt: 'VERPATZT', sub: T.n.toUpperCase() + ' OHNE PUNKTE', col: RED, t: 0 }); if (pops.length > 3) pops.shift();
+        trickEndT = clock; return;
+      }
+      tricks++; tr.ok = true;
+      trickRow = clock - trickEndT < 2.6 ? trickRow + 1 : 1;
+      trickEndT = clock;
+      const mult = curMult();
+      let base = T.p * mult, sub = T.n.toUpperCase();
+      if (tr.gate) { base += 100 * mult; sub += ' DURCHS GATE'; }
+      if (trickRow > 1) { base += 50 * Math.min(4, trickRow - 1) * mult; sub += ' · TRICK-KETTE ' + trickRow; }
+      const p = addPts(base);
+      if (x2T > 0) sub += ' · ×2';
+      pops.push({ txt: '+' + p, sub, col: LV[curLvl].c, t: 0 }); if (pops.length > 3) pops.shift();
+      flash(LV[curLvl].c, 0.55);
+      beep(1568, 0.07, 'triangle', 0.14); beep(2349, 0.12, 'triangle', 0.12, 0, 0.07);
+      say(T.n + ' gestanden. Plus ' + p + ' Punkte.');
+    }
+    function stepTrick(dt) {
+      if (trickCd > 0) trickCd = Math.max(0, trickCd - dt);
+      if (trick) { trick.t += dt; if (trick.t >= trick.d) landTrick(); }
+      if (state === 'demo' && !rm) {                   // Selbst-Impuls: der Autopilot zeigt ab und zu einen Trick
+        demoTrickT -= dt;
+        const g = nextGate();
+        if (demoTrickT <= 0 && (!g || g.zw - dist > 9) && Math.abs(kAhead) < 0.008) { if (doTrick(true)) demoTrickT = rand(6, 9); }
+      }
+      if (trick) camA = Math.min(1, camA + dt * 8); else if (camA > 0) camA = Math.max(0, camA - dt * 2.2);
+      const ready = !trick && trickCd <= 0;
+      if (ready !== trickReady) {
+        trickReady = ready;
+        A_.trick.classList.toggle('is-cd', !ready);
+        if (ready && state === 'play' && !rm) { A_.trick.classList.remove('is-ready'); void A_.trick.offsetWidth; A_.trick.classList.add('is-ready'); }
+      }
+    }
 
     /* ---------- Steuerung ---------- */
     function setMode(m) {
@@ -666,9 +917,9 @@
       if (isLive() || state === 'pause') listenTilt(m === 'tilt');
     }
     function keysText() {
-      if (mode === 'tilt') return 'Steuerung: Handy kippen. Oben zu dir kippen heißt steigen. Die Haltung beim Herunterzählen ist die Mitte, der Knopf „Mitte“ setzt sie neu.';
-      if (mob) return 'Am Handy: kippen oder mit dem Finger über das Bild ziehen. Während des Flugs füllt das Spiel den Bildschirm.';
-      return 'Steuerung: Maus bewegen oder Pfeiltasten und WASD. P pausiert.';
+      if (mode === 'tilt') return 'Steuerung: Handy kippen. Oben zu dir kippen heißt steigen. Die Haltung beim Herunterzählen ist die Mitte, der Knopf „Mitte“ setzt sie neu. Tippen aufs Bild oder auf ↻ zeigt einen Trick.';
+      if (mob) return 'Am Handy: kippen oder mit dem Finger über das Bild ziehen. Der Knopf ↻ oder ein Doppeltipp zeigt einen Trick. Während des Flugs füllt das Spiel den Bildschirm.';
+      return 'Steuerung: Maus bewegen oder Pfeiltasten und WASD. Klick, Leertaste oder T für einen Trick. P pausiert.';
     }
     const modeText = () => (mode === 'tilt' ? 'Steuern durch Kippen des Handys.' : mode === 'touch' ? 'Steuern mit dem Finger.' : 'Steuern mit Maus oder Pfeiltasten.');
     function autopilot() {
@@ -677,8 +928,9 @@
       const Kc = demoLike() ? 9 : 17, ff = kNow * v * v * CF / Kc;           // Fliehkraft vorhalten
       let gx = g.x, gy = g.y;
       if (g.mv) {                                       // bewegliches Gate: dorthin, wo es beim Durchflug sein wird
-        const o2 = Math.sin(g.om * (clock + (g.zw - dist) / Math.max(v, 2)) + g.ph) * g.amp;
-        if (g.mv === 1) gx = g.x0 + o2; else gy = g.y0 + o2;
+        const ph2 = g.om * (clock + (g.zw - dist) / Math.max(v, 2)) + g.ph, o2 = Math.sin(ph2) * g.amp;
+        if (g.mv === 1) gx = g.x0 + o2; else if (g.mv === 2) gy = g.y0 + o2;
+        else { gx = g.x0 + Math.cos(ph2) * g.amp; gy = g.y0 + Math.sin(ph2) * g.ampY; }
       }
       const o = nextObs(g.zw);
       if (o) {                                          // Hindernis vor dem Gate: einmal entscheiden, dann ausweichen
@@ -686,16 +938,20 @@
           const fr = clamp((o.zw - dist) / Math.max(0.5, g.zw - dist), 0, 1);
           const px = lerp(cx, g.x, fr), py = lerp(cy, g.y, fr), m = 0.45;
           o.dg = { x: null, y: null };
-          if (px > o.x0 - m && px < o.x1 + m && py > o.y0 - m && py < o.y1 + m) {
-            if (o.type === 'net') o.dg.y = g.y > 2 ? o.y1 + 0.55 : o.y0 - 0.45;
+          if (o.type === 'rings') o.dg.y = Math.min(gy, o.ry - 0.75);   // unter den schwingenden Ringen durch
+          else if (px > o.x0 - m && px < o.x1 + m && py > o.y0 - m && py < o.y1 + m) {
+            if (o.type === 'net') o.dg.y = py > (o.y0 + o.y1) / 2 ? o.y1 + 0.55 : o.y0 - 0.45;
             else if (o.type === 'hoop') o.dg.y = o.y0 - 0.6;
             else o.dg.x = Math.abs(px - (o.x0 - 0.8)) < Math.abs(px - (o.x1 + 0.8)) ? o.x0 - 0.8 : o.x1 + 0.8;
           }
         }
         if (o.dg.x != null) gx = o.dg.x;
         if (o.dg.y != null) gy = o.dg.y;
+      } else if (assist && state === 'play') {          // nur im Test: Power-up auf dem Weg mitnehmen
+        for (let i = 0; i < pus.length; i++) { const p = pus[i]; if (!p.done && p.zw > dist + 0.3 && p.zw < g.zw) { gx = p.x; gy = p.y; break; } }
       }
-      tx = clamp(gx + ff + Math.sin(clock * 0.8) * 0.12, -RX - 1, RX + 1); ty = gy + Math.sin(clock * 1.3) * 0.08;
+      const wc = windNow * 0.9;                         // Seitenwind vorhalten
+      tx = clamp(gx + ff - wc + Math.sin(clock * 0.8) * 0.12, -RX - 1, RX + 1); ty = gy + Math.sin(clock * 1.3) * 0.08;
     }
     function steerKeys(dt) {
       const kx = keys.r - keys.l, ky = keys.u - keys.d;
@@ -797,14 +1053,20 @@
 
       if (auto) vTarget = 9;
       else if (state === 'count' || state === 'end') vTarget = 0;
-      else if (state === 'play') vTarget = crashT > 0 ? 0 : Math.min(VMAX, 8 + flightT * 0.105);
+      else if (state === 'play') vTarget = crashT > 0 ? 0 : Math.min(LV[curLvl].vmax, 8 + flightT * 0.105);
       v += (vTarget - v) * Math.min(1, dt * (vTarget > v ? 1.7 : 2.6));
       dist += v * dt;
       fX0 = trAt(tkX, dist); fS0 = trAt(tkS, dist);
 
+      // Seitenwind ab Level 4: langsame Böen, die mal links, mal rechts drücken
+      const wTarget = (state === 'play' || state === 'end') && !auto ? LV[curLvl].wind : 0;
+      windAmp += (wTarget - windAmp) * Math.min(1, dt * 0.6);
+      windNow = windAmp * (0.75 * Math.sin(clock * 0.33 + 1.7) + 0.25 * Math.sin(clock * 1.07));
+      night += (nightTo - night) * Math.min(1, dt * 4);
+
       // Feder mit Dämpfung: der Whoop folgt dem Ziel weich und mit Trägheit, Kurven drücken nach außen
       const K = auto ? 9 : 17, Dm = auto ? 5.4 : 7.2;
-      const ax = K * (tx - cx) - Dm * vx - kNow * v * v * CF, ay = K * (ty - cy) - Dm * vy;
+      const ax = K * (tx - cx) - Dm * vx - kNow * v * v * CF + windNow * K * 0.9, ay = K * (ty - cy) - Dm * vy;
       vx += ax * dt; vy += ay * dt;
       cx = clamp(cx + vx * dt, -HW + 0.8, HW - 0.8);
       cy = clamp(cy + vy * dt, 0.25, HH - 0.7);
@@ -815,11 +1077,13 @@
       for (let z = 14; z <= 40; z += 13) { const k = kAt(dist + z); if (Math.abs(k) > Math.abs(ka)) ka = k; }
       kAhead = ka;
 
-      for (let i = 0; i < parts.length; i++) { const p = parts[i]; p.z -= v * dt; if (p.z < ZN + 0.2) newPart(p, true); }
+      const pdx = windNow * 3 * dt;                      // Staub treibt mit dem Wind
+      for (let i = 0; i < parts.length; i++) { const p = parts[i]; p.z -= v * dt; p.x += pdx; if (p.z < ZN + 0.2 || Math.abs(p.x) > HW) newPart(p, true); }
       for (let i = 0; i < gates.length; i++) {
         const g = gates[i]; if (g.done || !g.mv) continue;
-        const o = Math.sin(clock * g.om + g.ph) * g.amp;
-        if (g.mv === 1) g.x = g.x0 + o; else g.y = g.y0 + o;
+        const ph = clock * g.om + g.ph, o = Math.sin(ph) * g.amp;
+        if (g.mv === 1) g.x = g.x0 + o; else if (g.mv === 2) g.y = g.y0 + o;
+        else { g.x = g.x0 + Math.cos(ph) * g.amp; g.y = g.y0 + Math.sin(ph) * g.ampY; }
       }
       for (let i = 0; i < obs.length; i++) {
         const o = obs[i]; if (o.done) continue;
@@ -831,9 +1095,22 @@
         if (g.zw - dist > 0) break;
         g.done = true; judge(g);
       }
+      for (let i = 0; i < pus.length; i++) {
+        const p = pus[i]; if (p.done) continue;
+        if (p.zw - dist > 0) break;
+        p.done = true;
+        if (state === 'play' && crashT <= 0 && Math.abs(cx - p.x) < 0.75 && Math.abs(cy - p.y) < 0.65) collect(p);
+      }
       while (gates.length && gates[0].zw - dist < -2) gates.shift();
       while (obs.length && obs[0].zw - dist < -2) obs.shift();
+      while (pus.length && pus[0].zw - dist < -2) pus.shift();
       fillCourse();
+      stepTrick(dt);
+      if (x2T > 0 && state === 'play') x2T = Math.max(0, x2T - dt);
+      if (!hintPu && state === 'play' && pus.length && pus[0].zw - dist < 30 && pus[0].zw - dist > 8) {
+        hintPu = true; lsSet(PU_KEY, true);
+        toast('Flieg durch das Symbol: Akku, Schild oder Punkte ×2', 3);
+      }
 
       if (state === 'count') {
         countT += dt;
@@ -841,12 +1118,16 @@
         if (step !== countStep) {
           countStep = step;
           if (step < 3) { msg(String(3 - step), '', 0.55); beep(660, 0.09, 'square', 0.12); }
-          else { msg('ARMED', 'armed', 1.1); beep(1320, 0.22, 'square', 0.14); state = 'play'; setUI(); say('Scharf geschaltet. Los!'); }
+          else {
+            msg('ARMED', 'armed', 1.1); beep(1320, 0.22, 'square', 0.14); state = 'play'; setUI(); say('Scharf geschaltet. Los!');
+            if (debugLvl > 1) api.level(debugLvl);        // nur mit ?gamedebug=N in der Adresse
+            if (hintTrick && !pulsed && !rm) { pulsed = true; pulseTrick(); }   // Selbst-Impuls: Trick-Knopf pulsiert einmal pro Besuch
+          }
         }
       } else if (state === 'play') {
-        flightT += dt;
-        volt = voltAt(Math.min(1, flightT / BAT_T)) - sag;
-        if (flightT >= BAT_T) { volt = 3.5; endGame('bat'); }
+        flightT += dt; batT += dt;
+        volt = voltAt(Math.min(1, batT / BAT_T)) - sag;
+        if (batT >= BAT_T) { volt = 3.5; endGame('bat'); }
       } else if (state === 'end') {
         endT -= dt; if (endT <= 0) showOver();
       }
@@ -874,14 +1155,41 @@
         ox = Math.sin(clock * 61) * vib + (shake ? rand(-1, 1) * shake * 9 : 0);
         oy = Math.cos(clock * 47) * vib + (shake ? rand(-1, 1) * shake * 9 : 0);
       }
-      ctx.translate(W / 2 + ox, H / 2 + oy);
-      ctx.rotate(roll);
-      drawWorld();
-      drawSpeed();
-      drawAim();
+      // Trick aus Sicht der Brille: Flip dreht das Bild, Spin schwenkt seitlich, Powerloop nach oben und herum
+      // Die Halle läuft dabei wie ein Rundumbild weiter: am Rand kommt sie von der anderen Seite wieder herein.
+      let tR = 0, tX = 0, tY = 0, tS = 1, sp = 0, c2 = 0;
+      trickBlur = 0;
+      if (trick && !rm) {
+        const p = clamp(trick.t / trick.d, 0, 1), e = ease(p);
+        if (trick.i === 0) tR = e * Math.PI * 2 * trick.dir;
+        else if (trick.i === 1) {
+          sp = W * 2.4; tX = -(((e * sp + sp / 2) % sp) - sp / 2) * trick.dir; trickBlur = Math.sin(Math.PI * p);
+          if (Math.abs(tX) > W * 0.68) c2 = tX > 0 ? -sp : sp;
+        } else {
+          sp = H * 2.6; tY = ((e * sp + sp / 2) % sp) - sp / 2; tS = 1 - 0.16 * Math.sin(Math.PI * p); trickBlur = Math.sin(Math.PI * p);
+          if (Math.abs(tY) > H * 0.78) c2 = tY > 0 ? -sp : sp;
+        }
+      }
+      const hor = trick && trick.i === 1;
+      for (let pass = 0; pass < (c2 ? 2 : 1); pass++) {
+        const dX = hor ? tX + (pass ? c2 : 0) : tX, dY = hor ? tY : tY + (pass ? c2 : 0);
+        ctx.save();
+        if (sp) {                                    // jede Kopie nur in ihrem Streifen zeichnen
+          ctx.beginPath();
+          if (hor) ctx.rect(W / 2 + dX - sp / 2, -10, sp, H + 20); else ctx.rect(-10, H / 2 + dY - sp / 2, W + 20, sp);
+          ctx.clip();
+        }
+        ctx.translate(W / 2 + ox + dX, H / 2 + oy + dY);
+        ctx.rotate(roll + tR);
+        if (tS !== 1) ctx.scale(tS, tS);
+        drawWorld();
+        if (!pass) { drawSpeed(); drawAim(); }
+        ctx.restore();
+      }
       ctx.restore();
       drawScreen();
     }
+    let trickBlur = 0;
 
     // Maler-Verfahren: Scheibe für Scheibe von hinten nach vorne, damit Kurven richtig verdecken
     function drawWorld() {
@@ -889,9 +1197,11 @@
       drawList.length = 0;
       for (let i = 0; i < gates.length; i++) drawList.push(gates[i]);
       for (let i = 0; i < obs.length; i++) drawList.push(obs[i]);
+      for (let i = 0; i < pus.length; i++) if (!pus[i].done) drawList.push(pus[i]);
       drawList.sort((a, b) => b.zw - a.zw);
       let p = 0, haze = false;
       const nx = nextGate();
+      lineK = 1 - 0.65 * night; lampK = 1 - 0.9 * night;
       for (let i = NSL - 1; i >= 0; i--) {
         const zA = ZS[i], zB = ZS[i + 1];
         if (!haze && zA < 22) { drawHaze(R); haze = true; }
@@ -911,20 +1221,21 @@
           const c = cs[j]; if (Math.abs(c.k) < 0.0045 || c.s1 < lo || c.s0 > hi) continue;
           for (let zw = Math.max(first(lo, 7, c.s0 + 3), c.s0 + 3); zw < Math.min(hi, c.s1 - 3); zw += 7) drawSign(zw - dist, c.k > 0 ? -1 : 1);
         }
-        for (let zw = first(lo + 2.8, 6, 3); zw < hi + 2.8; zw += 6) drawLamp(zw - dist);
+        if (lampK > 0.05) for (let zw = first(lo + 2.8, 6, 3); zw < hi + 2.8; zw += 6) drawLamp(zw - dist);
         while (p < drawList.length) {
           const it = drawList[p], rel = it.zw - dist;
           if (rel >= ZF) { p++; continue; }
           if (i > 0 && rel < zA) break;
           p++;
           if (rel < 0.35) continue;
-          if (it.kind === 'g') drawGate(it, rel, it === nx); else drawObs(it, rel);
+          if (it.kind === 'g') drawGate(it, rel, it === nx); else if (it.kind === 'p') drawPU(it, rel); else drawObs(it, rel);
         }
       }
       if (!haze) drawHaze(R);
     }
+    let lineK = 1, lampK = 1;
     function surf(i, zA, zB) {
-      const c = SC[i];
+      const c = night > 0.5 ? SCN[i] : SC[i];
       ctx.beginPath(); q4(-HW, HH, zA, HW, HH, zA, HW, HH, zB, -HW, HH, zB); ctx.fillStyle = c.ceil; ctx.fill();
       ctx.beginPath(); q4(-HW, 0, zA, HW, 0, zA, HW, 0, zB, -HW, 0, zB); ctx.fillStyle = c.floor; ctx.fill();
       for (let k = 0; k < 3; k++) {                       // Spielfeldlinien längs
@@ -944,7 +1255,8 @@
       const hx = clamp(bendZ(34) * f / 34, -W * 0.7, W * 0.7);
       ctx.globalCompositeOperation = 'lighter';
       const g = ctx.createRadialGradient(hx, 0, 0, hx, 0, R * 0.42);
-      g.addColorStop(0, 'rgba(47,111,208,.30)'); g.addColorStop(0.5, 'rgba(47,111,208,.07)'); g.addColorStop(1, 'rgba(47,111,208,0)');
+      const hc0 = hazeC(), hk = 1 - 0.6 * night;             // Dunst leicht in der Farbe des Levels
+      g.addColorStop(0, rgba(hc0, 0.3 * hk)); g.addColorStop(0.5, rgba(hc0, 0.07 * hk)); g.addColorStop(1, rgba(hc0, 0));
       ctx.fillStyle = g; ctx.fillRect(hx - R, -R, R * 2, R * 2);
       ctx.globalCompositeOperation = 'source-over';
     }
@@ -966,9 +1278,15 @@
       }
       ctx.fillStyle = rgba([70, 135, 225], 0.13 * a); ctx.fill();
     }
+    let hazeL = 0, hazeV = [47, 111, 208];
+    function hazeC() {
+      const l = isLive() || state === 'pause' ? curLvl : 1;
+      if (l !== hazeL) { hazeL = l; const c = LV[l].c; hazeV = [Math.round(lerp(47, c[0], 0.35)), Math.round(lerp(111, c[1], 0.35)), Math.round(lerp(208, c[2], 0.35))]; }
+      return hazeV;
+    }
     function drawLamp(z) {            // Deckenlampen mit Schein und Spiegelung im glänzenden Hallenboden
       if (z < 1.2) return;
-      const a = fogA(z) * clamp((z - 1.2) / 5, 0, 1); if (a < 0.02) return;
+      const a = fogA(z) * clamp((z - 1.2) / 5, 0, 1) * lampK; if (a < 0.02) return;
       const z0 = Math.max(ZN, z - 1.2), z1 = z + 1.2, h0 = Math.max(ZN, z - 2.6), h1 = z + 2.6, r0 = Math.max(ZN, z - 2.8), r1 = z + 2.8;
       ctx.globalCompositeOperation = 'lighter';
       ctx.beginPath();
@@ -987,7 +1305,7 @@
     }
     function crossLine(zw, xw, col, a, lw) {
       const z = zw - dist; if (z < 0.5 || z > ZF) return;
-      const al = fogA(z) * a; if (al < 0.01) return;
+      const al = fogA(z) * a * lineK; if (al < 0.01) return;
       ctx.beginPath(); q4(-xw, 0, Math.max(ZN, z - lw), xw, 0, Math.max(ZN, z - lw), xw, 0, z + lw, -xw, 0, z + lw);
       ctx.fillStyle = rgba(col, al); ctx.fill();
     }
@@ -1119,8 +1437,8 @@
         ctx.font = '700 ' + fs + 'px "Chakra Petch", ui-monospace, monospace';
         ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
         ctx.fillStyle = rgba(col, (isNext ? 0.95 : 0.7) * a * clamp((190 - k) / 80, 0, 1));
-        const lab = g.bonus ? 'BONUS ×2' : 'GATE ' + pad(g.n % 100);
-        ctx.fillText(g.mv === 1 ? '◀ ' + lab + ' ▶' : g.mv === 2 ? '▲ ' + lab + ' ▼' : lab, gx * k, oy0 - 0.16 * k);
+        const lab = g.bonus ? 'BONUS ×2' : g.chain ? 'TUNNEL ' + (g.chain.i + 1) + '/3' : 'GATE ' + pad(g.n % 100);
+        ctx.fillText(g.mv === 1 ? '◀ ' + lab + ' ▶' : g.mv === 2 ? '▲ ' + lab + ' ▼' : g.mv === 3 ? '↻ ' + lab : lab, gx * k, oy0 - 0.16 * k);
       }
     }
 
@@ -1161,6 +1479,18 @@
         ctx.lineWidth = clamp(0.06 * k, 1, 14); ctx.strokeStyle = rgba(ALU, 0.95 * a); ctx.stroke();
         ctx.fillStyle = rgba(AMB, 0.95 * a); ctx.fillRect(X(x - 0.32), Y(3.12), X(x + 0.32) - X(x - 0.32), Math.max(1.5, 0.1 * k));
         obsLabel('LEITER', X(x), Y(3.12) - 0.22 * k, k, a, false);
+      } else if (o.type === 'rings') {                   // Turnringe an zwei Seilen, schwingen quer zur Flugrichtung
+        const rx = o.ax + Math.sin(clock * o.om + o.ph) * o.amp, ry = o.ry, rr = 0.18;
+        ctx.beginPath();
+        for (let s = -1; s <= 1; s += 2) { ctx.moveTo(X(o.ax + s * 0.25), Y(HH)); ctx.lineTo(X(rx + s * 0.25), Y(ry + rr)); }
+        ctx.lineWidth = clamp(0.035 * k, 0.8, 8); ctx.strokeStyle = rgba(WOOD, 0.85 * a); ctx.stroke();
+        ctx.beginPath();
+        for (let s = -1; s <= 1; s += 2) { ctx.moveTo(X(rx + s * 0.25) + rr * k, Y(ry)); ctx.arc(X(rx + s * 0.25), Y(ry), rr * k, 0, Math.PI * 2); }
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineWidth = clamp(0.26 * k, 3, 50); ctx.strokeStyle = rgba(RED, 0.15 * a); ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.lineWidth = clamp(0.055 * k, 1.2, 12); ctx.strokeStyle = rgba([238, 226, 204], 0.95 * a); ctx.stroke();
+        obsLabel('▼ RINGE', X(rx), Y(ry - rr) + 0.25 * k, k, a, true);
       } else {                                           // Basketballkorb an der Deckenhalterung
         const x = o.x;
         ctx.fillStyle = rgba([40, 50, 66], 0.9 * a);
@@ -1186,6 +1516,49 @@
       }
       ctx.lineCap = 'butt';
     }
+    // Power-up: leuchtendes, sich drehendes Sechseck mit Symbol
+    function drawPU(p, rel) {
+      const a = fogA(rel); if (a < 0.02) return;
+      const k = f / rel, c = PU[p.type].c;
+      const yb = p.y + (rm ? 0 : Math.sin(clock * 2.2 + p.ph) * 0.08);
+      const sx = (p.x + bendZ(rel) - cx) * k, sy = (cy - yb) * k, r = 0.4 * k;
+      if (r < 1.2) return;
+      ctx.globalCompositeOperation = 'lighter';
+      const R2 = r * 2.4, gr = ctx.createRadialGradient(sx, sy, 0, sx, sy, R2);
+      gr.addColorStop(0, rgba(c, 0.42 * a)); gr.addColorStop(1, rgba(c, 0));
+      ctx.fillStyle = gr; ctx.fillRect(sx - R2, sy - R2, R2 * 2, R2 * 2);
+      ctx.fillStyle = rgba(c, 0.12 * a); ctx.fillRect(sx - Math.max(0.5, 0.02 * k), sy + r, Math.max(1, 0.04 * k), Math.max(0, cy * k - sy - r));
+      ctx.globalCompositeOperation = 'source-over';
+      const sw = rm ? 1 : Math.max(0.2, Math.abs(Math.cos(clock * 2.4 + p.ph)));
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) { const th = i / 6 * Math.PI * 2 + Math.PI / 6, px = sx + Math.cos(th) * r * sw, py = sy + Math.sin(th) * r; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }
+      ctx.closePath();
+      ctx.fillStyle = rgba([6, 14, 28], 0.82 * a); ctx.fill();
+      ctx.lineWidth = clamp(0.06 * k, 1.2, 12); ctx.strokeStyle = rgba(c, 0.95 * a); ctx.stroke();
+      const u = r * 0.5;                                     // Symbol
+      ctx.fillStyle = rgba(c, a); ctx.strokeStyle = rgba(c, a); ctx.lineWidth = Math.max(1, u * 0.18); ctx.lineJoin = 'round';
+      if (p.type === 'bat') {
+        ctx.strokeRect(sx - u * 0.85, sy - u * 0.48, u * 1.6, u * 0.96);
+        ctx.fillRect(sx + u * 0.75, sy - u * 0.2, u * 0.2, u * 0.4);
+        for (let i = 0; i < 3; i++) ctx.fillRect(sx - u * 0.68 + i * u * 0.5, sy - u * 0.3, u * 0.36, u * 0.6);
+      } else if (p.type === 'shield') {
+        ctx.beginPath(); ctx.moveTo(sx, sy - u * 0.95); ctx.lineTo(sx + u * 0.75, sy - u * 0.62); ctx.lineTo(sx + u * 0.75, sy - u * 0.05);
+        ctx.quadraticCurveTo(sx + u * 0.7, sy + u * 0.7, sx, sy + u * 1.0); ctx.quadraticCurveTo(sx - u * 0.7, sy + u * 0.7, sx - u * 0.75, sy - u * 0.05);
+        ctx.lineTo(sx - u * 0.75, sy - u * 0.62); ctx.closePath();
+        ctx.globalAlpha = 0.3; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+      } else {
+        ctx.font = '700 ' + Math.round(u * 1.25) + 'px "Chakra Petch", ui-monospace, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('×2', sx, sy + u * 0.06);
+      }
+      ctx.lineJoin = 'miter';
+      if (k > 13 && k < 300) {
+        const fs = Math.min(40, Math.round(0.26 * k));
+        ctx.font = '700 ' + fs + 'px "Chakra Petch", ui-monospace, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = rgba(c, 0.95 * a * clamp((190 - k) / 80, 0, 1));
+        ctx.fillText(PU[p.type].n.toUpperCase(), sx, sy - r - 0.14 * k);
+      }
+    }
     function obsLabel(t, x, y, k, a, below) {
       if (k < 13 || k > 300) return;
       const fs = Math.min(48, Math.round(0.3 * k));
@@ -1197,12 +1570,12 @@
 
     function drawSpeed() {
       const sf = clamp((v - 2) / 14, 0, 1); if (sf < 0.02) return;
-      const len = 0.4 + v * 0.09, R = Math.hypot(W, H) * 0.55;
+      const len = 0.4 + v * 0.09, R = Math.hypot(W, H) * 0.55, wl = -windNow * 0.5;
       ctx.beginPath();
       for (let i = 0; i < parts.length; i++) {
         const p = parts[i]; if (p.z < ZN + 0.1) continue;
         const z2 = p.z + len;
-        ctx.moveTo(PX(p.x, p.z), PY(p.y, p.z)); ctx.lineTo(PX(p.x, z2), PY(p.y, z2));
+        ctx.moveTo(PX(p.x, p.z), PY(p.y, p.z)); ctx.lineTo(PX(p.x + wl, z2), PY(p.y, z2));
       }
       const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
       g.addColorStop(0, 'rgba(234,244,255,0)'); g.addColorStop(0.2, rgba(WHT, 0.1 * sf)); g.addColorStop(1, rgba(WHT, 0.55 * sf));
@@ -1221,7 +1594,7 @@
       // Ziel-Raute: so weit kommt der Whoop bis zum nächsten Gate (inklusive Fliehkraft)
       const ng = nextGate();
       const zm = clamp(ng ? ng.zw - dist : 12, 3, 30);
-      const drift = -kNow * v * v * CF / (demoLike() ? 9 : 17);
+      const drift = -kNow * v * v * CF / (demoLike() ? 9 : 17) + windNow * 0.9;
       const mx = clamp((tx + drift + bendZ(zm) - cx) * f / zm, -W, W), my = clamp((cy - ty) * f / zm, -H, H);
       const s = clamp(m * 0.016, 6, 11);
       const live = isLive();
@@ -1249,6 +1622,20 @@
         const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.hypot(W, H) * 0.6);
         g.addColorStop(0, 'rgba(255,75,92,0)'); g.addColorStop(1, rgba(RED, 0.45 * Math.min(1, missT)));
         ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      }
+      // Bewegungsunschärfe beim Spin und Powerloop
+      if (trickBlur > 0.04 && trick) {
+        const b = trickBlur, hor = trick.i === 1;
+        ctx.fillStyle = 'rgba(3,7,16,' + (0.38 * b * b).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.beginPath();
+        for (let i = 0; i < 18; i++) {
+          const q = ((i * 0.618 + trick.t * 3.1) % 1), l = (0.25 + ((i * 0.37) % 0.5)) * (hor ? W : H) * b;
+          if (hor) { const y = q * H, x = ((i * 0.29) % 1) * W; ctx.moveTo(x - l / 2, y); ctx.lineTo(x + l / 2, y); }
+          else { const x = q * W, y = ((i * 0.29) % 1) * H; ctx.moveTo(x, y - l / 2); ctx.lineTo(x, y + l / 2); }
+        }
+        ctx.lineWidth = 2; ctx.strokeStyle = rgba(LV[curLvl].c, 0.35 * b); ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
       }
       // Bildrauschen wie bei analogem Videoverlust
       const st = Math.max(crashT > 0 ? Math.min(1, crashT / 0.3) : 0, glitchT > 0 ? glitchT / 0.35 : 0);
@@ -1307,6 +1694,93 @@
         }
         ctx.lineJoin = 'miter';
       }
+      drawTrickCam();
+    }
+
+    /* Trick-Kamera: kleines Bild von außen (hinten oben), in dem der Whoop den Trick fliegt.
+       Eigenes Mini-3D: Punkte des Whoops drehen, dann schräg von oben projizieren. */
+    const RING = [];
+    for (let i = 0; i < 14; i++) RING.push([Math.cos(i / 14 * Math.PI * 2), Math.sin(i / 14 * Math.PI * 2)]);
+    const DUCTS = [[-0.62, 0.62], [0.62, 0.62], [-0.62, -0.62], [0.62, -0.62]];
+    const CA = Math.cos(0.5), SA = Math.sin(0.5);
+    function drawTrickCam() {
+      if (camA <= 0.01 || !cam) return;
+      if (demoLike() && W < 600) return;                     // kleine Bühne: Platz für den Hinweis „Tippen zum Mitfliegen“
+      const fs = clamp(W * 0.014, 10, 15), bw = Math.round(clamp(Math.min(W, H) * 0.3, 112, 184)), bh = Math.round(bw * 0.86);
+      const bx = Math.round(W * 0.055), by = Math.round(H * 0.065 + fs * 4.4);
+      const col = LV[isLive() ? curLvl : 1].c;
+      const p = clamp(cam.t / cam.d, 0, 1), e = ease(p), th = e * Math.PI * 2;
+      ctx.save();
+      ctx.globalAlpha = camA;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, 12); else ctx.rect(bx, by, bw, bh);
+      ctx.fillStyle = 'rgba(4,9,18,.74)'; ctx.fill();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = rgba(col, 0.75); ctx.stroke();
+      ctx.save(); ctx.clip();
+      // Boden als Linien, die nach hinten laufen: Gefühl von Tempo
+      const R = bw * 0.2, ox = bx + bw / 2, oy = by + bh * 0.62;
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) { const z = ((((i / 4 - clock * 1.6) % 1) + 1) % 1) * 3 - 1.2, yy = oy + (1.0 * CA - z * SA) * R * 0.9; ctx.moveTo(bx, yy); ctx.lineTo(bx + bw, yy); }
+      ctx.lineWidth = 1; ctx.strokeStyle = rgba(col, 0.16); ctx.stroke();
+      // Lage und Ort des Whoops im Trick
+      let pyO = 0, pzO = 0;
+      if (cam.i === 0) pyO = 0.55 * Math.sin(Math.PI * p);
+      else if (cam.i === 2) { pyO = 0.85 * (1 - Math.cos(th)); pzO = 0.85 * Math.sin(th) * 0.6; }
+      const ct = Math.cos(th * (cam.i === 0 ? cam.dir : 1)), st = Math.sin(th * (cam.i === 0 ? cam.dir : 1));
+      const T = (x, y, z) => {
+        let X = x, Y = y, Z = z;
+        if (cam.i === 0) { X = x * ct - y * st; Y = x * st + y * ct; }
+        else if (cam.i === 1) { X = x * ct + z * st; Z = -x * st + z * ct; }
+        else { Y = y * ct + z * st; Z = -y * st + z * ct; }
+        Y += pyO; Z += pzO;
+        return [ox + X * R, oy - (Y * CA + Z * SA) * R, Z * CA - Y * SA];
+      };
+      // Schatten auf dem Boden
+      const sh = clamp(1 - pyO * 0.45, 0.35, 1);
+      ctx.beginPath(); ctx.ellipse(ox, oy + 0.95 * R, R * 1.15 * sh, R * 0.3 * sh, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,' + (0.45 * sh).toFixed(3) + ')'; ctx.fill();
+      // Powerloop: Bahn als feiner Bogen
+      if (cam.i === 2 && p > 0.02 && p < 1) {
+        ctx.beginPath();
+        for (let j = 0; j <= 20; j++) { const a2 = th * j / 20, Y = 0.85 * (1 - Math.cos(a2)), Z = 0.85 * Math.sin(a2) * 0.6, xx = ox, yy = oy - (Y * CA + Z * SA) * R; if (j) ctx.lineTo(xx, yy); else ctx.moveTo(xx, yy); }
+        ctx.lineWidth = 2; ctx.strokeStyle = rgba(col, 0.35); ctx.stroke();
+      }
+      // Rahmen, dann die Ducts von hinten nach vorne
+      const body = [T(-0.3, 0, 0.5), T(0.3, 0, 0.5), T(0.3, 0, -0.5), T(-0.3, 0, -0.5)];
+      const dz = DUCTS.map((d, i) => ({ i, c: T(d[0], 0, d[1]) })).sort((a1, b1) => b1.c[2] - a1.c[2]);
+      const bodyZ = (body[0][2] + body[2][2]) / 2;
+      const duct = (d) => {
+        const D = DUCTS[d.i];
+        ctx.beginPath();
+        for (let j = 0; j < RING.length; j++) { const q = T(D[0] + RING[j][0] * 0.4, 0, D[1] + RING[j][1] * 0.4); if (j) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]); }
+        ctx.closePath(); ctx.fillStyle = 'rgba(150,190,240,.14)'; ctx.fill();
+        ctx.lineWidth = Math.max(1.5, R * 0.1); ctx.strokeStyle = rgba(col, 0.95); ctx.stroke();
+        const ang = clock * 47 * (d.i % 3 === 0 ? 1 : -1), ca = Math.cos(ang) * 0.34, sa = Math.sin(ang) * 0.34;   // Propeller
+        const p1 = T(D[0] + ca, 0.02, D[1] + sa), p2 = T(D[0] - ca, 0.02, D[1] - sa);
+        ctx.beginPath(); ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]);
+        ctx.lineWidth = Math.max(1, R * 0.07); ctx.strokeStyle = 'rgba(234,244,255,.6)'; ctx.stroke();
+      };
+      let k = 0;
+      while (k < 4 && dz[k].c[2] > bodyZ) duct(dz[k++]);
+      ctx.beginPath(); ctx.moveTo(body[0][0], body[0][1]); for (let j = 1; j < 4; j++) ctx.lineTo(body[j][0], body[j][1]); ctx.closePath();
+      ctx.fillStyle = '#16233d'; ctx.fill(); ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(234,244,255,.55)'; ctx.stroke();
+      const bat = [T(-0.13, 0.13, 0.3), T(0.13, 0.13, 0.3), T(0.13, 0.13, -0.32), T(-0.13, 0.13, -0.32)];     // Akku oben
+      ctx.beginPath(); ctx.moveTo(bat[0][0], bat[0][1]); for (let j = 1; j < 4; j++) ctx.lineTo(bat[j][0], bat[j][1]); ctx.closePath();
+      ctx.fillStyle = rgba(GRN, 0.85); ctx.fill();
+      const camP = T(0, 0.1, 0.55);                                                                     // Kamera vorne
+      ctx.beginPath(); ctx.arc(camP[0], camP[1], Math.max(2, R * 0.13), 0, Math.PI * 2); ctx.fillStyle = rgba(AMB, 0.95); ctx.fill();
+      while (k < 4) duct(dz[k++]);
+      ctx.restore();
+      // Beschriftung
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.font = '600 ' + Math.round(fs * 0.78) + 'px "Chakra Petch", ui-monospace, monospace';
+      ctx.fillStyle = 'rgba(212,230,255,.85)'; ctx.fillText('TRICK-KAMERA', bx + 9, by + 7);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.font = '700 ' + Math.round(fs * 1.05) + 'px "Chakra Petch", ui-monospace, monospace';
+      const done = !trick && cam.t >= cam.d;
+      const lab = TRICKS[cam.i].n.toUpperCase() + (done && !cam.auto ? (cam.ok ? ' ✓' : ' ✗') : '');
+      ctx.fillStyle = done && !cam.auto && !cam.ok ? rgba(RED, 1) : rgba(col, 1); ctx.fillText(lab, bx + bw / 2, by + bh - 6);
+      ctx.restore();
     }
 
     /* ---------- OSD in HTML (nur bei Änderung neu schreiben) ---------- */
@@ -1315,7 +1789,7 @@
     const cls = (el, key, val) => { if (hc[key] !== val) { hc[key] = val; el.className = val; } };
     function hud() {
       const demo = demoLike();
-      const vv = demo ? 4.2 - 0.12 * ((clock / 150) % 1) : state === 'count' && flightT === 0 ? 4.2 : volt;
+      const vv = demo ? 4.2 - 0.12 * ((clock / 150) % 1) : state === 'count' && batT === 0 ? 4.2 : volt;
       put('volt', vv.toFixed(2) + 'V');
       const pct = clamp((vv - 3.5) / 0.7, 0, 1), pw = Math.max(1, Math.round(pct * 10)) * 10 + '%';
       if (hc.pw !== pw) { hc.pw = pw; H_.cell.style.width = pw; }
@@ -1324,7 +1798,14 @@
       put('speed', String(Math.round(v * 3.6)));
       const mode_ = demo ? (state === 'idle' ? 'DISARMED' : 'AUTOPILOT') : state === 'count' ? 'ARMING' : state === 'play' ? 'ARMED' : 'DISARMED';
       put('mode', mode_); cls(H_.mode, 'modec', 'fcsg-mode ' + (mode_ === 'AUTOPILOT' ? 'auto' : mode_ === 'ARMED' ? 'armed' : ''));
-      put('lvl', 'LVL ' + curLvl);
+      put('lvl', 'LEVEL ' + curLvl); put('lvn', LV[curLvl].n);
+      const cd = dist - courseStart, pr = curLvl >= NLV ? 1 : clamp((cd - LV[curLvl].at) / (LV[curLvl + 1].at - LV[curLvl].at), 0, 1);
+      const prs = (Math.round(pr * 60) / 60).toFixed(3);         // Fortschritt zum nächsten Level
+      if (hc.prog !== prs) { hc.prog = prs; H_.prog.style.transform = 'scaleX(' + prs + ')'; }
+      const wa = Math.abs(windNow), wn = !isLive() || wa < 0.18 ? 0 : wa < 0.45 ? 1 : wa < 0.7 ? 2 : 3;
+      put('wind', wn ? (windNow < 0 ? '◀'.repeat(wn) + ' WIND' : 'WIND ' + '▶'.repeat(wn)) : '');
+      if (hc.shd !== shield) { hc.shd = shield; H_.shd.classList.toggle('on', shield); }
+      put('x2', x2T > 0 && isLive() ? '×2 · ' + Math.ceil(x2T) : '');
       put('score', num(score)); put('combo', String(combo));
       const mult = curMult();
       put('mult', combo > 0 && mult > 1 ? '×' + mult : '');
@@ -1462,6 +1943,7 @@
         else if (better) t = 'Gespeichert. Dein bester Wert als „' + n + '“ steht auf Platz ' + r.rank + '.';
         else t = r.rank ? 'Platz ' + r.rank + ' von ' + r.list.length + (r.online ? ' in der Bestenliste.' : ' auf diesem Gerät.') : 'Gespeichert.';
         H_.form.hidden = true; H_.placed.hidden = false; H_.placed.textContent = t;
+        if (!r.rejected && goalLv) H_.goal.textContent = goalLv;    // Platz steht jetzt darunter
         if (boardEl && !r.rejected) {
           const b = document.createElement('button'); b.type = 'button'; b.className = 'fcsg-tolist'; b.textContent = 'Zur Bestenliste';
           b.addEventListener('click', () => { if (window.FCS && window.FCS.scrollTo) window.FCS.scrollTo(boardEl, -120); else boardEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
@@ -1602,12 +2084,15 @@
     A_.inv.addEventListener('click', () => { tilt.inv = !tilt.inv; lsSet(INV_KEY, tilt.inv); setUI(); });
     A_.snd.addEventListener('click', toggleSound);
     A_.snd2.addEventListener('click', toggleSound);
+    A_.trick.addEventListener('click', (e) => { e.stopPropagation(); doTrick(false); });
+    A_.trick.addEventListener('pointerdown', (e) => { e.stopPropagation(); });
     const mine = (e) => host.contains(e.target) || stage.contains(e.target) || e.target === document.body;
     document.addEventListener('keydown', (e) => {
       if (!mine(e) || (e.target === document.body && !isLive())) return;
       const k = KEYMAP[e.code], live = state === 'count' || state === 'play';
       if (e.target.closest && e.target.closest('input')) return;
       if (k && live) { keys[k] = 1; if (mode === 'tilt') setMode(mob ? 'touch' : 'mouse'); e.preventDefault(); return; }
+      if ((e.code === 'Space' || e.code === 'KeyT') && live) { if (!e.repeat) doTrick(false); e.preventDefault(); return; }
       if ((e.code === 'KeyP' || e.code === 'Escape') && live) { pause(); e.preventDefault(); return; }
       if (e.code === 'KeyP' && state === 'pause') { arm(true); e.preventDefault(); return; }
       if (e.target === stage && (e.code === 'Enter' || e.code === 'Space')) {
@@ -1619,8 +2104,11 @@
     window.addEventListener('blur', () => { keys.l = keys.r = keys.u = keys.d = 0; });
     cv.addEventListener('pointerdown', (e) => {
       if (!isLive()) return;
-      if (e.pointerType === 'mouse') { if (state !== 'end') aimAbs(e); return; }
-      if (mode === 'tilt') return;
+      if (e.pointerType === 'mouse') { if (state !== 'end') { aimAbs(e); if (e.button === 0) doTrick(false); } return; }
+      if (mode === 'tilt') { doTrick(false); return; }          // beim Kippen ist das Bild frei: Tippen = Trick
+      const now = performance.now();                           // Finger: Doppeltipp = Trick
+      if (now - tapT < 320 && Math.hypot(e.clientX - tapX, e.clientY - tapY) < 44) { doTrick(false); tapT = 0; }
+      else { tapT = now; tapX = e.clientX; tapY = e.clientY; }
       touchId = e.pointerId; lastPX = e.clientX; lastPY = e.clientY;
       try { cv.setPointerCapture(e.pointerId); } catch (err) { /* egal */ }
     });
@@ -1652,7 +2140,8 @@
     setMode(mode);
     ensureTrack(ZF + 30);
     resetCourse(rm ? 9 : 14);
-    showBest(); setUI();
+    showBest(); setUI(); setLvlColor(1); trickLabel();
+    if (DEBUG) host.setAttribute('data-debug', debugLvl ? 'level ' + debugLvl : 'an');
     // Schrift fürs Canvas nachladen, dann das stehende Bild neu zeichnen
     if (document.fonts && document.fonts.load) {
       Promise.all([document.fonts.load('700 20px "Chakra Petch"'), document.fonts.load('600 20px "Chakra Petch"')])
@@ -1675,13 +2164,27 @@
       finish(reason) { api.end(reason); if (state === 'end') showOver(); },
       setFlightTime(s) { flightT = clamp(+s || 0, 0, BAT_T); },
       assist(on) { assist = !!on; },   // nur für automatische Tests: lenkt wie der Autopilot
-      warp(m) {                         // nur für Tests: als wäre man schon m Meter geflogen (Level 2 ab 220, Level 3 ab 560)
+      warp(m) {                         // nur für Tests: als wäre man schon m Meter geflogen (Level-Grenzen in LV)
         if (state !== 'play') return;
-        m = +m || 0; courseStart -= m; flightT = clamp(flightT + m / 12, 0, BAT_T - 1);
+        m = +m || 0; courseStart -= m; flightT = Math.max(0, flightT + m / 12); warped = true;
         resetTrackAhead(dist + 2); resetCourse(16);
       },
+      level(n) {                        // nur für Tests: an den Anfang von Level n springen (Akku bleibt, wie er ist)
+        n = clamp(Math.round(+n) || 1, 1, NLV);
+        if (state !== 'play') return;
+        const m = LV[n].at - (dist + 16 - courseStart) + 4;
+        if (m > 0) api.warp(m);
+      },
+      trick: () => doTrick(false),
+      battery(s) { batT = clamp(BAT_T - (+s || 0), 0, BAT_T); },   // nur für Tests: verbleibende Akku-Sekunden setzen
+      give(type) { if (state === 'play' && PU[type]) collect({ type }); },   // nur für Tests: Power-up sofort einsammeln
+      levels: () => LV.slice(1).map((l, i) => ({ n: i + 1, name: l.n, at: l.at })),
       stats: () => ({
         state, mode, score, passed, combo, bestCombo, lives, best, level: curLvl, near,
+        tricks, trickRow, trick: trick ? TRICKS[trick.i].n : null, trickCd: +trickCd.toFixed(2), nextTrick: TRICKS[trickIdx].n,
+        shield, x2: +x2T.toFixed(1), batLeft: +(BAT_T - batT).toFixed(1), wind: +windNow.toFixed(2), night: +night.toFixed(2),
+        pickups: pus.filter((p) => !p.done).map((p) => p.type), lvBonus,
+        next: (() => { const g = nextGate(); return g ? { x: +g.x.toFixed(2), y: +g.y.toFixed(2), dz: +(g.zw - dist).toFixed(1), w: +g.w.toFixed(2) } : null; })(),
         flightT: +flightT.toFixed(2), volt: +volt.toFixed(2), kmh: Math.round(v * 3.6),
         pos: [+cx.toFixed(2), +cy.toFixed(2)], target: [+tx.toFixed(2), +ty.toFixed(2)],
         curve: +kNow.toFixed(4), curveAhead: +kAhead.toFixed(4), course: +(dist - courseStart).toFixed(1),
@@ -1702,7 +2205,7 @@
   }
   function mountAll() { document.querySelectorAll('[data-game="whoop"]').forEach(mount); return instances; }
   window.FCSGame = {
-    version: '2.0.0',
+    version: '3.0.0',
     instances,
     mount,
     mountAll,
