@@ -5,64 +5,18 @@ on:
     paths: ['.github/workflows/gyroflow-e2e.yml']
 permissions:
   contents: read
-  actions: write
 env:
   HOOK: https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i
-  TESTCODE: FCS-TQVL-UNWM
 jobs:
-  e2e:
+  api:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 5
     steps:
-      - name: Testclip wie ein Mitglied hochladen und Gyroflow-Station anstoßen
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Live-API prüfen (Kartenlink, Mitgliedscode)
         run: |
           set -euo pipefail
-          pip install -q gdown
-          gdown -q 1_gEzRlw9B38FEf3xdxxEsS9G4v_kavNX -O gopro.mp4
-          python3 - <<'PY'
-          import os, json, hashlib, urllib.request, urllib.parse
-          HOOK = os.environ['HOOK']; n = 'Testlauf Gyroflow'; p = 'gopro.mp4'; size = os.path.getsize(p)
-          k = hashlib.sha1(f'clip|{n}|{size}|fcs-clip-2026'.encode()).hexdigest()[:10]
-          def post(d):
-              r = urllib.request.urlopen(urllib.request.Request(HOOK, data=urllib.parse.urlencode(d).encode(), method='POST'), timeout=120)
-              return r.read().decode()
-          s = post({'a': 'start', 'n': n, 'fn': 'GoPro_Hero6_Test.MP4', 'sz': size, 'typ': 'video/mp4', 'zweck': 'gyroflow', 'c': os.environ['TESTCODE'], 'k': k, 'opt': json.dumps({'glaettung': 50, 'horizont': True, 'zoom': 'dynamisch'})})
-          j = json.loads(s); print('::add-mask::' + j['url']); print('Auftrag', j['id'])
-          C = 327680 * 30; item = None
-          with open(p, 'rb') as f:
-              pos = 0
-              while pos < size:
-                  data = f.read(min(C, size - pos)); end = pos + len(data) - 1
-                  r = urllib.request.urlopen(urllib.request.Request(j['url'], data=data, method='PUT', headers={'Content-Range': f'bytes {pos}-{end}/{size}'}), timeout=300)
-                  b = r.read().decode()
-                  if r.status in (200, 201): item = json.loads(b)['id']
-                  pos = end + 1
-          print('done', post({'a': 'done', 'id': j['id'], 'item': item}))
-          open('job.txt', 'w').write(j['id'])
-          PY
-          echo "Auftrag $(cat job.txt) hochgeladen. Make startet die Gyroflow-Station jetzt selbst."
-      - name: Warten, bis die Station fertig ist (Status wie die Website, einmal pro Minute)
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import os, json, time, urllib.request, urllib.parse
-          HOOK = os.environ['HOOK']; job = open('job.txt').read().strip()
-          for i in range(56):
-              time.sleep(60)
-              r = urllib.request.urlopen(HOOK + '?' + urllib.parse.urlencode({'a': 'status', 'id': job}), timeout=60).read().decode()
-              j = json.loads(r)
-              if j.get('url'): print('::add-mask::' + j['url'])
-              print(f'{i + 1} min:', j.get('st'), j.get('msg', ''))
-              if j.get('st') == 'fertig':
-                  req = urllib.request.Request(j['url'], headers={'Range': 'bytes=0-1023'})
-                  with urllib.request.urlopen(req, timeout=60) as d:
-                      head = d.read(); print('Download geht:', d.status, len(head), 'Bytes gelesen, Datei', j.get('name'), j.get('size'), 'Bytes')
-                      assert head[4:8] == b'ftyp', 'keine MP4-Datei'
-                  raise SystemExit(0)
-              if j.get('st') == 'fehler':
-                  raise SystemExit('Station meldet Fehler: ' + j.get('msg', ''))
-          raise SystemExit('Zeit abgelaufen')
-          PY
-# Lauf 4: Make startet die Station selbst (neue GitHub-Verbindung mit public_repo), Optionen wie das Clip-Studio
+          echo "Kartenlink:"; curl -sS -G "$HOOK" --data-urlencode a=maplink --data-urlencode "u=https://maps.app.goo.gl/PB8N7vSjhJRb4pnZ9?g_st=ac" | cut -c1-140; echo
+          echo "Code falsch:"; curl -sS -X POST "$HOOK" --data-urlencode a=check --data-urlencode c=FCS-XXXX-XXXX; echo
+          echo "Code Test:"; curl -sS -X POST "$HOOK" --data-urlencode a=check --data-urlencode c=fcs-tqvl-unwm; echo
+          curl -sS -G "$HOOK" --data-urlencode a=maplink --data-urlencode "u=https://maps.app.goo.gl/PB8N7vSjhJRb4pnZ9?g_st=ac" | grep -q '49.3449' && echo "KARTENLINK OK"
+# Lauf 5: Live-API Kartenlink und Mitgliedscode
