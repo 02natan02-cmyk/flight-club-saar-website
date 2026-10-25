@@ -132,9 +132,11 @@ function src1(s) {
 }
 
 export function compositor(canvas) {
+  if (typeof window !== 'undefined' && window.FCS_STUDIO_TEST && window.FCS_STUDIO_TEST.noGL) return { ok: false };
   const opt = { alpha: false, premultipliedAlpha: false, preserveDrawingBuffer: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' };
   let gl = null, v2 = false;
-  try { gl = canvas.getContext('webgl2', opt); v2 = !!gl; } catch (e) {}
+  const T = typeof window !== 'undefined' && window.FCS_STUDIO_TEST || {};
+  if (!T.gl1) { try { gl = canvas.getContext('webgl2', opt); v2 = !!gl; } catch (e) {} }
   if (!gl) { try { gl = canvas.getContext('webgl', opt) || canvas.getContext('experimental-webgl', opt); } catch (e) {} }
   if (!gl) return { ok: false };
   const sh = (type, s) => { const x = gl.createShader(type); gl.shaderSource(x, s); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(x)); return x; };

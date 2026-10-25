@@ -225,7 +225,7 @@ export async function render(job, hooks = {}) {
   output.addVideoTrack(vsrc, { frameRate: fps });
   let asrc = null;
   if (job.audio && job.ac) {
-    asrc = new M.AudioBufferSource(job.ac.startsWith('pcm') ? { codec: job.ac } : { codec: job.ac, quality: new M.Quality(192000) });
+    asrc = new M.AudioBufferSource(job.ac.startsWith('pcm') ? { codec: job.ac } : { codec: job.ac, quality: new M.Quality({ bitrate: 192000 }) });
     output.addAudioTrack(asrc);
   }
   const tracks = new Map();

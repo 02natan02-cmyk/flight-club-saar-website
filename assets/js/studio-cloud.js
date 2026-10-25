@@ -118,6 +118,8 @@ export class Upload {
         if (r.status === 200 || r.status === 201) { this.sent = total; this.emit('progress', { sent: total, total, bps: this.bps() }); return this.finish(r.json); }
         const nx = r.json && (r.json.nextExpectedRanges || [])[0];
         this.sent = nx != null ? parseInt(String(nx).split('-')[0], 10) : b + 1;
+        this._spd.push([performance.now(), this.sent]); if (this._spd.length > 40) this._spd.shift();
+        this.emit('progress', { sent: this.sent, total, bps: this.bps() });
         continue;
       }
       if (r.status === 404) { saveSess(this.key, null); this.fail('Die Upload-Sitzung ist abgelaufen. Tipp auf „Nochmal“, dann startet der Upload neu.', false, true); return; }

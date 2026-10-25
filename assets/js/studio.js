@@ -205,6 +205,7 @@
     if (c.demo) c.fps = 25;
     if (S.clips[0] === c && S.fmt === 'orig') setFmt('orig');
     renderClips(); rebuild(); tlDraw(); layout(); goState(); steps();
+    if (c.dur) thumbsFor(c);
     if (S.clips[S.sel] === c) { stageMsg(); strip(); seekView(); if (!c.demo && P.visible) play(); }
     if (c.file) selftest(c);
   }
@@ -252,7 +253,7 @@
     const before = c.mode;
     if (c.info && c.info.canDecode && L.draw) c.mode = L.draw.some(nb) || c.ref === false ? 'draw' : (L.copy && L.copy.some(nb)) ? 'copy' : (el && el.some(nb)) ? 'element' : 'draw';
     else if (c.state === 'ok') c.mode = c.elBlack ? null : 'element';
-    if (before === 'draw' && c.mode === 'copy') { c.thumbs = []; c._thumbing = 0; if (curClip() === c) strip(); }
+    if (before === 'draw' && c.mode === 'copy' && !c._thumbing) { c.thumbs = []; thumbsFor(c); }
     renderClips();
   }
   function sampleEl(c, v) {
@@ -288,7 +289,7 @@
       const port = c.h > c.w ? '<em class="cl-b">Hochkant</em>' : '';
       const nM = c.marks.length;
       return `<li class="cl${i === S.sel ? ' on' : ''}${c.demo ? ' demo' : ''}" data-id="${c.id}">
-        <button type="button" class="cl-main" data-act="sel" aria-pressed="${i === S.sel}" aria-label="Clip ${i + 1} auswählen: ${esc(c.name)}">
+        <button type="button" class="cl-main" data-act="sel" aria-pressed="${i === S.sel}">
           <span class="cl-th"><canvas width="96" height="54" data-th="${c.id}"></canvas><b>${i + 1}</b></span>
           <span class="cl-tx"><b>${esc(c.name)}</b><small>${esc(meta)}</small>${st}</span>
         </button>
@@ -318,28 +319,33 @@
       }
     });
   }
-  /* Vorschaubilder für Zeitleiste und Karten */
-  async function strip() {
+  /* Vorschaubilder für Zeitleiste, Clip-Karten und Szenen-Streifen (12 je Clip, für jeden Clip) */
+  const NTH = 12;
+  function strip() {
     const c = curClip(), cv = $('#tl-strip'), tl = $('#tl'); if (!c || !cv || !tl) return;
     const dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round((tl.clientWidth || 300) * dpr), H = Math.round((tl.clientHeight || 60) * dpr);
-    cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.clearRect(0, 0, W, H);
-    const n = Math.max(4, Math.min(16, Math.round((tl.clientWidth || 300) / 64)));
-    const paint = () => { const tw = W / n; c.thumbs.forEach((t, i) => { if (!t) return; const sa = t.width / t.height, ta = tw / H; let sw = t.width, sh = t.height, sx = 0, sy = 0; if (sa > ta) { sw = sh * ta; sx = (t.width - sw) / 2; } else { sh = sw / ta; sy = (t.height - sh) / 2; } try { x.drawImage(t, sx, sy, sw, sh, i * tw, 0, tw + 1, H); } catch (e) {} }); };
-    if (c.thumbs.length === n && c.thumbs.some(Boolean)) { paint(); return; }
-    if (!c.dur || c._thumbing === n) return;
-    c._thumbing = n; c.thumbs = new Array(n).fill(null);
-    const times = Array.from({ length: n }, (_, i) => (i + .5) * c.dur / n);
-    const done = () => { if (curClip() === c) paint(); renderClips(); if (c.state === 'nurExport' && c.el && c.thumbs[0]) { try { c.el.poster = c.thumbs[Math.floor(c.thumbs.length / 3)].toDataURL('image/jpeg', .8); c.el.classList.add('on'); } catch (e) {} } };
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    const x = cv.getContext('2d'); x.clearRect(0, 0, W, H);
+    const tw = W / NTH;
+    c.thumbs.forEach((t, i) => { if (!t) return; const sa = t.width / t.height, ta = tw / H; let sw = t.width, sh = t.height, sx = 0, sy = 0; if (sa > ta) { sw = sh * ta; sx = (t.width - sw) / 2; } else { sh = sw / ta; sy = (t.height - sh) / 2; } try { x.drawImage(t, sx, sy, sw, sh, i * tw, 0, tw + 1, H); } catch (e) {} });
+    if (!c.thumbs.length) thumbsFor(c);
+  }
+  async function thumbsFor(c) {
+    if (!c.dur || c._thumbing) return;
+    c._thumbing = 1; c.thumbs = new Array(NTH).fill(null);
+    const times = Array.from({ length: NTH }, (_, i) => (i + .5) * c.dur / NTH);
+    const upd = () => { if (curClip() === c) strip(); };
+    const done = () => { c._thumbing = 0; upd(); renderClips(); sbDraw(); if (c.state === 'nurExport' && c.el && c.thumbs[0]) { try { c.el.poster = c.thumbs[Math.floor(NTH / 3)].toDataURL('image/jpeg', .8); c.el.classList.add('on'); } catch (e) {} } };
     if (c.file && c.info && c.info.canDecode && c.mode !== 'element') {
-      try { const M = await media(); await M.thumbs(c.file, times, 160, 90, c.mode === 'copy' ? 'copy' : 'draw', (i, t) => { c.thumbs[i] = t; if (curClip() === c) paint(); }); done(); return; } catch (e) {}
+      try { const M = await media(); await M.thumbs(c.file, times, 160, 90, c.mode === 'copy' ? 'copy' : 'draw', (i, t) => { c.thumbs[i] = t; upd(); }); done(); return; } catch (e) {}
     }
-    if (c.state !== 'ok') return;
+    if (c.state !== 'ok') { c._thumbing = 0; return; }
     // Ersatz: eigenes Video-Element springen lassen
     const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.crossOrigin = 'anonymous'; v.src = c.src;
-    try { await once(v, 'loadeddata', 8000); } catch (e) { return; }
-    for (let i = 0; i < n; i++) {
+    try { await once(v, 'loadeddata', 8000); } catch (e) { c._thumbing = 0; return; }
+    for (let i = 0; i < NTH; i++) {
       v.currentTime = times[i]; try { await once(v, 'seeked', 4000); } catch (e) { break; }
-      try { const t = document.createElement('canvas'); t.width = 160; t.height = 90; const k = t.getContext('2d'); const sa = v.videoWidth / v.videoHeight; let sw = v.videoWidth, sh = v.videoHeight; if (sa > 16 / 9) sw = sh * 16 / 9; else sh = sw * 9 / 16; k.drawImage(v, (v.videoWidth - sw) / 2, (v.videoHeight - sh) / 2, sw, sh, 0, 0, 160, 90); c.thumbs[i] = t; if (curClip() === c) paint(); } catch (e) { break; }
+      try { const t = document.createElement('canvas'); t.width = 160; t.height = 90; const k = t.getContext('2d'); const sa = v.videoWidth / v.videoHeight; let sw = v.videoWidth, sh = v.videoHeight; if (sa > 16 / 9) sw = sh * 16 / 9; else sh = sw * 9 / 16; k.drawImage(v, (v.videoWidth - sw) / 2, (v.videoHeight - sh) / 2, sw, sh, 0, 0, 160, 90); c.thumbs[i] = t; upd(); } catch (e) { break; }
     }
     v.removeAttribute('src'); v.load(); done();
   }
@@ -575,17 +581,20 @@
   let glTestFor = null;
   function paint(A, B, cA, cB, tr, fade) {
     const look = S.look !== 'natur' && S.lookK > 0;
-    const need = !!(A && A.readyState >= 2 && (look || tr || fade > 0) && !(cA && cA.glBad) && !(cB && cB.glBad));
+    const need = !!(A && (look || tr || fade > 0) && !(cA && cA.glBad) && !(cB && cB.glBad));
     if (need) needGL();
-    const want = !!(need && GL && GL.ok);
+    const want = !!(need && GL && GL.ok && (A.readyState >= 2 || P.glUse));
+    // Sucht ein Video gerade (readyState < 2), bleibt das letzte WebGL-Bild stehen, statt auf den Ersatzweg zu springen
+    const ready = !!(A && A.readyState >= 2 && (!B || !tr || B.readyState >= 2));
     S.clips.forEach(c => [c.el, c.el2].forEach(v => { if (!v) return; const on = v === A || v === B; v.classList.toggle('on', on); }));
     // Fallback-Übergang ohne WebGL: Überblenden per Deckkraft, Blitz als weiße Fläche
     const fx = $('#st-fx');
     if (!want && tr && B) {
       const p = clamp(tr.p, 0, 1), e = p * p * (3 - 2 * p);
-      B.classList.add('on'); B.style.opacity = tr.type === 'blitz' ? 1 : e; A.style.opacity = tr.type === 'blitz' ? 0 : 1;
+      if (A === B) { A.style.opacity = ''; }
+      else { B.classList.add('on'); A.style.opacity = tr.type === 'blitz' ? 0 : 1; B.style.opacity = tr.type === 'blitz' ? 1 : e; }
       if (fx) fx.style.opacity = tr.type === 'blitz' ? Math.pow(1 - p, 2.2) * .95 : 0;
-    } else { S.clips.forEach(c => [c.el, c.el2].forEach(v => { if (v) v.style.opacity = ''; })); if (fx) fx.style.opacity = !want && fade > 0 ? 0 : 0; }
+    } else { S.clips.forEach(c => [c.el, c.el2].forEach(v => { if (v) v.style.opacity = ''; })); if (fx) fx.style.opacity = 0; }
     // Fallback-Look per CSS-Filter, Ausblenden per Schwarz
     vids.style.filter = !want && look && window.__fcsCssLook ? window.__fcsCssLook(S.look, S.lookK) : '';
     const fb = $('#st-fade'); if (fb) fb.style.opacity = !want && fade > 0 ? clamp(fade, 0, 1) : 0;
@@ -595,6 +604,7 @@
     const dpr = Math.min(devicePixelRatio || 1, 2), w = Math.round(box.w * dpr), h = Math.round(box.h * dpr);
     const sc = Math.min(1, 1920 / Math.max(w, h));
     GL.size(w * sc, h * sc);
+    if (!ready) return;
     const ok = GL.render({ A, B: tr ? B : null, ra: cropN(cA, A), rb: cB ? cropN(cB, B) : null, tr, look: look ? { id: S.look, k: S.lookK } : null, fade });
     if (!ok) { glc.classList.remove('on'); P.glUse = false; return; }
     glc.classList.add('on'); P.glUse = true;
@@ -753,7 +763,7 @@
     $('#tl-read').hidden = auto; $$('.tl-fine').forEach(x => x.hidden = auto);
     const long = $('#tl-long'); if (long) long.hidden = auto || !(d > MAXLEN);
     const mk = $('#tl-marks');
-    if (mk) mk.innerHTML = auto ? c.marks.map(m => `<div class="tl-mk" data-mk="${m.id}" style="left:${m.t0 / d * 100}%;width:${m.len / d * 100}%" role="button" tabindex="0" aria-label="Stelle bei ${tD(m.t0)}, ${sec(m.len)} lang. Pfeiltasten verschieben, Entf löscht."><i>${ICON.star}</i><button type="button" class="tl-mk-x" tabindex="-1" aria-label="Stelle löschen">×</button></div>`).join('') : '';
+    if (mk) mk.innerHTML = auto ? c.marks.map(m => `<div class="tl-mk" data-mk="${m.id}" style="left:${m.t0 / d * 100}%;width:${m.len / d * 100}%" role="button" tabindex="0" aria-label="Stelle bei ${tD(m.t0)}, ${sec(m.len)} lang. Pfeiltasten verschieben, Entf löscht."><i>${ICON.star}</i><span class="tl-mk-x" aria-hidden="true">×</span></div>`).join('') : '';
     const hint = $('#tl-hint'); if (hint) hint.innerHTML = auto ? 'Tipp bei jeder coolen Stelle auf <b>★ Stelle</b>. Die Kästchen kannst du verschieben, × löscht.' : 'Zuschneiden: Zieh die gelben Griffe oder das ganze Fenster.';
     sumLine();
   }
@@ -855,6 +865,7 @@
     }));
     const cg = $('#cut-go'); if (cg) cg.addEventListener('click', () => {
       if (!marksAll().length) return; interact();
+      if (!S.lookTouched) setLook(STYLES[S.style].look, true);
       S.viewSeq = true; rebuild(); modeUI(); P.t = 0; tlDraw(); play(); visit(2);
       if (!inView(stage)) go(wrap, -110);
       flash($('#st-sb'));
@@ -1164,7 +1175,7 @@
     const d = def(s.k), h = document.createElement('div');
     h.className = 'stk'; h.tabIndex = 0; h.dataset.id = s.id; h.setAttribute('role', 'button');
     h.setAttribute('aria-label', `${d.n} auf dem Video. Pfeiltasten verschieben, Plus und Minus ändern die Größe, Q und E drehen, Entf löscht.`);
-    h.innerHTML = '<span class="stk-k stk-rot" aria-hidden="true"></span><span class="stk-k stk-sc" aria-hidden="true"></span><button class="stk-k stk-x" type="button" tabindex="-1" aria-label="Sticker löschen">×</button>';
+    h.innerHTML = '<span class="stk-k stk-rot" aria-hidden="true"></span><span class="stk-k stk-sc" aria-hidden="true"></span><span class="stk-k stk-x" aria-hidden="true">×</span>';
     h.querySelector('.stk-x').addEventListener('click', e => { e.stopPropagation(); removeSt(s); });
     h.addEventListener('focus', () => selectSt(s.id));
     layer.appendChild(h); s.h = h; place(s);
@@ -1404,7 +1415,8 @@
   function firstOwn() { return own().find(c => c.w) || S.clips.find(c => c.w) || null; }
   function outDims() {
     const c0 = firstOwn(); if (!c0) return { W: 1920, H: 1080 };
-    const r = cropPx(c0.w, c0.h, S.aspect); let W = r.width, H = r.height;
+    // Zielformat, nicht der gerade animierte Wert der Bühne
+    const r = cropPx(c0.w, c0.h, fmtA(S.fmt)); let W = r.width, H = r.height;
     if (S.q === '1080') { const sh = Math.min(W, H); if (sh > 1080) { W *= 1080 / sh; H *= 1080 / sh; } }
     const k = Math.min(1, 3840 / Math.max(W, H), 2160 / Math.min(W, H)); W *= k; H *= k;
     return { W: even(W), H: even(H) };
@@ -1538,7 +1550,7 @@
         }
       }
       if (!out) throw new Error('kein-ergebnis');
-      if (job.gl) job.gl.destroy();
+      if (job.gl && job.gl.destroy) job.gl.destroy();
       doneUI(); goState();
       const pilot = (S.ln.name !== 'Dein Pilotenname' && S.ln.name.trim()) || (S.member && S.member.n) || ((($('#snd-name') || {}).value) || '') || 'clip';
       const file = new File([out.blob], `flightclubsaar_${slug(pilot) || 'clip'}_${today()}.${out.ext}`, { type: out.mime || out.blob.type });
@@ -1583,8 +1595,8 @@
     if (job.vc && window.VideoEncoder) {
       target = new M.M.BufferTarget();
       output = new M.M.Output({ format: new M.M.Mp4OutputFormat({ fastStart: 'in-memory' }), target });
-      vsrc = new M.M.CanvasSource(outC, { codec: job.vc, quality: new M.M.Quality(job.bitrate), keyFrameInterval: 2 }); output.addVideoTrack(vsrc, { frameRate: fps });
-      if (job.audio && job.ac) { const as = new M.M.AudioBufferSource(job.ac.startsWith('pcm') ? { codec: job.ac } : { codec: job.ac, quality: new M.M.Quality(192000) }); output.addAudioTrack(as); job._as = as; }
+      vsrc = new M.M.CanvasSource(outC, { codec: job.vc, quality: new M.M.Quality({ bitrate: job.bitrate, bitrateMode: 'variable' }), keyFrameInterval: 2 }); output.addVideoTrack(vsrc, { frameRate: fps });
+      if (job.audio && job.ac) { const as = new M.M.AudioBufferSource(job.ac.startsWith('pcm') ? { codec: job.ac } : { codec: job.ac, quality: new M.M.Quality({ bitrate: 192000 }) }); output.addAudioTrack(as); job._as = as; }
       await output.start(); if (job._as) await job._as.add(job.audio);
     } else {
       const types = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'];
@@ -1660,7 +1672,8 @@
     f.addEventListener('submit', async e => {
       e.preventDefault();
       if (window.FCS && FCS.validate && !FCS.validate(f)) return;
-      const files = f._files || []; if (!files.length) { const s = $('#snd-state'); if (s) s.textContent = 'Wähl oben zuerst dein Video.'; return; }
+      const extra = [...(($('#snd-extra') || {}).files || [])].filter(x => x.size);
+      const files = (f._files || []).concat(extra); if (!files.length) { const s = $('#snd-state'); if (s) s.textContent = 'Wähl oben zuerst dein Video.'; return; }
       const C = await cloud();
       const ig = ($('#snd-ig').value || '').trim(), msg = ($('#snd-msg').value || '').trim();
       const t = [ig && 'Instagram: ' + (ig.startsWith('@') ? ig : '@' + ig), msg, S.result && files.includes(S.result) ? `Clip-Studio: ${$('#st-sum').textContent}` : ''].filter(Boolean).join('\n').slice(0, 500);
@@ -1675,7 +1688,8 @@
       $('#snd-go').disabled = false;
       if (allOk) { S.done.sent = true; steps(); f.classList.add('sent'); const ok = $('#snd-ok-msg'); if (ok) { ok.hidden = false; if (gs() && !RM) gs().fromTo(ok, { scale: .92, opacity: 0 }, { scale: 1, opacity: 1, duration: .6, ease: 'back.out(2)' }); } }
     });
-    const again = $('#snd-again'); if (again) again.addEventListener('click', () => { f.classList.remove('sent'); $('#snd-ok-msg').hidden = true; $('#snd-up').innerHTML = ''; $('#snd-up').hidden = true; });
+    const ex = $('#snd-extra'); if (ex) ex.addEventListener('change', () => { const st = $('#snd-state'); if (st) st.textContent = ''; });
+    const again = $('#snd-again'); if (again) again.addEventListener('click', () => { const e2 = $('#snd-extra'); if (e2) e2.value = ''; f.classList.remove('sent'); $('#snd-ok-msg').hidden = true; $('#snd-up').innerHTML = ''; $('#snd-up').hidden = true; });
     reach();
   }
   /* Ein Upload mit Fortschritt, Pause/Fortsetzen und Abbrechen. Liefert true, wenn fertig. */
@@ -1746,7 +1760,7 @@
       const sel = $('#gy-clip'), c = own().find(x => String(x.id) === (sel && sel.value)) || own()[0];
       if (!c || !c.file) { const m = $('#gy-msg'); if (m) m.textContent = 'Wähl in Schritt 1 zuerst deinen Clip.'; return; }
       interact();
-      const opt = { glaettung: +$('#gy-smooth').value, horizont: $('#gy-hor').checked, zoom: ($('input[name=gy-zoom]:checked') || {}).value || 'dynamisch', kamera: ($('#gy-cam') || {}).value || '' };
+      const opt = { glaettung: +$('#gy-smooth').value, horizont: $('#gy-hor').checked, zoom: ($('input[name=gy-zoom]:checked') || {}).value || 'dynamisch' };
       const C = await cloud(); const box = $('#gy-up'); box.hidden = false; box.innerHTML = ''; go2.disabled = true;
       const n = (S.member.n || 'Mitglied').slice(0, 40);
       const res = await runUpload(C, box, c.file, { n, zweck: 'gyroflow', opt, c: S.member.c, t: 'Gyroflow-Auftrag aus dem Clip-Studio' });
@@ -1754,7 +1768,6 @@
       if (!res) return;
       const id = res.job;
       if (id) { const j = jobs(); j.unshift({ id, fn: c.file.name, d: Date.now(), st: 'eingegangen', url: '', msg: '', lp: Date.now() }); saveJobs(j); }
-      const log = $('#gy-log'); if (log && log.files[0] && id) await runUpload(C, box, log.files[0], { n, zweck: 'gyroflow', c: S.member.c, zu: id, t: 'Gyro-Datei oder Blackbox-Log zu Auftrag ' + id });
       jobsUI(); pollJobs(true);
     });
   }
@@ -1768,20 +1781,21 @@
       <button type="button" class="linkbtn job-x" data-job="${esc(x.id)}">Aus der Liste nehmen</button></li>`).join('');
   }
   let pollT = 0;
+  const pollMs = () => (window.FCS_STUDIO_TEST && FCS_STUDIO_TEST.poll) || 60000;
   async function pollJobs(now) {
     clearTimeout(pollT);
     const api = apiClips(); if (!api) return;
     const open = jobs().filter(x => x.st !== 'fertig' && x.st !== 'fehler'); if (!open.length) return;
-    if (document.visibilityState !== 'visible') { pollT = setTimeout(() => pollJobs(), 60000); return; }
+    if (document.visibilityState !== 'visible') { pollT = setTimeout(() => pollJobs(), pollMs()); return; }
     const C = await cloud(); const j = jobs(); const t = Date.now();
     for (const x of j) {
       if (x.st === 'fertig' || x.st === 'fehler') continue;
-      if (t - (x.lp || 0) < 60000) continue; // höchstens einmal pro Minute
+      if (t - (x.lp || 0) < pollMs() - 500) continue; // höchstens einmal pro Minute
       x.lp = t; const r = await C.gyroStatus(api, x.id);
       if (r.ok) { x.st = r.st || x.st; x.url = r.url || ''; x.msg = r.msg || ''; }
     }
     saveJobs(j); jobsUI();
-    if (j.some(x => x.st !== 'fertig' && x.st !== 'fehler')) pollT = setTimeout(() => pollJobs(), 60500);
+    if (j.some(x => x.st !== 'fertig' && x.st !== 'fehler')) pollT = setTimeout(() => pollJobs(), pollMs() + 500);
   }
   function jobsInit() {
     jobsUI();
@@ -1813,7 +1827,9 @@
       msg.textContent = 'Wird geprüft …'; msg.className = 'st-code-msg';
       const btn = form.querySelector('[type=submit]'); btn.disabled = true;
       const r = await C.checkMember(api, c); btn.disabled = false;
-      if (r.ok) {
+      if (r.ok && r.bis && r.bis < new Date().getFullYear()) {
+        msg.textContent = `Dieser Code galt bis Ende ${r.bis}. Mit deinem neuen Code für ${new Date().getFullYear()} geht Premium sofort wieder.`; msg.className = 'st-code-msg bad';
+      } else if (r.ok) {
         S.member = { c, n: r.n, bis: r.bis }; lsSet(LS.member, S.member);
         msg.textContent = ''; form.hidden = true; clubUI(); unlock(true);
       } else { msg.textContent = r.net ? 'Gerade nicht erreichbar, versuch es gleich nochmal.' : 'Dieser Code stimmt nicht. Den Code bekommst du vom Vorstand.'; msg.className = 'st-code-msg bad'; }
@@ -1831,12 +1847,12 @@
     const m = S.member, exp = m && m.bis && m.bis < new Date().getFullYear();
     wrapC.classList.toggle('on', isMember());
     if (isMember()) {
-      t.innerHTML = `<b>Premium aktiv: Hallo ${esc(m.n)}!</b> Auto-Schnitt, eigene Musik, dein Tag und Gyroflow sind freigeschaltet${m.bis ? ` (bis Ende ${m.bis})` : ''}.`;
+      t.innerHTML = `<b>Premium aktiv: Hallo ${esc(m.n)}!</b> <span class="cl-l">Auto-Schnitt, eigene Musik, dein Tag und Gyroflow sind freigeschaltet${m.bis ? ` (bis Ende ${m.bis})` : ''}.</span><span class="cl-s">Alles freigeschaltet${m.bis ? ` bis Ende ${m.bis}` : ''}.</span>`;
       b.innerHTML = '<button class="btn ghost" type="button" id="mc-out">Abmelden</button>';
       $('#mc-out').addEventListener('click', () => { S.member = null; lsSet(LS.member, null); clubUI(); unlock(false); });
     } else {
-      t.innerHTML = exp ? `<b>Dein Mitgliedscode galt bis Ende ${m.bis}.</b> Mit deinem neuen Code geht Premium sofort wieder.` : '<b>Premium für Mitglieder:</b> Auto-Schnitt im Takt, eigene Musik, dein Piloten-Tag und Gyroflow. Kein GoPro- oder CapCut-Abo nötig und kein Gyroflow am eigenen PC: alles im Mitgliedsbeitrag.';
-      b.innerHTML = '<button class="btn solid" type="button" id="mc-open2">Mitgliedscode eingeben</button><a class="btn ghost" href="mitglied.html">Mitglied werden <span class="arr">→</span></a>';
+      t.innerHTML = exp ? `<b>Dein Mitgliedscode galt bis Ende ${m.bis}.</b> Mit deinem neuen Code geht Premium sofort wieder.` : '<b>Premium für Mitglieder:</b> <span class="cl-l">Auto-Schnitt im Takt, eigene Musik, dein Piloten-Tag und Gyroflow. Kein GoPro- oder CapCut-Abo nötig und kein Gyroflow am eigenen PC: alles im Mitgliedsbeitrag.</span><span class="cl-s">Auto-Schnitt, Musik, Tag und Gyroflow, ohne Abo.</span>';
+      b.innerHTML = '<button class="btn solid" type="button" id="mc-open2">Code eingeben</button><a class="btn ghost" href="mitglied.html">Mitglied werden <span class="arr">→</span></a>';
       $('#mc-open2').addEventListener('click', openCode);
     }
   }
@@ -2047,6 +2063,19 @@
     if (window.ScrollTrigger) ScrollTrigger.create({ trigger: st, start: 'top 85%', once: true, onEnter: demo }); else demo();
     ['pointerdown', 'keydown'].forEach(ev => $('#studio').addEventListener(ev, e => { if (e.isTrusted && !e.target.closest('#demo-auto')) interact(); }, true));
     setStep(1, true); goState(); steps(); sumLine(); pendingUploads(); syncUp();
+    // Diagnose für Tests auf echten Geräten: in der Konsole  await FCS.studioStatus()  aufrufen
+    if (window.FCS) FCS.studioStatus = async () => {
+      const WEG = { draw: 'WebCodecs direkt', copy: 'WebCodecs über RGBA-Kopie (sicherer Weg)', element: 'Echtzeit über das Video-Element' };
+      const mx = a => a ? a.map(l => l ? Math.round(l.max) : '-').join('/') : 'nicht getestet';
+      const clips = S.clips.map((c, i) => ({ nr: i + 1, datei: c.name, format: c.info && c.info.ok ? fmtLine(c.info) : (c.info && c.info.err) || 'Beispielclip', zustand: { ok: 'spielt', nicht: 'Browser spielt die Videospur nicht', nurExport: 'nur Export (Standbild-Vorschau)', laden: 'lädt' }[c.state] || c.state,
+        selbsttest_hellste_pixel: `Element ${mx(c.elSamples)} · WebCodecs ${mx(c.lum.draw)} · Kopie ${mx(c.lum.copy)}`, bild: c.ref === true ? 'Bild vorhanden' : c.ref === false ? 'schwarz/sehr dunkel (Inhalt)' : 'noch offen',
+        exportweg: WEG[c.mode] || 'keiner (Export in diesem Browser nicht möglich)', webgl_vorschau: c.glBad ? 'aus, CSS-Ersatz' : 'an' }));
+      let enc = {};
+      try { const M = await media(); const { W, H } = outDims(), fps = outFps(), br = bitrate(W, H, fps); enc = { ausgabe: `${W} × ${H}, ${fps} fps, ${(br / 1e6).toFixed(0)} Mbit/s`, video_encoder: (await M.encodable(W, H, fps, br)) || 'keiner für diese Größe', audio_encoder: (await M.audioCodec()) || 'keiner (dann PCM in MOV)' }; } catch (e) { enc = { fehler: String(e && e.message) }; }
+      const out = { clips, ...enc, webgl: GL ? (GL.ok ? (GL.v2 ? 'WebGL 2' : 'WebGL 1') : 'nicht verfügbar') : 'noch nicht gebraucht', mitglied: isMember() ? S.member.n : 'nein', browser: navigator.userAgent };
+      try { console.table(clips); } catch (e) {}
+      return out;
+    };
     if (window.FCS_STUDIO_TEST) window.__fcsStudio = { S, P, rebuild, setStep, addFiles, loadMusic, exportVideo, select, seqAt, demoAuto, outDims, setLook, setFmt, play, pause };
   }
   function syncUp() { const s = $('#snd'); if (s) sndUI(); gyroClips(); }
