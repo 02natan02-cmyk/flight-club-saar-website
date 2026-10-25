@@ -112,6 +112,10 @@
         <span class="go-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/></svg></span>
         <b class="go-h">Biete/Suche</b><span class="go-p">Teile von Piloten für Piloten.</span>
       </a>
+      <a class="go-t go-spiel sm" href="#spiel" data-reveal>
+        <span class="go-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.2 8.2l2.3 2.3M15.8 8.2l-2.3 2.3M8.2 15.8l2.3-2.3M15.8 15.8l-2.3-2.3"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg></span>
+        <b class="go-h">Spiel</b><span class="go-p">Mit einem Finger durch die Gates, zehn Level, Bestenliste.</span>
+      </a>
     </div>
   </div>
 </section>
@@ -142,6 +146,21 @@
   </div>
 </section>
 
+
+<!-- 3 · SPIEL (Natan 25.10.: höher, damit man es schneller findet) -->
+<section data-nav="Spiel" class="sec spiel" id="spiel">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2" data-split>Kannst du fliegen?</h2>
+      <p class="lede" data-reveal>Ein Tiny Whoop, eine dunkle Halle, leuchtende Gates: Flieg durch Kurven und an Hindernissen vorbei, sammle Akkus, Schilde und doppelte Punkte, zeig Flips, Spins und Powerloops und schaff alle zehn Level, bevor der Akku leer ist. Die Besten landen in der Bestenliste. Am Handy steuerst du mit dem Finger oder durch Kippen. In echt geht das beim Hallenfliegen.</p>
+    </div>
+    <div class="spiel-grid">
+      <div class="game-box" data-reveal><div data-game="whoop" data-board="#spiel-board"></div></div>
+      <aside class="spiel-board" id="spiel-board" data-reveal aria-label="Bestenliste Whoop-Rennen"></aside>
+    </div>
+    <p class="spiel-sim" data-reveal><a class="btn" href="simulator.html"><span>Mit echter Funke oder Controller fliegen: FPV-Simulator</span> <i aria-hidden="true">→</i></a></p>
+  </div>
+</section>
 
 <!-- 4 · DER VEREIN mit Drohnenshow -->
 <section class="sec club" id="verein" data-nav="Verein">
@@ -287,21 +306,6 @@
         <div class="osd z-br hud" id="zap-legal">25 mW · DE OK</div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- 6 · SPIEL -->
-<section data-nav="Spiel" class="sec spiel" id="spiel">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2 class="h2" data-split>Kannst du fliegen?</h2>
-      <p class="lede" data-reveal>Ein Tiny Whoop, eine dunkle Halle, leuchtende Gates: Flieg durch Kurven und an Hindernissen vorbei, sammle Akkus, Schilde und doppelte Punkte, zeig Flips, Spins und Powerloops und schaff alle zehn Level, bevor der Akku leer ist. Die Besten landen in der Bestenliste. Am Handy steuerst du mit dem Finger oder durch Kippen. In echt geht das beim Hallenfliegen.</p>
-    </div>
-    <div class="spiel-grid">
-      <div class="game-box" data-reveal><div data-game="whoop" data-board="#spiel-board"></div></div>
-      <aside class="spiel-board" id="spiel-board" data-reveal aria-label="Bestenliste Whoop-Rennen"></aside>
-    </div>
-    <p class="spiel-sim" data-reveal><a class="btn" href="simulator.html"><span>Mit echter Funke oder Controller fliegen: FPV-Simulator</span> <i aria-hidden="true">→</i></a></p>
   </div>
 </section>
 
