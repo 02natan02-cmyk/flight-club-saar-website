@@ -52,8 +52,8 @@ export async function probe(file) {
    Grafikchip-Canvas eine leere Fläche statt des Bildes liefern.
    'draw' = direkt auf den Grafikchip-Canvas · 'cpu' = auf einen Canvas im Arbeitsspeicher
    'copy' = über eine RGBA-Kopie in sRGB (rechnet HDR und 10 Bit auf normales SDR um) · 'sw' = Software-Dekoder ---------- */
-export const WAYS = ['draw', 'cpu', 'copy', 'sw'];
-export const cpuWay = mode => mode === 'cpu' || mode === 'sw';
+export const WAYS = ['draw', 'cpu', 'copy', 'raw', 'sw'];
+export const cpuWay = mode => mode === 'cpu' || mode === 'sw' || mode === 'raw';
 export function sinkFor(track, mode) { return new M.VideoSampleSink(track, mode === 'sw' ? { hardwareAcceleration: 'prefer-software' } : {}); }
 export function canvas(w, h, mode) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -68,11 +68,62 @@ async function toRGBA(s) {
   const r = s.visibleRect || { width: s.codedWidth, height: s.codedHeight };
   return new M.VideoSample(buf, { format: 'RGBA', codedWidth: r.width, codedHeight: r.height, timestamp: s.timestamp, duration: s.duration, rotation: s.rotation });
 }
+/* 'raw': Rohdaten (YUV, 8 oder 10 Bit) aus dem Dekoder holen und selbst in RGB umrechnen, inklusive HDR (PQ/HLG) → SDR.
+   Umgeht den Grafik-Weg des Browsers komplett: hilft, wenn das Handy für HDR-Videos überall nur leere Flächen liefert. */
+const PQ = (() => { const m1 = .1593017578125, m2 = 78.84375, c1 = .8359375, c2 = 18.8515625, c3 = 18.6875; return v => { const p = Math.pow(Math.max(v, 0), 1 / m2); return Math.pow(Math.max(p - c1, 0) / (c2 - c3 * p), 1 / m1) * 10000; }; })();
+const HLG = v => { const a = .17883277, b = .28466892, c = .55991073; return v <= .5 ? v * v / 3 : (Math.exp((v - c) / a) + b) / 12; };
+const lutCache = new Map();
+function luts(transfer) {
+  let L = lutCache.get(transfer); if (L) return L;
+  // Code (0..1023) → lineares Licht relativ zu SDR-Weiß; danach Tonkurve und Gamma über eine zweite Tabelle
+  const lin = new Float32Array(1024);
+  for (let i = 0; i < 1024; i++) {
+    const v = i / 1023;
+    lin[i] = transfer === 'pq' ? PQ(v) / 203 : transfer === 'hlg' ? Math.pow(HLG(v) * 12, 1.2) / 3.2 : Math.pow(v, 2.4);
+  }
+  const hdr = transfer === 'pq' || transfer === 'hlg';
+  const enc = new Uint8ClampedArray(4096); // lineares Licht 0..4 (in 4096 Stufen) → sRGB 8 Bit
+  for (let i = 0; i < 4096; i++) { let x = i / 1023; if (hdr) x = x * (1 + x / 16) / (1 + x); x = Math.min(1, x); enc[i] = Math.round(255 * (x <= .0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - .055)); }
+  L = { lin, enc, hdr }; lutCache.set(transfer, L); return L;
+}
+async function rawRGBA(s) {
+  const fmt = s.format; if (!fmt) throw new Error('kein Rohformat');
+  const deep = /P10|P12/.test(fmt), sub = /^I420|^NV12/.test(fmt) ? 2 : /^I422/.test(fmt) ? 1 : 0, nv = fmt === 'NV12';
+  if (!/^(I420|I420P10|I420P12|I420A|I422|I422P10|I444|I444P10|NV12)$/.test(fmt)) throw new Error('Format ' + fmt);
+  const r = s.visibleRect || { x: 0, y: 0, width: s.codedWidth, height: s.codedHeight }, w = r.width, h = r.height;
+  const buf = new Uint8Array(s.allocationSize()); const lay = await s.copyTo(buf);
+  const B = deep ? new Uint16Array(buf.buffer, buf.byteOffset, buf.byteLength >> 1) : buf, k = deep ? 2 : 1, sh = deep ? (/P12/.test(fmt) ? 2 : 0) : 0;
+  const cs = s.colorSpace || {}, m = cs.matrix || (w * h > 1280 * 720 ? 'bt709' : 'smpte170m'), full = !!cs.fullRange, tr = cs.transfer || 'bt709';
+  const L = luts(tr === 'pq' ? 'pq' : tr === 'hlg' || tr === 'arib-std-b67' ? 'hlg' : 'sdr');
+  const [kr, kb] = m === 'bt2020-ncl' ? [.2627, .0593] : m === 'smpte170m' || m === 'bt470bg' ? [.299, .114] : [.2126, .0722];
+  const kg = 1 - kr - kb, crR = 2 * (1 - kr), cbB = 2 * (1 - kb), cbG = -2 * kb * (1 - kb) / kg, crG = -2 * kr * (1 - kr) / kg;
+  const g2020 = m === 'bt2020-ncl' || cs.primaries === 'bt2020';
+  const yS = full ? 1 / 1023 : 1 / 876, yO = full ? 0 : 64, cS = full ? 1 / 1023 : 1 / 896;
+  const out = new Uint8ClampedArray(w * h * 4), lin = L.lin, enc = L.enc;
+  const yo = lay[0].offset / k, ys = lay[0].stride / k, uo = lay[1].offset / k, us = lay[1].stride / k, vo = nv ? 0 : lay[2].offset / k, vs = nv ? 0 : lay[2].stride / k;
+  const to10 = deep ? (v => v >> sh) : (v => v << 2);
+  const cx = sub ? 1 : 0, cy = sub === 2 ? 1 : 0;
+  for (let y = 0; y < h; y++) {
+    const yr = yo + y * ys, cyy = y >> cy;
+    for (let x = 0; x < w; x++) {
+      const cxx = x >> cx;
+      let Y = to10(B[yr + x]), U, V;
+      if (nv) { const q = uo + cyy * us + cxx * 2; U = to10(B[q]); V = to10(B[q + 1]); } else { U = to10(B[uo + cyy * us + cxx]); V = to10(B[vo + cyy * vs + cxx]); }
+      const yy = (Y - yO) * yS, u = (U - 512) * cS, v = (V - 512) * cS;
+      let R = yy + crR * v, G = yy + cbG * u + crG * v, Bc = yy + cbB * u;
+      R = lin[R <= 0 ? 0 : R >= 1 ? 1023 : (R * 1023) | 0]; G = lin[G <= 0 ? 0 : G >= 1 ? 1023 : (G * 1023) | 0]; Bc = lin[Bc <= 0 ? 0 : Bc >= 1 ? 1023 : (Bc * 1023) | 0];
+      if (g2020) { const r2 = 1.6605 * R - .5876 * G - .0728 * Bc, g2 = -.1246 * R + 1.1329 * G - .0083 * Bc, b2 = -.0182 * R - .1006 * G + 1.1187 * Bc; R = r2; G = g2; Bc = b2; }
+      const o = (y * w + x) * 4;
+      out[o] = enc[R <= 0 ? 0 : R >= 4 ? 4095 : (R * 1023) | 0]; out[o + 1] = enc[G <= 0 ? 0 : G >= 4 ? 4095 : (G * 1023) | 0]; out[o + 2] = enc[Bc <= 0 ? 0 : Bc >= 4 ? 4095 : (Bc * 1023) | 0]; out[o + 3] = 255;
+    }
+  }
+  return new M.VideoSample(out, { format: 'RGBA', codedWidth: w, codedHeight: h, timestamp: s.timestamp, duration: s.duration, rotation: s.rotation });
+}
 /* test: Name eines Testschalters (FCS_STUDIO_TEST.flat / .flatExport), der für diesen Weg eine leere lila Fläche simuliert */
 export async function drawTo(ctx, s, crop, mode, test) {
   const fit = crop ? { fit: 'fill', crop } : { fit: 'cover' };
   if (test && flagged(test, mode)) { ctx.fillStyle = FLAT; ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); return; }
-  if (mode === 'copy') { const r = await toRGBA(s); try { r.drawWithFit(ctx, fit); } finally { r.close(); } return; }
+  if (mode === 'copy' || mode === 'raw') { const r = await (mode === 'raw' ? rawRGBA(s) : toRGBA(s)); try { r.drawWithFit(ctx, fit); } finally { r.close(); } return; }
   s.drawWithFit(ctx, fit);
 }
 export function lumaOf(ctx, w, h) {
@@ -86,7 +137,7 @@ export function lumaOf(ctx, w, h) {
   return { max: mx, min: mn, mean, std: Math.sqrt(Math.max(0, sq / n - mean * mean)), range: mx - mn, rgb: [r / n, g / n, b / n].map(Math.round) };
 }
 /* Echtes Bild: nicht schwarz und nicht einfarbig. Eine gleichmäßige Fläche (lila, grün, grau) ist kein Videobild. */
-export const real = l => !!(l && l.max >= 8 && (l.std >= 1.5 || l.range >= 10));
+export const real = l => !!(l && l.max >= 6 && (l.std >= .8 || l.range >= 6));
 const withTimeout = (p, ms) => Promise.race([p, new Promise(res => setTimeout(() => res(null), ms))]);
 /* Selbsttest eines Weges: gezeichnet wird auf dieselbe Canvas-Art wie beim Export (groß, Grafikchip oder Arbeitsspeicher),
    danach auf 24 × 24 verkleinert und ausgewertet. */
@@ -326,13 +377,18 @@ export async function render(job, hooks = {}) {
         if (flagged('flatExport', 'gl')) { out.fillStyle = FLAT; out.fillRect(0, 0, W, H); }
       } else {
         // 2D-Ersatz ohne WebGL: Blende als Überblendung, Blitz als weiße Fläche, Look per Canvas-Filter
-        if (look && 'filter' in out && job.cssLook) out.filter = job.cssLook(look.id, look.k);
-        out.globalAlpha = 1; out.drawImage(A, 0, 0, W, H);
-        if (inTr && B) {
-          const p = Math.max(0, Math.min(1, tr.p));
-          if (cut.type === 'blitz') { out.drawImage(B, 0, 0, W, H); out.filter = 'none'; out.fillStyle = '#fff'; out.globalAlpha = Math.pow(1 - p, 2.2) * .95; out.fillRect(0, 0, W, H); }
-          else { out.globalAlpha = p * p * (3 - 2 * p); out.drawImage(B, 0, 0, W, H); }
-          out.globalAlpha = 1;
+        const base = look && job.cssLook ? job.cssLook(look.id, look.k) : 'none';
+        if ('filter' in out) out.filter = base;
+        out.globalAlpha = 1;
+        if (inTr && B && job.tr2d) job.tr2d(out, A, null, B, null, tr, W, H, base);
+        else {
+          out.drawImage(A, 0, 0, W, H);
+          if (inTr && B) {
+            const p = Math.max(0, Math.min(1, tr.p));
+            if (cut.type === 'blitz') { out.drawImage(B, 0, 0, W, H); out.filter = 'none'; out.fillStyle = '#fff'; out.globalAlpha = Math.pow(1 - p, 2.2) * .95; out.fillRect(0, 0, W, H); }
+            else { out.globalAlpha = p * p * (3 - 2 * p); out.drawImage(B, 0, 0, W, H); }
+            out.globalAlpha = 1;
+          }
         }
         if ('filter' in out) out.filter = 'none';
         if (fade > 0) { out.fillStyle = '#000'; out.globalAlpha = fade; out.fillRect(0, 0, W, H); out.globalAlpha = 1; }

@@ -35,6 +35,45 @@ export const TRANS = {
   whip:    { n: 'Whip-Pan', d: .36 },
   glitch:  { n: 'Glitch', d: .3 }
 };
+/* Übergänge ohne WebGL, mit 2D-Zeichnen (Export-Ersatz und Echtzeit-Weg). A/B: Quelle, ra/rb: [sx, sy, sw, sh] oder null,
+   tr: {type, p, seed}, base: Canvas-Filter des Looks ('none' oder z. B. 'contrast(1.1)') */
+export function tr2d(ctx, A, ra, B, rb, tr, W, H, base) {
+  const d = (S, r, x, y, w, h) => { if (r) ctx.drawImage(S, r[0], r[1], r[2], r[3], x, y, w, h); else ctx.drawImage(S, x, y, w, h); };
+  const f0 = base && base !== 'none' ? base : '', setF = extra => { if ('filter' in ctx) ctx.filter = (f0 + ' ' + (extra || '')).trim() || 'none'; };
+  const p = Math.max(0, Math.min(1, tr.p)), e = p * p * (3 - 2 * p);
+  setF(); ctx.globalAlpha = 1;
+  switch (tr.type) {
+    case 'blitz': d(B, rb, 0, 0, W, H); ctx.filter = 'none'; ctx.fillStyle = '#fff'; ctx.globalAlpha = Math.pow(1 - p, 2.2) * .95; ctx.fillRect(0, 0, W, H); break;
+    case 'zoom': {
+      const q = p < .5 ? p / .5 : (p - .5) / .5, s = p < .5 ? 1 + .45 * q * q : 1.3 - .3 * (1 - Math.pow(1 - q, 3));
+      d(p < .5 ? A : B, p < .5 ? ra : rb, W * (1 - s) / 2, H * (1 - s) / 2, W * s, H * s); break;
+    }
+    case 'wisch': {
+      d(A, ra, 0, 0, W, H);
+      const k = e * 1.5 - .25, x0 = k / .8 * W, x1 = (k - .2) / .8 * W;
+      ctx.save(); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(x0, 0); ctx.lineTo(x1, H); ctx.lineTo(0, H); ctx.closePath(); ctx.clip();
+      d(B, rb, 0, 0, W, H); ctx.restore(); setF(); break;
+    }
+    case 'whip': {
+      setF(`blur(${(Math.sin(Math.PI * p) * W * .012).toFixed(1)}px)`);
+      d(A, ra, -e * W, 0, W, H); d(B, rb, (1 - e) * W, 0, W, H); break;
+    }
+    case 'glitch': {
+      const k = 1 - p; d(B, rb, 0, 0, W, H);
+      const hs = n => { const x = Math.sin(n) * 43758.5453; return x - Math.floor(x); };
+      for (let i = 0; i < 18; i++) {
+        if (hs(i * 3.1 + tr.seed) < .55) continue;
+        const sh = (hs(i + tr.seed) - .5) * .12 * k * W, y = i * H / 18, h = H / 18 + 1;
+        const r = rb || [0, 0, B.videoWidth || B.width, B.videoHeight || B.height], sy = r[1] + r[3] * i / 18, sh2 = r[3] / 18;
+        ctx.drawImage(B, r[0], sy, r[2], sh2, sh, y, W, h);
+      }
+      break;
+    }
+    case 'schnitt': d(B, rb, 0, 0, W, H); break;
+    default: d(A, ra, 0, 0, W, H); ctx.globalAlpha = e; d(B, rb, 0, 0, W, H);
+  }
+  ctx.globalAlpha = 1; if ('filter' in ctx) ctx.filter = 'none';
+}
 const TYPE = { schnitt: 0, blende: 1, blitz: 2, zoom: 3, wisch: 4, whip: 5, glitch: 6 };
 
 const VS = `
@@ -190,6 +229,8 @@ export function compositor(canvas) {
     /* A, B: Quellen; ra/rb: Ausschnitt [u0,v0,u1,v1] (0..1); tr: {type, p, seed}; look: {id, k}; fade: 0..1 */
     render({ A, B, ra, rb, tr, look, fade }) {
       if (api.lost) return false;
+      // Testschalter: simuliert ein Handy, dessen WebGL nur eine leere lila Fläche liefert
+      if (window.FCS_STUDIO_TEST && window.FCS_STUDIO_TEST.flatGL) { gl.clearColor(.184, .051, .2, 1); gl.clear(gl.COLOR_BUFFER_BIT); return true; }
       if (A) upload(tA, 0, A);
       const hasB = !!(B && tr && tr.type && tr.type !== 'schnitt');
       if (hasB) upload(tB, 1, B);

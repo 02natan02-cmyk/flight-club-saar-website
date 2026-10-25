@@ -517,3 +517,16 @@ details.st-tk-more>.fold-in{padding:0}
 .tagbox .btn.ok{--b:var(--green);color:var(--green)}
 
 @media (prefers-reduced-motion:reduce){.st-hint-dot,.st-steps li.now b,.st-add.nudge,.flash,.st-sb.flash{animation:none}}
+
+/* Arbeitsmodus: sobald ein eigener Clip geladen ist, klebt die Schritt-Leiste oben (statt der Kapitel-Leiste der Seite),
+   und der Ratgeber darunter ist ausgeblendet, bis man das Studio verlässt */
+body.st-work .toc{display:none}
+body.st-work #studio ~ section{display:none}
+body.st-work .st-steps{position:sticky;top:74px;z-index:31;margin-inline:calc(-1 * clamp(6px,1.4vw,14px));padding:8px clamp(6px,1.4vw,14px);background:rgba(4,9,18,.9);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);border-radius:0 0 18px 18px;transition:top .45s var(--ease)}
+body.st-work.nav-hidden .st-steps{top:0}
+body.st-work .st-steps button{min-height:50px;padding:6px 10px}
+body.st-work .st-steps small{display:none}
+@media (max-width:700px){body.st-work .st-steps{top:70px}body.st-work .st-steps button{min-height:46px}}
+.st-leave{margin-top:clamp(24px,4vw,44px);padding:18px;border:1px solid var(--line-hi);border-radius:18px;display:grid;gap:12px;justify-items:start;background:rgba(2,6,14,.55)}
+.st-leave .btn{min-height:48px}
+@media (max-width:420px){body.st-work .st-steps span{font-size:12px;letter-spacing:0}body.st-work .st-steps button{padding:6px 4px;column-gap:6px}}
