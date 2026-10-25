@@ -197,7 +197,12 @@
       const stab = c === 'x360' ? [K.stabCam, 'Gyroflow kann gestitchtes 360-Grad-Video nicht stabilisieren.'] : s === 'gyro' ? [K.stabGyro, 'Danach in Gyroflow: Objektivprofil, Glättung, Horizont.'] : [K.stabCam, 'Fertig zum Posten direkt nach dem Flug.'];
       let nd;
       if (z === 'halle') nd = ['Kein ND', 'In der Halle ist es dunkel genug.'];
-      else if (c === 'x360') nd = ['Je nach Modell', 'Prüf, ob es für deine 360-Grad-Kamera passende ND-Filter gibt.'];
+      else if (c === 'x360') {
+        // Aufsteckfilter gibt es für die Insta360 X5 und X6 nur als ND16, ND32 und ND64
+        const r = ndRec(15, fps, ang, K.ap), ix = Math.min(5, Math.max(3, r.i)), nm = r.i ? NDN[ix] : 'Kein ND';
+        const cap = ix === 5 && r.i > 5;
+        nd = [nm, (!r.i ? '' : cap ? `Stärker als ND64 gibt es nicht: Bei Sonne wird der Shutter damit ${shTxt(r.tB * 64)} s statt ${shTxt(t)} s. ` : `Richtwert bei Sonne für ${shTxt(t)} s. `) + 'Zum Aufstecken gibt es ND16, ND32 und ND64 für die Insta360 X5 und X6. Für die GoPro Max 2 bietet GoPro keine ND-Filter an, dort wird der Shutter bei Sonne kürzer.'];
+      }
       else { const r = ndRec(15, fps, ang, K.ap); nd = [r.name, `Richtwert bei Sonne für ${shTxt(t)} s. Bei Wolken ein bis zwei Stufen schwächer.`]; }
       const rows = [['Auflösung', res], ['Bildrate', [fps + 'p', fpsWhy]], ['Shutter', [shTxt(t) + ' s', shWhy]], ['ISO', iso], ['Weißabgleich', wb], ['Profil', prof], ['Objektiv', lens], ['Stabilisierung', stab], ['ND bei Sonne', nd]];
       out.innerHTML = rows.map(([k, [v, w]]) => `<div class="${prev[k] !== undefined && prev[k] !== v ? 'flash' : ''}"><dt>${k}</dt><dd><b>${esc(v)}</b><span>${esc(w)}</span></dd></div>`).join('');
@@ -223,25 +228,25 @@
     { n: 'GoPro HERO13 Black', t: 'Action-Cam', g: 159, gt: '159 g mit Akku', s: '5.3K60, 4K120, 10 Bit, Log, bis 120 Mbit/s, HyperSmooth 6.0', gy: 'ja', k: ['fuenf', 'lr'] },
     { n: 'DJI Osmo Action 6', t: 'Action-Cam', g: 149, gt: '149 g', s: '4K bis 120 fps, auch quadratisch 3840 × 3840, 1/1,1-Zoll-Sensor, Blende f/2,0 bis f/4,0, D-Log M in 10 Bit', gy: 'ja', k: ['fuenf', 'lr'] },
     { n: 'DJI Osmo Action 5 Pro', t: 'Action-Cam', g: 146, gt: '146 g', s: '4K120, 1/1,3-Zoll-Sensor, 155°, RockSteady 3.0+', gy: 'ja', k: ['fuenf', 'lr'] },
-    { n: 'GoPro Mission 1', t: 'Action-Cam', g: null, gt: 'keine Angabe', s: 'Neu seit Mai 2026: 1-Zoll-Sensor, 8K60, 4K240, 159°', gy: 'nicht gelistet', k: ['fuenf', 'lr'] },
+    { n: 'GoPro Mission 1 Pro', t: 'Action-Cam', g: 207, gt: 'ca. 207 g', s: 'Seit Mai 2026: 1-Zoll-Sensor mit 50 Megapixeln, 8K60, 4K240. Die Mission 1 ohne Pro schafft 8K30 und 4K120. Gyroflow listet keine der beiden Mission-Kameras, also nutz die Stabilisierung in der Kamera.', gy: 'nein', k: ['fuenf', 'lr'] },
     { n: 'Naked GoPro (Beispiel HERO9)', t: 'Naked', g: 49, gt: '49 g im Flywoo-Case', s: 'Bild wie das Original, Strom vom Kopter (2S bis 6S), nicht wasserdicht', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
-    { n: 'RunCam Thumb 2', t: 'Mini-HD', g: 27, gt: '27 g', s: '4K60, 1080p120, 5 V, Gyro-Datei für Gyroflow', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
-    { n: 'Insta360 GO 3S', t: 'Mini-HD', g: 39, gt: '39 g Kamera allein', s: '4K, FlowState-Stabilisierung', gy: 'ja', k: ['cine', 'fuenf'] },
-    { n: 'Insta360 GO Ultra', t: 'Mini-HD', g: 53, gt: '53 g', s: '4K60, 1/1,28-Zoll-Sensor, 156°, bis 180 Mbit/s', gy: 'nicht gelistet', k: ['cine', 'fuenf'] },
-    { n: 'Caddx Walnut', t: 'Mini-HD', g: 60, gt: 'ca. 60 g', s: '4K60, 1/2,3-Zoll-Sensor, Strom 2S bis 6S, IP64', gy: 'ja', k: ['fuenf', 'lr'] },
+    { n: 'RunCam Thumb 2', t: 'Mini-HD', g: 27, gt: '27 g', s: '4K60, 1080p120, 5 V. Für Gyroflow: .gcsv-Datei neben dem Video, Synchronisation nötig.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
+    { n: 'Insta360 GO 3S', t: 'Mini-HD', g: 39, gt: '39 g Kamera allein', s: '4K, FlowState-Stabilisierung. Gyroflow braucht keine Synchronisation.', gy: 'ja', k: ['cine', 'fuenf'] },
+    { n: 'Insta360 GO Ultra', t: 'Mini-HD', g: 53, gt: '53 g', s: '4K60, 1/1,28-Zoll-Sensor, 156°, bis 180 Mbit/s. Gyroflow liest ihre Bewegungsdaten, in der Kameratabelle der Doku steht sie noch nicht.', gy: 'ja', k: ['cine', 'fuenf'] },
+    { n: 'Caddx Walnut', t: 'Mini-HD', g: 60, gt: 'ca. 60 g', s: '4K60, 1/2,3-Zoll-Sensor, Strom 2S bis 6S, IP64. Für Gyroflow: .gcsv-Datei, Synchronisation nötig, interne Verzerrungskorrektur aus.', gy: 'ja', k: ['fuenf', 'lr'] },
     { n: 'DJI O4 Air Unit', t: 'Digital', g: 8.2, gt: 'ca. 8,2 g mit Kamera', s: '4K60, 1080p120, 1/2-Zoll-Sensor, 117,6°, bis 100 Mbit/s, 23 GB intern', gy: 'ja', k: ['whoop', 'cine', 'fuenf'] },
-    { n: 'DJI O4 Air Unit Pro', t: 'Digital', g: 32, gt: 'ca. 32 g mit Kamera', s: '4K120, 1/1,3-Zoll-Sensor, 155°, D-Log M, bis 130 Mbit/s', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
-    { n: 'Walksnail Avatar Moonlight', t: 'Digital', g: 38.5, gt: 'ca. 38,5 g ohne Antenne', s: '4K60, 1080p100, bis 150 Mbit/s, Gyro-Datei', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
-    { n: 'HDZero', t: 'Digital', g: null, gt: 'Aufnahme in der Brille', s: 'DVR in der Brille, gut zum Auswerten. Für Filme eine zusätzliche HD-Kamera mitnehmen.', gy: 'nein', k: ['whoop', 'cine', 'fuenf'] },
+    { n: 'DJI O4 Air Unit Pro', t: 'Digital', g: 32, gt: 'ca. 32 g mit Kamera', s: '4K120, 1/1,3-Zoll-Sensor, 155°, D-Log M, bis 130 Mbit/s. Bei Einheiten von 2026 mit dem Gyro-Chip 1469D meldet das Gyro unter Vibration falsche Bewegung: dann die Optische Korrektur in Gyroflow nutzen.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
+    { n: 'Walksnail Avatar Moonlight', t: 'Digital', g: 38.5, gt: 'ca. 38,5 g ohne Antenne', s: '4K60, 1080p100, bis 150 Mbit/s. Für Gyroflow: eigene Gyro-Datei, Synchronisation von Hand, eingebaute Stabilisierung aus.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
+    { n: 'HDZero', t: 'Digital', g: null, gt: 'Aufnahme in der Brille', gs: 'in der Brille', s: 'DVR in der Brille, gut zum Auswerten. Für Filme eine zusätzliche HD-Kamera mitnehmen.', gy: 'nein', k: ['whoop', 'cine', 'fuenf'] },
     { n: 'Insta360 X6', t: '360 Grad', g: 196, gt: '196 g', s: 'Seit August 2026: 8K50 rundum, Einzellinse bis 5K60, I-Log', gy: '360', k: ['fuenf', 'lr'] },
     { n: 'Insta360 X5', t: '360 Grad', g: 201, gt: '201 g', s: '8K rundum, austauschbare Linsen', gy: '360', k: ['fuenf', 'lr'] },
-    { n: 'GoPro Max 2', t: '360 Grad', g: null, gt: 'keine Angabe', s: '360-Grad-Kamera, vorgestellt im September 2025', gy: '360', k: ['fuenf', 'lr'] },
-    { n: 'DJI Avata 360', t: '360-Grad-Drohne', g: null, gt: 'komplette Drohne', s: 'Seit März 2026: 8K60 rundum, Einzellinse 4K60, Reframing in DJI Fly und DJI Studio', gy: '360', k: [] }
+    { n: 'GoPro Max 2', t: '360 Grad', g: 195, gt: '195 g', s: 'Seit September 2025: 8K30 rundum, 5.6K60, austauschbare Linsen. Keine ND-Filter von GoPro.', gy: '360', k: ['fuenf', 'lr'] },
+    { n: 'DJI Avata 360', t: '360-Grad-Drohne', g: null, gt: 'ca. 455 g, komplette Drohne', gs: 'ganze Drohne', s: 'Seit März 2026: 8K60 rundum, Einzellinse 4K60, Reframing in DJI Fly und DJI Studio. Gyroflow liest nur die Bewegungsdaten und spielt das Video nicht ab.', gy: '360', k: [] }
   ];
   function shelf() {
     const list = $('#fm-shelf'); if (!list) return;
     const say = $('#fm-shelf-say'), sort = $('#fm-sort'), root = list.closest('.fm-shelf'), card = $('#fm-cam-card');
-    const GY = { ja: ['green', 'Gyroflow: ja'], nein: ['', 'Gyroflow: nein'], 'prüfen': ['amber', 'Gyroflow: prüfen'], 'nicht gelistet': ['amber', 'Gyroflow: nicht gelistet'], '360': ['sig', 'Reframen in der App'] };
+    const GY = { ja: ['green', 'Gyroflow: ja'], nein: ['', 'Gyroflow: nein'], '360': ['sig', 'Reframen in der App'] };
     const KL = { whoop: 'Tiny Whoop', cine: 'Cinewhoop', fuenf: '5 Zoll', lr: 'Long Range' };
     const SAY = {
       alle: 'Alle 17 Kameras, der Balken zeigt das Gewicht. Wähl eine Kopter-Klasse, um zu sehen, was passt.',
@@ -277,7 +282,7 @@
         const w = c.g == null ? 0 : c.g / MAXG;
         return `<li><button type="button" class="fm-cam" data-n="${esc(c.n)}" data-k="${c.k.join(' ')}" aria-expanded="false" aria-controls="fm-cx-${i}">` +
           `<span class="fm-cam-n">${esc(c.n)}<small>${esc(c.t)}</small></span>` +
-          `<span class="fm-cam-w">${c.g == null ? `<em>${esc(c.gt)}</em>` : `<i style="--w:${shown ? w.toFixed(3) : 0}" data-w="${w.toFixed(3)}"></i>`}</span>` +
+          `<span class="fm-cam-w">${c.g == null ? `<em>${esc(c.gs || c.gt)}</em>` : `<i style="--w:${shown ? w.toFixed(3) : 0}" data-w="${w.toFixed(3)}"></i>`}</span>` +
           `<span class="fm-cam-g">${c.g == null ? '' : de(c.g, c.g % 1 ? 1 : 0) + '&nbsp;g'}</span></button>` +
           `<div class="fm-cam-x" id="fm-cx-${i}">${info(c)}</div></li>`;
       }).join('');

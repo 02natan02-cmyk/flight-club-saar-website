@@ -93,7 +93,7 @@ details.fm-more>.fold-in{display:grid;gap:clamp(14px,2vw,22px);padding:0}
 .fm-copied{min-height:1.2em;margin:10px 0 0;font-size:12px;letter-spacing:.14em;color:var(--green)}
 fieldset{border:0;margin:0 0 14px;padding:0;min-width:0}
 fieldset legend{margin-bottom:8px;padding:0}
-.fm-sec input[type=range]{width:100%;accent-color:var(--sig);height:28px;cursor:pointer}
+.fm-sec input[type=range]{width:100%;accent-color:var(--sig);height:44px;cursor:pointer}
 .fm-ticks{position:relative;height:16px;margin:2px 10px 0!important;font:600 10.5px var(--hud);letter-spacing:.04em}
 .fm-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
 .panel .h3{margin-bottom:.5em}
@@ -379,7 +379,7 @@ fieldset legend{margin-bottom:8px;padding:0}
 .fm-tool .h3{margin:6px 0 0}
 .fm-tool p{font-size:14px;color:#c9d8ec}
 .fm-tool .tri-go{margin-top:auto;font:600 12px var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--sig)}
-.tri-go{font:600 12px var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--sig);text-decoration:none}
+.tri-go{font:600 12px var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--sig);text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
 .fm-frame{display:grid;grid-template-columns:minmax(0,1.5fr) auto minmax(0,1fr);gap:clamp(16px,2.4vw,30px);align-items:center;margin-top:clamp(24px,4vw,44px)}
 .fm-frame-src{position:relative}
 .fm-frame-img{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000 url(../../media/schiff.webp) center/cover no-repeat;border:1px solid var(--line-hi);touch-action:pan-y}
@@ -629,3 +629,10 @@ fieldset legend{margin-bottom:8px;padding:0}
   .fm-iris{display:none}
   .fm-focus,.fm-rule-disc svg{animation:none}
 }
+
+/* Tippflächen: mindestens 44 px, damit alles am Handy sicher zu treffen ist */
+.chip span{min-height:44px;min-width:44px;box-sizing:border-box;align-items:center;justify-content:center}
+.btn{min-height:44px}
+.fm-mv-btns button,.fm-ck-tabs button,.fm-sec select{min-height:44px}
+/* Am Handy deckt der Hinweis sonst die Bildschirmanzeige der Werkzeuge ab */
+@media (max-width:620px){.fm-hint-nd,.fm-hint-sh{top:50%;right:auto;left:50%;translate:-50% -50%}}

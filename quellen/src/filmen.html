@@ -56,39 +56,63 @@
   </div>
 </section>
 
-<!-- CLIP-STUDIO: 1 Video auswählen · 2 Logos und Sticker · 3 Runterladen oder schicken -->
+<!-- CLIP-STUDIO: 1 Clips · 2 Schneiden · 3 Musik · 4 Look und Logo · 5 Fertig (Logik: assets/js/studio*.js) -->
 <section class="sec st-sec" id="studio" data-toc="Clip-Studio" aria-labelledby="st-h">
   <div class="wrap">
     <header class="st-head">
       <h2 class="h2" id="st-h" data-split>Clip-Studio</h2>
       <div>
-        <p class="lede">Dein Video, das Vereinslogo drauf, fertig zum Posten: in drei Schritten direkt hier im Browser, am Handy genauso wie am PC.</p>
-        <p class="st-safe"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Das Video bleibt auf deinem Gerät, bis du es selbst abschickst.</p>
+        <p class="lede">Clips rein, coole Stellen antippen, Musik drunter, Vereinslogo drauf, fertig. Das Studio schneidet auf den Takt und rechnet dein Video in voller Qualität, direkt im Browser, am Handy genauso wie am PC.</p>
+        <p class="st-safe"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Deine Videos bleiben auf deinem Gerät, bis du sie selbst an den Verein schickst.</p>
       </div>
     </header>
 
-    <ol class="st-steps" id="st-steps" aria-label="So funktioniert das Clip-Studio">
-      <li class="now"><button type="button" data-step="1" aria-current="step"><b>1</b><span>Video auswählen</span><small>MP4, MOV oder WebM vom Handy oder PC</small></button></li>
-      <li><button type="button" data-step="2"><b>2</b><span>Logos und Sticker draufziehen</span><small>Vereinslogo, Ayedo-Logo und Sticker</small></button></li>
-      <li><button type="button" data-step="3"><b>3</b><span>Runterladen oder an den Verein schicken</span><small>fertig für Reels, TikTok und YouTube</small></button></li>
-    </ol>
+    <div class="st-club" id="st-club">
+      <div class="st-club-in">
+        <span class="st-club-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg></span>
+        <p class="st-club-t" id="st-club-t"><b>Premium für Mitglieder:</b> <span class="cl-l">Auto-Schnitt im Takt, eigene Musik, dein Piloten-Tag und Gyroflow. Kein GoPro- oder CapCut-Abo nötig und kein Gyroflow am eigenen PC: alles im Mitgliedsbeitrag.</span><span class="cl-s">Auto-Schnitt, Musik, Tag und Gyroflow, ohne Abo.</span></p>
+        <div class="st-club-b" id="st-club-b"><button class="btn solid" type="button" id="mc-open">Code eingeben</button><a class="btn ghost" href="mitglied.html">Mitglied werden <span class="arr">→</span></a></div>
+      </div>
+      <p class="st-lockmsg" id="st-lockmsg" hidden></p>
+      <form class="st-code" id="mc-form" novalidate hidden>
+        <label for="mc-code">Dein Mitgliedscode</label>
+        <div class="st-code-row"><input id="mc-code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="FCS-XXXX-XXXX" maxlength="16"><button class="btn solid" type="submit">Freischalten</button></div>
+        <p class="st-code-msg" id="mc-msg" role="status" aria-live="polite"></p>
+        <p class="st-code-help">Den Code bekommst du vom Vorstand. Er wird nur auf diesem Gerät gemerkt, abmelden geht jederzeit.</p>
+      </form>
+    </div>
+
+    <nav class="st-steps" id="st-steps" aria-label="Schritte im Clip-Studio">
+      <ol>
+        <li class="now"><button type="button" data-step="1" aria-current="step"><b>1</b><span>Clips</span><small>Video oder bis zu 5 Clips</small></button></li>
+        <li><button type="button" data-step="2"><b>2</b><span>Schneiden</span><small>Zuschneiden oder Auto-Schnitt</small></button></li>
+        <li><button type="button" data-step="3"><b>3</b><span>Musik</span><small>Takt und Bässe erkannt</small></button></li>
+        <li><button type="button" data-step="4"><b>4</b><span><i class="s-l">Look &amp; </i>Logo</span><small>Farbe, Logo, Sticker, Tag</small></button></li>
+        <li><button type="button" data-step="5"><b>5</b><span>Fertig</span><small>Speichern oder einsenden</small></button></li>
+      </ol>
+    </nav>
 
     <div class="st" id="st">
       <div class="st-main">
         <div class="st-stagewrap" id="st-wrap">
           <div class="st-stage" id="st-stage">
-            <canvas id="st-cv" aria-hidden="true"></canvas>
+            <div class="st-vids" id="st-vids"></div>
+            <canvas class="st-gl" id="st-gl" aria-hidden="true"></canvas>
+            <div class="st-fx" id="st-fx" aria-hidden="true"></div>
+            <div class="st-fade" id="st-fade" aria-hidden="true"></div>
+            <canvas class="st-ov" id="st-cv" aria-hidden="true"></canvas>
             <div class="st-layer" id="st-layer" role="group" aria-label="Logos und Sticker auf dem Video"></div>
             <div class="st-drop" id="st-drop">
               <button class="btn solid" type="button" data-st-pick><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>Video auswählen</button>
-              <span>oder hierher ziehen · MP4, MOV oder WebM</span>
+              <span>oder hierher ziehen · MP4, MOV, WebM, auch 4K und HDR</span>
             </div>
             <div class="st-dragover" aria-hidden="true"><b>Loslassen</b><span>Das Video wird nur in deinem Browser geöffnet</span></div>
-            <p class="st-hint" id="st-hint" aria-hidden="true"><span class="st-hint-dot"></span><span id="st-hint-t">Zieh ein Logo von rechts aufs Video</span></p>
+            <p class="st-hint" id="st-hint" aria-hidden="true"><span class="st-hint-dot"></span><span id="st-hint-t">Zieh ein Logo aufs Video</span></p>
+            <button class="st-tap" type="button" id="st-tap" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>Tippen zum Abspielen</button>
             <div class="st-err" id="st-err" role="alert" hidden></div>
           </div>
         </div>
-        <input class="sr" type="file" id="st-file" accept="video/mp4,video/quicktime,video/webm,video/*" aria-label="Video auswählen" tabindex="-1">
+        <input class="sr" type="file" id="st-file" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv" multiple aria-label="Clips auswählen" tabindex="-1">
 
         <div class="st-transport">
           <span class="st-tag hud" id="st-tag">BEISPIEL</span>
@@ -97,29 +121,127 @@
           <span class="st-time hud" id="st-time">0:00 / 0:00</span>
           <button class="st-ic" type="button" id="st-mute" aria-label="Ton" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="i-on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="i-off" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
           <span class="st-name" id="st-name">Beispielvideo</span>
-          <button class="btn solid st-other" type="button" id="st-other" data-st-pick><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>Video auswählen</button>
+          <button class="btn amber solid st-markb" type="button" id="st-mark" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg>Stelle</button>
         </div>
 
         <div class="st-trim" id="st-trim" hidden>
-          <div class="tl" id="tl" aria-label="Video kürzen">
+          <div class="tl" id="tl" aria-label="Zeitleiste des Clips">
             <canvas class="tl-strip" id="tl-strip" aria-hidden="true"></canvas>
             <div class="tl-shade tl-l" id="tl-sl"></div><div class="tl-shade tl-r" id="tl-sr"></div>
             <div class="tl-win" id="tl-win"></div>
-            <div class="tl-h tl-a" id="tl-a" role="slider" tabindex="0" aria-label="Start des Clips" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><i></i></div>
+            <div class="tl-marks" id="tl-marks"></div>
+            <div class="tl-h tl-a" id="tl-a" role="slider" tabindex="0" aria-label="Anfang des Clips" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><i></i></div>
             <div class="tl-h tl-b" id="tl-b" role="slider" tabindex="0" aria-label="Ende des Clips" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><i></i></div>
             <div class="tl-ph" id="tl-ph" aria-hidden="true"></div>
           </div>
-          <div class="tl-read hud"><span>Start <b id="tl-ra">0:00,0</b></span><span>Länge <b id="tl-rl">0,0 s</b> <em>max. 60 s</em></span><span>Ende <b id="tl-rb">0:00,0</b></span></div>
-          <p class="tl-hint">Kürzen: Zieh die gelben Griffe oder das ganze Fenster. <span id="tl-long" hidden>Dein Video ist länger als 60 Sekunden, wähl hier den Ausschnitt.</span></p>
+          <div class="tl-read hud" id="tl-read"><span>Anfang <b id="tl-ra">0:00,0</b></span><span>Länge <b id="tl-rl">0,0 s</b></span><span>Ende <b id="tl-rb">0:00,0</b></span></div>
+          <p class="tl-hint" id="tl-hint">Zuschneiden: Zieh die gelben Griffe oder das ganze Fenster.</p>
+          <p class="tl-hint" id="tl-long" hidden>Dein Video ist länger als 3 Minuten, wähl hier den Ausschnitt.</p>
+        </div>
+
+        <div class="st-sb" id="st-sb" hidden>
+          <p class="sb-h hud"><span id="sb-info"></span><span class="sb-tip">Übergang antippen zum Tauschen</span></p>
+          <div class="sb-row" id="sb-row"></div>
+          <div class="sb-menu" id="sb-menu" role="menu" aria-label="Übergang wählen" hidden></div>
         </div>
       </div>
 
-      <div class="st-panel panel">
-        <div class="st-blk" id="st-b2">
-          <div class="st-bh"><b>2</b><h3>Logos und Sticker</h3><button class="linkbtn" type="button" id="stk-clear" hidden>Alle entfernen</button></div>
+      <div class="st-panel panel" id="st-panel">
+        <!-- 1 Clips -->
+        <section class="st-pane" data-pane="1" aria-labelledby="p1-h">
+          <div class="st-bh"><b>1</b><h3 id="p1-h">Deine Clips</h3></div>
+          <p class="st-help">Wähl dein Video vom Handy oder PC: MP4, MOV oder WebM, auch 4K, HDR, Hochkant und Drohnen-Aufnahmen. Mitglieder hängen bis zu fünf Clips aneinander.</p>
+          <button class="btn solid st-add" type="button" id="clips-add" data-st-pick><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg><span>Clips auswählen</span></button>
+          <p class="st-note" id="clips-note" hidden></p>
+          <ul class="clips" id="clips" aria-label="Deine Clips"></ul>
+          <p class="st-help small mute" id="clips-none">Noch kein eigenes Video gewählt, auf der Bühne läuft ein Beispiel.</p>
+        </section>
+
+        <!-- 2 Schneiden -->
+        <section class="st-pane" data-pane="2" aria-labelledby="p2-h" hidden>
+          <div class="st-bh"><b>2</b><h3 id="p2-h">Schneiden</h3></div>
+          <div class="st-seg" role="radiogroup" aria-label="Art des Schnitts">
+            <label><input type="radio" name="st-mode" value="trim" checked><span><b>Zuschneiden</b><small>Anfang und Ende wählen</small></span></label>
+            <label data-prem><input type="radio" name="st-mode" value="auto"><span><b>Auto-Schnitt <i class="prem-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="sr">für Mitglieder</span></i></b><small>Stellen antippen, das Studio schneidet im Takt</small></span></label>
+          </div>
+          <div id="p2-trim">
+            <p class="st-help">Zieh unter dem Video die gelben Griffe. Für genaue Schnitte nimmst du die Knöpfe hier oder die Pfeiltasten am Griff (mit Umschalt springt es eine Sekunde).</p>
+            <div class="fine">
+              <div class="fine-row tl-fine"><span class="hud">Anfang</span><button class="btn ghost" type="button" data-fine="a-" aria-label="Anfang −0,1 s früher">−0,1 s</button><button class="btn ghost" type="button" data-fine="a=" aria-label="Anfang hier setzen">Hier</button><button class="btn ghost" type="button" data-fine="a+" aria-label="Anfang +0,1 s später">+0,1 s</button></div>
+              <div class="fine-row tl-fine"><span class="hud">Ende</span><button class="btn ghost" type="button" data-fine="b-" aria-label="Ende −0,1 s früher">−0,1 s</button><button class="btn ghost" type="button" data-fine="b=" aria-label="Ende hier setzen">Hier</button><button class="btn ghost" type="button" data-fine="b+" aria-label="Ende +0,1 s später">+0,1 s</button></div>
+            </div>
+            <p class="st-help small">„Hier“ setzt Anfang oder Ende an die Stelle, an der das Video gerade steht.</p>
+          </div>
+          <div id="p2-auto" hidden>
+            <ol class="how"><li>Spiel den Clip ab und tipp bei jeder coolen Stelle auf <b>★ Stelle</b> (am PC auch Taste M).</li><li>Wähl einen Stil.</li><li>Tipp auf <b>Schneiden</b>: Die Szenen landen auf den Bässen deiner Musik.</li></ol>
+            <div class="chips-b" id="mk-chips"></div>
+            <button class="btn amber solid" type="button" id="mk-add"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg>Coole Stelle hier</button>
+            <label class="rng"><span>Szene</span><input type="range" id="mk-len" min="2" max="10" step=".5" value="5"><output id="mk-len-o">5,0 s</output></label>
+            <p class="mk-n hud" id="mk-n" aria-live="polite">Noch keine Stelle markiert</p>
+            <p class="st-sub">Stil</p>
+            <div class="styles" role="radiogroup" aria-label="Stil des Schnitts">
+              <label class="sty"><input type="radio" name="st-style" value="ruhig"><span><b>Ruhig</b><small>Lange Szenen, weiche Blenden</small></span></label>
+              <label class="sty"><input type="radio" name="st-style" value="action" checked><span><b>Action</b><small>Kurz auf dem Bass, Zoom, Blitz, Tempo</small></span></label>
+              <label class="sty"><input type="radio" name="st-style" value="cine"><span><b>Cinematisch</b><small>Blenden, Whip, leichte Zeitlupe</small></span></label>
+            </div>
+            <div class="btns"><button class="btn solid" type="button" id="cut-go" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg>Schneiden</button><button class="btn ghost" type="button" id="cut-edit" hidden>Stellen bearbeiten</button></div>
+            <details class="fold st-adj"><summary>Anpassen</summary><div class="fold-in">
+              <p class="st-help">Jeden Übergang tippst du im Szenen-Streifen unter dem Video an und tauschst ihn aus: Schnitt, Blende, Blitz, Zoom, Wisch, Whip-Pan oder Glitch. Die Vorschau springt sofort an die Stelle. Eine Szene antippen springt zu ihr.</p>
+              <label class="check"><input type="checkbox" id="fade-end" checked><span>Am Ende ins Schwarze ausblenden</span></label>
+            </div></details>
+          </div>
+          <div class="prem-box" id="p2-lock" data-prem-lock data-lockmsg="auto">
+            <p><b>Auto-Schnitt ist Premium für Mitglieder:</b> bis zu fünf Clips, Stellen antippen, das Studio schneidet auf die Bässe deiner Musik, mit Stilen und Übergängen zum Tauschen.</p>
+            <div class="btns"><button class="btn amber solid" type="button" id="demo-auto"><span>Vorführung ansehen</span></button><button class="btn ghost" type="button" data-code-open>Code eingeben</button></div>
+            <p class="st-help small" id="demo-note" hidden>Die Vorführung nutzt Clips des Vereins und einen Beat, den dein Browser gerade selbst erzeugt hat. Deine eigenen Clips schneidet das Studio genauso.</p>
+          </div>
+        </section>
+
+        <!-- 3 Musik -->
+        <section class="st-pane" data-pane="3" aria-labelledby="p3-h" hidden>
+          <div class="st-bh"><b>3</b><h3 id="p3-h">Musik</h3><em class="prem-tag" data-prem-lock><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Mitglieder</em></div>
+          <p class="st-help">Leg deine eigene Musik unter das Video. Das Studio erkennt Takt und Bässe, darauf sitzen beim Auto-Schnitt die Schnitte.</p>
+          <div class="mu-pick" data-prem data-lockmsg="musik"><button class="btn solid" type="button" data-mu-pick><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Musik auswählen</button><small>MP3, M4A, AAC oder WAV</small></div>
+          <input type="file" id="mu-file" class="sr" accept="audio/*,.mp3,.m4a,.aac,.wav" tabindex="-1" aria-label="Musik auswählen">
+          <p class="st-note bad" id="mu-err" role="alert" hidden></p>
+          <div class="mu" id="mu-box" hidden>
+            <p class="mu-h"><b id="mu-name">Musik</b><span class="hud" id="mu-bpm"></span></p>
+            <canvas class="mu-wave" id="mu-wave" tabindex="0" aria-label="Wellenform mit Takt-Raster. Tippen oder ziehen setzt den Startpunkt, Pfeiltasten springen einen Takt weiter."></canvas>
+            <div class="mu-row"><button class="btn ghost" type="button" id="mu-prev" aria-label="‹ Takt: Start einen Takt früher">‹ Takt</button><span class="hud mu-st">Start <b id="mu-start-o">0:00,0</b></span><button class="btn ghost" type="button" id="mu-next" aria-label="Takt ›: Start einen Takt später">Takt ›</button><button class="btn ghost" type="button" id="mu-first">Erster Bass</button></div>
+            <label class="rng"><span>Musik</span><input type="range" id="mu-vol" min="0" max="100" value="90"><output id="mu-vol-o">90 %</output></label>
+            <label class="rng"><span>Originalton</span><input type="range" id="mu-orig" min="0" max="100" value="20"><output id="mu-orig-o">20 %</output></label>
+            <label class="rng"><span>Einblenden</span><input type="range" id="mu-fin" min="0" max="30" value="5"><output id="mu-fin-o">0,5 s</output></label>
+            <label class="rng"><span>Ausblenden</span><input type="range" id="mu-fout" min="0" max="60" value="15"><output id="mu-fout-o">1,5 s</output></label>
+            <button class="linkbtn" type="button" id="mu-del">Musik entfernen</button>
+          </div>
+          <p class="st-help small">Für die Vereinskanäle bitte keine Chart-Songs. <a href="#musik">Woher du passende Musik bekommst</a></p>
+        </section>
+
+        <!-- 4 Look und Logo -->
+        <section class="st-pane" data-pane="4" aria-labelledby="p4-h" hidden>
+          <div class="st-bh"><b>4</b><h3 id="p4-h">Look und Logo</h3><button class="linkbtn" type="button" id="stk-clear" hidden>Sticker entfernen</button></div>
+          <p class="st-sub">Format</p>
+          <div class="fmts" role="radiogroup" aria-label="Format">
+            <label class="fmt"><input type="radio" name="st-fmt" value="orig" checked><span><i style="--a:1.778"></i><b>Original</b><small>wie aufgenommen</small></span></label>
+            <label class="fmt"><input type="radio" name="st-fmt" value="9:16"><span><i style="--a:.5625"></i><b>9:16</b><small>Reels · TikTok · Shorts</small></span></label>
+            <label class="fmt"><input type="radio" name="st-fmt" value="1:1"><span><i style="--a:1"></i><b>1:1</b><small>Feed</small></span></label>
+            <label class="fmt"><input type="radio" name="st-fmt" value="16:9"><span><i style="--a:1.778"></i><b>16:9</b><small>YouTube · Website</small></span></label>
+          </div>
+          <label class="rng" id="pan-row" hidden><span id="pan-lbl">Ausschnitt</span><input type="range" id="pan" min="0" max="100" value="50"><output id="pan-o">Mitte</output></label>
+          <p class="st-sub">Look</p>
+          <div class="looks" role="radiogroup" aria-label="Look (Farbstimmung)">
+            <label class="lk"><input type="radio" name="st-look" value="natur" checked><span><i class="sw sw-natur"></i>Natürlich</span></label>
+            <label class="lk"><input type="radio" name="st-look" value="warm"><span><i class="sw sw-warm"></i>Warm Cinematic</span></label>
+            <label class="lk"><input type="radio" name="st-look" value="kraeftig"><span><i class="sw sw-kraeftig"></i>Kräftig</span></label>
+            <label class="lk"><input type="radio" name="st-look" value="kuehl"><span><i class="sw sw-kuehl"></i>Kühl</span></label>
+            <label class="lk"><input type="radio" name="st-look" value="sw"><span><i class="sw sw-sw"></i>Schwarzweiß</span></label>
+            <label class="lk"><input type="radio" name="st-look" value="dlogm"><span><i class="sw sw-dlogm"></i>D-Log M → normal</span></label>
+          </div>
+          <label class="rng" id="look-k-row" hidden><span>Stärke</span><input type="range" id="look-k" min="0" max="100" value="80"><output id="look-k-o">80 %</output></label>
+          <p class="st-help small">„D-Log M → normal“ macht flache Aufnahmen von DJI O4, Avata 2 und Co. wieder farbig.</p>
+          <p class="st-sub">Logos und Sticker</p>
           <p class="st-help" id="st-help-tray">Zieh ein Logo aufs Video oder klick es an. Auf dem Video verschiebst du es, am Griff drehst und vergrößerst du es.</p>
           <div class="tray tray-top" id="tray-top" role="group" aria-label="Logos"></div>
-          <p class="st-sub" aria-hidden="true">Weitere Sticker</p>
           <div class="tray tray-more" id="tray" role="group" aria-label="Weitere Sticker"></div>
           <div class="stk-edit" id="stk-edit" hidden>
             <p class="stk-title hud"><span class="dot"></span><span id="stk-name">Sticker</span></p>
@@ -128,74 +250,119 @@
             <div class="stk-btns"><button class="btn ghost" type="button" id="stk-front">Nach vorn</button><button class="btn ghost st-del" type="button" id="stk-del">Löschen</button></div>
             <p class="st-keys hud">Tastatur: Pfeile verschieben · + und − Größe · Q und E drehen · Entf löscht</p>
           </div>
-        </div>
-
-        <details class="fold st-opt" id="st-opt">
-          <summary>Format und Name im Video <small>optional</small></summary>
-          <div class="fold-in">
-            <p class="st-help">Wofür ist der Clip? Das Format bestimmt den Bildausschnitt.</p>
-            <div class="fmts" role="radiogroup" aria-label="Format">
-              <label class="fmt"><input type="radio" name="st-fmt" value="orig" checked><span><i style="--a:1.778"></i><b>Original</b><small>wie aufgenommen</small></span></label>
-              <label class="fmt"><input type="radio" name="st-fmt" value="9:16"><span><i style="--a:.5625"></i><b>9:16</b><small>Reels · TikTok · Shorts</small></span></label>
-              <label class="fmt"><input type="radio" name="st-fmt" value="1:1"><span><i style="--a:1"></i><b>1:1</b><small>Feed</small></span></label>
-              <label class="fmt"><input type="radio" name="st-fmt" value="16:9"><span><i style="--a:1.778"></i><b>16:9</b><small>YouTube · Website</small></span></label>
+          <div class="tagbx" data-prem data-lockmsg="tag">
+            <p class="st-sub">Dein Tag <em class="prem-tag" data-prem-lock><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Mitglieder</em></p>
+            <div class="tag-grid">
+              <canvas id="tag-prev" width="480" height="140" role="img" aria-label="Vorschau deines Tags"></canvas>
+              <div class="tag-f">
+                <div class="field"><label for="tag-alias">Pilotenname</label><input id="tag-alias" maxlength="24" placeholder="z. B. dein FPV-Name" autocomplete="nickname"></div>
+                <div class="chips" role="radiogroup" aria-label="Stil des Tags">
+                  <label class="chip"><input type="radio" name="tag-style" value="band" checked><span>Banner</span></label>
+                  <label class="chip"><input type="radio" name="tag-style" value="plakette"><span>Plakette</span></label>
+                  <label class="chip"><input type="radio" name="tag-style" value="hud"><span>HUD</span></label>
+                  <label class="chip"><input type="radio" name="tag-style" value="stempel"><span>Stempel</span></label>
+                </div>
+                <label class="check" id="tag-img-row" hidden><input type="checkbox" id="tag-img" checked><span>Mit deinem Profilbild von der Crew-Seite</span></label>
+                <button class="btn solid" type="button" id="tag-add">Tag aufs Video</button>
+              </div>
             </div>
-            <label class="rng" id="pan-row" hidden><span id="pan-lbl">Ausschnitt</span><input type="range" id="pan" min="0" max="100" value="50"><output id="pan-o">Mitte</output></label>
-            <p class="st-help" id="pan-help" hidden>Oder zieh das Video direkt im Bild zur Seite.</p>
-            <div class="field"><label for="ln-name">Pilotenname als Bauchbinde</label><input id="ln-name" maxlength="28" placeholder="Dein Pilotenname" autocomplete="nickname"><span class="hint">Erscheint unten links im Video, mit „Flight Club Saar e. V.“ darunter.</span></div>
-            <div class="field"><span class="lbl">Wann?</span><div class="chips">
-              <label class="chip"><input type="radio" name="ln-mode" value="start" checked><span>Am Anfang (5 s)</span></label>
-              <label class="chip"><input type="radio" name="ln-mode" value="all"><span>Ganzes Video</span></label>
-              <label class="chip"><input type="radio" name="ln-mode" value="off"><span>Aus</span></label>
-            </div></div>
+            <p class="st-help small">Dein Tag wird auf diesem Gerät gemerkt und steht beim nächsten Video gleich bereit.</p>
           </div>
-        </details>
+          <details class="fold st-opt">
+            <summary>Name im Video <small>Bauchbinde</small></summary>
+            <div class="fold-in">
+              <div class="field"><label for="ln-name">Pilotenname als Bauchbinde</label><input id="ln-name" maxlength="28" placeholder="Dein Pilotenname" autocomplete="nickname"><span class="hint">Erscheint unten links im Video, mit „Flight Club Saar e. V.“ darunter.</span></div>
+              <div class="field"><span class="lbl">Wann?</span><div class="chips">
+                <label class="chip"><input type="radio" name="ln-mode" value="start" checked><span>Am Anfang (5 s)</span></label>
+                <label class="chip"><input type="radio" name="ln-mode" value="all"><span>Ganzes Video</span></label>
+                <label class="chip"><input type="radio" name="ln-mode" value="off"><span>Aus</span></label>
+              </div></div>
+            </div>
+          </details>
+        </section>
 
-      </div>
-
-      <div class="st-blk st-b3 panel" id="st-b3">
-        <div class="st-bh"><b>3</b><h3>Fertig machen</h3></div>
-        <p class="st-sum hud" id="st-sum"></p>
-        <div class="st-go" id="st-go">
-          <button class="btn solid" type="button" id="st-dl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12M6 10l6 6 6-6M4 20h16"/></svg>Runterladen</button>
-          <button class="btn amber solid" type="button" id="st-send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>An den Verein schicken</button>
-        </div>
-        <p class="st-why" id="st-why"></p>
-
-        <div class="prog" id="prog" hidden>
-          <div class="bat" aria-hidden="true"><i id="bat-fill"></i><span class="bat-tip"></span></div>
-          <div class="prog-row hud"><span id="prog-t" role="status" aria-live="polite">Wird gerechnet … 0 %</span><span id="prog-eta"></span></div>
-          <button class="btn ghost" type="button" id="prog-x">Abbrechen</button>
-        </div>
-
-        <div class="res" id="res" hidden>
-          <p class="res-ok hud"><span class="dot"></span><span id="res-t">Fertig gerechnet</span> · <span id="res-info"></span></p>
-          <video id="res-v" controls playsinline preload="metadata"></video>
-          <div class="btns"><a class="btn solid" id="res-dl" download>Video speichern</a><button class="btn" type="button" id="res-share" hidden>Teilen</button><button class="btn amber" type="button" id="res-send">An den Verein schicken</button></div>
-        </div>
-
-        <form class="sendform" data-fcs-form id="clipform" novalidate hidden>
-          <input type="hidden" name="_subject" value="Neuer Clip für die Vereinsseite (Flight Club Saar, Entwurf)">
-          <input type="hidden" name="Formular" value="Clip einsenden">
-          <input type="hidden" name="Freigabe für" value="Website und Kanäle des Vereins">
-          <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
-          <input type="file" name="attachment" id="cf-att" hidden tabindex="-1" aria-hidden="true">
-          <div class="sf-head"><h4>An den Verein schicken</h4><button type="button" class="linkbtn" id="cf-back">Zurück</button></div>
-          <p class="sf-file"><span aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9h18M3 15h18M8 5v4M8 15v4M16 5v4M16 15v4"/></svg></span><span><b id="cf-vn">clip.mp4</b><span id="cf-vs">0 MB</span></span><em class="tag" id="cf-badge">Anhang</em></p>
-          <div class="field sf-hidden"><input class="sr" type="text" name="Video" id="cf-status" required tabindex="-1" aria-hidden="true"><span class="err">Bitte wähl zuerst dein Video.</span></div>
-          <div class="big" id="cf-big" hidden><p id="cf-big-t"></p><div class="btns" id="cf-big-b"></div></div>
-          <div class="grid g2">
-            <div class="field"><label for="cf-pilot">Name oder Pilotenname</label><input id="cf-pilot" name="Name oder Pilotenname" required autocomplete="nickname"><span class="err">Bitte deinen Namen eingeben.</span></div>
-            <div class="field"><label for="cf-ig">Instagram-Name <small>optional</small></label><input id="cf-ig" name="Instagram für die Collab" placeholder="@deinname" autocomplete="off"></div>
+        <!-- 5 Fertig -->
+        <section class="st-pane" data-pane="5" aria-labelledby="p5-h" hidden>
+          <div class="st-bh"><b>5</b><h3 id="p5-h">Fertig machen</h3></div>
+          <p class="st-sum hud" id="st-sum"></p>
+          <div class="fmts qs" role="radiogroup" aria-label="Qualität">
+            <label class="fmt"><input type="radio" name="st-q" value="orig" checked><span><i style="--a:1.778"></i><b>Original</b><small id="q-orig-o">bis 4K</small></span></label>
+            <label class="fmt"><input type="radio" name="st-q" value="1080"><span><i style="--a:1.778;--s:.7"></i><b>1080p</b><small>kleinere Datei</small></span></label>
           </div>
-          <p class="sf-collab">Mit deinem Instagram-Namen verlinken wir dich, wenn wir den Clip posten, und postest du selbst, lad einfach @flightclubsaar als Mitwirkenden ein.</p>
-          <label class="check"><input type="checkbox" name="Einwilligung" value="ja" required><span>Das Video ist von mir, erkennbare Personen sind einverstanden, Kennzeichen und Hausnummern sind nicht zu erkennen, und ich habe beim Flug die Regeln eingehalten. Der Verein darf den Clip prüfen und auf Website und Kanälen zeigen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-          <button class="btn solid sf-go" type="submit">Clip abschicken <span class="arr">→</span></button>
-          <div class="form-ok" hidden><b>Danke!</b> <span id="cf-ok-t">Dein Clip ist unterwegs. Der Vorstand schaut ihn sich an, bevor er online geht.</span></div>
-          <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schick den Clip per WhatsApp.</div>
-          <div class="reach" id="reach"><p class="reach-h">So viele folgen dem Verein</p><div class="reach-g" id="reach-g"></div><p class="reach-s hud" id="reach-s"></p></div>
-          <p class="draftnote"><span>Entwurf: Einsendungen gehen vorerst an info@falcon-eye.de und werden an den Vorstand weitergegeben. Anhänge bis <span data-maxmail>9</span>&nbsp;MB.</span></p>
-        </form>
+          <div class="st-go" id="st-go"><button class="btn solid" type="button" id="st-dl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12M6 10l6 6 6-6M4 20h16"/></svg>Video erstellen und speichern</button></div>
+          <p class="st-why" id="st-why"></p>
+          <div class="prog" id="prog" hidden>
+            <div class="bat" aria-hidden="true"><i id="bat-fill"></i><span class="bat-tip"></span></div>
+            <div class="prog-row hud"><span id="prog-t" role="status" aria-live="polite">Wird gerechnet … 0 %</span><span id="prog-eta"></span></div>
+            <button class="btn ghost" type="button" id="prog-x">Abbrechen</button>
+          </div>
+          <div class="res" id="res" hidden>
+            <p class="res-ok hud"><span class="dot"></span><span id="res-t">Fertig gerechnet</span> · <span id="res-info"></span></p>
+            <p class="st-note" id="res-note" hidden></p>
+            <video id="res-v" controls playsinline preload="metadata"></video>
+            <div class="btns"><a class="btn solid" id="res-dl" download>Video speichern</a><button class="btn" type="button" id="res-share" hidden>Teilen</button><button class="btn amber" type="button" id="res-send">An den Verein schicken</button></div>
+          </div>
+
+          <div class="sendbox" id="send-wrap">
+            <h4>An den Verein schicken</h4>
+            <p class="st-help">In voller Qualität direkt in den Vereins-OneDrive, ohne Verkleinern. Große Dateien gehen in Stücken hoch und laufen nach einem Abbruch an derselben Stelle weiter.</p>
+            <p class="st-note" id="snd-off" hidden>Einsenden in voller Qualität: bald verfügbar.</p>
+            <p class="st-note" id="snd-pending" hidden></p>
+            <form class="sendform" id="snd" novalidate>
+              <div class="chips" role="radiogroup" aria-label="Was schickst du?">
+                <label class="chip"><input type="radio" name="snd-what" value="fertig"><span>Fertiges Video</span></label>
+                <label class="chip"><input type="radio" name="snd-what" value="orig" checked><span>Original-Clips</span></label>
+              </div>
+              <ul class="snd-files" id="snd-files"></ul>
+              <div class="grid g2">
+                <div class="field"><label for="snd-name">Name oder Pilotenname</label><input id="snd-name" required maxlength="40" autocomplete="nickname"><span class="err">Bitte deinen Namen eingeben.</span></div>
+                <div class="field"><label for="snd-ig">Instagram-Name <small>optional</small></label><input id="snd-ig" placeholder="@deinname" autocomplete="off" maxlength="40"></div>
+              </div>
+              <div class="field"><label for="snd-extra">Weitere Datei <small>optional, zum Beispiel Blackbox-Log oder .gcsv für Gyroflow</small></label><input type="file" id="snd-extra" multiple></div>
+              <div class="field"><label for="snd-msg">Nachricht <small>optional</small></label><textarea id="snd-msg" maxlength="400" rows="2" placeholder="Wo bist du geflogen, mit welchem Kopter?"></textarea></div>
+              <p class="sf-collab">Mit deinem Instagram-Namen verlinken wir dich, wenn wir den Clip posten. Postest du selbst, lad einfach @flightclubsaar als Mitwirkenden ein.</p>
+              <label class="check"><input type="checkbox" id="snd-ok" required><span>Das Video ist von mir, erkennbare Personen sind einverstanden, Kennzeichen und Hausnummern sind nicht zu erkennen, und ich habe beim Flug die Regeln eingehalten. Der Verein darf den Clip prüfen und auf Website und Kanälen zeigen (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+              <button class="btn amber solid sf-go" type="submit" id="snd-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>Hochladen</button>
+              <p class="snd-state" id="snd-state" role="status" aria-live="polite"></p>
+              <div class="snd-up" id="snd-up" hidden></div>
+              <div class="form-ok" id="snd-ok-msg" hidden><b>Angekommen, danke!</b> Der Vorstand schaut sich deinen Clip an, bevor er online geht. <button class="linkbtn" type="button" id="snd-again">Noch einen schicken</button></div>
+              <div class="reach" id="reach"><p class="reach-h">So viele folgen dem Verein</p><div class="reach-g" id="reach-g"></div><p class="reach-s hud" id="reach-s"></p></div>
+            </form>
+          </div>
+
+          <div class="gybox" data-prem data-lockmsg="gyro">
+            <h4>Mit Gyroflow stabilisieren <em class="prem-tag" data-prem-lock><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Mitglieder</em></h4>
+            <p class="st-help">Gyroflow nimmt die Bewegungsdaten deiner Kamera und macht wackelige Aufnahmen butterweich. Dein Original geht an den Verein, wird dort stabilisiert, und du bekommst hier den Link zum Herunterladen.</p>
+            <div class="gy-grid">
+              <div class="field"><label for="gy-clip">Clip</label><select id="gy-clip"><option value="">Noch kein Clip gewählt</option></select></div>
+              <label class="rng"><span>Glättung</span><input type="range" id="gy-smooth" min="0" max="100" value="50"><output id="gy-smooth-o">50 %</output></label>
+              <label class="check"><input type="checkbox" id="gy-hor"><span>Horizont halten (bleibt immer gerade)</span></label>
+              <div class="chips" role="radiogroup" aria-label="Zoom und Ränder">
+                <label class="chip"><input type="radio" name="gy-zoom" value="dynamisch" checked><span>Zoom dynamisch</span></label>
+                <label class="chip"><input type="radio" name="gy-zoom" value="statisch"><span>Zoom fest</span></label>
+                <label class="chip"><input type="radio" name="gy-zoom" value="aus"><span>Kein Zoom, Ränder sichtbar</span></label>
+              </div>
+              <p class="st-note">Schreibt deine Kamera keine Gyro-Daten ins Video (RunCam: .gcsv-Datei, sonst Blackbox-Log .bbl, .bfl oder .csv), schick die Datei oben bei „An den Verein schicken“ mit und schreib in die Nachricht „Gyroflow“.</p>
+            </div>
+            <details class="fold gy-cams"><summary>Welche Kameras schreiben Gyro-Daten mit?</summary><div class="fold-in">
+              <ul class="gy-list">
+                <li><b>DJI:</b> Avata, Avata 2, O3 Air Unit, O4 Air Unit, Neo, Action 2 (ab Firmware v01.04.0510), Action 4, 5 und 6 und Osmo Nano. Dafür die Bildstabilisierung (RockSteady, EIS) ausschalten und das Sichtfeld auf „Wide“ stellen. O3 und O4 weich gelagert einbauen. Nicht dabei: DJI FPV und Action 3.</li>
+                <li><b>GoPro:</b> Hero 5 Black und neuer. Ab Hero 8 darf HyperSmooth an bleiben, bei der Hero 7 Black muss es aus sein. Am besten mit dem Objektiv „Wide“ filmen.</li>
+                <li><b>Insta360:</b> One R, One RS, Go 2, Go 3, Go 3S, Ace, Ace Pro, SMO 4K und Caddx Peanut. Manche Modelle speichern die Bewegungsdaten nur im FreeFrame-Modus.</li>
+                <li><b>RunCam:</b> Thumb, Thumb Pro, Thumb Pro-W, Thumb 2 und 5 Orange. Sie speichern die Gyro-Daten als eigene .gcsv-Datei neben dem Video: die schickst du über „An den Verein schicken“ mit. Bildstabilisierung und Verzeichnungskorrektur ausschalten.</li>
+                <li><b>Sony:</b> die meisten neueren Modelle.</li>
+                <li><b>Alle anderen Kameras:</b> das Blackbox-Log deines Flugcontrollers (.bbl, .bfl oder .csv) über „An den Verein schicken“ mitschicken.</li>
+              </ul>
+              <p class="st-help small">Quellen: Gyroflow-Dokumentation zu <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/dji" target="_blank" rel="noopener">DJI</a>, <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/gopro" target="_blank" rel="noopener">GoPro</a>, <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/insta360" target="_blank" rel="noopener">Insta360</a>, <a href="https://docs.gyroflow.xyz/app/getting-started/supported-cameras/runcam" target="_blank" rel="noopener">RunCam</a> und die <a href="https://docs.gyroflow.xyz/app/readme/features" target="_blank" rel="noopener">Liste aller Kameras</a> (Stand Oktober 2026).</p>
+            </div></details>
+            <button class="btn solid" type="button" id="gy-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-6 6-6 9 0s6 6 9 0"/></svg>Mit Gyroflow stabilisieren</button>
+            <p class="st-help small" id="gy-msg"></p>
+            <div class="snd-up" id="gy-up" hidden></div>
+          </div>
+          <div class="jobs" id="jobs" hidden><h4>Meine Aufträge</h4><ul id="jobs-list"></ul></div>
+        </section>
+
+        <div class="st-nav"><button class="btn ghost" type="button" id="st-prev" hidden>‹ Zurück</button><button class="btn solid" type="button" id="st-next"><span>Weiter: Schneiden</span> <span class="arr">→</span></button></div>
       </div>
     </div>
 
@@ -204,19 +371,19 @@
       <h3 class="st-tools-h">Werkzeuge für deinen Clip</h3>
       <div class="st-tk">
         <a class="tkc panel" href="https://suno.com/" target="_blank" rel="noopener"><span class="tk-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span><b>Suno</b><span>Eigene Songs für deine Clips. Kommerziell nutzbar sind sie nur mit aktivem Pro- oder Premier-Abo.</span><em>suno.com ↗</em></a>
-        <a class="tkc panel" href="https://www.capcut.com/" target="_blank" rel="noopener"><span class="tk-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg></span><b>CapCut</b><span>Schneller Schnitt am Handy und PC mit Text, Übergängen und Vorlagen, ideal für Reels und TikTok.</span><em>capcut.com ↗</em></a>
+        <a class="tkc panel" href="https://gyroflow.xyz/" target="_blank" rel="noopener"><span class="tk-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12c3-6 6-6 9 0s6 6 9 0"/></svg></span><b>Gyroflow</b><span>Stabilisiert FPV-Aufnahmen mit den Gyro-Daten. Mitglieder lassen das direkt hier im Studio machen, sonst kostenlos für PC und Mac.</span><em>gyroflow.xyz ↗</em></a>
         <a class="tkc panel" href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank" rel="noopener"><span class="tk-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M7 12l3-3 2 2 4-4"/></svg></span><b>DaVinci Resolve</b><span>Profi-Schnitt mit der besten Farbkorrektur. Die Grundversion für Windows, Mac und Linux kostet nichts.</span><em>blackmagicdesign.com ↗</em></a>
       </div>
       <details class="fold st-tk-more">
         <summary>Mehr Werkzeuge, Musik-Regeln und Hashtag</summary>
         <div class="fold-in">
           <div class="st-tk-grid">
-            <article><h4>Eigene Songs mit Suno</h4><p>Mit einem bezahlten Suno-Abo (Pro oder Premier) erzeugst du eigene Musik für deine Videos. Laut den Suno-Nutzungsbedingungen (Stand September 2026) darfst du Songs, die du mit einem bezahlten Plan über Suno herunterlädst, auch kommerziell nutzen. Downloads mit dem kostenlosen Plan sind nur für private Zwecke gedacht, und die Zahl der Downloads pro Monat ist begrenzt.</p><p class="mute small">Bedingungen können sich ändern. Bitte prüf vor dem Veröffentlichen den aktuellen Stand.</p><p><a href="https://suno.com/terms" target="_blank" rel="noopener">Suno-Nutzungsbedingungen ↗</a></p></article>
+            <article><h4>Eigene Songs mit Suno</h4><p>Mit einem bezahlten Suno-Abo (Pro oder Premier) erzeugst du eigene Musik für deine Videos. Nach den Suno-Nutzungsbedingungen, die seit dem 3. September 2026 gelten, darfst du Songs, die du mit Pro oder Premier erstellt und heruntergeladen hast, kommerziell nutzen, und das bleibt auch nach einer Kündigung so. Der kostenlose Plan erlaubt nur 7 Test-Downloads insgesamt, ausschließlich für private Zwecke.</p><p class="mute small">Pro erlaubt 20 Downloads im Monat, Premier 60. Kommerziell nutzen darfst du nur die heruntergeladene Datei, nicht einen Suno-Link.</p><p><a href="https://suno.com/terms" target="_blank" rel="noopener">Suno-Nutzungsbedingungen ↗</a></p></article>
             <article><h4>YouTube-Audio-Mediathek</h4><p>In YouTube Studio findest du kostenlose Musik und Soundeffekte. Sie ist für YouTube-Videos gedacht. Ob ein Titel auch auf Instagram oder TikTok erlaubt ist, steht in seiner Lizenz. Bei Creative-Commons-Titeln nennst du den Künstler.</p><p><a href="https://www.youtube.com/audiolibrary" target="_blank" rel="noopener">Audio-Mediathek ↗</a></p></article>
             <article><h4>Musik direkt in der App</h4><p>Postest du selbst, ist die Musikauswahl in Instagram oder TikTok für Beiträge in der jeweiligen App gedacht. Für Clips, die du uns schickst, nimm lieber Musik aus den Quellen oben oder den Originalton.</p></article>
             <article class="warn"><h4>Keine Chart-Songs</h4><p>Bekannte Songs aus Radio und Charts sind geschützt. Videos damit werden oft stummgeschaltet, gesperrt oder gelöscht. Für die Vereinskanäle bitte ohne Chart-Musik schicken.</p></article>
-            <article><h4>Gyroflow</h4><p>PC · Mac · kostenlos. Stabilisiert FPV-Aufnahmen nachträglich mit den Gyro-Daten aus Kamera oder Flugcontroller.</p><p><a href="https://gyroflow.xyz/" target="_blank" rel="noopener">gyroflow.xyz ↗</a></p></article>
-            <article><h4>HandBrake</h4><p>PC · Mac · kostenlos. Macht große Videodateien kleiner, praktisch, wenn dein Clip zu groß für den Anhang ist.</p><p><a href="https://handbrake.fr/" target="_blank" rel="noopener">handbrake.fr ↗</a></p></article>
+            <article><h4>CapCut</h4><p>Schneller Schnitt am Handy und PC mit Text, Übergängen und Vorlagen. Vieles davon kann das Clip-Studio hier inzwischen selbst.</p><p><a href="https://www.capcut.com/" target="_blank" rel="noopener">capcut.com ↗</a></p></article>
+            <article><h4>HandBrake</h4><p>PC · Mac · kostenlos. Wandelt Videos um, zum Beispiel HEVC in H.264, wenn ein Gerät dein Video nicht abspielt.</p><p><a href="https://handbrake.fr/" target="_blank" rel="noopener">handbrake.fr ↗</a></p></article>
           </div>
           <div class="tagbox">
             <span class="tagbox-l hud">Hashtag und Markierung für deine Posts</span>
@@ -359,7 +526,7 @@
           <article class="fm-type">
             <span class="fm-type-n hud">A</span>
             <h3 class="h3">Action-Cams</h3>
-            <p>GoPro HERO13 Black, DJI Osmo Action 6 und 5 Pro, Insta360. Beste Bildqualität, 10 Bit, Log-Profile und starke eingebaute Stabilisierung. Dafür wiegen sie rund 150 Gramm. Neu seit Mai 2026 ist die GoPro Mission 1 mit 1-Zoll-Sensor.</p>
+            <p>GoPro HERO13 Black, DJI Osmo Action 6 und 5 Pro, Insta360. Beste Bildqualität, 10 Bit, Log-Profile und starke eingebaute Stabilisierung. Dafür wiegen sie rund 150 Gramm. Neu seit Mai 2026 sind die GoPro Mission 1 und die Mission 1 Pro mit 1-Zoll-Sensor, die Pro filmt 8K60 und 4K240.</p>
             <p class="fm-fit"><span class="tag">5 Zoll</span><span class="tag">Long Range</span></p>
           </article>
           <article class="fm-type">
@@ -605,7 +772,7 @@
           <div class="panel"><h3 class="h3">Fischauge und Wide</h3><p>Maximale Übersicht, starke Krümmung an den Rändern, viel Gefühl für Tempo. Ideal für Gyroflow, weil Rand zum Zuschneiden übrig bleibt. Gyroflow empfiehlt bei GoPro „Wide“, bei DJI ist „Wide“ Pflicht.</p></div>
           <div class="panel"><h3 class="h3">SuperView und HyperView</h3><p>GoPro nimmt den hohen Sensor (4:3 oder 8:7) und dehnt ihn auf 16:9, vor allem an den Rändern. Sehr immersiv, aber alles am Bildrand wird breit gezogen. Ab HERO11 stabilisiert Gyroflow diese Modi genau, bei älteren Modellen rät die Doku ab.</p></div>
           <div class="panel"><h3 class="h3">Linear</h3><p>Die Kamera entzerrt selbst, gerade Linien bleiben gerade. Wirkt ruhiger und hochwertiger, ist aber enger. Bei der HERO13 auch als „Linear + Horizont-Lock“, bei DJI hält HorizonSteady den Horizont.</p></div>
-          <div class="panel"><h3 class="h3">Später entzerren</h3><p>Mit dem Objektivprofil in Gyroflow, der Linsenkorrektur im Schnittprogramm oder in GoPro Player + ReelSteady. Vorteil: Du entscheidest erst im Schnitt, wie viel Krümmung bleiben darf.</p></div>
+          <div class="panel"><h3 class="h3">Später entzerren</h3><p>Mit dem Objektivprofil in Gyroflow, der Linsenkorrektur im Schnittprogramm oder in GoPro Player (HyperSmooth Pro). Vorteil: Du entscheidest erst im Schnitt, wie viel Krümmung bleiben darf.</p></div>
           <div class="panel"><h3 class="h3">Horizont gerade</h3><p>Ein schiefer Horizont wirkt unruhig, ein bewusst gekippter dynamisch. Horizont-Lock kostet Bildausschnitt, weil das Bild beim Drehen in ein kleineres Rechteck passen muss. Teste es oben mit dem Kurven-Schalter.</p></div>
           <div class="panel"><h3 class="h3">Volle Sensorfläche</h3><p>Nimm in 4:3 oder 8:7 auf, wenn deine Kamera das kann. Dann bleibt oben und unten Reserve für Stabilisierung und für 9:16-Ausschnitte. Gyroflow nennt 16:9 nur dann sinnvoll, wenn du die höchste Bildrate brauchst.</p></div>
         </div>
@@ -653,7 +820,7 @@
           <div class="panel">
             <span class="tag sig">Sofort fertig</span>
             <h3 class="h3">In der Kamera</h3>
-            <p>GoPro HyperSmooth, DJI RockSteady und HorizonSteady, Insta360 FlowState. Der Clip ist direkt nach dem Flug fertig zum Posten. Grenzen: harte Flips und Rollen, Horizont-Lock nur in bestimmten Modi, und was die Kamera abschneidet, ist weg. Bei der O4 Air Unit Pro funktioniert RockSteady laut Händlerangaben nur im Standard-Bildwinkel.</p>
+            <p>GoPro HyperSmooth, DJI RockSteady und HorizonSteady, Insta360 FlowState. Der Clip ist direkt nach dem Flug fertig zum Posten. Grenzen: harte Flips und Rollen, Horizont-Lock nur in bestimmten Modi, und was die Kamera abschneidet, ist weg. Bei der O4 Air Unit Pro geht RockSteady laut DJI-Datenblatt nur im Standard-Bildwinkel.</p>
           </div>
           <div class="panel">
             <span class="tag green">Kostenlos · Open Source</span>
@@ -665,18 +832,18 @@
 
         <h3 class="h3 fm-subh">Woher kommen die Gyro-Daten?</h3>
         <div class="fm-src-grid">
-          <div class="panel"><b class="fm-k">GoPro</b><p>Ab HERO8 Black ohne Synchronisation. HyperSmooth darf ab HERO8 sogar an bleiben. Objektiv „Wide“, Sensor 4:3 oder 8:7. Ab HERO11 stecken die Objektivdaten in jeder Datei.</p></div>
-          <div class="panel"><b class="fm-k">DJI</b><p>O3 und O4 Air Unit, Avata und Avata 2, Osmo Action 2, 4, 5 und 6. Die Action 3 wird nicht unterstützt. Stabilisierung muss aus sein, sonst speichert die Kamera keine Gyro-Daten. Sichtfeld „Wide“. Bei einigen O4-Pro-Einheiten von 2026 meldet die Doku Probleme mit dem Gyro-Chip.</p></div>
+          <div class="panel"><b class="fm-k">GoPro</b><p>Ab HERO8 Black ohne Synchronisation. HyperSmooth darf ab HERO8 sogar an bleiben. Objektiv „Wide“, Sensor 4:3 oder 8:7. Ab HERO11 stecken die Objektivdaten in jeder Datei. Die Mission 1 und die Mission 1 Pro nennt die Gyroflow-Doku nicht, bei ihnen stabilisiert die Kamera selbst.</p></div>
+          <div class="panel"><b class="fm-k">DJI</b><p>O3 und O4 Air Unit, Avata und Avata 2, Osmo Action 2, 4, 5 und 6. Die Action 3 wird nicht unterstützt. Stabilisierung muss aus sein, sonst speichert die Kamera keine Gyro-Daten. Sichtfeld „Wide“. Die O3 und O4 Air Unit brauchen eine weiche Montage oder die Optische Korrektur in Gyroflow. Bei einigen O4-Pro-Einheiten von 2026 (Gyro-Chip 1469D) meldet das Gyro bei Vibration falsche Bewegung, dort rät die Doku zur Optischen Korrektur.</p></div>
           <div class="panel"><b class="fm-k">RunCam</b><p>Thumb, Thumb Pro, Thumb Pro-W und Thumb 2 speichern eine .gcsv-Datei neben dem Video. Gyroflow rät: Bildstabilisierung und Verzerrungskorrektur aus, Shutter 45 bis 90 Grad, ISO so niedrig wie möglich, Weißabgleich „Sunny“.</p></div>
-          <div class="panel"><b class="fm-k">Insta360 und Caddx</b><p>Insta360 GO 2, GO 3, GO 3S, Ace Pro und ONE RS, manche nur im FreeFrame-Modus. Caddx Peanut und Walnut (Walnut mit Synchronisation, interne Verzerrungskorrektur aus). Neuere Modelle vor dem Kauf in der Doku prüfen.</p></div>
-          <div class="panel"><b class="fm-k">Walksnail Moonlight</b><p>Speichert eine Gyro-Datei für Gyroflow, wenn die eingebaute Stabilisierung aus ist. Die eingebaute Stabilisierung gibt es nur in 2.7K und dann ohne Gyro-Daten.</p></div>
+          <div class="panel"><b class="fm-k">Insta360 und Caddx</b><p>Ohne Synchronisation laufen Insta360 GO 2, GO 3, GO 3S, Ace, Ace Pro, ONE R und ONE RS. Bei der Ace Pro und der Ace Pro 2 speichert die Kamera die Gyro-Daten nur im Videomodus FreeFrame (so schreibt es Insta360 im Handbuch). Die GO Ultra liest Gyroflow ebenfalls, in der Kameratabelle der Doku steht sie noch nicht. Caddx Peanut ist eine GO 2, die Walnut braucht eine Synchronisation und die interne Verzerrungskorrektur aus. Die 360-Grad-Kameras X3, X4, X5 und X6 stabilisiert Gyroflow nicht.</p></div>
+          <div class="panel"><b class="fm-k">Walksnail Moonlight</b><p>Speichert die Gyro-Daten in einer eigenen .gcsv-Datei neben dem Video, ab Firmware 38.43.8 (die Version 38.43.4 schrieb noch keine). Die Synchronisation machst du von Hand. Das Gyro ist verrauscht: Bleibt das Bild unruhig, nimm die Blackbox-Daten des Flugcontrollers. Die eingebaute Stabilisierung der Kamera muss für Gyroflow aus sein.</p></div>
           <div class="panel"><b class="fm-k">Blackbox</b><p>Für jede Kamera ohne eigenen Gyro: Gyroflow liest Betaflight-Logs (.bbl, .bfl oder als .csv aus dem Blackbox Explorer), auch von INAV und Emuflight. Den Kamera-Uptilt trägst du unter „Motion data → Rotation → Pitch“ ein, Log und Video musst du synchronisieren.</p></div>
         </div>
 
         <div class="grid g3 fm-stabtips">
           <div class="panel"><h3 class="h3">Vibrationen zuerst</h3><p>Gyroflow sagt es deutlich: Behebe Vibrationen erst mechanisch, saubere Bewegungsdaten bringen immer das beste Ergebnis. Krumme Props, lockere Schrauben und ein harter Kamerahalter machen Jello, das keine Software ganz rettet.</p></div>
           <div class="panel"><h3 class="h3">Kurze Belichtung</h3><p>Für Gyroflow 45 bis 90 Grad Shutter. Unschärfe aus einer langen Belichtung zeigt die alte Wackelrichtung, auch wenn das Bild schon ruhig ist. Zum Ausprobieren: Schalter „Lange Belichtung“ oben.</p></div>
-          <div class="panel"><h3 class="h3">ReelSteady</h3><p>GoPro Player + ReelSteady ist GoPros Desktop-App für Mac und Windows, 2022 vorgestellt, zum Stabilisieren von GoPro-Material und Korrigieren der Linse. Prüf vor dem Kauf, ob sie für dein Modell noch angeboten wird. Gyroflow kann dasselbe kostenlos.</p></div>
+          <div class="panel"><h3 class="h3">GoPro Player</h3><p>GoPros Desktop-App für Mac und Windows. Die Stabilisierung heißt dort HyperSmooth Pro (der Start 2022 lief noch unter dem Namen ReelSteady) und ist ein Kauf in der App, alles andere im Player kostet nichts. Sie unterstützt die HERO8 bis HERO13 vollständig, ältere Modelle nur mit abgeschalteter Kamera-Stabilisierung, und sie funktioniert nicht mit 360-Grad-Material. Gyroflow rechnet dasselbe kostenlos.</p></div>
         </div>
       </div>
     </details>
@@ -948,14 +1115,14 @@
         <div class="panel fm-suno-info">
         <span class="tag sig">Eigene Songs</span>
         <h3 class="h3">Mit Suno und aktivem Abo</h3>
-        <p>Suno erzeugt aus einer Beschreibung komplette Songs, auch rein instrumental. Was du darfst, hängt am Abo. Laut Suno, Stand Oktober 2026:</p>
+        <p>Suno erzeugt aus einer Beschreibung komplette Songs, auch rein instrumental. Was du darfst, hängt am Abo. So steht es in den Suno-Nutzungsbedingungen, die seit dem 3. September 2026 gelten:</p>
         <ul class="fm-list">
           <li><b>Pro und Premier:</b> Für Songs, die du mit aktivem Abo erstellst und herunterlädst, bekommst du kommerzielle Nutzungsrechte. Laut Suno-Hilfe behältst du diese Rechte auch nach einer Kündigung.</li>
-          <li><b>Downloads sind begrenzt:</b> Pro bietet 20, Premier 60 Song-Downloads pro Monat, nicht genutzte verfallen.</li>
-          <li><b>Kostenloser Plan:</b> Nur für private, nicht kommerzielle Nutzung, keine Downloads. Ein späteres Abo macht alte Songs nicht nachträglich frei.</li>
+          <li><b>Downloads sind begrenzt:</b> Pro bietet 20, Premier 60 Song-Downloads pro Monat, nicht genutzte verfallen. Wer mehr braucht, kann Downloads zukaufen. Kommerziell nutzen darfst du nur die heruntergeladene Datei, nicht einen Suno-Link.</li>
+          <li><b>Kostenloser Plan:</b> Nur für private, nicht kommerzielle Nutzung, mit 7 Test-Downloads insgesamt. Ein späteres Abo macht alte Songs nicht nachträglich frei.</li>
           <li><b>Eigene Songtexte</b> gehören dir. Fremde Texte nur mit Erlaubnis, keine Namen echter Künstler im Prompt.</li>
         </ul>
-        <p class="fm-note">Kein Rechtsrat: Rein KI-erzeugte Musik ist je nach Land urheberrechtlich nicht geschützt, und um Suno laufen Klagen großer Labels. Lies vor wichtigen Projekten die aktuellen Bedingungen unter suno.com.</p>
+        <p class="fm-note">Kein Rechtsrat. Rein KI-erzeugte Musik ist in Deutschland und den USA nicht urheberrechtlich geschützt, weil das Urheberrecht eine menschliche Schöpfung verlangt. Universal und Sony klagen weiter gegen Suno (Stand August 2026), mit Warner gab es im November 2025 eine Einigung.</p>
         <a class="btn ghost" href="https://suno.com/pricing" target="_blank" rel="noopener">Suno-Pläne ansehen <span class="arr">↗</span></a>
       </div>
         <div class="fm-beat panel">
@@ -1005,7 +1172,7 @@
           <li><button type="button" data-s="4" aria-pressed="false"><b>5</b><span>Teilen</span><em>Der Verein nimmt die Einladung an, dann erscheint dein Reel auch bei uns. Bis dahin sehen es nur deine Follower.</em></button></li>
         </ol>
         <p class="fm-ig-desc" id="fm-ig-desc" aria-hidden="true">Plus antippen, Reel wählen, deinen Clip hochladen.</p>
-        <p class="fm-src mute">TikTok: Markier @flightclubsaar in der Beschreibung. Bietet dir die App eine Funktion für Mitwirkende an, nutze sie gern. Stories können auf Instagram keine Collab-Beiträge sein. Menünamen können je nach App-Version leicht abweichen.</p>
+        <p class="fm-src mute">TikTok: Markier @flightclubsaar in der Beschreibung. Bietet dir die App eine Funktion für Mitwirkende an, nutze sie gern. Stories können auf Instagram keine Collab-Beiträge sein. Hast du es vergessen, lädst du uns auch bei einem fertigen Reel nachträglich ein: Drei-Punkte-Menü, Verwalten, Bearbeiten, Personen markieren.</p>
       </div>
     </div>
 
@@ -1095,6 +1262,6 @@
       <a class="btn" href="wissen.html">FPV-Wissen <span class="arr">→</span></a>
       <a class="btn ghost" href="hilfe.html">Technik-Hilfe</a>
     </div>
-    <p class="fm-credits hud" aria-hidden="true">Ein Ratgeber des Flight Club Saar e. V. · Filme: Falcon Eye · Stand 24.10.2026</p>
+    <p class="fm-credits hud" aria-hidden="true">Ein Ratgeber des Flight Club Saar e. V. · Filme: Mitglieder des Vereins · Stand 25.10.2026</p>
   </div>
 </section>
