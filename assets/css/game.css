@@ -57,7 +57,23 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
 .fcsg-mode{display:inline-block;padding:.2em .6em;border:1px solid transparent}
 .fcsg-mode.auto{color:var(--amber,#ffb020)}
 .fcsg-mode.armed{color:#fff;border-color:rgba(255,255,255,.75);box-shadow:0 0 0 1px #000}
-.fcsg-lvl{color:var(--amber,#ffb020);letter-spacing:.2em}
+.fcsg-lvl{color:var(--lc,var(--amber,#ffb020));letter-spacing:.2em}
+.fcsg-lvn{display:none}
+@container (min-width:700px){.fcsg-lvn{display:inline}.fcsg-lvn::before{content:" · "}}
+/* Fortschritt bis zum nächsten Level */
+.fcsg-prog{display:block;width:8.5em;height:4px;border-radius:2px;overflow:hidden;background:rgba(255,255,255,.2);box-shadow:0 0 0 1px #000}
+.fcsg-prog i{display:block;width:100%;height:100%;background:var(--lc,var(--sig,#3fe0ff));transform:scaleX(0);transform-origin:0 50%;transition:transform .3s linear}
+.fcsg-wind{color:var(--amber,#ffb020);font-size:.86em;letter-spacing:.16em}
+.fcsg-wind:empty{display:none}
+/* Schild und Punkte ×2 */
+.fcsg-shd{display:none;align-items:center;color:#7db8ff;filter:drop-shadow(0 0 6px rgba(90,162,255,.9))}
+.fcsg-shd.on{display:inline-flex}
+.fcsg-shd svg{width:1.25em;height:1.25em}
+.fcsg-x2{display:inline-block;margin-left:.45em;padding:.05em .4em;border-radius:4px;background:rgba(255,92,170,.2);color:#ff7cc0;font-style:normal;letter-spacing:.08em}
+.fcsg-x2:empty{display:none}
+.fcsg .is-glow{animation:fcsgGlowUp .8s cubic-bezier(.2,.7,.1,1)}
+@keyframes fcsgGlowUp{0%{transform:scale(1)}25%{transform:scale(1.35);opacity:.6}50%{opacity:1}100%{transform:none}}
+.fcsg-bat{transform-origin:0 50%}
 
 /* Feste OSD-Teile nur im eigenen Flug */
 .fcsg-play{visibility:hidden}
@@ -68,7 +84,9 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
 .fcsg-msg.on{opacity:1}
 .fcsg-msg.pop{animation:fcsgPop .45s cubic-bezier(.2,.7,.1,1) both}
 .fcsg-msg.armed{color:var(--sig,#3fe0ff);letter-spacing:.12em}
-.fcsg-msg.lvl{top:56%;font-size:clamp(40px,9cqw,96px);color:var(--amber,#ffb020);letter-spacing:.1em;text-shadow:0 0 40px rgba(255,176,32,.6),0 3px 0 #000}
+.fcsg-msg.lvl{top:52%;font-size:clamp(40px,9cqw,96px);color:var(--lc,var(--amber,#ffb020));letter-spacing:.1em;text-shadow:0 0 40px rgba(0,0,0,.55),0 3px 0 #000}
+.fcsg-msg small{display:block;margin-top:.2em;font:700 clamp(14px,.3em,30px)/1.1 var(--hud,"Chakra Petch",monospace);letter-spacing:.32em;text-transform:uppercase;color:#fff;text-shadow:0 0 2px #000,0 2px 0 #000}
+.fcsg-msg.rec{top:30%;font-size:clamp(38px,8cqw,90px);color:#ffd65c;letter-spacing:.08em;text-shadow:0 0 40px rgba(255,214,92,.6),0 3px 0 #000}
 @keyframes fcsgPop{from{opacity:0;transform:scale(1.7)}to{opacity:1;transform:none}}
 .fcsg-toast{position:absolute;left:50%;bottom:21%;transform:translateX(-50%);width:max-content;max-width:84%;padding:.6em .95em;border-radius:10px;background:rgba(4,9,18,.74);border:1px solid rgba(63,224,255,.45);font:600 clamp(12px,1.5cqw,16px)/1.35 var(--hud,monospace);letter-spacing:.08em;text-align:center;white-space:normal;opacity:0;transform:translate(-50%,-6px);transition:opacity .25s,transform .25s}
 .fcsg-toast.on{opacity:1;transform:translate(-50%,0)}
@@ -89,6 +107,24 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
 .fcsg-cb.fcsg-snd .w{opacity:.25}
 .fcsg-cb.on{border-color:var(--sig,#3fe0ff);color:var(--sig,#3fe0ff)}
 .fcsg-cb.on .w{opacity:1}
+
+/* Trick-Knopf: unten rechts, mit dem Daumen gut erreichbar (PC zusätzlich Klick, Leertaste, T) */
+.fcsg-trick{position:absolute;z-index:3;right:5.5%;bottom:calc(6.5% + 4.4em);display:none;align-items:center;justify-content:center;width:clamp(58px,7.2cqw,76px);height:clamp(58px,7.2cqw,76px);padding:0;border-radius:50%;border:2px solid var(--lc,var(--sig,#3fe0ff));background:rgba(4,9,18,.62);color:#fff;font-size:clamp(10px,1.4cqw,15px);cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);touch-action:manipulation;transition:opacity .2s,transform .15s}
+.fcsg.is-ctl .fcsg-trick{display:flex}
+.fcsg-trick-in{display:grid;justify-items:center;gap:1px;color:var(--lc,var(--sig,#3fe0ff))}
+.fcsg-trick svg{width:44%;height:auto;min-width:22px}
+.fcsg-trick b{font:700 clamp(9px,1.1cqw,11px)/1 var(--hud,"Chakra Petch",monospace);letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.fcsg-trick::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--lc,var(--sig,#3fe0ff));opacity:0;pointer-events:none}
+.fcsg-trick:hover,.fcsg-trick:focus-visible{background:rgba(63,224,255,.16)}
+.fcsg-trick:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.fcsg-trick:active{transform:scale(.93)}
+.fcsg-trick.is-cd{opacity:.42}
+.fcsg-trick.is-ready{animation:fcsgReady .42s cubic-bezier(.2,.7,.1,1)}
+.fcsg-trick.is-pulse::after{animation:fcsgRing 1.1s ease-out 2}
+.fcsg-trick.is-pulse{animation:fcsgReady .55s cubic-bezier(.2,.7,.1,1) 2}
+@keyframes fcsgReady{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:none}}
+@keyframes fcsgRing{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
+.fcsg-full .fcsg-trick{right:max(5.5%,calc(env(safe-area-inset-right) + 12px));bottom:calc(max(6.5%,env(safe-area-inset-bottom)) + 4.4em)}
 
 /* Selbst-Impuls: Hinweis über dem Autopilot-Flug */
 .fcsg-hint{position:absolute;left:50%;top:25%;z-index:3;margin:0;transform:translate(-50%,-50%);pointer-events:none;display:flex;align-items:center;gap:.7em;width:max-content;max-width:86%;padding:.75em 1.15em;border-radius:999px;background:rgba(4,9,18,.66);border:1px solid rgba(63,224,255,.5);box-shadow:0 0 30px -6px rgba(63,224,255,.5);font:600 clamp(11px,1.35cqw,14px)/1.25 var(--hud,monospace);letter-spacing:.14em;text-transform:uppercase;color:#fff;text-align:center;animation:fcsgFloat 2.6s ease-in-out infinite}
@@ -126,7 +162,9 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
 .fcsg-score b{font:400 clamp(64px,13cqw,150px)/.85 var(--big,"Bebas Neue",sans-serif);color:#fff;text-shadow:0 0 40px rgba(63,224,255,.45)}
 .fcsg-score span{font:600 12px/1 var(--hud,monospace);letter-spacing:.3em;text-transform:uppercase;color:var(--mute,#9db1cc)}
 .fcsg-new{margin:0;display:inline-flex;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,176,32,.6);background:rgba(255,176,32,.1);color:var(--amber,#ffb020);font:700 12px/1 var(--hud,monospace);letter-spacing:.16em;text-transform:uppercase}
-.fcsg-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:min(440px,100%);margin:2px 0 0}
+.fcsg-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;width:min(500px,100%);margin:2px 0 0}
+.fcsg-goal{margin:0;max-width:46ch;font:400 15px/1.45 var(--body,"Inter",system-ui,sans-serif);color:#c9d8ec}
+.fcsg-goal:empty{display:none}
 .fcsg-stats div{min-width:0;padding:10px 4px;border:1px solid var(--line-hi,rgba(158,196,255,.38));border-radius:12px;background:rgba(255,255,255,.03)}
 .fcsg-stats dt{font:600 10px/1.2 var(--hud,monospace);letter-spacing:.12em;text-transform:uppercase;color:var(--mute,#9db1cc)}
 .fcsg-stats dd{margin:5px 0 0;font:400 clamp(24px,3.4cqw,36px)/1 var(--big,"Bebas Neue",sans-serif);color:#fff}
@@ -162,14 +200,15 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
   .fcsg-card{gap:9px}
   .fcsg-stats{gap:6px}
   .fcsg-stats div{padding:7px 2px}
-  .fcsg-stats dt{font-size:9px;letter-spacing:.08em}
-  .fcsg-stats dd{font-size:24px}
+  .fcsg-stats dt{font-size:9px;letter-spacing:.04em}
+  .fcsg-stats dd{font-size:22px}
   .fcsg-ui-mid .fcsg-txt,.fcsg-ui-start .fcsg-txt{display:none}
   .fcsg-ui-start{background:linear-gradient(0deg,rgba(4,9,18,.94) 0%,rgba(4,9,18,.55) 30%,rgba(4,9,18,0) 50%)}
   .fcsg-ui-start .fcsg-title{font-size:clamp(40px,12cqw,52px)}
   .fcsg-score b{font-size:64px}
   .fcsg-card-over .fcsg-link,.fcsg-card-over .fcsg-new{display:none}
   .fcsg-frow{flex-wrap:wrap}
+  .fcsg-card-over:has(.fcsg-form:not([hidden])) .fcsg-goal{display:none}
   .fcsg-frow .fcsg-in,.fcsg .fcsg-frow .fcsg-send{flex:1 1 100%}
   .fcsg-hint{top:24%}
   .fcsg-tl,.fcsg-bl{left:6.5%}
@@ -189,6 +228,8 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
   .fcsg-card-over .fcsg-stats{display:none}
   .fcsg-hint{top:22%}
   .fcsg-ctl{gap:6px}
+  .fcsg-trick,.fcsg-full .fcsg-trick{bottom:max(6.5%,env(safe-area-inset-bottom));right:calc(max(5.5%,env(safe-area-inset-right)) + 7.2em)}
+  .fcsg-goal{display:none}
 }
 
 /* ---------- Leiste unter dem Spiel ---------- */
@@ -241,4 +282,6 @@ html.fcsg-lock,html.fcsg-lock body{overflow:hidden!important;overscroll-behavior
   .fcsg-warn.on{animation:none!important}
   .fcsg-toast{transition:none}
   .fcsb.is-in .fcsb-row,.fcsb-row.is-new::after{animation:none!important}
+  .fcsg-trick,.fcsg-trick::after,.fcsg .is-glow{animation:none!important}
+  .fcsg-prog i{transition:none}
 }
