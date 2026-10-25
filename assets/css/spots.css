@@ -508,3 +508,16 @@ textarea.lv-in{min-height:72px;resize:vertical}
 .ms-vg{grid-column:2;display:inline-flex;align-items:center;gap:5px;font:600 11px var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--pc)}
 .ms-vg svg{width:12px;height:12px;fill:currentColor}
 .ms-v:focus-visible{outline:2px solid var(--sig);outline-offset:2px}
+
+/* Neu gemeldete Spots */
+.sp-new{display:inline-flex;margin-left:8px;padding:3px 7px;border-radius:999px;background:rgba(198,244,50,.14);border:1px solid rgba(198,244,50,.55);color:#e4ff9c;font:700 10px/1 var(--hud);letter-spacing:.12em}
+.sp-neu{display:grid;gap:8px;margin:12px 0 4px;padding:12px 14px;border-radius:12px;border:1px dashed rgba(198,244,50,.45);background:rgba(198,244,50,.06)}
+.sp-neu-t{margin:0;font-size:14px;line-height:1.5;color:#d9e8c4}
+.sp-neu-t b{color:#fff}
+.sf-ok-t{display:grid;gap:10px;min-width:0}
+.sf-code{margin:0;font-size:15px}
+.sf-code b{display:inline;font:700 20px/1 var(--hud);letter-spacing:.12em;color:#fff;text-transform:none}
+.sf-ok-b{display:flex;flex-wrap:wrap;gap:8px}
+.sp-ok .sf-ok-b .btn{grid-column:auto;min-height:44px}
+.sf-ok-b .btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:560px){.sendform .sf-ok{grid-template-columns:1fr;gap:10px}.sf-ok-b .btn{flex:1 1 100%;justify-content:center}}

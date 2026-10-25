@@ -92,13 +92,14 @@
      opt.what 'Bewertung' | 'Beitrag'; opt.acc 'die Bewertung' | 'den Beitrag'; opt.it 'sie' | 'ihn';
      opt.mine 'Das ist deine.' | 'Das ist deiner.'; opt.area Betreff-Zusatz;
      opt.get(id) → Eintrag; opt.excerpt(e) → kurzer Text; opt.onDeleted(id, el) */
-  function lvWire(root, opt) {
+  function lvWire(root, opt0) {
     if (!root || root._lv) return; root._lv = true;
+    let opt = opt0; const per = id => { opt = opt0.per ? Object.assign({}, opt0, opt0.per(id) || {}) : opt0; return opt; };
     const post = el => el.closest('[data-lv-id]');
     const close = (p) => { const pan = p && $('.lv-pan', p); if (!pan) return; pan.hidden = true; pan.innerHTML = ''; $$('[data-lv]', p).forEach(b => b.setAttribute('aria-expanded', 'false')); };
     const head = (t, sub) => `<p class="lv-ft">${t}</p>${sub ? `<p class="lv-sub">${sub}</p>` : ''}`;
     const delForm = (id) => {
-      const m = lvMine(id), k = 'lv-' + id;
+      per(id); const m = lvMine(id), k = 'lv-' + id;
       return `<form class="lv-f" data-lv-f="del" novalidate>
         ${head(opt.what + ' löschen', m ? `<span class="lv-yours">${LVI.ok}${opt.mine}</span> Der Code ist schon eingetragen.` : 'Gib den Löschcode ein, den du beim Veröffentlichen bekommen hast.')}
         <label class="lv-l" for="${k}-pw">Löschcode</label>
@@ -108,7 +109,7 @@
       </form>`;
     };
     const forgotForm = (id) => {
-      const k = 'lv-' + id;
+      per(id); const k = 'lv-' + id;
       return `<form class="lv-f" data-lv-f="forgot" novalidate>
         ${head('Code vergessen?', `Schreib dem Vorstand kurz, dann löscht er ${opt.acc} für dich.`)}
         <div class="lv-g"><label class="lv-l" for="${k}-fn">Dein Name</label><input class="lv-in" id="${k}-fn" name="name" required maxlength="40" autocomplete="nickname" value="${lvEsc(lvName())}"></div>
@@ -119,7 +120,7 @@
       </form>`;
     };
     const repForm = (id) => {
-      const k = 'lv-' + id, why = ['Beleidigend', 'Spam oder Werbung', 'Falsche Angaben', 'Persönliche Daten', 'Etwas anderes'];
+      per(id); const k = 'lv-' + id, why = ['Beleidigend', 'Spam oder Werbung', 'Falsche Angaben', 'Persönliche Daten', 'Etwas anderes'];
       return `<form class="lv-f" data-lv-f="rep" novalidate>
         ${head(opt.what + ' melden', `Der Vorstand schaut ${opt.it} sich an und nimmt ${opt.it} bei Bedarf runter.`)}
         <fieldset class="lv-why"><legend class="lv-l">Was stimmt nicht?</legend><div class="lv-chips">${why.map((w, i) => `<label class="lv-chip"><input type="radio" name="grund" value="${w}"${i === 0 ? ' required' : ''}><span>${w}</span></label>`).join('')}</div></fieldset>
@@ -151,7 +152,7 @@
     root.addEventListener('submit', async e => {
       const f = e.target.closest('[data-lv-f]'); if (!f) return;
       e.preventDefault();
-      const p = post(f), id = p.dataset.lvId, item = opt.get(id) || {}, kind = f.dataset.lvF;
+      const p = post(f), id = p.dataset.lvId, kind = f.dataset.lvF; per(id); const item = opt.get(id) || {};
       const msg = $('.lv-msg', f), btn = $('[type=submit]', f), say = (t, bad = true) => { msg.textContent = t; msg.classList.toggle('bad', bad); };
       say('');
       if (kind === 'del') {
@@ -245,7 +246,10 @@
     inp._vupd = upd; upd(false);
   }
   const VD = { all: new Set() };
-  const vidsOf = id => rtOf(id).map(x => ({ x, v: vidParse(x.link) })).filter(o => o.v);
+  const vidsOf = id => {
+    const s = byId(id), own = s && s.vids ? s.vids.map((l, i) => ({ x: { id: s.ref + '-v' + i, n: s.von, d: s.d }, v: vidParse(l) })) : [];
+    return own.concat(rtOf(id).map(x => ({ x, v: vidParse(x.link) }))).filter(o => o.v);
+  };
   function vidCard({ x, v }) {
     const P = VP[v.k], by = `<span class="vd-by"><b>${esc(x.n)}</b>${x.d ? ' · ' + lvTime(x.d) : ''}</span>`;
     if (v.k === 'youtube' && v.yt) return `<li class="vd vd-yt${v.short ? ' is-short' : ''}" data-vx="${esc(x.id)}" style="--pc:${P.c}">
@@ -319,6 +323,65 @@
   /* ---------- Bewertungen live (FCS.board, Bereich 'spot:<id>') ----------
      Einmal laden, sobald die Spot-Liste in Sicht kommt (oder ein Spot geöffnet wird). Danach nur noch lokal rechnen. */
   const RT = { st: 'idle', list: [], all: new Set(), seen: false };
+
+  /* ---------- Neu gemeldete Spots (FCS.board, Bereich 'spot:neu') ----------
+     Wer einen Spot meldet, sieht ihn sofort auf der Karte (Kennzeichen „Neu gemeldet“). Der Vorstand löscht bei Bedarf
+     mit seinem Code. Text t ist JSON: {d: Beschreibung, la, lo, a: Art-Schlüssel, v: [Video-Links], o: Ortsname}. */
+  const NEU = 'spot:neu';
+  const nf5 = v => v.toFixed(5).replace('.', ',');
+  const fmtLL = (la, lo) => `${nf5(Math.abs(la))} ${la < 0 ? 'S' : 'N'}, ${nf5(Math.abs(lo))} ${lo < 0 ? 'W' : 'O'}`;
+  const artKey = name => (Object.entries(T).find(([, t]) => t.n === name) || [''])[0];
+  function fromBoard(x) {
+    let o; try { o = JSON.parse(x.t || '{}') || {}; } catch (e) { return null; }
+    const la = +o.la, lo = +o.lo;
+    if (!isFinite(la) || !isFinite(lo) || Math.abs(la) > 90 || Math.abs(lo) > 180) return null;
+    const typ = o.a && T[o.a] && o.a !== 'neu' ? o.a : 'neu';
+    return { id: 'n-' + x.id, ref: x.id, neu: 1, n: String(x.titel || 'Neuer Spot').slice(0, 90), typ, lat: la, lng: lo,
+      adr: o.o ? String(o.o).slice(0, 120) + ' · ' + fmtLL(la, lo) : fmtLL(la, lo),
+      t: String(o.d || '').slice(0, 600) || 'Neu gemeldeter Spot.', regel: 'Neu gemeldet, der Vorstand schaut ihn sich noch an. Kläre vor Ort, ob Fliegen erlaubt ist.',
+      stern: null, k: [], foto: +x.nf ? FCS.board.foto(x.id, 0) : null, fotoAlt: '', von: String(x.n || ''), d: x.d,
+      vids: (Array.isArray(o.v) ? o.v : []).slice(0, 3).map(String) };
+  }
+  function mergeNeu() {
+    const neu = RT.list.filter(x => x && x.b === NEU).map(fromBoard).filter(Boolean);
+    const before = S.filter(s => s.neu).map(s => s.id).join(','), after = neu.map(s => s.id).join(',');
+    if (before === after) return;
+    if (neu.some(s => s.typ === 'neu') && !T.neu) T.neu = { n: 'Neu gemeldet', c: '#c6f432' };
+    for (let i = S.length - 1; i >= 0; i--) if (S[i].neu) S.splice(i, 1);
+    S.push(...neu);
+    if (!byId(current)) current = S[0] ? S[0].id : null;
+    filters(); radarPins(); list(); leafPins(false); sel(); if (RT.st === 'ok') rtPaint();
+  }
+  // Ort aus der Eingabe lesen: Koordinaten (auch 49,32 / 6,94 und Grad-Minuten-Sekunden), Google-Maps-Links, Kurzlinks, sonst Text
+  function parseLoc(raw) {
+    const t = String(raw || '').trim(); if (!t) return null;
+    const ok = (la, lo) => (isFinite(la) && isFinite(lo) && Math.abs(la) <= 90 && Math.abs(lo) <= 180 && (la || lo)) ? { la, lo } : { text: t };
+    const sh = t.match(/https?:\/\/(?:maps\.app\.goo\.gl|goo\.gl\/maps)\/[^\s]+/i); if (sh) return { short: sh[0].replace(/^http:/i, 'https:') };
+    let m = t.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/) || t.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || t.match(/[?&](?:q|query|ll|destination|daddr|center)=(-?\d+\.\d+)(?:,|%2C)\s*\+?(-?\d+\.\d+)/i) || t.match(/\/(?:place|search|dir)\/(-?\d+\.\d+),\s*\+?(-?\d+\.\d+)/);
+    if (m) return ok(+m[1], +m[2]);
+    const d = t.replace(/[′’´`]/g, "'").replace(/[″”“]|''/g, '"').replace(/º/g, '°');
+    m = d.match(/(\d{1,2})\s*°\s*(\d{1,2})\s*'\s*(\d{1,2}(?:[.,]\d+)?)\s*"?\s*([NS])[\s,;]*(\d{1,3})\s*°\s*(\d{1,2})\s*'\s*(\d{1,2}(?:[.,]\d+)?)\s*"?\s*([EOW])/i);
+    if (m) { const f = (a, b, c) => +a + +b / 60 + parseFloat(String(c).replace(',', '.')) / 3600; let la = f(m[1], m[2], m[3]), lo = f(m[5], m[6], m[7]); if (/s/i.test(m[4])) la = -la; if (/w/i.test(m[8])) lo = -lo; return ok(la, lo); }
+    const n = d.replace(/(\d),(\d{3,})/g, '$1.$2');
+    m = n.match(/(-?\d{1,2}\.\d{3,})\s*°?\s*[NS]?\s*[,;\s/]\s*[EOW]?\s*(-?\d{1,3}\.\d{3,})/i);
+    if (m) return ok(+m[1], +m[2]);
+    return { text: t };
+  }
+  const tmo = ms => { const c = new AbortController(); setTimeout(() => c.abort(), ms); return c.signal; };
+  async function unshort(u) {
+    const api = (D.api || {}).clips || (D.api || {}).mitglied; if (!api) return null;
+    const r = await fetch(api + '?a=maplink&u=' + encodeURIComponent(u), { credentials: 'omit', signal: tmo(15000) });
+    let j = {}; try { j = JSON.parse(await r.text()); } catch (e) { return null; }
+    const p = j && j.url ? parseLoc(j.url) : null;
+    return p && isFinite(p.la) ? p : null;
+  }
+  // Adresse oder Ortsname suchen (OpenStreetMap Nominatim), bevorzugt rund ums Saarland
+  async function geocode(q) {
+    const u = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=de&countrycodes=de,fr,lu&viewbox=6.1,49.8,7.7,48.9&q=' + encodeURIComponent(q.slice(0, 200));
+    const r = await fetch(u, { credentials: 'omit', signal: tmo(12000) });
+    const j = await r.json(); const x = Array.isArray(j) && j[0];
+    return x ? { la: +x.lat, lo: +x.lon, name: String(x.display_name || '').split(',').slice(0, 3).join(',').trim() } : null;
+  }
   const live = () => !!(window.FCS && FCS.board && FCS.board.on());
   const rtOf = id => RT.list.filter(x => x.b === 'spot:' + id);
   const stOf = x => { const v = Math.round(+x.st); return v >= 1 && v <= 5 ? v : 0; };
@@ -381,6 +444,7 @@
     if (!live() || RT.st === 'load') return;
     RT.st = 'load'; rtPaint();
     try { const srv = await FCS.board.list('spot:'); RT.list = [...RT.list.filter(x => x._new && !srv.some(y => y.id === x.id)), ...srv]; RT.st = 'ok'; } catch (e) { RT.st = 'err'; }
+    if (RT.st === 'ok') mergeNeu();
     rtPaint();
     if (RT.st !== 'ok') return;
     const ul = $('#spotlist'), r = ul && ul.getBoundingClientRect();
@@ -390,8 +454,8 @@
   function ratingsInit() {
     const ul = $('#spotlist'); if (!ul) return;
     if (live()) {
-      const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); if (RT.st === 'idle') rtLoad(); } }, { rootMargin: '200px 0px' });
-      io.observe(ul);
+      const io = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { io.disconnect(); if (RT.st === 'idle') rtLoad(); } }, { rootMargin: '400px 0px' });
+      io.observe(ul); const mb = $('#mapbox'); if (mb) io.observe(mb);
     }
     ul.addEventListener('click', e => {
       const b = e.target.closest('[data-rt-retry],[data-rv-all]'); if (!b) return;
@@ -401,9 +465,10 @@
     });
     lvWire(ul, {
       what: 'Bewertung', acc: 'die Bewertung', it: 'sie', mine: 'Das ist deine.', area: 'Spot-Bewertung',
+      per: id => { const x = RT.list.find(y => y.id === id); return x && x.b === NEU ? { what: 'Spot', acc: 'den Spot', it: 'ihn', mine: 'Das ist deiner.', area: 'Neuer Spot' } : null; },
       get: id => RT.list.find(x => x.id === id),
-      excerpt: x => { const s = byId(String(x.b || '').slice(5)); return `${s ? s.n + ': ' : ''}${stOf(x) ? stOf(x) + ' Sterne' : ''}${x.t ? ', ' + x.t : ''}`; },
-      onDeleted: id => { RT.list = RT.list.filter(x => x.id !== id); RT.seen = true; rtPaint(); }
+      excerpt: x => { if (x.b === NEU) return 'Neuer Spot: ' + (x.titel || ''); const s = byId(String(x.b || '').slice(5)); return `${s ? s.n + ': ' : ''}${stOf(x) ? stOf(x) + ' Sterne' : ''}${x.t ? ', ' + x.t : ''}`; },
+      onDeleted: id => { const neu = RT.list.some(x => x.id === id && x.b === NEU); RT.list = RT.list.filter(x => x.id !== id); RT.seen = true; if (neu) mergeNeu(); rtPaint(); }
     });
   }
 
@@ -998,24 +1063,43 @@
     $('#leaf').classList.toggle('is-sat', kind === 'sat');
     watchTiles();
   }
+  /* Ausschnitt mitnehmen: Wer im Radar oder in der Karte gezoomt hat, sieht nach dem Umschalten genau dieselbe Stelle.
+     Radar: km um LAT0/LON0, R.k = Pixel pro km. Karte: Web-Mercator, 156543 m pro Pixel bei Zoom 0 am Äquator. */
+  const MPP0 = 156543.03392;
+  function radarToMap() {
+    if (!M.map || !R.w || !R.k) return false;
+    const lat = LAT0 + R.c[1] / KY, lng = LON0 + R.c[0] / KX;
+    const z = Math.log2(MPP0 * Math.cos(lat * Math.PI / 180) * R.k / 1000);
+    M.map.setView([lat, lng], clamp(z, M.map.getMinZoom(), M.map.getMaxZoom()), { animate: false });
+    return true;
+  }
+  function mapToRadar() {
+    if (!M.map) return;
+    const c = M.map.getCenter(), z = M.map.getZoom();
+    R.c = km(c.lng, c.lat);
+    R.k = Math.pow(2, z) / (MPP0 * Math.cos(c.lat * Math.PI / 180) / 1000);
+    if (R.kFit) R.k = clamp(R.k, R.kMin, R.kMax);
+    clampC(); R.fitted = true; touchMode();
+  }
   function setView(v) {
-    const street = v !== 'radar';
+    const street = v !== 'radar', was = R.box.hidden ? 'map' : 'radar';
     $$('.mp-vbtn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
     $('#map-fail').hidden = true;
     R.box.hidden = street; $('#leaf').hidden = !street;
     $('#mapbox').classList.toggle('is-street', street);
-    if (!street) { $('#map-wait').hidden = true; size(); setOn(); redraw(); return; }
+    if (!street) { $('#map-wait').hidden = true; if (was === 'map') mapToRadar(); size(); setOn(); redraw(); return; }
     setOn(); stopImpulse();
     if (!window.L) { fail(); return; }
     if (!M.map) makeMap(v);
     else {
       if (M.kind !== v) setLayer(v); else if (M.failed) retry();
-      // Behälter war versteckt: Größe neu messen, sonst bleibt die Karte grau oder klein
-      requestAnimationFrame(() => { M.map.invalidateSize(); focusSpot(false); });
+      // Behälter war versteckt: Größe neu messen, Ausschnitt bleibt (Straße ↔ Satellit) bzw. kommt vom Radar
+      requestAnimationFrame(() => { M.map.invalidateSize({ pan: false }); if (was === 'radar') radarToMap(); });
     }
   }
   function makeMap(kind) {
     const el = $('#leaf');
+    if (/[?&]radardebug/.test(location.search)) window.__M = M;
     M.map = L.map(el, { zoomControl: true, scrollWheelZoom: false, attributionControl: false, zoomSnap: .5, minZoom: 7, maxZoom: 19 });
     L.control.attribution({ position: 'bottomright', prefix: false }).addTo(M.map);
     M.map.on('click', () => { stopImpulse(); M.map.scrollWheelZoom.enable(); });
@@ -1030,8 +1114,8 @@
     }, { passive: false });
     setLayer(kind);
     leafPins(false);
-    fit(false);
-    requestAnimationFrame(() => { M.map.invalidateSize(); fit(false); });
+    if (!radarToMap()) fit(false);
+    requestAnimationFrame(() => { M.map.invalidateSize({ pan: false }); if (!radarToMap()) fit(false); });
     setTimeout(() => M.map && M.map.invalidateSize(), 350);
     if (window.ResizeObserver) new ResizeObserver(() => M.map && !el.hidden && M.map.invalidateSize()).observe(el);
   }
@@ -1089,7 +1173,7 @@
       <article class="sp-card" aria-labelledby="sp-${esc(s.id)}-n">
         <button class="sp-pic" type="button" data-show="${esc(s.id)}" aria-label="${esc(s.n)} auf der Karte zeigen">${pic}<span class="sp-pin">${IC.pin}</span></button>
         <div class="sp-body">
-          <p class="sp-typ"><i></i>${esc(t.n)}</p>
+          <p class="sp-typ"><i></i>${esc(t.n)}${s.neu ? '<span class="sp-new">Neu gemeldet</span>' : ''}</p>
           <h3 class="sp-n" id="sp-${esc(s.id)}-n">${esc(s.n)}</h3>
           <p class="sp-rt" data-rt="${esc(s.id)}"${rtBadge(s.id, true) ? '' : ' hidden'}>${rtBadge(s.id, true)}</p>
           <p class="sp-t">${esc(s.t)}</p>
@@ -1102,6 +1186,7 @@
           <div><dt>Fliegen</dt><dd>${esc(s.regel)}</dd></div>
           <div><dt>Bewertung</dt><dd class="sp-st" data-rt-big="${esc(s.id)}">${rtBig(s)}</dd></div>
         </dl>
+        ${s.neu ? `<div class="sp-neu" data-lv-id="${esc(s.ref)}"><p class="sp-neu-t">Gemeldet von <b>${esc(s.von)}</b> ${lvTime(s.d)}. Der Vorstand schaut ihn sich noch an.${lvMine(s.ref) ? ' <span class="lv-mine">Deiner</span>' : ''}</p>${lvActs()}</div>` : ''}
         <div class="vd-wrap" data-vd="${esc(s.id)}">${vdHTML(s)}</div>
         <div class="rv" data-rv="${esc(s.id)}">${rvHTML(s)}</div>
         <div class="sp-rate-slot"></div>
@@ -1354,14 +1439,73 @@
       $$('.sf-vrow input', f).forEach(i => { const raw = i.value.trim(); if (!raw) return; const n = vidNorm(raw); if (n) i.value = n; else { if (i._vupd) i._vupd(true); if (!bad) bad = i; } });
       if (bad) { e.preventDefault(); e.stopImmediatePropagation(); bad.closest('.field').classList.add('bad'); bad.focus({ preventScroll: true }); FCS.scrollTo(bad, -160); }
     }, true);
-    f.addEventListener('fcs:sent', () => { const ok = $('.sf-ok', f); if (ok) setTimeout(() => { go(ok, -Math.round(innerHeight * .3)); const b = $('#sf-again'); if (b) b.focus({ preventScroll: true }); }, 60); });
-    const again = $('#sf-again');
-    if (again) again.addEventListener('click', () => {
+    // Ort sofort lesbar machen: erkannte Koordinaten direkt zeigen, Kurzlinks und Adressen werden beim Senden gesucht
+    const IDLE = 'Am Spot? Dann tipp auf „Meinen Standort nehmen“. Sonst Adresse, Koordinaten oder Google-Maps-Link.';
+    const showLoc = () => { const p = parseLoc(loc.value); if (!p) say(IDLE); else if (isFinite(p.la)) say(`Kartenpunkt erkannt: ${fmtLL(p.la, p.lo)}`, 'ok'); else if (p.short) say('Google-Maps-Link erkannt, der Punkt wird beim Senden gelesen.', 'ok'); else say('Wir suchen den Ort beim Senden auf der Karte.'); };
+    if (loc) { loc.addEventListener('blur', showLoc); loc.addEventListener('paste', () => setTimeout(showLoc, 0)); }
+    const bad = $('.sf-bad', f), okBox = $('.sf-ok', f);
+    const fail = (t, el) => { if (bad) { bad.innerHTML = `<p><b>Das hat nicht geklappt.</b> ${esc(t)}</p>`; bad.hidden = false; } if (el) { el.closest('.field') && el.closest('.field').classList.add('bad'); el.focus({ preventScroll: true }); FCS.scrollTo(el, -160); } else if (bad) go(bad, -Math.round(innerHeight * .4)); };
+    async function where() {
+      let p = parseLoc(loc.value);
+      if (p && p.short) { say('Google-Maps-Link wird gelesen …'); try { p = await unshort(p.short); } catch (e) { p = null; } if (!p) { say('Diesen Link können wir gerade nicht lesen.', 'bad'); return { err: 'Diesen Google-Maps-Link können wir gerade nicht lesen. Tipp die Adresse oder die Koordinaten ein, oder nimm deinen Standort.' }; } }
+      else if (p && p.text) { say('Ort wird auf der Karte gesucht …'); let g = null; try { g = await geocode(p.text); } catch (e) {} if (!g) { say('Ort nicht gefunden.', 'bad'); return { err: 'Den Ort finden wir nicht. Schreib ihn genauer (Straße und Ort), füg Koordinaten oder einen Google-Maps-Link ein oder nimm deinen Standort.' }; } p = g; }
+      if (!p || !isFinite(p.la)) return { err: 'Bitte sag uns, wo der Spot liegt.' };
+      say(`Kartenpunkt: ${fmtLL(p.la, p.lo)}${p.name ? ' · ' + p.name : ''}`, 'ok');
+      return p;
+    }
+    function showOk(name, pw, id) {
+      f.classList.add('sent');
+      const wa = `Mein Löschcode für den Spot „${name}“ beim Flight Club Saar: ${pw}\n${location.origin}${location.pathname}#karte`;
+      okBox.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        <div class="sf-ok-t"><p><b>Dein Spot ist auf der Karte!</b> „${esc(name)}“ steht jetzt als neu gemeldeter Spot auf der Karte. Der Vorstand schaut ihn sich noch an.</p>
+        <p class="sf-code">Dein Löschcode: <b>${esc(pw)}</b></p>
+        <div class="sf-ok-b"><button class="btn solid" type="button" data-sf-show="${esc(id)}">Auf der Karte zeigen</button><button class="btn" type="button" id="sf-again">Noch einen Spot melden</button><button class="btn ghost" type="button" data-sf-copy="${esc(pw)}">${LVI.copy}<span>Code kopieren</span></button><a class="btn ghost" href="https://wa.me/?text=${encodeURIComponent(wa)}" target="_blank" rel="noopener">${LVI.wa}<span>Code per WhatsApp an mich</span></a></div></div>`;
+      okBox.hidden = false;
+      const g = G(); if (g) g.fromTo(okBox, { scale: .94, opacity: 0 }, { scale: 1, opacity: 1, duration: .55, ease: 'back.out(2)', clearProps: 'transform,opacity' });
+      setTimeout(() => { go(okBox, -Math.round(innerHeight * .3)); const b = $('[data-sf-show]', okBox); if (b) b.focus({ preventScroll: true }); }, 60);
+    }
+    function again() {
+      const von = $('#s-von').value, ok = $('input[name=Datenschutz]', f).checked;
       f.reset(); clear(); f.classList.remove('sent');
+      $('#s-von').value = von; $('input[name=Datenschutz]', f).checked = ok;
       $$('.sf-vrow', f).slice(1).forEach(r => r.remove()); if (vmore) vmore.hidden = false; const v1 = $('#s-v1'); if (v1 && v1._vupd) v1._vupd(false);
       $$('.form-ok,.form-bad', f).forEach(x => x.hidden = true);
-      say('Am Spot? Dann tipp auf „Meinen Standort nehmen“.');
+      say(IDLE);
       $('#s-name').focus({ preventScroll: true }); go(f, -20);
+    }
+    f.addEventListener('click', e => {
+      if (e.target.closest('#sf-again')) { again(); return; }
+      const sh = e.target.closest('[data-sf-show]'); if (sh) { stopImpulse(); touched = true; pick(sh.dataset.sfShow, 'list'); go($('#mapbox'), -16); return; }
+      const cp = e.target.closest('[data-sf-copy]'); if (cp) lvCopy(cp.dataset.sfCopy, cp);
+    });
+    f.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (f._busy) return;
+      $$('.form-bad', f).forEach(x => x.hidden = true);
+      if (!FCS.validate(f)) return;
+      const btn = $('.sf-go', f), bt = btn.innerHTML; f._busy = true; btn.disabled = true; btn.innerHTML = '<span>Wird eingetragen …</span>';
+      try {
+        if (!live()) { // ohne Live-Anbindung wie früher per Mail
+          let r = { ok: false }; try { r = await FCS.send(f); } catch (er) {}
+          if (r.ok) { f.classList.add('sent'); okBox.hidden = false; } else fail('Bitte versuch es gleich noch einmal oder schick den Spot per WhatsApp.');
+          return;
+        }
+        const p = await where(); if (p.err) { fail(p.err, loc); return; }
+        const name = $('#s-name').value.trim().replace(/\s+/g, ' ').slice(0, 90), von = $('#s-von').value.trim().replace(/\s+/g, ' ').slice(0, 40), txt = ($('#s-txt').value || '').trim().slice(0, 600);
+        const artName = ($('input[name=Art]:checked', f) || {}).value || '';
+        const vids = $$('.sf-vrow input', f).map(i => vidNorm(i.value)).filter(Boolean).slice(0, 3);
+        const o = { d: txt, la: +p.la.toFixed(6), lo: +p.lo.toFixed(6), a: artKey(artName), v: vids, o: String(p.name || '').slice(0, 120) };
+        const files = inp && inp.files && inp.files[0] ? [inp.files[0]] : [];
+        const map = `https://www.google.com/maps?q=${o.la},${o.lo}`;
+        const fields = { b: NEU, n: von, titel: name, t: JSON.stringify(o), ort: (o.o || fmtLL(o.la, o.lo)).slice(0, 60), link: map };
+        let r = { ok: false }; try { r = await FCS.board.add(fields, files); } catch (er) {}
+        if (!r.ok) { fail('Gerade nicht erreichbar. Bitte versuch es gleich noch einmal, deine Eingaben bleiben stehen.'); return; }
+        lvKeepName(von);
+        RT.list.unshift({ id: r.id, b: NEU, n: von, titel: name, t: fields.t, ort: fields.ort, link: map, nf: files.length ? 1 : 0, d: lvNow(), _new: 1 });
+        mergeNeu(); current = 'n-' + r.id; sel(); redraw();
+        showOk(name, r.pw, current);
+        if (FCS.notify) FCS.notify('Neuer Spot auf der Karte: ' + name, { Spot: name, Von: von, Kartenpunkt: fmtLL(o.la, o.lo), Karte: map, Ort: o.o, Art: artName, Beschreibung: txt, Videos: vids.join(' '), Foto: files.length ? 'ja' : 'nein', 'Beitrag-ID': r.id }).catch(() => {});
+      } finally { f._busy = false; btn.disabled = false; btn.innerHTML = bt; }
     });
   }
 

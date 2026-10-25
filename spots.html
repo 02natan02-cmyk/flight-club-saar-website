@@ -18,7 +18,7 @@
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=c0a55e7f">
 <link rel="stylesheet" href="assets/lib/leaflet.css">
-<link rel="stylesheet" href="assets/css/spots.css?v=6295b87b">
+<link rel="stylesheet" href="assets/css/spots.css?v=e73296ff">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -186,16 +186,16 @@
   <div class="wrap send-grid">
     <div class="send-side">
       <h2 class="h2 sp-h2" id="send-h" data-split>Spot melden</h2>
-      <p class="send-intro">Du kennst einen guten Platz? Schick ihn uns. Der Vorstand prüft jeden Vorschlag und nimmt ihn danach in die Karte auf.</p>
+      <p class="send-intro">Du kennst einen guten Platz? Trag ihn ein. Er steht sofort als „neu gemeldet“ auf der Karte, und du kannst gleich den nächsten eintragen.</p>
       <ol class="send-flow" aria-label="So geht es nach dem Senden weiter">
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg>Du schickst den Spot</li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20M8.5 11l2 2 3.5-3.5"/></svg>Der Vorstand prüft ihn</li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Er erscheint auf der Karte</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg>Du trägst den Spot ein</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Er steht sofort auf der Karte</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20M8.5 11l2 2 3.5-3.5"/></svg>Der Vorstand schaut ihn sich an</li>
       </ol>
       <p class="send-wa">Lieber direkt schreiben? <span id="wa-btns"></span></p>
     </div>
 
-    <form class="panel sendform" data-fcs-form id="spotform" novalidate>
+    <form class="panel sendform" id="spotform" novalidate>
       <input type="hidden" name="_subject" value="Neuer Spot-Vorschlag (Flight Club Saar, Entwurf)">
       <input type="hidden" name="Formular" value="Spot melden">
       <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
@@ -204,8 +204,8 @@
         <legend><b>1</b>Wo ist der Spot?</legend>
         <div class="field"><label for="s-name">Name des Spots</label><input id="s-name" name="Spot" required placeholder="z. B. Alte Halle am Waldrand"><span class="err">Bitte gib dem Spot einen Namen.</span></div>
         <div class="field"><label for="s-loc">Wo?</label>
-          <div class="locrow"><input id="s-loc" name="Standort" required placeholder="Ort, Adresse oder Google-Maps-Link"><button class="btn ghost" type="button" id="geo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Meinen Standort nehmen</button></div>
-          <span class="hint" id="geo-msg" aria-live="polite">Am Spot? Dann tipp auf „Meinen Standort nehmen“.</span>
+          <div class="locrow"><input id="s-loc" name="Standort" required placeholder="Adresse, Koordinaten oder Google-Maps-Link"><button class="btn ghost" type="button" id="geo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Meinen Standort nehmen</button></div>
+          <span class="hint" id="geo-msg" aria-live="polite">Am Spot? Dann tipp auf „Meinen Standort nehmen“. Sonst Adresse, Koordinaten oder Google-Maps-Link.</span>
           <span class="err">Bitte sag uns, wo der Spot liegt.</span>
         </div>
       </fieldset>
@@ -233,9 +233,9 @@
       <fieldset class="sf-step">
         <legend><b>3</b>Wer schickt ihn?</legend>
         <div class="field"><label for="s-von">Name oder Pilotenname</label><input id="s-von" name="Name" required autocomplete="nickname"><span class="err">Bitte gib deinen Namen oder Pilotennamen ein.</span></div>
-        <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Meine Angaben dürfen zur Prüfung des Spots verarbeitet werden (<a href="datenschutz.html">Datenschutz</a>).</span></label>
-        <button class="btn solid sf-go" type="submit">Spot senden <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <p class="sf-draft">Entwurf: Vorschläge gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben.</p>
+        <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Der Spot erscheint mit meinem Namen sofort öffentlich auf der Karte (<a href="datenschutz.html#bestenliste">Datenschutz</a>).</span></label>
+        <button class="btn solid sf-go" type="submit">Spot eintragen <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="sf-draft">Mit einem Löschcode kannst du deinen Spot jederzeit selbst wieder entfernen.</p>
       </fieldset>
 
       <div class="form-ok sp-ok sf-ok" hidden>
@@ -243,7 +243,7 @@
         <p><b>Danke, dein Spot ist unterwegs!</b> Der Vorstand schaut ihn sich an und schaltet ihn frei.</p>
         <button class="btn ghost" type="button" id="sf-again">Noch einen Spot melden</button>
       </div>
-      <div class="form-bad sp-bad" hidden><p><b>Das hat nicht geklappt.</b> Bitte versuch es gleich noch einmal oder schick den Spot per WhatsApp.</p></div>
+      <div class="form-bad sp-bad sf-bad" role="alert" hidden><p><b>Das hat nicht geklappt.</b> Bitte versuch es gleich noch einmal oder schick den Spot per WhatsApp.</p></div>
     </form>
   </div>
 </section>
@@ -261,7 +261,7 @@
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Mitglieder des Vereins · Website: <a href="https://falcon-eye.de/" target="_blank" rel="noopener">Falcon Eye</a></span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=8b299299"></script>
+<script src="assets/js/data.js?v=af5aea61"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -272,6 +272,6 @@
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/lib/leaflet.js"></script>
 <script src="assets/js/fcs.js?v=4782690c"></script>
-<script src="assets/js/spots.js?v=315d147f"></script>
+<script src="assets/js/spots.js?v=115e1634"></script>
 </body>
 </html>

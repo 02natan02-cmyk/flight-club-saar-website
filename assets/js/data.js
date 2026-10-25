@@ -61,7 +61,16 @@ FCS.data = {
       t: 'Zweite Winterhalle im Dezember. Gleiche Regeln wie in Eiweiler.', regel: 'Nur zu Vereinsterminen', stern: null, k: [] },
     { id: 'goettelborn', n: 'Förderturm Göttelborn', typ: 'industrie', lat: 49.3435266, lng: 7.0386915, adr: 'Göttelborn, 66287 Quierschied',
       t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben, nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [],
-      foto: 'media/spots/goettelborn.webp', fotoAlt: 'Stahlgerüst am Förderturm Göttelborn' }
+      foto: 'media/spots/goettelborn.webp', fotoAlt: 'Stahlgerüst am Förderturm Göttelborn' },
+    // Von Natan (Vorstand) am 25.10.2026 eingetragen
+    { id: 'lost-sportplatz', n: 'Lost Place hinter dem Sportplatz', typ: 'lost', lat: 49.305833, lng: 7.063861, adr: '49°18\'21" N, 7°03\'50" O',
+      t: 'Verlassenes Gebäude hinter einem Sportplatz: zwei Etagen, Löcher im Dach. Durch die Öffnungen lässt sich durchfliegen.', regel: 'Eigentümer vorher fragen. Vorsicht, das Dach ist beschädigt, nicht hineingehen.', stern: null, k: [] },
+    { id: 'feld-friedhof', n: 'Feld hinter dem Friedhof', typ: 'feld', lat: 49.3240715, lng: 6.9477823, adr: '49,32407 N, 6,94778 O',
+      t: 'Freies Feld hinter einem Friedhof, viel Platz zum Üben.', regel: 'Nicht über den Friedhof fliegen, Rücksicht auf Besucher.', stern: null, k: [] },
+    { id: 'feld-frankreich', n: 'Feld in Frankreich', typ: 'feld', lat: 49.1979501, lng: 6.9571201, adr: '49,19795 N, 6,95712 O (Frankreich)',
+      t: 'Feld kurz hinter der Grenze in Frankreich.', regel: 'Liegt in Frankreich: Deine EU-Registrierung gilt dort auch.', stern: null, k: [] },
+    { id: 'feld-dillingen', n: 'Feld bei Dillingen mit Hütte', typ: 'feld', lat: 49.34494, lng: 6.706215, adr: 'Bei Dillingen/Saar, 49,34494 N, 6,70622 O',
+      t: 'Feld mit Sitzmöglichkeit und Hütte, gut für eine Pause zwischen den Akkus.', regel: 'Rücksicht auf Spaziergänger und Tiere.', stern: null, k: [] }
   ],
   spotTypen: {
     halle: { n: 'Halle', c: '#3fe0ff' },
