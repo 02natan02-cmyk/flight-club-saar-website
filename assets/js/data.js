@@ -171,6 +171,6 @@ FCS.data = {
   markt: [],
   partner: [
     { n: 'Ayedo', u: 'https://ayedo.de/', ig: 'weareayedo', t: 'Sponsor und Partner seit Februar 2025. Cloud-Anbieter aus Schwalbach-Hülzweiler im Saarland.' },
-    { n: 'Falcon Eye', u: 'https://falcon-eye.de/', t: 'FPV-Filme und Webdesign aus dem Verein heraus. Die Filme auf dieser Seite stammen von hier.' }
+    { n: 'Falcon Eye', u: 'https://falcon-eye.de/', t: 'FPV-Filme und Webdesign aus dem Verein heraus. Falcon Eye baut und betreibt diese Website, die Filme stammen von vielen Mitgliedern des Vereins.' }
   ]
 };

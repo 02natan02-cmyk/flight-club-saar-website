@@ -166,11 +166,44 @@
       }
       return out;
     }
+    /* Feste Gruppen: Piloten mit Kanal auf möglichst wenige Gruppen mit höchstens k Piloten verteilen, in jeder Gruppe verträgt
+       sich jeder mit jedem. Die Gruppen fliegen reihum (Gruppe 1, 2, 3, wieder 1 …). prev = bisherige Gruppe je Pilot, damit
+       beim Nachrechnen möglichst niemand die Gruppe wechseln muss. */
+    function teams(pilots, chOf, k, prev = {}) {
+      const ps = pilots.filter(p => chOf[p.key]), N = ps.length; if (!N) return [];
+      k = Math.max(1, Math.min(k | 0 || 1, N));
+      const deg = {}; ps.forEach(p => { deg[p.key] = ps.filter(q => q !== p && !compat(chOf[p.key], chOf[q.key])).length; });
+      const order = ps.slice().sort((a, b) => deg[b.key] - deg[a.key] || a.o - b.o);
+      for (let G = Math.ceil(N / k); G <= N; G++) {
+        const cap = Math.ceil(N / G), mem = Array.from({ length: G }, () => []); let steps = 0;
+        const go = (i) => {
+          if (i === N) return true; if (++steps > 40000) return false;
+          const p = order[i], c = chOf[p.key], cands = [];
+          let empty = false;
+          for (let g = 0; g < G; g++) {
+            if (mem[g].length >= cap) continue;
+            if (!mem[g].length && prev[p.key] !== g) { if (empty) continue; empty = true; }
+            if (mem[g].some(q => !compat(c, chOf[q.key]))) continue;
+            cands.push([(prev[p.key] === g ? -100 : 0) + mem[g].length * 10 + g * .01, g]);
+          }
+          cands.sort((x, y) => x[0] - y[0]);
+          for (const [, g] of cands) { mem[g].push(p); if (go(i + 1)) return true; mem[g].pop(); if (steps > 40000) return false; }
+          return false;
+        };
+        if (go(0)) {
+          const out = mem.filter(m => m.length).map(m => m.slice().sort((a, b) => chOf[a.key].f - chOf[b.key].f).map(p => p.key));
+          const rank = t => { const ix = t.map(key => prev[key]).filter(v => v != null); return ix.length ? Math.min(...ix) : 1e3 + Math.min(...t.map(key => (ps.find(p => p.key === key) || {}).o || 0)); };
+          return out.sort((a, b) => rank(a) - rank(b));
+        }
+      }
+      return ps.map(p => [p.key]);
+    }
+    const rotation = (tm, nH, keep = []) => { const out = keep.slice(0, nH).map(h => h.slice()); for (let i = out.length; i < nH; i++) out.push(tm.length ? tm[i % tm.length].slice() : []); return out; };
     const heatCount = (s) => { const cyc = s.slot + s.pause; return cyc > 0 ? Math.max(0, Math.min(120, Math.floor((s.e - s.b + s.pause) / cyc + 1e-9))) : 0; };
     // Konflikte innerhalb eines Durchgangs (nach Handänderungen möglich)
     function conflicts(keys, chOf) { const out = []; for (let i = 0; i < keys.length; i++) for (let j = i + 1; j < keys.length; j++) { const a = chOf[keys[i]], b = chOf[keys[j]]; if (a && b && !compat(a, b)) out.push([keys[i], keys[j]]); } return out; }
 
-    return { BAND, RB, SYS, ORDER, GUARD, legal, sysOf, chan, need, compat, label, mhz, parseCh, fmtCh, parseNote, options, assign, maxSimul, heats, heatCount, conflicts };
+    return { BAND, RB, SYS, ORDER, GUARD, legal, sysOf, chan, need, compat, label, mhz, parseCh, fmtCh, parseNote, options, assign, maxSimul, heats, teams, rotation, heatCount, conflicts };
   })();
 
   root.FCS_TERMIN = CORE;
@@ -226,7 +259,7 @@
   }
 
   /* ---------- Plan: Grundeinstellungen, Piloten aus den Einträgen ---------- */
-  const DEF = () => ({ b: toMin((D.zeit || {}).von) || 1080, e: toMin((D.zeit || {}).bis) || 1260, slot: 3, pause: 2, k: 0, all: 0 });
+  const DEF = () => ({ b: toMin((D.zeit || {}).von) || 1080, e: toMin((D.zeit || {}).bis) || 1260, slot: 3, pause: 2, k: 0, all: 0, mode: 'g' });
   function fromReg(r, o) {
     const sys = C.sysOf(r.kat), chs = C.parseCh(r.titel, sys), nt = C.parseNote(r.t);
     return { key: r.id, ref: r.id, n: String(r.n || 'Pilot').slice(0, 40), sys, fix: chs.fix || null, wish: chs.wish || null, ch: null, lock: false, here: true, cls: nt.cls, note: nt.note.slice(0, 200), o, d: r.d || '' };
@@ -236,16 +269,18 @@
   function encode(pl) {
     const idx = new Map();
     const p = pl.pilots.map((x, i) => { idx.set(x.key, i); return [x.ref || ('~' + x.n), x.sys, x.ch || '', (x.here ? 1 : 0) | (x.lock ? 2 : 0) | (x.sysx ? 4 : 0)]; });
-    const s = pl.s, o = { v: 1, s: [s.b, s.e, s.slot, s.pause, s.k || 0, s.all ? 1 : 0], p };
+    const s = pl.s, o = { v: 1, s: [s.b, s.e, s.slot, s.pause, s.k || 0, s.all ? 1 : 0, s.mode === 'm' ? 1 : 0], p };
+    if (s.mode !== 'm' && pl.teams && pl.teams.length && p.length <= 36) o.g = pl.teams.map(t => t.filter(k => idx.has(k)).map(k => B36[idx.get(k)]).join('')).join('.');
     const hs = pl.heats.map(h => h.filter(k => idx.has(k)).map(k => idx.get(k)));
     o.h = p.length <= 36 ? hs.map(h => h.map(i => B36[i]).join('')).join('.') : hs;
     let j = JSON.stringify(o);
-    if (j.length > 2000) { delete o.h; j = JSON.stringify(o); } // dann rechnet jedes Gerät die Durchgänge gleich nach
+    if (j.length > 2000) { delete o.h; j = JSON.stringify(o); }
+    if (j.length > 2000) { delete o.g; j = JSON.stringify(o); } // dann rechnet jedes Gerät die Durchgänge gleich nach
     return j;
   }
   function decode(o, regsD) {
     const s = Array.isArray(o.s) ? o.s : [], df = DEF();
-    const pl = { s: { b: num(s[0], df.b), e: num(s[1], df.e), slot: Math.min(15, Math.max(1, num(s[2], df.slot))), pause: Math.min(15, Math.max(0, num(s[3], df.pause))), k: Math.min(8, Math.max(0, num(s[4], 0) | 0)), all: num(s[5], 0) ? 1 : 0 }, pilots: [], heats: [] };
+    const pl = { s: { b: num(s[0], df.b), e: num(s[1], df.e), slot: Math.min(15, Math.max(1, num(s[2], df.slot))), pause: Math.min(15, Math.max(0, num(s[3], df.pause))), k: Math.min(8, Math.max(0, num(s[4], 0) | 0)), all: num(s[5], 0) ? 1 : 0, mode: num(s[6], 0) ? 'm' : 'g' }, pilots: [], heats: [], teams: [] };
     const by = new Map(regsD.map(r => [r.id, r])), keys = [];
     (Array.isArray(o.p) ? o.p : []).forEach((x, i) => {
       if (!Array.isArray(x) || typeof x[0] !== 'string') { keys.push(null); return; }
@@ -260,6 +295,7 @@
     const hs = typeof o.h === 'string' ? o.h.split('.').map(h => [...h].map(c => B36.indexOf(c))) : Array.isArray(o.h) ? o.h : null;
     pl.heats = hs ? hs.map(h => (Array.isArray(h) ? h : []).map(i => keys[i]).filter(Boolean)) : [];
     pl.noHeats = !hs;
+    if (typeof o.g === 'string') pl.teams = o.g.split('.').map(t => [...t].map(c => keys[B36.indexOf(c)]).filter(Boolean)).filter(t => t.length);
     return pl;
   }
   // Einträge und Plan zusammenführen: Ausgetragene raus, Neue rein. true = es hat sich etwas geändert
@@ -271,6 +307,7 @@
     regsD.forEach(r => { if (!pl.pilots.some(p => p.ref === r.id)) { pl.pilots.push(fromReg(r, ++o)); changed = true; } });
     const keys = new Set(pl.pilots.map(p => p.key));
     pl.heats = pl.heats.map(h => h.filter(k => keys.has(k)));
+    pl.teams = (pl.teams || []).map(t => t.filter(k => keys.has(k))).filter(t => t.length);
     return changed;
   }
   const present = pl => pl.pilots.filter(p => p.here).sort((a, b) => a.o - b.o);
@@ -291,15 +328,34 @@
     if (now < t0 || now > dayStart(T.d) + 864e5) return 0;
     return Math.min(pl.heats.length, Math.floor((now - t0) / cyc) + 1);
   }
+  const isTeams = pl => (pl.s.mode || 'g') !== 'm';
+  // Feste Gruppen neu bilden; wer schon eine Gruppe hat, bleibt nach Möglichkeit darin
+  function mkTeams(pl) {
+    const prev = {}; (pl.teams || []).forEach((t, i) => t.forEach(k => { prev[k] = i; }));
+    const ps = present(pl), m = chMap(pl);
+    pl.teams = C.teams(ps, m, kEff(pl), prev);
+  }
   function regen(pl, from) {
     const nH = C.heatCount(pl.s); const keep = pl.heats.slice(0, Math.min(from || 0, nH));
     const ps = present(pl); const m = chMap(pl);
+    if (isTeams(pl)) { mkTeams(pl); pl.heats = C.rotation(pl.teams, nH, keep); return; }
     pl.heats = C.heats(ps.filter(p => m[p.key]), m, kEff(pl), nH, keep);
   }
   function fitCount(pl) {
     const nH = C.heatCount(pl.s);
     if (pl.heats.length > nH) pl.heats = pl.heats.slice(0, nH);
-    else if (pl.heats.length < nH) { const ps = present(pl), m = chMap(pl); pl.heats = C.heats(ps.filter(p => m[p.key]), m, kEff(pl), nH, pl.heats); }
+    else if (pl.heats.length < nH) {
+      if (isTeams(pl)) { if (!(pl.teams && pl.teams.length)) mkTeams(pl); pl.heats = C.rotation(pl.teams, nH, pl.heats); return; }
+      const ps = present(pl), m = chMap(pl); pl.heats = C.heats(ps.filter(p => m[p.key]), m, kEff(pl), nH, pl.heats);
+    }
+  }
+  const teamOfKey = (key, pl = T.plan) => (pl.teams || []).findIndex(t => t.includes(key));
+  // Gruppe eines Durchgangs: die Gruppe, aus der die meisten Piloten des Durchgangs stammen
+  function teamOfHeat(i, pl = T.plan) {
+    if (!isTeams(pl) || !(pl.teams && pl.teams.length)) return -1;
+    const h = pl.heats[i] || [], cnt = {}; let best = -1, bn = 0;
+    h.forEach(k => { const t = teamOfKey(k, pl); if (t >= 0) { cnt[t] = (cnt[t] || 0) + 1; if (cnt[t] > bn) { bn = cnt[t]; best = t; } } });
+    return best;
   }
 
   function build() {
@@ -320,6 +376,7 @@
     if (changed || needCh || src === 'auto') reassign(pl, false);
     if (changed || src === 'auto' || pl.noHeats || !pl.heats.length) { regen(pl, changed ? fromIdx(pl) : 0); if (changed && src !== 'auto') T.notice = T.notice || 'Seit dem veröffentlichten Plan hat sich die Liste geändert. Die kommenden Durchgänge sind neu eingeteilt.'; }
     else fitCount(pl);
+    if (isTeams(pl) && !(pl.teams && pl.teams.length) && present(pl).length) regen(pl, fromIdx(pl));
     delete pl.noHeats;
     T.plan = pl; T.pub = pub; T.src = src; T.dirty = src === 'local';
   }
@@ -376,7 +433,7 @@
     let el = $('#tp-toast'); if (!el) { el = document.createElement('div'); el.id = 'tp-toast'; el.className = 'tp-toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
     el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 3200);
   }
-  function renderAll() { renderHead(); renderMe(); renderList(); renderSpec(); renderChList(); renderConf(); renderSet(); renderHeats(); renderPub(); renderLivePrev(); if (L.open) liveFill(true); }
+  function renderAll() { renderHead(); renderMe(); renderList(); renderSpec(); renderChList(); renderConf(); renderTeams(); renderSet(); renderHeats(); renderPub(); renderLivePrev(); if (L.open) liveFill(true); }
 
   function renderHead() {
     const t = T.t; if (!t) return;
@@ -428,6 +485,7 @@
     box.innerHTML = `<p class="tp-me-k hud"><span class="dot" aria-hidden="true"></span>Dein Abend</p>
       <div class="tp-me-row"><span class="tp-me-ch" style="--c:${colorOf(key, gs)}">${c ? esc(C.label(c)) : '–'}</span>
       <div class="tp-me-t"><h3>${esc(p.n)}</h3><p>${esc(SYS[p.sys].n)}${c ? ' · ' + esc(C.mhz(c.f)) + (c.bw === 20 && p.sys !== 'w' ? ' · 20 MHz' : '') : ''}${p.here ? '' : ' · <b class="tp-warn">als nicht da markiert</b>'}</p></div></div>
+      ${isTeams(T.plan) && teamOfKey(key) >= 0 ? `<p class="tp-me-g">Du fliegst in <b>Gruppe ${teamOfKey(key) + 1}</b> zusammen mit ${T.plan.teams[teamOfKey(key)].filter(x => x !== key).map(x => esc(pName(x))).join(', ') || 'niemandem sonst'}.</p>` : ''}
       <p class="tp-me-hint">${esc(SYSHINT[p.sys] || '')}</p>
       ${hs.length ? `<p class="tp-me-n"><b>${hs.length}</b> Flüge eingeplant${upcoming.length && upcoming.length < hs.length ? `, noch ${upcoming.length}` : ''}</p><ul class="tp-me-times" aria-label="Deine Startzeiten">${upcoming.slice(0, 8).map(h => `<li><time>${fmtMin(h.at)}</time><span>#${pad(h.i + 1)}</span></li>`).join('')}${upcoming.length > 8 ? `<li class="more">+${upcoming.length - 8}</li>` : ''}</ul>` : '<p class="mute">Noch keine Flüge eingeplant.</p>'}
       <div class="btns">${own && p.ref === own.r.id && p.sys === 'u' ? '<button class="btn amber solid" type="button" data-me="add">Videosystem ergänzen</button>' : ''}<a class="btn" href="#plan">Zum Abendplan</a>${own && p.ref === own.r.id ? `<button class="btn ghost" type="button" data-me="del">${IC.trash}Austragen</button>` : '<button class="btn ghost" type="button" data-me="forget">Das bin ich nicht</button>'}</div>
@@ -617,22 +675,61 @@
     </ul>`;
   }
 
+  const stepper = (id, lbl, val, unit) => `<div class="tp-step" data-step="${id}"><span class="lbl" id="tp-l-${id}">${lbl}</span><div class="tp-step-c"><button type="button" data-d="-1" aria-label="${lbl} weniger">−</button><output aria-labelledby="tp-l-${id}" aria-live="polite">${val}${unit ? '<small> ' + unit + '</small>' : ''}</output><button type="button" data-d="1" aria-label="${lbl} mehr">+</button></div></div>`;
+  const kShow = pl => Math.min(kEff(pl), Math.max(1, kMax(pl) || kEff(pl)));
+
+  /* ---------- Gruppen (Gruppe 1, 2, 3 … reihum) ---------- */
+  function renderTeams() {
+    const box = $('#tp-teams'); if (!box || !T.plan) return;
+    const pl = T.plan, ps = present(pl);
+    if (!ps.length) { box.innerHTML = '<div class="tp-tm-h"><div><h3 class="h3">Die Gruppen</h3><p class="tp-tm-sum">Sobald Piloten eingetragen sind, teilt der Plan sie hier in Gruppen auf: Gruppe 1, 2, 3 fliegen reihum.</p></div></div>'; return; }
+    if (!isTeams(pl)) { box.innerHTML = `<div class="tp-tm-h"><div><h3 class="h3">Die Gruppen</h3><p class="tp-tm-sum">Der Abend läuft gerade gemischt: Jeder fliegt mit wechselnden Partnern.</p></div><button class="btn solid" type="button" data-mode="g">Feste Gruppen verwenden</button></div>`; return; }
+    const tm = pl.teams || [], m = chMap(), gs = groups(), s = pl.s, cyc = s.slot + s.pause, focusD = document.activeElement && box.contains(document.activeElement) && document.activeElement.dataset.d;
+    const times = ti => pl.heats.map((h, i) => teamOfHeat(i) === ti ? fmtMin(s.b + i * cyc) : null).filter(Boolean);
+    const inT = new Set(tm.flat()), rest = ps.filter(p => !inT.has(p.key));
+    const ka = kAuto(pl), kx = kMax(pl);
+    box.innerHTML = `<div class="tp-tm-h"><div><h3 class="h3">Die Gruppen</h3>
+        <p class="tp-tm-sum"><b>${ps.length}</b> ${ps.length === 1 ? 'Pilot' : 'Piloten'} · <b>${tm.length}</b> ${tm.length === 1 ? 'Gruppe' : 'Gruppen'} · Reihenfolge ${tm.map((t, i) => i + 1).join(' → ')}${tm.length > 1 ? ' → wieder 1' : ''}</p>
+        <p class="tp-tm-note">Höchstens ${kShow(pl)} pro Gruppe, gleichmäßig verteilt. In jeder Gruppe hat jeder einen eigenen Kanal, keiner stört den anderen.${kx && s.k && s.k > kx ? ` Mit diesen Videosystemen passen höchstens ${kx} gleichzeitig störungsfrei in die Luft.` : ''}</p></div>
+      ${stepper('k', 'Piloten pro Gruppe', s.k ? s.k : 'Auto ' + ka, '')}</div>
+      <ol class="tp-tms">${tm.map((t, i) => { const tt = times(i); return `<li class="tp-tm" data-t="${i}">
+        <header><b>Gruppe ${i + 1}</b><span>${t.length} ${t.length === 1 ? 'Pilot' : 'Piloten'}</span></header>
+        <ul>${t.map(key => { const p = pOf(key), c = m[key]; return p ? `<li><button type="button" data-pk="${esc(key)}"><span class="tp-tm-ch" style="--c:${colorOf(key, gs)}">${c ? esc(C.label(c)) : '–'}</span><span class="tp-tm-n">${esc(p.n)}<small>${esc(SYS[p.sys].n)}${c ? ' · ' + esc(C.mhz(c.f)) : ''}</small></span></button></li>` : ''; }).join('')}</ul>
+        <p class="tp-tm-t">${tt.length ? `Startet um ${tt.slice(0, 4).join(', ')}${tt.length > 4 ? ' und ' + (tt.length - 4) + '-mal mehr' : ''}` : 'Passt mit diesen Zeiten nicht in den Abend.'}</p>
+      </li>`; }).join('')}</ol>
+      ${rest.length ? `<p class="tp-tm-note">Ohne Kanal und darum noch in keiner Gruppe: ${rest.map(p => esc(p.n)).join(', ')}.</p>` : ''}
+      <p class="tp-tm-act"><button class="tp-mini" type="button" data-tregen>${IC.reload}<span>Gruppen neu mischen</span></button><span class="mute">Tausch: im Abendplan zwei Piloten nacheinander antippen.</span></p>`;
+    if (focusD) { const b = $(`[data-step="k"] [data-d="${focusD}"]`, box); if (b) b.focus({ preventScroll: true }); }
+  }
+  function setMode(v) {
+    const pl = T.plan; if (!pl || (pl.s.mode || 'g') === v) return;
+    pl.s.mode = v; if (v === 'g') pl.teams = [];
+    regen(pl, fromIdx(pl)); commit(v === 'g' ? 'Feste Gruppen: Gruppe 1, 2, 3 … fliegen reihum.' : 'Gemischt: Jeder fliegt mit wechselnden Partnern.');
+  }
+  function onTeams(e) {
+    if (e.target.closest('[data-mode]')) { setMode(e.target.closest('[data-mode]').dataset.mode); return; }
+    if (e.target.closest('[data-tregen]')) { T.plan.teams = []; regen(T.plan, fromIdx(T.plan)); T.sel = null; commit('Gruppen neu gemischt.'); return; }
+    const b = e.target.closest('[data-pk]'); if (b) { openPilot(b.dataset.pk); return; }
+    onSet(e);
+  }
+
   /* ---------- Einstellungen ---------- */
   function renderSet() {
     const box = $('#tp-set'); if (!box || !T.plan) return;
     const al = $('#tp-all'); if (al) al.checked = !!T.plan.s.all;
-    const s = T.plan.s, ka = kAuto(T.plan), nH = C.heatCount(s), ps = present(T.plan), k = Math.min(kEff(T.plan), Math.max(1, kMax(T.plan) || kEff(T.plan)));
+    const s = T.plan.s, ka = kAuto(T.plan), nH = C.heatCount(s), ps = present(T.plan), k = kShow(T.plan), tmode = isTeams(T.plan), G = (T.plan.teams || []).length;
     const per = ps.length ? Math.round(T.plan.heats.reduce((a, h) => a + h.length, 0) / ps.length) : 0;
-    const step = (id, lbl, val, unit) => `<div class="tp-step" data-step="${id}"><span class="lbl" id="tp-l-${id}">${lbl}</span><div class="tp-step-c"><button type="button" data-d="-1" aria-label="${lbl} weniger">−</button><output aria-labelledby="tp-l-${id}" aria-live="polite">${val}${unit ? '<small> ' + unit + '</small>' : ''}</output><button type="button" data-d="1" aria-label="${lbl} mehr">+</button></div></div>`;
+    const step = stepper;
     const focusId = document.activeElement && box.contains(document.activeElement) ? (document.activeElement.id || (document.activeElement.closest('[data-step]') ? document.activeElement.closest('[data-step]').dataset.step + ':' + document.activeElement.dataset.d : '')) : '';
     box.innerHTML = `<div class="tp-set-g">
       <div class="field"><label for="tp-s-b">Beginn</label><input type="time" id="tp-s-b" value="${fmtMin(s.b)}" step="300"></div>
       <div class="field"><label for="tp-s-e">Ende</label><input type="time" id="tp-s-e" value="${fmtMin(s.e)}" step="300"></div>
       ${step('slot', 'Flug pro Akku', String(s.slot).replace('.', ','), 'min')}
       ${step('pause', 'Wechselpause', String(s.pause).replace('.', ','), 'min')}
-      ${step('k', 'Gleichzeitig', s.k ? s.k : 'Auto ' + ka, '')}
+      ${step('k', tmode ? 'Pro Gruppe' : 'Gleichzeitig', s.k ? s.k : 'Auto ' + ka, '')}
     </div>
-    <p class="tp-set-sum"><b>${nH}</b> Durchgänge im ${String(s.slot + s.pause).replace('.', ',')}-Minuten-Takt · <b>${k}</b> gleichzeitig${ps.length ? ` · jeder fliegt etwa <b>${per}</b>-mal` : ''}</p>`;
+    <fieldset class="tp-mode"><legend class="lbl">Ablauf</legend><div class="chips"><label class="chip"><input type="radio" name="tp-mode" value="g"${tmode ? ' checked' : ''}><span>Feste Gruppen reihum</span></label><label class="chip"><input type="radio" name="tp-mode" value="m"${tmode ? '' : ' checked'}><span>Gemischt, wechselnde Partner</span></label></div></fieldset>
+    <p class="tp-set-sum"><b>${nH}</b> Durchgänge im ${String(s.slot + s.pause).replace('.', ',')}-Minuten-Takt · ${tmode && G ? `<b>${G}</b> ${G === 1 ? 'Gruppe' : 'Gruppen'} mit bis zu <b>${k}</b> Piloten` : `<b>${k}</b> gleichzeitig`}${ps.length ? ` · jeder fliegt etwa <b>${per}</b>-mal` : ''}</p>`;
     if (focusId) { const el = focusId.includes(':') ? $(`[data-step="${focusId.split(':')[0]}"] [data-d="${focusId.split(':')[1]}"]`, box) : $('#' + focusId, box); if (el) el.focus({ preventScroll: true }); }
   }
   function onSet(e) {
@@ -644,7 +741,8 @@
   }
   function fitTimes() { fitCount(T.plan); commit(); }
   function onTime(e) {
-    const el = e.target; if (!el.matches('#tp-s-b, #tp-s-e')) return;
+    const el = e.target; if (el.name === 'tp-mode') { setMode(el.value); return; }
+    if (!el.matches('#tp-s-b, #tp-s-e')) return;
     const v = toMin(el.value); if (v == null) return;
     const s = T.plan.s;
     if (el.id === 'tp-s-b') s.b = v; else s.e = v;
@@ -672,7 +770,7 @@
       const chips = h.map(key => { const c = m[key]; return `<button class="tp-chip${key === me ? ' me' : ''}${sel && sel.k === key && sel.h === i ? ' sel' : ''}${cf.some(x => x.includes(key)) ? ' bad' : ''}" type="button" data-k="${esc(key)}" data-h="${i}" style="--c:${colorOf(key, gs)}" aria-pressed="${sel && sel.k === key && sel.h === i ? 'true' : 'false'}"><span>${esc(pName(key))}</span><i>${c ? esc(C.label(c)) : '–'}</i></button>`; }).join('');
       const free = Math.max(0, k - h.length);
       return `<article class="tp-heat${past ? ' past' : ''}${now ? ' now' : ''}${cf.length ? ' bad' : ''}${me && h.includes(me) ? ' mine' : ''}" data-h="${i}">
-        <header class="tp-hh"><b class="tp-hn">${pad(i + 1)}</b><span class="tp-ht"><time>${fmtMin(at)}</time><small>bis ${fmtMin(at + s.slot)}</small></span>${now ? '<span class="tp-hnow">Jetzt</span>' : ''}
+        <header class="tp-hh"><b class="tp-hn">${pad(i + 1)}</b><span class="tp-ht"><time>${fmtMin(at)}</time><small>bis ${fmtMin(at + s.slot)}</small></span>${teamOfHeat(i) >= 0 ? `<span class="tp-hg">Gruppe ${teamOfHeat(i) + 1}</span>` : ''}${now ? '<span class="tp-hnow">Jetzt</span>' : ''}
           <span class="tp-hmv"><button type="button" data-mv="-1" data-h="${i}" aria-label="Durchgang ${i + 1} früher"${i === 0 ? ' disabled' : ''}>${IC.up}</button><button type="button" data-mv="1" data-h="${i}" aria-label="Durchgang ${i + 1} später"${i === n - 1 ? ' disabled' : ''}>${IC.down}</button></span></header>
         <div class="tp-hs">${chips}${Array.from({ length: free }, () => `<button class="tp-free" type="button" data-free="${i}"${sel ? '' : ' tabindex="-1"'}>frei</button>`).join('')}</div>
         ${cf.length ? `<p class="tp-hc">Störung: ${cf.map(([a, b]) => `${esc(pName(a))} und ${esc(pName(b))}`).join(', ')}</p>` : ''}
@@ -683,6 +781,15 @@
   }
   function swap(a, b) { // a,b = {h,k} oder {h, free:true}
     const H = T.plan.heats;
+    if (isTeams(T.plan) && T.plan.teams && T.plan.teams.length) {
+      const pl = T.plan, tm = pl.teams, ta = teamOfKey(a.k);
+      if (ta < 0) return false;
+      if (b.free) { const tb = teamOfHeat(b.h); if (tb < 0 || tb === ta) { toast(`${pName(a.k)} ist schon in dieser Gruppe.`); return false; } tm[ta] = tm[ta].filter(x => x !== a.k); tm[tb].push(a.k); }
+      else { const tb = teamOfKey(b.k); if (tb < 0 || tb === ta) { toast('Die beiden sind in derselben Gruppe.'); return false; } tm[ta] = tm[ta].map(x => x === a.k ? b.k : x); tm[tb] = tm[tb].map(x => x === b.k ? a.k : x); }
+      const m = chMap(); pl.teams = tm.filter(t => t.length).map(t => t.sort((x, y) => (m[x] ? m[x].f : 0) - (m[y] ? m[y].f : 0)));
+      pl.heats = C.rotation(pl.teams, C.heatCount(pl.s), pl.heats.slice(0, fromIdx(pl)));
+      return true;
+    }
     if (b.free) { if (H[b.h].includes(a.k)) { toast(`${pName(a.k)} fliegt in diesem Durchgang schon.`); return false; } H[a.h] = H[a.h].filter(x => x !== a.k); H[b.h].push(a.k); }
     else {
       if (a.h === b.h) return false;
@@ -697,20 +804,22 @@
     if (t.closest('[data-showall]')) { T.showAll = !T.showAll; renderHeats(); return; }
     if (t.closest('[data-unsel]')) { T.sel = null; renderHeats(); return; }
     if (t.closest('[data-onlyme]')) { T.onlyMe = !T.onlyMe; renderHeats(); return; }
-    if (t.closest('[data-regen]')) { regen(T.plan, fromIdx(T.plan)); T.sel = null; commit('Neu eingeteilt.'); return; }
+    if (t.closest('[data-regen]')) { if (isTeams(T.plan)) T.plan.teams = []; regen(T.plan, fromIdx(T.plan)); T.sel = null; commit('Neu eingeteilt.'); return; }
     const mv = t.closest('[data-mv]');
     if (mv) { const i = +mv.dataset.h, j = i + +mv.dataset.mv, H = T.plan.heats; if (j < 0 || j >= H.length) return; [H[i], H[j]] = [H[j], H[i]]; T.sel = null; commit(); const b = $(`[data-mv="${mv.dataset.mv}"][data-h="${j}"]`); if (b && !b.disabled) b.focus({ preventScroll: true }); flash(j); return; }
     const fr = t.closest('[data-free]');
-    if (fr) { if (!T.sel) { toast('Tipp zuerst einen Piloten an.'); return; } const to = +fr.dataset.free; if (swap(T.sel, { h: to, free: true })) { const k = T.sel.k; T.sel = null; commit(`${pName(k)} in Durchgang ${to + 1} verschoben.`); flash(to); } return; }
+    if (fr) { if (!T.sel) { toast('Tipp zuerst einen Piloten an.'); return; } const to = +fr.dataset.free; if (swap(T.sel, { h: to, free: true })) { const k = T.sel.k; T.sel = null; commit(movedMsg(k, to)); flash(to); } return; }
     const ch = t.closest('.tp-chip');
     if (ch && !ch._dragged) {
       const cur = { h: +ch.dataset.h, k: ch.dataset.k };
       if (!T.sel) { T.sel = cur; renderHeats(); focusChip(cur); say(`${pName(cur.k)} ausgewählt.`); return; }
       if (T.sel.h === cur.h && T.sel.k === cur.k) { T.sel = null; renderHeats(); focusChip(cur); return; }
       if (T.sel.h === cur.h) { T.sel = cur; renderHeats(); focusChip(cur); return; }
-      const a = T.sel; if (swap(a, cur)) { T.sel = null; commit(`${pName(a.k)} und ${pName(cur.k)} getauscht.`); flash(a.h); flash(cur.h); }
+      const a = T.sel; if (swap(a, cur)) { T.sel = null; commit(swapMsg(a.k, cur.k)); flash(a.h); flash(cur.h); }
     }
   }
+  const movedMsg = (k, h) => isTeams(T.plan) && teamOfKey(k) >= 0 ? `${pName(k)} fliegt jetzt in Gruppe ${teamOfKey(k) + 1}.` : `${pName(k)} in Durchgang ${h + 1} verschoben.`;
+  const swapMsg = (a, b) => isTeams(T.plan) && teamOfKey(a) >= 0 ? `${pName(a)} und ${pName(b)} haben die Gruppe getauscht.` : `${pName(a)} und ${pName(b)} getauscht.`;
   const focusChip = c => { const el = $(`.tp-chip[data-h="${c.h}"][data-k="${CSS.escape(c.k)}"]`); if (el) el.focus({ preventScroll: true }); };
   const flash = i => { if (RM) return; const el = $(`.tp-heat[data-h="${i}"]`); if (!el) return; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1100); };
   // Ziehen mit der Maus: Pilot auf einen anderen Piloten oder einen freien Platz fallen lassen
@@ -733,7 +842,7 @@
       const tg = document.elementFromPoint(e.clientX, e.clientY), z = tg && tg.closest('.tp-chip, .tp-free'); if (!z || z === dd.ch) return;
       const a = { h: +dd.ch.dataset.h, k: dd.ch.dataset.k };
       const b = z.classList.contains('tp-free') ? { h: +z.dataset.free, free: true } : { h: +z.dataset.h, k: z.dataset.k };
-      if (swap(a, b)) { T.sel = null; commit(b.free ? `${pName(a.k)} in Durchgang ${b.h + 1} verschoben.` : `${pName(a.k)} und ${pName(b.k)} getauscht.`); flash(a.h); flash(b.h); }
+      if (swap(a, b)) { T.sel = null; commit(b.free ? movedMsg(a.k, b.h) : swapMsg(a.k, b.k)); flash(a.h); flash(b.h); }
     });
   }
 
@@ -1013,6 +1122,7 @@
   document.addEventListener('visibilitychange', () => { if (L.open && document.visibilityState === 'visible') wake(true); });
   const mmss = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); };
   const cdTxt = P => { if (P.left == null) return P.ph === 'ende' ? '00:00' : '--:--'; if (P.left >= 864e5) { const d = Math.floor(P.left / 864e5); return d + (d === 1 ? ' Tag' : ' Tage'); } if (P.left >= 36e5) return Math.floor(P.left / 36e5) + ':' + pad(Math.floor(P.left % 36e5 / 6e4)) + ' h'; return mmss(P.left); };
+  const gLbl = i => { const t = teamOfHeat(i); return t >= 0 ? `Gruppe ${t + 1} · ` : ''; };
   function pilotCards(keys, big) {
     const m = chMap(), gs = groups();
     if (!keys || !keys.length) return big ? '<p class="tl-empty">Niemand eingeplant</p>' : '<li class="tl-empty">Niemand eingeplant</li>';
@@ -1043,14 +1153,14 @@
     let ph = '', cur = [], nx = null, af = null;
     if (P.ph === 'leer') ph = 'Noch kein Plan';
     else if (P.ph === 'ende') ph = 'Feierabend · alle Durchgänge geflogen';
-    else if (P.ph === 'vor') { ph = P.left >= 12 * 36e5 ? `Am ${FCS.fmtDate(T.d, 1)} um ${atT(0)} Uhr · Durchgang 1` : `Gleich geht es los · Durchgang 1 um ${atT(0)} Uhr`; cur = pl.heats[0]; nx = 1; af = 2; }
-    else if (P.ph === 'flug') { ph = `Jetzt fliegen · Durchgang ${P.i + 1} von ${n}`; cur = pl.heats[P.i]; nx = P.i + 1; af = P.i + 2; }
-    else if (P.ph === 'wechsel') { ph = `Wechsel · Durchgang ${P.i + 2 <= n ? P.i + 2 : n} macht sich bereit`; cur = pl.heats[P.i + 1] || []; nx = P.i + 2; af = P.i + 3; }
+    else if (P.ph === 'vor') { ph = P.left >= 12 * 36e5 ? `Am ${FCS.fmtDate(T.d, 1)} um ${atT(0)} Uhr · ${gLbl(0)}Durchgang 1` : `Gleich geht es los · ${gLbl(0)}Durchgang 1 um ${atT(0)} Uhr`; cur = pl.heats[0]; nx = 1; af = 2; }
+    else if (P.ph === 'flug') { ph = `Jetzt fliegen · ${gLbl(P.i)}Durchgang ${P.i + 1} von ${n}`; cur = pl.heats[P.i]; nx = P.i + 1; af = P.i + 2; }
+    else if (P.ph === 'wechsel') { ph = `Wechsel · ${gLbl(P.i + 1)}Durchgang ${P.i + 2 <= n ? P.i + 2 : n} macht sich bereit`; cur = pl.heats[P.i + 1] || []; nx = P.i + 2; af = P.i + 3; }
     $('#tl-ph').textContent = ph + (L.paused ? ' · Pause' : '');
     $('#tl-pilots').innerHTML = P.ph === 'ende' || P.ph === 'leer' ? `<p class="tl-empty">${P.ph === 'ende' ? 'Danke fürs Fliegen! Akkus raus, Hallenlicht an.' : 'Sobald Piloten eingetragen sind, geht es los.'}</p>` : pilotCards(cur, true);
     $('#tl-pilots').dataset.n = Math.min(8, (cur || []).length);
-    $('#tl-nh').textContent = nx != null && nx < n ? `Als Nächstes · ${atT(nx)}` : 'Als Nächstes';
-    $('#tl-ah').textContent = af != null && af < n ? `Danach · ${atT(af)}` : 'Danach';
+    $('#tl-nh').textContent = nx != null && nx < n ? `Als Nächstes · ${gLbl(nx)}${atT(nx)}` : 'Als Nächstes';
+    $('#tl-ah').textContent = af != null && af < n ? `Danach · ${gLbl(af)}${atT(af)}` : 'Danach';
     $('#tl-next').innerHTML = nx != null && nx < n ? pilotCards(pl.heats[nx]) : '<li class="tl-empty">Ende des Plans</li>';
     $('#tl-after').innerHTML = af != null && af < n ? pilotCards(pl.heats[af]) : '<li class="tl-empty">–</li>';
     const today = new Date().toISOString().slice(0, 10) === T.d;
@@ -1109,6 +1219,7 @@
     $('#tp-all').addEventListener('change', e => { T.plan.s.all = e.target.checked ? 1 : 0; reassign(T.plan, true); regen(T.plan, fromIdx(T.plan)); commit(e.target.checked ? 'Alle acht Raceband-Kanäle sind frei.' : 'Nur Kanäle von 5725 bis 5875 MHz.'); });
     $('#tp-reassign').addEventListener('click', () => { T.plan.pilots.forEach(p => { if (!p.fix) p.lock = false; }); reassign(T.plan, true); regen(T.plan, fromIdx(T.plan)); commit('Kanäle neu verteilt.'); });
     $('#tp-set').addEventListener('click', onSet); $('#tp-set').addEventListener('change', onTime);
+    $('#tp-teams').addEventListener('click', onTeams);
     $('#tp-heats').addEventListener('click', onHeats); $('#tp-tools').addEventListener('click', onHeats);
     $('#tp-pub').addEventListener('click', onPub);
     $('#tp-me').addEventListener('click', e => {
