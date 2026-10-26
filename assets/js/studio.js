@@ -248,6 +248,12 @@
   }
   const WAYS = ['draw', 'cpu', 'copy', 'raw', 'sw'];
   function evalClip(c) {
+    if (S.locked) {
+      // Pixel-Prüfungen sagen hier nichts aus: Video-Element in Echtzeit nehmen, nichts verweigern
+      c.ref = true; c.glBad = true; c.elBlack = false;
+      c.mode = c.state === 'ok' ? 'element' : (c.info && c.info.canDecode ? 'draw' : null);
+      renderClips(); return;
+    }
     const L = c.lum, el = c.elSamples.length >= 2 ? c.elSamples : null;
     const wc = WAYS.find(w => L[w] && L[w].some(nb)) || null, elOk = !!(el && el.some(nb));
     const wcDone = !c.info || !c.info.canDecode || WAYS.every(w => L[w]) || !!wc || (c.tested && !wc);
@@ -1587,11 +1593,11 @@
       // Compositor in Ausgabegröße für Übergänge und Look
       const G = await glm(); job.tr2d = G.tr2d;
       // Hat WebGL auf diesem Gerät in der Vorschau schon eine leere Fläche geliefert (oder ist der Kontext verloren), gleich den 2D-Weg nehmen
-      if (glOff || segs.some(s => s.c.glBad)) job.gl = null;
+      if (glOff || S.locked || segs.some(s => s.c.glBad)) job.gl = null;
       else { const glCanvas = document.createElement('canvas'); glCanvas.width = W; glCanvas.height = H; job.gl = G.compositor(glCanvas); if (job.gl.ok) await loadLut(job.gl); }
       let out, live = false;
       const run = async () => {
-        live = job.segs.some(sg => sg.mode === 'element') || !vc;
+        live = S.locked || job.segs.some(sg => sg.mode === 'element') || !vc;
         if (live) return renderLive(job, p => set(p), M);
         // Bild-Selbsttest während des Exports (vor Logo, Sticker und Schriftzug): liefert ein Weg nur eine leere,
         // einfarbige Fläche (Samsung: lila), bricht das Studio ab und nimmt den nächsten Weg
@@ -1636,7 +1642,7 @@
       }
       if (!out) throw new Error('kein-ergebnis');
       // Fertige Datei prüfen: Länge und Bildanzahl. Nie still ein kaputtes oder leeres Video speichern.
-      if (out.ext !== 'webm') {
+      if (out.ext !== 'webm' && !out.rec) {
         set(1, 'Wird geprüft');
         const chk = await M.verify(out.blob, { dur: job.frames / fps, frames: job.frames, fps, live });
         console.info('Clip-Studio: Prüfung der fertigen Datei', chk, out.fastStart || '');
@@ -1691,14 +1697,14 @@
     const total = S.seq.total, mode = playMode(); const wasStep = S.step;
     S.viewSeq = true; if (S.step <= 2) S.step = 3;
     let rec = null, vsrc = null, output = null, target = null, parts = [];
-    if (job.vc && window.VideoEncoder) {
+    if (job.vc && window.VideoEncoder && !S.locked) {
       target = new M.M.BufferTarget();
       output = new M.M.Output({ format: new M.M.Mp4OutputFormat({ fastStart: 'in-memory' }), target });
       vsrc = new M.M.CanvasSource(outC, { codec: job.vc, quality: new M.M.Quality({ bitrate: job.bitrate, bitrateMode: 'variable' }), keyFrameInterval: 2 }); output.addVideoTrack(vsrc, { frameRate: fps });
       if (job.audio && job.ac) { const as = new M.M.AudioBufferSource(job.ac.startsWith('pcm') ? { codec: job.ac } : { codec: job.ac, quality: new M.M.Quality({ bitrate: 192000 }) }); output.addAudioTrack(as); job._as = as; }
       await output.start(); if (job._as) await job._as.add(job.audio);
     } else {
-      const types = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'];
+      const types = ['video/mp4;codecs=avc1,mp4a', 'video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
       const mime = types.find(t => MediaRecorder.isTypeSupported(t)); if (!mime) throw new Error('kein-encoder');
       const stream = outC.captureStream(fps); let ac2 = null;
       if (job.audio) { ac2 = new AudioContext(); const src = ac2.createBufferSource(); src.buffer = job.audio; const dst = ac2.createMediaStreamDestination(); src.connect(dst); dst.stream.getAudioTracks().forEach(t => stream.addTrack(t)); job._src = src; job._ac = ac2; }
@@ -1713,7 +1719,7 @@
         if (e) { try { if (output) await output.cancel(); if (rec && rec.state !== 'inactive') rec.stop(); if (job._ac) job._ac.close(); } catch (er) {} reject(e); return; }
         try {
           if (output) { await output.finalize(); resolve({ blob: new Blob([target.buffer], { type: 'video/mp4' }), mime: 'video/mp4', ext: 'mp4', fastStart: 'in-memory' }); }
-          else { rec.onstop = () => { if (job._ac) job._ac.close(); const type = rec._mime.split(';')[0]; resolve({ blob: new Blob(parts, { type }), mime: type, ext: type === 'video/mp4' ? 'mp4' : 'webm' }); }; rec.stop(); }
+          else { rec.onstop = () => { if (job._ac) job._ac.close(); const type = rec._mime.split(';')[0]; resolve({ blob: new Blob(parts, { type }), mime: type, ext: type === 'video/mp4' ? 'mp4' : 'webm', rec: true }); }; rec.stop(); }
         } catch (er) { reject(er); }
       };
       if (job.signal) job.signal.addEventListener('abort', () => stop(new DOMException('abgebrochen', 'AbortError')));
@@ -1746,7 +1752,7 @@
               else if (flagT('element')) purple();
             }
             // Selbsttest: Video-Element direkt (Arbeitsspeicher) gegen das gerechnete Bild (vor Logo und Stickern)
-            if (made++ % 8 === 3 && cA.ref === true) {
+            if (made++ % 8 === 3 && cA.ref === true && !S.locked) {
               const k = k24(); k.fillStyle = '#000'; k.fillRect(0, 0, 24, 24); k.drawImage(A, 0, 0, 24, 24); const Ls = lum24(k);
               k.fillRect(0, 0, 24, 24); k.drawImage(outC, 0, 0, 24, 24); const Lo = lum24(k);
               checks++; if (!nb(Ls)) srcFlat++; else if (!nb(Lo) && !(fade > 0)) outFlat++;
@@ -2204,12 +2210,41 @@
       g.luma(); g.size(w0, h0);
     } catch (e) {}
   }
+  /* Schutz vor Auslesen (z. B. Samsung Internet „Smart Anti-Tracking“, Fingerprinting-Schutz): ein bekanntes Muster zeichnen und
+     zurücklesen (2D und WebGL). Stimmt es nicht, sagen alle Pixel-Prüfungen nichts aus: dann keine Leer-Prüfungen, kein WebGL,
+     Looks per CSS und Export in Echtzeit über MediaRecorder. */
+  function readLockTest() {
+    const T = window.FCS_STUDIO_TEST || {};
+    const want = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 255], [32, 96, 160], [0, 0, 0]];
+    let ok2d = false, okGL = true;
+    try {
+      const c = document.createElement('canvas'); c.width = 12; c.height = 8; const x = c.getContext('2d', { willReadFrequently: true });
+      want.forEach((w, i) => { x.fillStyle = `rgb(${w})`; x.fillRect((i % 3) * 4, Math.floor(i / 3) * 4, 4, 4); });
+      const d = x.getImageData(0, 0, 12, 8).data; ok2d = true;
+      want.forEach((w, i) => { const o = ((Math.floor(i / 3) * 4 + 2) * 12 + (i % 3) * 4 + 2) * 4; for (let k = 0; k < 3; k++) if (Math.abs(d[o + k] - w[k]) > 1) ok2d = false; });
+    } catch (e) { ok2d = false; }
+    try {
+      const c = document.createElement('canvas'); c.width = 4; c.height = 4; const g = c.getContext('webgl', { preserveDrawingBuffer: true });
+      if (g) { g.clearColor(.2, .6, .8, 1); g.clear(g.COLOR_BUFFER_BIT); const px = new Uint8Array(4); g.readPixels(1, 1, 1, 1, g.RGBA, g.UNSIGNED_BYTE, px); okGL = Math.abs(px[0] - 51) <= 2 && Math.abs(px[1] - 153) <= 2 && Math.abs(px[2] - 204) <= 2; const l = g.getExtension('WEBGL_lose_context'); if (l) l.loseContext(); }
+    } catch (e) {}
+    S.locked = !ok2d || !okGL || !!T.forceLocked;
+    if (S.locked) { glOff = true; console.info('Clip-Studio: Dieser Browser verfälscht ausgelesene Bilder (Schutz vor Fingerprinting). Looks per CSS, Export in Echtzeit, keine Pixel-Prüfungen.', { ok2d, okGL }); lockNote(); }
+  }
+  const isSamsung = () => /SamsungBrowser/i.test(navigator.userAgent);
+  function chromeIntent() { const u = new URL(location.href); return `intent://${u.host}${u.pathname}${u.search}${u.hash}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(u.href)};end`; }
+  function lockNote() {
+    const why = $('#st-why'); if (!why || !S.locked) return;
+    const bn = isSamsung() ? 'Samsung Internet' : 'Dein Browser';
+    why.classList.remove('bad'); why.classList.add('lock');
+    why.innerHTML = `${esc(bn)} schützt Bilder vor dem Auslesen. Das Studio nimmt dein Video deshalb in Echtzeit auf (dauert so lange wie das Video). Wird es leer, öffne die Seite in Chrome oder schalte in ${isSamsung() ? 'Samsung Internet unter Einstellungen › Datenschutz „Smart Anti-Tracking“ bzw. den Fingerprinting-Schutz' : 'den Einstellungen den Fingerprinting-Schutz'} für diese Seite aus.${/Android/i.test(navigator.userAgent) ? ` <a class="btn ghost" id="st-chrome" href="${esc(chromeIntent())}">In Chrome öffnen</a>` : ''}`;
+  }
   function studio() {
     stage = $('#st-stage'); wrap = $('#st-wrap'); layer = $('#st-layer'); vids = $('#st-vids'); ovc = $('#st-cv'); glc = $('#st-gl');
     if (!stage || !wrap || !layer || !vids || !ovc || !glc) return;
     octx = ovc.getContext('2d');
     window.__fcsTrans = { schnitt: { n: 'Schnitt', d: 0 }, blende: { n: 'Blende', d: .7 }, blitz: { n: 'Blitz', d: .32 }, zoom: { n: 'Zoom', d: .42 }, wisch: { n: 'Wisch', d: .5 }, whip: { n: 'Whip-Pan', d: .36 }, glitch: { n: 'Glitch', d: .3 } };
     loadImgs(); leaveUI(); buildTray(); trayDrag(); gestures(); keys(); timeline(); controls(); clipsUI(); autoUI(); sbUI(); musicUI(); lookUI(); stickerControls(); tagUI(); sendUI(); gyroUI(); stepsUI(); memberUI(); jobsInit();
+    readLockTest();
     initGL();
     S.aspect = 16 / 9; layout();
     let rq = 0, lastW = innerWidth; addEventListener('resize', () => { if (!FINE && innerWidth === lastW) return; lastW = innerWidth; cancelAnimationFrame(rq); rq = requestAnimationFrame(() => { layout(); strip(); sbDraw(); waveDraw(); }); });
