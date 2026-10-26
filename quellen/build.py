@@ -74,6 +74,7 @@ def head(file, title, desc):
 <html lang="de" class="no-js">
 <head>
 <meta charset="utf-8">
+<script data-fe="bald">try{{if(/(^|[.])falcon-eye[.]de$/.test(new URL(document.referrer).hostname)&&Date.now()<Date.parse("2026-10-29T08:00:00+01:00"))location.replace(new URL("bald/",document.baseURI).href)}}catch(e){{}}</script>
 <script data-fe="intro">try{{var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="back_forward")sessionStorage.removeItem("fcs-intro")}}catch(e){{}}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title}</title>
