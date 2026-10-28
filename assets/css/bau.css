@@ -287,3 +287,27 @@
 .bk-moreopts[open] summary{color:var(--osd);margin-bottom:8px}
 .bk-fix{margin-top:6px;justify-self:start;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line-hi);background:none;color:var(--sig);font:600 12px/1 var(--hud);cursor:pointer}
 .bk-cl li .bk-fix{grid-column:1}
+
+.bk-kl-tag{display:inline-block;vertical-align:middle;margin-left:6px;padding:4px 9px;border-radius:999px;background:rgba(255,176,32,.12);color:var(--amber);font:600 12px/1 var(--hud);letter-spacing:.06em;text-transform:none}
+
+/* Anfänger-Test 28.10.: Leerzustand, Lötplan am Handy, Lesbarkeit */
+.bk-zoom{display:none;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line-hi);background:none;color:var(--osd);font:600 12px/1 var(--hud);letter-spacing:.06em;cursor:pointer;margin-left:auto}
+.bk-app.is-solder .bk-zoom{display:inline-flex;align-items:center}
+.bk-solder .sv-t.out,.bk-solder > text.sv-t:not(.pad){fill:#13202f}
+.bk-solder .sv-t.out{font-weight:700}
+.bk-verdict{flex-wrap:wrap}
+.bk-verdict span{flex:1 1 220px;min-width:0;line-height:1.45}
+.bk-verdict .bk-fix{margin-top:0}
+.bk-back{display:inline-flex;align-items:center;min-height:40px;margin:0 0 8px;padding:0 12px 0 8px;border-radius:999px;border:1px solid var(--line-hi);background:none;color:var(--sig);font:600 13px/1 var(--hud);cursor:pointer}
+.chip-b.dim:not(.on){opacity:.55}
+@media (max-width:1100px){
+  .bk-app.is-empty .bk-stagecol,.bk-app.is-empty .bk-bar{display:none}
+  .bk-app.is-solder .bk-stagecol{position:sticky;top:66px;z-index:3;background:var(--night);padding:4px 0 6px}
+  .bk-app.is-solder .bk-tname{display:none}
+  .bk-app.is-solder .bk-stage{height:40svh;min-height:250px}
+  body:has(.bk-app) .totop{bottom:92px}
+}
+@media (max-width:560px){
+  .bk-steps button{padding:0 9px 0 5px;gap:5px;font-size:11px}
+  .bk-nav .btn{padding-inline:14px;font-size:12px;letter-spacing:.06em;white-space:nowrap}
+}
