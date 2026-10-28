@@ -1476,7 +1476,7 @@ function init() {
     stage.classList.remove('is-demo'); stage.classList.add('is-live');
     cta.hidden = true;
     resetQuad(); simT = 0; race.laps = 0; race.last = 0;
-    if (CR().eigen) flashMsg('EIGENBAU · SCHUB ' + CR().tw.toFixed(1).replace('.', ',') + ' : 1', 'good', 3);
+    if (CR().eigen) setTimeout(() => flashMsg('EIGENBAU · SCHUB ' + CR().tw.toFixed(1).replace('.', ',') + ' : 1', 'good', 3), 1600);
     if (IN.src === 'touch' || (COARSE && !FINE)) setTouch(true);
     if (!quiet && !R.on) showHelp();
   }

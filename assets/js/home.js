@@ -808,3 +808,35 @@
   }
   document.addEventListener('fcs:ready', () => setTimeout(ay, 60), { once: true });
 })();
+
+/* ===== Make It Saarbrücken: drei Stationen, Videostapel, läuft selbst durch bis zum ersten Tippen ===== */
+(function () {
+  'use strict';
+  const st = document.getElementById('mi-stage'); if (!st) return;
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tabs = [...document.querySelectorAll('[data-mi]')], cards = [...st.querySelectorAll('.mi-card')], list = tabs[0].parentElement;
+  const osd = document.getElementById('mi-osd-t'), hint = document.getElementById('mi-hint');
+  const T = 6000; list.style.setProperty('--mi-t', T / 1000 + 's');
+  let cur = 0, vis = false, auto = !RM, timer = 0;
+  const load = (v) => { if (v && !v.src && v.dataset.src) v.src = v.dataset.src; };
+  function show(i) {
+    cur = (i + cards.length) % cards.length;
+    cards.forEach((c, k) => { c.dataset.pos = (k - cur + cards.length) % cards.length; const v = c.querySelector('video'); if (k === cur && vis) { load(v); v.play().catch(() => {}); } else v.pause(); });
+    tabs.forEach((t, k) => { t.classList.toggle('on', k === cur); t.setAttribute('aria-selected', String(k === cur)); if (k === cur) { const b = t.querySelector('.mi-bar'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; } });
+    osd.textContent = tabs[cur].querySelector('b').textContent.toUpperCase();
+    clearTimeout(timer); if (auto && vis) timer = setTimeout(() => show(cur + 1), T);
+  }
+  const stop = () => { auto = false; clearTimeout(timer); list.classList.add('stop'); hint.hidden = true; };
+  tabs.forEach((t, k) => t.addEventListener('click', () => { stop(); show(k); }));
+  cards.forEach((c, k) => c.addEventListener('click', () => { stop(); show(k); }));
+  list.addEventListener('keydown', e => { if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return; e.preventDefault(); stop(); show(cur + (e.key === 'ArrowDown' ? 1 : -1)); tabs[cur].focus(); });
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis) show(cur); else { clearTimeout(timer); cards.forEach(c => c.querySelector('video').pause()); } }, { threshold: .35 }).observe(st);
+  show(0);
+  // Interview mit Ton im Dialog
+  const dlg = document.getElementById('mi-iv'), iv = dlg.querySelector('video');
+  document.getElementById('mi-iv-open').addEventListener('click', () => { stop(); load(iv); dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', ''); iv.play().catch(() => {}); });
+  const close = () => { iv.pause(); dlg.close ? dlg.close() : dlg.removeAttribute('open'); };
+  document.getElementById('mi-iv-x').addEventListener('click', close);
+  dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+  dlg.addEventListener('close', () => iv.pause());
+})();

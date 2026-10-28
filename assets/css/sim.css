@@ -136,7 +136,7 @@
 .sim-tabs [role=tab]{flex:1 1 auto;min-height:52px;padding:8px 10px;border:0;border-bottom:2px solid transparent;background:none;color:#bcd0ea;font:600 15px/1.2 var(--body);cursor:pointer;transition:color .2s,border-color .2s,background .2s}
 .sim-tabs [role=tab]:hover{color:#fff;background:rgba(255,255,255,.04)}
 .sim-tabs [role=tab][aria-selected=true]{color:#fff;border-bottom-color:var(--sig)}
-.sim-pane{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:18px 18px 22px;display:grid;align-content:start;gap:16px;scrollbar-width:thin;scrollbar-color:rgba(158,196,255,.3) transparent}
+.sim-pane{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:18px 18px 22px;display:grid;align-content:start;grid-auto-rows:max-content;gap:16px;scrollbar-width:thin;scrollbar-color:rgba(158,196,255,.3) transparent}
 .sim-pane[hidden]{display:none}
 .sim-pane:focus-visible{outline-offset:-3px}
 .sim-pane::-webkit-scrollbar{width:8px}

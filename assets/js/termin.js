@@ -461,7 +461,7 @@
     const el = $(sel); if (!el) return;
     if (v == null) { el.textContent = '…'; return; }
     const from = parseInt(el.textContent, 10);
-    if (!anim() || isNaN(from) || from === v) { el.textContent = v; return; }
+    if (!anim() || typeof v !== 'number' || isNaN(from) || from === v) { el.textContent = v; return; }
     const o = { v: from }; gsap.to(o, { v, duration: .8, ease: 'expo.out', onUpdate: () => { el.textContent = Math.round(o.v); } });
   }
 

@@ -33,7 +33,7 @@
 .bk-fly{position:absolute;left:50%;bottom:62px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));padding:14px 16px;border-radius:16px;background:rgba(4,12,26,.82);border:1px solid var(--line-hi);text-align:center}
 .bk-fly-t{margin:0 0 10px;font-size:15px}
 .bk-fly .btns{justify-content:center}
-.bk-nogl{position:absolute;inset:auto 16px 60px;margin:0;padding:12px 14px;border-radius:12px;background:rgba(4,12,26,.85);border:1px solid var(--line-hi)}
+.bk-nogl{pointer-events:none;position:absolute;inset:auto 16px 60px;margin:0;padding:12px 14px;border-radius:12px;background:rgba(4,12,26,.85);border:1px solid var(--line-hi)}
 
 .bk-panel{display:flex;flex-direction:column;min-height:0;height:min(calc(100svh - 190px),760px);min-height:460px;border-radius:var(--r);border:1px solid var(--line-hi);background:linear-gradient(180deg,#0d1f3d,#071225)}
 .bk-steps{display:flex;gap:4px;overflow-x:auto;padding:10px;border-bottom:1px solid var(--line);scrollbar-width:thin;scrollbar-color:var(--line-hi) transparent;flex:none}

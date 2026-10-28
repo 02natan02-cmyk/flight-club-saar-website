@@ -1087,7 +1087,7 @@
     $('#map-fail').hidden = true;
     R.box.hidden = street; $('#leaf').hidden = !street;
     $('#mapbox').classList.toggle('is-street', street);
-    if (!street) { $('#map-wait').hidden = true; if (was === 'map') mapToRadar(); size(); setOn(); redraw(); return; }
+    if (!street) { clearTimeout(M.timer); $('#map-wait').hidden = true; if (was === 'map') mapToRadar(); size(); setOn(); redraw(); return; }
     setOn(); stopImpulse();
     if (!window.L) { fail(); return; }
     if (!M.map) makeMap(v);
@@ -1127,6 +1127,7 @@
   function retry() { M.ok = 0; M.bad = 0; watchTiles(); [M.base, ...M.over].forEach(l => l && l.redraw()); }
   function fail() {
     M.failed = true; clearTimeout(M.timer);
+    if (!R.box.hidden) return;
     $('#map-wait').hidden = true;
     const b = $('#map-fail-b');
     b.innerHTML = vis().map(s => routeBtn(s, 'mp-fail-r').replace('<span>Route</span>', `<span>${esc(s.n)}</span>`)).join('');

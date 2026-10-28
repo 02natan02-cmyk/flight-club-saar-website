@@ -95,7 +95,7 @@ FCS.data = {
   kanal: [
     { ch: 3, a: 'Stay Fly', o: 'Bando-Session', clip: 'media/kanal/stayfly.mp4', ig: 'stay_fly.sb' },
     { ch: 4, a: 'GrobsFPV', o: 'Bando Time', clip: 'media/kanal/grobsfpv.mp4', ig: 'grobsfpv' },
-    { ch: 5, a: 'OrcaFPV', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
+    { ch: 5, a: 'Orcinus', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
     { ch: 6, a: 'Booyaka FPV', o: 'Grube Göttelborn', clip: 'media/kanal/booyaka.mp4', ig: 'wojtasczyk_natan' }
   ],
   // Bestenliste „Kannst du fliegen?“: Make-Szenario 8156727 (Webhook → Datenspeicher „FCS Whoop Bestenliste“)
@@ -150,7 +150,7 @@ FCS.data = {
     { a: 'Stay Fly', n: 'Tobias', ort: 'Scheidt', seit: 2019, stil: 'Juicy SBang, Freestyle, Cinematic', yt: 'stayflysb', tt: 'stayfly.sb', ig: 'stay_fly.sb', img: 'media/piloten/stay-fly.webp' },
     { a: 'Fireblast FPV', n: 'Sebastian', ort: 'Riegelsberg', seit: 2017, stil: 'Freestyle, 3D', tt: 'fireblast_fpv', ig: 'fireblast_fpv', img: 'media/piloten/fireblast-fpv.webp' },
     { a: 'GrobsFPV', n: 'Tom', ort: 'Merzig', seit: 2023, stil: 'Freestyle, Cinematic', yt: 'GrobsFPV', tt: 'grobsfpv', ig: 'grobsfpv', img: 'media/piloten/grobsfpv.webp' },
-    { a: 'OrcaFPV', n: '', ort: '', seit: 2020, stil: 'Freestyle, Cinema, Whoops', ig: 'orcinus.fpv', img: 'media/piloten/orcafpv.webp' },
+    { a: 'Orcinus', n: 'Ruben', ort: '', seit: 2020, stil: 'Freestyle, Cinema, Whoops', ig: 'orcinus.fpv', img: 'media/piloten/orcafpv.webp' },
     { a: 'Crystal FPV', n: 'Julian', ort: 'Völklingen', seit: 2023, stil: 'Cinema, Whoop, Freestyle', img: 'media/piloten/crystal-fpv.webp' },
     { a: 'Jonny FPV Magic', n: '', ort: 'Riegelsberg', seit: 2024, stil: 'Aggro Acro, Whoops, Freestyle, Cinematic' },
     { a: 'Lord FPV', n: 'Waldemar', ort: 'Saarlouis', seit: 2019, stil: 'Race, Freestyle, Long Range', img: 'media/piloten/lord-fpv.webp' },

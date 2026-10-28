@@ -159,6 +159,7 @@ function checks(st = B) {
   if (pr && m) { const pk = klasseOfProp(pr.durchmesser_zoll), mk = klasseOfStator(statorOf(m)); if (pk && mk && pk !== mk) add('warn', 'Motor und Propeller passen nicht zusammen', `${esc(m.name)} ist für ${KL(mk).name} gebaut, der Propeller für ${KL(pk).name}.`); }
   // Anschlüsse
   const plan = wiring(st);
+  if (b && plan.noplan && plan.noplan.length) add('warn', 'Nicht im Herstellerplan eingezeichnet', `${plan.noplan.join(', ')}: Der Anschlussplan des Herstellers zeigt dafür keine Lötpunkte. Freien UART und Pads im Handbuch nachsehen.`);
   if (b && plan.missing.length) add('bad', 'Zu wenige freie Anschlüsse (UART)', `Es fehlt ein freier UART für: ${plan.missing.join(', ')}. Andere Platine wählen oder ein Teil weglassen.`);
   else if (b && plan.uarts.length) add('ok', 'Anschlüsse reichen', plan.uarts.map(u => `${u.uart}: ${u.wer}`).join(' · '));
   if (b && b.eingebauter_empfaenger && r && !r._builtin) add('warn', 'Die Platine hat schon einen Empfänger', `${esc(b.name)} hat ${esc(b.eingebauter_empfaenger)} eingebaut. Ein zweiter Empfänger ist nur nötig, wenn deine Funke ein anderes Protokoll spricht.`);
@@ -195,18 +196,21 @@ function layoutFor(b) {
   const name = (b.name || '') + ' ' + (b.hersteller || '');
   return PL.find(l => l.board === b.id) || PL.find(l => { try { return new RegExp(l.match, 'i').test(name); } catch (e) { return false; } }) || null;
 }
+const buchseOf = (L, n) => L && [...((L.unterseite && L.unterseite.buchsen) || []).map(c => ({ ...c, unten: true })), ...((L.oberseite && L.oberseite.buchsen) || []), ...(L.teile || []).filter(t => t.typ === 'buchse')].find(c => c.n === n) || null;
 const padById = (L, id) => L && (L.pads.find(p => p.id === id) || L.pads.find(p => p.n === id && !p.id) || L.pads.find(p => p.n === id)) || null;
 /* Belegung nach dem Anschlussplan des Herstellers (platinen.json, „rollen“) */
 function wiringLayout(st, b, L) {
-  const v = P(st.video), r = P(st.rx), gps = P(st.gps), led = P(st.led), bz = P(st.buzzer), R = L.rollen || {};
-  const W_ = [], uarts = [], missing = [];
-  const W2 = (teil, kabel, id, art, notiz, rolle) => { const pd = padById(L, id); W_.push({ teil, kabel, pad: pd ? (pd.lab || pd.n) : id, padId: pd ? (pd.id || pd.n) : id, art, notiz: notiz || '', rolle }); };
+  const v = P(st.video), r = P(st.rx), gps = P(st.gps), led = P(st.led), bz = P(st.buzzer);
+  const R = Object.fromEntries(Object.entries(L.rollen || {}).filter(([, x]) => x && typeof x === 'object').map(([k, x]) => [k, { ...x, pads: x.pads || {} }]));
+  const W_ = [], uarts = [], missing = [], noplan = [];
+  const W2 = (teil, kabel, id, art, notiz, rolle) => { if (!id) return; const pd = padById(L, id); W_.push({ teil, kabel, pad: pd ? (pd.lab || pd.n) : id, padId: pd ? (pd.id || pd.n) : id, art, notiz: notiz || '', rolle, unten: !!(pd && pd.unten) }); };
+  const plug = (teil, bu, notiz, rolle) => { const c = buchseOf(L, bu); W_.push({ teil, kabel: 'Steckerkabel', pad: c ? (c.lab || c.n) : bu, padId: 'BUCHSE:' + bu, art: 'plug', notiz: notiz || '', rolle }); };
   const useU = (role, wer) => { if (role && role.uart) uarts.push({ uart: 'UART' + role.uart, wer }); };
   if (r && !r._builtin && !/dji/i.test(r.protokoll || '')) {
     const ro = R.empfaenger;
-    if (!ro) missing.push('Empfänger');
+    if (!ro || (!Object.keys(ro.pads).length && !ro.buchse)) noplan.push('Empfänger');
     else {
-      useU(ro, 'Empfänger');
+      useU(ro, 'Empfänger'); if (ro.buchse) plug('Empfänger', ro.buchse, ro.text || '', 'rx');
       const crsf = /crsf|crossfire|tracer/i.test((r.protokoll || '') + r.name), sbus = /sbus/i.test(r.protokoll || '');
       W2('Empfänger', 'GND', ro.pads.GND, 'g', '', 'rx'); W2('Empfänger', crsf ? '5V-IN' : '5V', ro.pads['5V'], 'v', '', 'rx');
       if (sbus) W2('Empfänger', 'SBUS', ro.pads.SBUS || ro.pads.TX, 'rx', '', 'rx');
@@ -217,19 +221,19 @@ function wiringLayout(st, b, L) {
     if (v.typ === 'digital') {
       const ro = R.digital || {};
       useU(ro, 'Videosystem (MSP)');
-      if (ro.buchse && /dji|o3|o4/i.test(v.name)) W_.push({ teil: 'Videosystem', kabel: 'Steckerkabel', pad: 'DJI-Buchse', padId: 'BUCHSE:' + ro.buchse, art: 'plug', notiz: ro.text || '', rolle: 'dji' });
-      else if (ro.pads) { W2('Videosystem', 'Plus', ro.pads.Plus, 'v', 'über den Spannungsregler', 'vtx'); W2('Videosystem', 'GND', ro.pads.Masse, 'g', '', 'vtx'); W2('Videosystem', 'TX', ro.pads.TX, 'rx', 'Bildschirmanzeige (MSP)', 'vtx'); W2('Videosystem', 'RX', ro.pads.RX, 'tx', '', 'vtx'); }
-      else missing.push('Videosystem');
+      if (ro.buchse && buchseOf(L, ro.buchse)) plug('Videosystem', ro.buchse, ro.text || '', 'dji');
+      else if (ro.pads && Object.keys(ro.pads).length) { W2('Videosystem', 'Plus', ro.pads.Plus, 'v', 'über den Spannungsregler', 'vtx'); W2('Videosystem', 'GND', ro.pads.Masse, 'g', '', 'vtx'); W2('Videosystem', 'TX', ro.pads.TX, 'rx', 'Bildschirmanzeige (MSP)', 'vtx'); W2('Videosystem', 'RX', ro.pads.RX, 'tx', '', 'vtx'); }
+      else noplan.push('Videosystem');
     } else {
       const k = R.kamera, t = R.vtx_analog;
-      if (k) { W2('Kamera', 'Video', k.pads.Video, 'vid', '', 'cam'); W2('Kamera', 'Plus', k.pads.Plus, 'v', '', 'cam'); W2('Kamera', 'GND', k.pads.Masse, 'g', '', 'cam'); }
-      if (t) { useU(t, 'Videosender (SmartAudio)'); W2('Videosender', 'Video', t.pads.Video, 'vid', '', 'vtx'); W2('Videosender', 'Plus', t.pads.Plus, 'v', '', 'vtx'); W2('Videosender', 'GND', t.pads.Masse, 'g', '', 'vtx'); if (t.pads.SmartAudio) W2('Videosender', 'SmartAudio', t.pads.SmartAudio, 'tx', 'Kanal und Leistung aus dem Menü', 'vtx'); }
+      if (k) { const kp = k.pads || {}; if (k.buchse) plug('Kamera', k.buchse, k.text || '', 'cam'); W2('Kamera', 'Video', kp.Video, 'vid', '', 'cam'); W2('Kamera', 'Plus', kp.Plus, 'v', k.text || '', 'cam'); W2('Kamera', 'GND', kp.Masse || kp.GND, 'g', '', 'cam'); }
+      if (t) { const tp = t.pads || {}; if (Object.keys(tp).length) useU(t, 'Videosender (SmartAudio)'); W2('Videosender', 'Video', tp.Video, 'vid', '', 'vtx'); W2('Videosender', 'Plus', tp.Plus, 'v', t.text || '', 'vtx'); W2('Videosender', 'GND', tp.Masse || tp.GND, 'g', '', 'vtx'); W2('Videosender', 'SmartAudio', tp.SmartAudio, 'tx', 'Kanal und Leistung aus dem Menü', 'vtx'); }
     }
   }
-  if (gps) { const ro = R.gps; if (!ro) missing.push('GPS'); else { useU(ro, 'GPS'); W2('GPS', '5V', ro.pads['5V'], 'v', '', 'gps'); W2('GPS', 'GND', ro.pads.GND, 'g', '', 'gps'); W2('GPS', 'TX', ro.pads.TX, 'rx', '', 'gps'); W2('GPS', 'RX', ro.pads.RX, 'tx', '', 'gps'); } }
+  if (gps) { const ro = R.gps; if (!ro || (!Object.keys(ro.pads).length && !ro.buchse)) noplan.push('GPS'); else { const gp = ro.pads || {}; useU(ro, 'GPS'); if (ro.buchse) plug('GPS', ro.buchse, ro.text || '', 'gps'); W2('GPS', '5V', gp['5V'], 'v', '', 'gps'); W2('GPS', 'GND', gp.GND, 'g', '', 'gps'); W2('GPS', 'TX', gp.TX, 'rx', '', 'gps'); W2('GPS', 'RX', gp.RX, 'tx', '', 'gps'); if (gps.kompass || /880|m10q|5883|kompass|compass/i.test(gps.name || '')) { W2('GPS', 'SDA', gp.SDA, 'tx', 'Kompass', 'gps'); W2('GPS', 'SCL', gp.SCL, 'rx', 'Kompass', 'gps'); } } }
   if (led && R.led) { W2('LED-Streifen', '5V', R.led.pads['5V'], 'v', '', 'led'); W2('LED-Streifen', 'GND', R.led.pads.GND, 'g', '', 'led'); W2('LED-Streifen', 'DIN', R.led.pads.DIN, 'tx', 'Pfeil auf dem Streifen zeigt weg von der Platine', 'led'); }
   if (bz && R.buzzer) { W2('Buzzer', '+', R.buzzer.pads.Plus, 'v', '', 'bz'); W2('Buzzer', '−', R.buzzer.pads.Minus, 'g', '', 'bz'); }
-  return { wires: W_, uarts, missing, layout: L };
+  return { wires: W_, uarts, missing, noplan, layout: L };
 }
 function wiring(st = B) {
   { const bb = P(st.board), L = layoutFor(bb); if (L && L.rollen) return wiringLayout(st, bb, L); }
@@ -555,22 +559,28 @@ const PLDEFS = (farbe) => `
 function drawPlan(svg, mk, b, plan, steps, act) {
   const L = plan.layout, h = L.h || 1, BS = 380, x0 = 500 - BS / 2, BH = BS * h, y0 = 490 - BH / 2;
   const cur = state.solderStep, last = steps.length - 1;
+  const pos = {};
   const doneIds = new Set(), actIds = new Set(act.ids || act.pads || []);
   steps.forEach((st, i) => { if (i < cur || cur === last) (st.ids || st.pads || []).forEach(x => doneIds.add(x)); });
-  const flip = (act.ids || []).some(x => String(x).startsWith('BUCHSE:'));
+  const under = new Set([...((L.unterseite && L.unterseite.buchsen) || []).map(c => 'BUCHSE:' + c.n), ...L.pads.filter(p => p.unten).map(p => p.id || p.n)]);
+  const flip = (act.ids || []).some(x => under.has(String(x)));
+  const raute = L.form === 'raute';
+  const pcb = (attrs) => raute ? mk('path', { d: `M${x0 + BS / 2} ${y0} L${x0 + BS} ${y0 + BH / 2} L${x0 + BS / 2} ${y0 + BH} L${x0} ${y0 + BH / 2}Z`, 'stroke-linejoin': 'round', ...attrs }, g) : mk('rect', { x: x0, y: y0, width: BS, height: BH, rx: 34, ...attrs }, g);
   svg.classList.remove('tilt'); void svg.getBoundingClientRect(); if (!RM) svg.classList.add('tilt');
   const defs = mk('defs', {});
   defs.innerHTML = PLDEFS(L.farbe || '#14161b');
   // Platine
   const g = mk('g', { class: 'pl-board' + (flip ? ' flip' : '') });
-  mk('rect', { x: x0, y: y0, width: BS, height: BH, rx: 34, class: 'pl-pcb', fill: 'url(#svg-pcb)', filter: 'url(#svg-shadow)' }, g);
-  mk('rect', { x: x0, y: y0, width: BS, height: BH, rx: 34, fill: 'url(#svg-mask)' }, g);
+  pcb({ class: 'pl-pcb', fill: 'url(#svg-pcb)', filter: 'url(#svg-shadow)' });
+  pcb({ fill: 'url(#svg-mask)' });
   for (let i = 0; i < 9; i++) mk('path', { d: `M${x0 + BS * .22} ${y0 + BH * (.24 + i * .06)} h${BS * (.12 + (i % 3) * .05)} l${BS * .03} ${BS * .03} h${BS * .16}`, class: 'pl-trace' }, g);
   mk('rect', { x: x0 + BS * .4, y: y0 + BH * .38, width: BS * .16, height: BS * .16, rx: 3, class: 'pl-chip' }, g);
   for (let i = 0; i < 6; i++) { mk('rect', { x: x0 + BS * (.25 + i * .05), y: y0 + BH * .7, width: BS * .025, height: BS * .014, class: 'pl-smd' }, g); mk('rect', { x: x0 + BS * .3, y: y0 + BH * (.2 + i * .035), width: BS * .014, height: BS * .025, class: 'pl-smd' }, g); }
   if (flip) {
     mk('text', { x: 500, y: y0 + 46, 'text-anchor': 'middle', class: 'sv-t sm dim' }, g).textContent = 'Unterseite';
     const bu = (L.unterseite && L.unterseite.buchsen) || [];
+    const sock = (c, cx, cy) => { const w = c.w * BS, hh = c.h * BS; mk('rect', { x: cx - w / 2, y: cy - hh / 2, width: w, height: hh, rx: 4, class: 'pl-sock on' }, g); };
+    L.pads.filter(p => p.unten).forEach(p => { const cx = x0 + (1 - p.x) * BS, cy = y0 + p.y * BS, id = p.id || p.n, on = actIds.has(id), done = doneIds.has(id); mk('rect', { x: cx - 8.5, y: cy - 8.5, width: 17, height: 17, rx: 2.5, class: 'pl-pad' + (on ? ' on' : '') + (done ? ' done' : '') }, g); if (on || done) mk('circle', { cx, cy, r: 6.5, class: 'pl-blob' + (on ? ' fresh' : '') }, g); mk('text', { x: cx, y: cy + (p.y > h / 2 ? -16 : 28), 'text-anchor': 'middle', class: 'pl-lab in' + (on ? ' on' : '') }, g).textContent = p.lab || p.n; });
     bu.forEach(c => { const cx = x0 + (1 - c.x) * BS, cy = y0 + c.y * BS, w = c.w * BS, hh = c.h * BS; mk('rect', { x: cx - w / 2, y: cy - hh / 2, width: w, height: hh, rx: 4, class: 'pl-sock on' }, g); for (let i = 0; i < (c.pins || []).length; i++) mk('rect', { x: cx - w / 2 + 6 + i * (w - 12) / c.pins.length, y: cy - 3, width: (w - 12) / c.pins.length - 4, height: 6, class: 'pl-pin' }, g); mk('text', { x: cx, y: cy - hh / 2 - 12, 'text-anchor': 'middle', class: 'sv-t sm' }, g).textContent = c.lab || c.n; });
   }
   (L.loecher || []).forEach(([hx, hy]) => { const cx = x0 + hx * BS, cy = y0 + hy * BS; mk('circle', { cx, cy, r: 22, class: 'pl-ring' }, g); mk('circle', { cx, cy, r: 12, class: 'pl-hole' }, g); });
@@ -581,25 +591,29 @@ function drawPlan(svg, mk, b, plan, steps, act) {
     else if (t.typ === 'antenne') mk('path', { d: `M${tx} ${ty} h${t.w * BS} v${t.h * BS * .5} h-${t.w * BS * .3} v-${t.h * BS * .3} h-${t.w * BS * .4} v${t.h * BS * .3}`, class: 'pl-ant' }, g);
     else if (t.typ === 'jumper') { mk('rect', { x: tx, y: ty, width: t.w * BS, height: t.h * BS, rx: 3, class: 'pl-jmp' }, g); }
     else if (t.typ === 'chip') mk('rect', { x: tx - t.w * BS / 2, y: ty - t.w * BS / 2, width: t.w * BS, height: t.w * BS, rx: 4, class: 'pl-chip' }, g);
+    else if (t.typ === 'knopf') { mk('rect', { x: tx - 11, y: ty - 8, width: 22, height: 16, rx: 3, class: 'pl-btn' }, g); mk('circle', { cx: tx, cy: ty, r: 4.5, class: 'pl-btn-in' }, g); }
+    else if ((t.typ === 'buchse' || t.typ === 'stecker') && t.w) { const w = t.w * BS, hh = (t.h || .06) * BS, on = actIds.has('BUCHSE:' + t.n); mk('rect', { x: tx, y: ty, width: w, height: hh, rx: 4, class: 'pl-sock' + (on ? ' on' : '') }, g); const np = (t.pins || []).length; for (let i = 0; i < np; i++) { const vert = hh > w; mk('rect', vert ? { x: tx + hh * 0 + w * .3, y: ty + 5 + i * (hh - 10) / np, width: w * .4, height: (hh - 10) / np - 3, class: 'pl-pin' } : { x: tx + 5 + i * (w - 10) / np, y: ty + hh * .3, width: (w - 10) / np - 3, height: hh * .4, class: 'pl-pin' }, g); } }
   });
+  if (!flip) (L.teile || []).filter(t => t.typ === 'buchse' && t.n).forEach(c => { const cxr = c.x + (c.w || 0) / 2, cyr = c.y + (c.h || 0) / 2, e = edgeOf({ x: cxr, y: cyr }, h), cx = x0 + cxr * BS, cy = y0 + cyr * BS; pos['BUCHSE:' + c.n] = { x: cx, y: cy, lx: cx, ly: cy, e, inner: true }; });
   // Pads
-  const PS = 17, pos = {};
-  if (!flip) L.pads.forEach(p => {
+  const PS = 17;
+  if (!flip) L.pads.filter(p => !p.unten).forEach(p => {
     const cx = x0 + p.x * BS, cy = y0 + p.y * BS, id = p.id || p.n, e = edgeOf(p, h);
     const on = actIds.has(id), done = doneIds.has(id);
     mk('rect', { x: cx - PS / 2, y: cy - PS / 2, width: PS, height: PS, rx: 2.5, class: 'pl-pad' + (on ? ' on' : '') + (done ? ' done' : '') }, g);
     if (done || on) mk('circle', { cx, cy, r: 6.5, class: 'pl-blob' + (on ? ' fresh' : '') }, g);
     const inner = Math.min(p.x, 1 - p.x, p.y, h - p.y) > .08;
     const lab = p.lab || p.n, cls = 'pl-lab' + (on ? ' on' : '') + (inner ? ' in' : '');
-    if (inner) mk('text', { x: cx + (e === 'w' ? 16 : e === 'e' ? -16 : 0), y: cy + (e === 'n' ? 24 : e === 's' ? -16 : 4), 'text-anchor': e === 'w' ? 'start' : e === 'e' ? 'end' : 'middle', class: cls }, g).textContent = lab;
+    const tight = inner && (e === 'n' || e === 's') && L.pads.some(q => q !== p && !q.unten && Math.abs(q.y - p.y) < .03 && Math.abs(q.x - p.x) < .055 + String(lab).length * .004);
+    if (tight) { const ty = e === 'n' ? cy + 14 : cy - 14; mk('text', { x: cx + 4, y: ty, class: cls + ' v', transform: `rotate(-90 ${cx + 4} ${ty})`, 'text-anchor': e === 'n' ? 'end' : 'start' }, g).textContent = lab; }
+    else if (inner) mk('text', { x: cx + (e === 'w' ? 16 : e === 'e' ? -16 : 0), y: cy + (e === 'n' ? 24 : e === 's' ? -16 : 4), 'text-anchor': e === 'w' ? 'start' : e === 'e' ? 'end' : 'middle', class: cls }, g).textContent = lab;
     else if (e === 'n' || e === 's') { const ty = e === 'n' ? y0 - 12 : y0 + BH + 12; mk('text', { x: cx + 5, y: ty, class: cls, transform: `rotate(-90 ${cx + 5} ${ty})`, 'text-anchor': e === 'n' ? 'start' : 'end' }, g).textContent = lab; }
     else mk('text', { x: e === 'w' ? x0 - 12 : x0 + BS + 12, y: cy + 5, 'text-anchor': e === 'w' ? 'end' : 'start', class: cls }, g).textContent = lab;
     const dist = inner ? 34 : 22 + String(lab).length * 8.6, lx = e === 'w' ? x0 - dist : e === 'e' ? x0 + BS + dist : cx, ly = e === 'n' ? y0 - dist : e === 's' ? y0 + BH + dist : cy;
     const sx = e === 'w' ? x0 - 4 : e === 'e' ? x0 + BS + 4 : cx, sy = e === 'n' ? y0 - 4 : e === 's' ? y0 + BH + 4 : cy;
     pos[id] = { x: cx, y: cy, lx, ly, e, inner, sx, sy };
   });
-  if (!flip) mk('text', { x: 500, y: y0 + BH + 92, 'text-anchor': 'middle', class: 'sv-t sm dim' }).textContent = nameOf(b);
-  if (flip) L.pads.forEach(p => { const e = edgeOf(p, h), cx = x0 + p.x * BS, cy = y0 + p.y * BS; pos[p.id || p.n] = { x: cx, y: cy, lx: cx, ly: cy, e, inner: true, ghost: true }; });
+  if (flip) L.pads.forEach(p => { const e = edgeOf(p, h), cx = x0 + (p.unten ? 1 - p.x : p.x) * BS, cy = y0 + p.y * BS; pos[p.id || p.n] = { x: cx, y: cy, lx: cx, ly: cy, e, inner: true, ghost: !p.unten }; });
   if (flip) (L.unterseite && L.unterseite.buchsen || []).forEach(c => { pos['BUCHSE:' + c.n] = { x: x0 + (1 - c.x) * BS, y: y0 + c.y * BS + c.h * BS / 2, lx: x0 + (1 - c.x) * BS, ly: y0 + BH + 34, e: 's', inner: true }; });
   // Bauteile: Seite nach Lage ihrer Pads
   const grp = {}; plan.wires.forEach(w => { (grp[w.teil] = grp[w.teil] || []).push(w); });
@@ -617,7 +631,7 @@ function drawPlan(svg, mk, b, plan, steps, act) {
     list.forEach((t, i) => {
       const ws = grp[t], n = list.length, isAct = act.teil === t || ws.some(w => actIds.has(w.padId));
       const anyShown = ws.some(visible);
-      let cx, cy; if (sd === 'w') { cx = 92; cy = 160 + (i + .5) * (680 / n); } else if (sd === 'e') { cx = 908; cy = 160 + (i + .5) * (680 / n); } else if (sd === 'n') { cx = 220 + (i + .5) * (560 / n); cy = 70; } else { cx = 220 + (i + .5) * (560 / n); cy = 930; }
+      let cx, cy; if (sd === 'w') { cx = 92; cy = 160 + (i + .5) * (680 / n); } else if (sd === 'e') { cx = 908; cy = 160 + (i + .5) * (680 / n); } else if (sd === 'n') { cx = 140 + (i + .5) * (720 / n); cy = 70; } else { cx = 140 + (i + .5) * (720 / n); cy = 930; }
       const cg = mk('g', { class: 'pl-comp' + (isAct ? ' on' : '') + (anyShown ? '' : ' wait') });
       compArt(mk, cg, t, cx, cy, sd);
       ws.forEach((w, j) => {
@@ -641,13 +655,12 @@ function drawPlan(svg, mk, b, plan, steps, act) {
       });
     });
   }
-  if (cur === last) mk('text', { x: 500, y: 985, 'text-anchor': 'middle', class: 'sv-t amber' }).textContent = 'Fertig verkabelt. So sieht dein Anschlussplan aus.';
   state.solderSeen = true;
 }
 /* Bauteile als eigene Zeichnungen, Stil wie in Anschlussplänen */
 function compArt(mk, g, t, cx, cy, sd) {
   const box = (w, hh, cls, rx = 8) => mk('rect', { x: cx - w / 2, y: cy - hh / 2, width: w, height: hh, rx, class: cls }, g);
-  const label = (txt, dy) => mk('text', { x: cx, y: cy + dy, 'text-anchor': 'middle', class: 'pl-cname' }, g).textContent = txt;
+  const label = (txt, dy) => { let t2 = String(txt || '').replace(/ mit .*$| \(.*\)$/, ''); if (t2.length > 24) t2 = t2.slice(0, 23).trim() + '…'; mk('text', { x: cx, y: cy + dy, 'text-anchor': 'middle', class: 'pl-cname' }, g).textContent = t2; };
   const nm = (k) => { const p = P(B[k]); return p ? nameOf(p) : ''; };
   if (t === 'Empfänger') { box(150, 74, 'pl-pcb2'); box(34, 34, 'pl-chip', 3); mk('path', { d: `M${cx - 75} ${cy - 20} h-30`, class: 'pl-antw' }, g); mk('rect', { x: cx - 112, y: cy - 26, width: 12, height: 12, class: 'pl-gold' }, g); label(nm('rx'), -48); }
   else if (t === 'GPS') { box(110, 110, 'pl-gpsb', 10); box(70, 70, 'pl-gold', 6); label(nm('gps') || 'GPS', -66); }
@@ -775,6 +788,38 @@ function mats() {
   });
   return MAT;
 }
+/* Oberseite einer echten Platine als Textur: Pads, Löcher, Buchsen und Beschriftung an der Stelle aus dem Herstellerplan */
+const texCache = {};
+function boardTex(L) {
+  if (texCache[L.board]) return texCache[L.board];
+  const W = 1024, h = L.h || 1, H = Math.round(W * h), c = D.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+  g.translate(W, H); g.rotate(Math.PI); // Front (Pfeil) liegt in der Szene vorne
+  const X = (x) => x * W, Y = (y) => y * W;
+  g.fillStyle = L.farbe || '#15171c';
+  g.beginPath(); if (L.form === 'raute') { g.moveTo(W / 2, 0); g.lineTo(W, H / 2); g.lineTo(W / 2, H); g.lineTo(0, H / 2); } else g.roundRect(0, 0, W, H, 70); g.fill();
+  g.save(); g.clip(); g.strokeStyle = 'rgba(120,150,190,.12)'; g.lineWidth = 6; for (let i = 0; i < 14; i++) { g.beginPath(); g.moveTo(W * .2, H * (.18 + i * .045)); g.lineTo(W * (.45 + (i % 3) * .08), H * (.18 + i * .045)); g.lineTo(W * (.52 + (i % 3) * .08), H * (.24 + i * .045)); g.lineTo(W * .78, H * (.24 + i * .045)); g.stroke(); } g.restore();
+  g.fillStyle = '#090a0d'; g.fillRect(W * .41, H * .4, W * .17, W * .17); g.strokeStyle = '#2a2f38'; g.lineWidth = 4; g.strokeRect(W * .41, H * .4, W * .17, W * .17);
+  (L.loecher || []).forEach(([x, y]) => { g.fillStyle = '#d9ad48'; g.beginPath(); g.arc(X(x), Y(y), 46, 0, 7); g.fill(); g.fillStyle = '#05060a'; g.beginPath(); g.arc(X(x), Y(y), 26, 0, 7); g.fill(); });
+  (L.teile || []).forEach(t => { const x = X(t.x), y = Y(t.y);
+    if (t.typ === 'usb') { g.fillStyle = '#c3cad4'; g.fillRect(x, y, t.w * W, t.h * W); g.fillStyle = '#3a414c'; g.fillRect(x + 18, y + t.h * W * .3, t.w * W - 36, t.h * W * .4); }
+    else if (t.typ === 'buchse' && t.w) { g.fillStyle = '#f2f2f2'; g.fillRect(x, y, t.w * W, (t.h || .06) * W); g.fillStyle = '#c9a23f'; const n = (t.pins || []).length; for (let i = 0; i < n; i++) g.fillRect(x + 10 + i * (t.w * W - 20) / n, y + (t.h || .06) * W * .35, (t.w * W - 20) / n - 6, (t.h || .06) * W * .3); }
+    else if (t.typ === 'pfeil') { g.fillStyle = '#f2f4f8'; g.beginPath(); g.moveTo(x, y - 70); g.lineTo(x + 52, y + 44); g.lineTo(x, y + 16); g.lineTo(x - 52, y + 44); g.closePath(); g.fill(); }
+    else if (t.typ === 'knopf') { g.fillStyle = '#c3cad4'; g.fillRect(x - 22, y - 16, 44, 32); g.fillStyle = '#20242c'; g.beginPath(); g.arc(x, y, 9, 0, 7); g.fill(); }
+  });
+  const PS = 30; g.textBaseline = 'middle';
+  L.pads.filter(p => !p.unten).forEach(p => { const x = X(p.x), y = Y(p.y);
+    const gr = g.createLinearGradient(x - PS / 2, y - PS / 2, x + PS / 2, y + PS / 2); gr.addColorStop(0, '#fbe6a2'); gr.addColorStop(.5, '#d9ad48'); gr.addColorStop(1, '#9b7224');
+    g.fillStyle = gr; g.fillRect(x - PS / 2, y - PS / 2, PS, PS);
+    const e = edgeOf(p, h), lab = String(p.lab || p.n); g.fillStyle = 'rgba(240,244,250,.92)'; g.font = `700 ${lab.length > 5 ? 17 : 21}px "Chakra Petch",sans-serif`;
+    const inner = Math.min(p.x, 1 - p.x, p.y, h - p.y) > .08;
+    g.save(); g.translate(x, y);
+    if (e === 'n' || e === 's') { g.rotate(-Math.PI / 2); g.textAlign = (e === 'n') === inner ? 'right' : 'left'; g.fillText(lab, (e === 'n') === inner ? -PS * .75 : PS * .75, 0); }
+    else { g.textAlign = (e === 'w') === inner ? 'left' : 'right'; g.fillText(lab, (e === 'w') === inner ? PS * .75 : -PS * .75, 0); }
+    g.restore();
+  });
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  return (texCache[L.board] = t);
+}
 const box = (w, h, d, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
 const cyl = (rt, rb, h, m, seg = 24) => new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), m);
 const at = (o, x, y, z, rx = 0, ry = 0, rz = 0) => { o.position.set(x, y, z); o.rotation.set(rx, ry, rz); return o; };
@@ -810,6 +855,7 @@ let lastSig = {};
 function build3d(force) {
   if (!G3.ok) return;
   const M = mats(), d = dims(), c = [[-1, 1], [1, 1], [-1, -1], [1, -1]];
+  G3.bs = d.bs;
   const sig = (k, extra = '') => JSON.stringify([B[k], B.klasse, d.wb, d.propR, d.bellR, d.bs, extra]);
   const changed = (k, extra) => { const s = sig(k, extra); if (!force && lastSig[k] === s) return false; lastSig[k] = s; return true; };
   // Rahmen
@@ -830,7 +876,7 @@ function build3d(force) {
         if (d.duct) { const ring = new THREE.Mesh(new THREE.TorusGeometry(d.propR + .35, .18, 8, 40), M.duct); ring.rotation.x = Math.PI / 2; ring.position.set(mx, d.bellH * .9, mz); fr.add(ring); const wall = new THREE.Mesh(new THREE.CylinderGeometry(d.propR + .4, d.propR + .4, d.bellH * 1.4, 40, 1, true), M.duct); wall.position.set(mx, d.bellH * .6, mz); fr.add(wall); }
       });
       fr.add(box(d.bs * 1.35, t, d.bs * (d.duct ? 1.6 : 2.4), M.carbon));
-      if (!d.duct) { const top = new THREE.Group(); top.add(at(box(d.bs * 1.1, t * .7, d.bs * 2.4, M.carbon), 0, d.bs * .9 + .6, 0)); for (const [x, z] of [[-1, 1], [1, 1], [-1, -1], [1, -1]]) top.add(at(cyl(.22, .22, d.bs * .9 + .5, M.alu, 10), x * d.bs * .45, (d.bs * .9 + .6) / 2, z * d.bs * 1.05)); fr.add(top); }
+      if (!d.duct) { const top = new THREE.Group(); top.add(at(box(d.bs * 1.1, t * .7, d.bs * 2.4, M.carbon), 0, d.bs * .9 + .6, 0)); for (const [x, z] of [[-1, 1], [1, 1], [-1, -1], [1, -1]]) top.add(at(cyl(.22, .22, d.bs * .9 + .5, M.alu, 10), x * d.bs * .45, (d.bs * .9 + .6) / 2, z * d.bs * 1.05)); fr.add(top); fr.userData.top = top; }
       part('rahmen', fr, V(0, -3, 0));
     }
   }
@@ -838,15 +884,25 @@ function build3d(force) {
   if (changed('board', B.esc)) {
     if (!B.board) { drop('board'); drop('esc'); } else {
       const b = P(B.board), aio = isAio(b);
-      const fc = new THREE.Group(); const s = d.bs * .92;
-      fc.add(at(box(s, .14, s, M.pcbA), 0, aio ? .6 : 1.7, 0));
-      fc.add(at(box(s * .25, .14, s * .25, M.dark), 0, (aio ? .6 : 1.7) + .14, 0));
-      fc.add(at(box(s * .2, .25, s * .15, M.silver), s * .42, (aio ? .6 : 1.7) + .15, 0));
-      for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) fc.add(at(cyl(.2, .2, .3, M.std({ color: 0x7a3cff, roughness: .7 }), 10), x * s * .42, aio ? .6 : 1.7, z * s * .42));
+      const fc = new THREE.Group(); const s = d.bs * .92, LY = layoutFor(b), fy = aio ? .6 : 1.7;
+      if (LY) {
+        const hz = s * (LY.h || 1), raute = LY.form === 'raute';
+        const core = at(box(raute ? s * .7 : s, .14, raute ? hz * .7 : hz, M.std({ color: new THREE.Color(LY.farbe || '#15171c'), roughness: .6, metalness: .15 })), 0, fy, 0); if (raute) core.rotation.y = Math.PI / 4; fc.add(core);
+        const top = new THREE.Mesh(new THREE.PlaneGeometry(s, hz), M.std({ map: boardTex(LY), roughness: .45, metalness: .25, transparent: true, alphaTest: .5 })); top.rotation.x = -Math.PI / 2; top.position.set(0, fy + .075, 0); fc.add(top);
+        fc.add(at(box(s * .16, .1, s * .16, M.dark), 0, fy + .12, 0));
+      } else {
+        fc.add(at(box(s, .14, s, M.pcbA), 0, fy, 0));
+        fc.add(at(box(s * .25, .14, s * .25, M.dark), 0, fy + .14, 0));
+        fc.add(at(box(s * .2, .25, s * .15, M.silver), s * .42, fy + .15, 0));
+      }
+      const holes = LY && LY.loecher && LY.loecher.length ? LY.loecher.map(([x, y]) => [(.5 - x) * s, s * (LY.h || 1) / 2 - y * s]) : [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([x, z]) => [x * s * .42, z * s * .42]);
+      holes.forEach(([x, z]) => fc.add(at(cyl(.16, .16, .34, M.std({ color: 0x7a3cff, roughness: .7 }), 12), x, fy - .1, z)));
       part('board', fc, V(0, 5, 0), .05);
       if (!aio) {
-        const e = new THREE.Group(); e.add(at(box(s, .16, s, M.pcbC), 0, .75, 0));
-        for (let i = 0; i < 8; i++) e.add(at(box(s * .14, .18, s * .1, M.dark), -s * .33 + (i % 4) * s * .22, .9, i < 4 ? s * .35 : -s * .35));
+        const e = new THREE.Group(), EL = LY && LY.esc && LY.esc.pads ? { ...LY.esc, board: LY.board + '_esc' } : null;
+        if (EL) { const hz = s * (EL.h || 1); e.add(at(box(s, .16, hz, M.std({ color: new THREE.Color(EL.farbe || '#15171c'), roughness: .6 })), 0, .75, 0)); const tp = new THREE.Mesh(new THREE.PlaneGeometry(s, hz), M.std({ map: boardTex(EL), roughness: .45, metalness: .25, transparent: true, alphaTest: .5 })); tp.rotation.x = -Math.PI / 2; tp.position.set(0, .835, 0); e.add(tp); }
+        else e.add(at(box(s, .16, s, M.pcbC), 0, .75, 0));
+        if (!EL) for (let i = 0; i < 8; i++) e.add(at(box(s * .14, .18, s * .1, M.dark), -s * .33 + (i % 4) * s * .22, .9, i < 4 ? s * .35 : -s * .35));
         e.add(tube([[s * .12, .8, -s * .5], [s * .12, .8, -s * 1.2], [s * .1, 1.0, -s * 1.9]], .18, M.red));
         e.add(tube([[-s * .12, .8, -s * .5], [-s * .12, .8, -s * 1.2], [-s * .1, 1.0, -s * 1.9]], .18, M.blk));
         e.add(at(box(1.4, .75, 1.3, M.xt), 0, 1.05, -s * 2.15));
@@ -987,10 +1043,14 @@ function frame3d(dt) {
   G3.shadow.material.opacity = 1 - G3.flyK * .6; const ss = G3.size * 1.3 * (1 + G3.flyK * .4); G3.shadow.scale.set(ss, ss, 1);
   // LEDs
   if (G3.leds.length) G3.leds.forEach(l => l.m.color.setHSL(((G3.t * .25 + l.k * .05) % 1), .9, .55));
+  // Nahaufnahme der Platine beim Schritt Flugcontroller: obere Teile ausblenden, Kamera fährt von oben heran
+  const fT = view === '3d' && !G3.fly && STEPS[step] && STEPS[step].id === 'board' && B.board ? 1 : 0; G3.fk = (G3.fk || 0) + (fT - (G3.fk || 0)) * clamp(dt * (RM ? 20 : 2.4));
+  const hideTop = G3.fk > .25; ['akku', 'video', 'prop', 'gps', 'rx', 'buzzer', 'kondensator'].forEach(k => { if (G3.parts[k]) G3.parts[k].obj.visible = !hideTop; });
+  if (G3.parts.rahmen && G3.parts.rahmen.obj.userData.top) G3.parts.rahmen.obj.userData.top.visible = !hideTop;
   // Kamera
-  const r = G3.size * 1.55 + 7 + G3.exT * 10, el = G3.pitch;
+  const fk = ease(G3.fk), r = lerp(G3.size * 1.55 + 7 + G3.exT * 10, (G3.bs || 3.6) * 2.5 + 2, fk), el = lerp(G3.pitch, 1.2, fk);
   G3.cam.position.set(Math.sin(G3.yaw) * Math.cos(el) * r, Math.sin(el) * r + G3.flyK * 6, Math.cos(G3.yaw) * Math.cos(el) * r);
-  G3.cam.lookAt(0, 2 + G3.flyK * (G3.size * .3), 0);
+  G3.cam.lookAt(0, lerp(2, 1.7, fk) + G3.flyK * (G3.size * .3), 0);
   G3.renderer.render(G3.scene, G3.cam);
 }
 
@@ -1006,7 +1066,7 @@ function findBy(kat, re, pref) { const L = (kat === 'board' ? boards() : arr(kat
 function preset(name) {
   if (name === 'mamba-o4-crsf') {
     Object.keys(B).forEach(k => B[k] = null); B.klasse = 'five';
-    B.board = findBy('board', /mamba.*f405|f405.*mamba/i) || findBy('board', /mamba/i);
+    B.board = findBy('board', /mamba.*f722(?!.*mini)/i) || findBy('board', /mamba/i);
     B.rahmen = findBy('rahmen', /.*/, f => klasseOfFrame(f) === 'five');
     B.motor = findBy('motor', /2207|2306/, m => range(m.empfohlen_s)[1] >= 6);
     if (B.motor) { const ks = kvList(P(B.motor)); B.kv = ks.find(k => k >= 1700 && k <= 2000) || ks[0] || null; }
@@ -1014,7 +1074,7 @@ function preset(name) {
     B.akku = findBy('akku', /.*/, a => num(a.zellen) === 6 && num(a.mah) >= 1000 && num(a.mah) <= 1400);
     B.video = findBy('video', /o4 air unit(?!.*pro)/i) || findBy('video', /o4/i);
     B.rx = findBy('empfaenger', /crossfire nano/i) || findBy('empfaenger', /crossfire/i);
-    B.kondensator = findBy('extra', /kondens|capacitor/i); B.buzzer = findBy('extra', /buzzer/i);
+    B.kondensator = findBy('extra', /.*/, x => x.typ === 'kondensator' && /35/.test(x.name)) || findBy('extra', /kondens|capacitor|µF/i); B.buzzer = findBy('extra', /.*/, x => x.typ === 'buzzer') || findBy('extra', /buzzer/i);
   }
 }
 
