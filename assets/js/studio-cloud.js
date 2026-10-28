@@ -31,11 +31,12 @@ export async function post(url, fields) {
 
 /* ---------- Mitgliedscode ---------- */
 export const normCode = s => {
-  const r = String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const r = String(s || '').toUpperCase().replace(/[^A-Z0-9ÄÖÜ]/g, '');
   const core = r.startsWith('FCS') ? r.slice(3) : r;
-  return core.length === 8 ? `FCS-${core.slice(0, 4)}-${core.slice(4)}` : String(s || '').trim().toUpperCase();
+  return r.startsWith('FCS') && core.length === 8 ? `FCS-${core.slice(0, 4)}-${core.slice(4)}` : r;
 };
-export const codeOk = c => /^FCS-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(c);
+// FCS-XXXX-XXXX oder ein Wort mit Zahl (gleiche Regel wie fcs.js)
+export const codeOk = c => /^FCS-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(c) || /^[A-ZÄÖÜ0-9]{8,24}$/.test(c);
 export async function checkMember(url, code) {
   try {
     const u = new URL(url); u.searchParams.set('a', 'check'); u.searchParams.set('c', code);

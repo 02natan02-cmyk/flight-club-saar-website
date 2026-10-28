@@ -250,7 +250,7 @@
   };
 
   /* ---------- Termin aus der Adresse ---------- */
-  const ALL = (FCS.termine ? FCS.termine() : []);
+  let ALL = []; // erst nach dem Laden füllen: Termine stehen nur verschlüsselt im Mitgliederbereich
   const T = { d: '', t: null, st: 'idle', regs: [], plans: [], planErr: false, plan: null, pub: null, src: 'auto', dirty: false, notice: '', sel: null, showAll: false, replace: null, done: null, hintSeen: {} };
   function pickDate() {
     const q = new URLSearchParams(location.search).get('d');
@@ -1189,6 +1189,15 @@
     $('#tp-switch').innerHTML = '';
     const tc = $('.toc'); if (tc) tc.remove(); document.body.classList.remove('has-toc');
   }
+  function showGuest() {
+    $$('main > section:not(.pagehead):not(#mitglieder)').forEach(s => { s.hidden = true; s.removeAttribute('data-toc'); });
+    const g = $('#mitglieder'); if (g) g.hidden = false;
+    $('#tp-datum').textContent = 'für Mitglieder'; $('.tp-h1-k').textContent = 'Hallenabend';
+    $('#tp-ort').textContent = 'Datum, Halle, Abendplan und Kanäle siehst du mit deinem Mitgliedscode.';
+    const st = $('.tp-stats'); if (st) st.hidden = true; const bt = $('.tp-btns'); if (bt) bt.hidden = true;
+    const sw = $('#tp-switch'); if (sw) sw.innerHTML = '';
+    const tc = $('.toc'); if (tc) tc.remove(); document.body.classList.remove('has-toc');
+  }
   function switchTo(d, push) {
     if (d === T.d) return;
     T.d = d; T.t = ALL.find(t => t.d === d); T.sel = null; T.done = null; T.replace = null; T.showAll = false; T.onlyMe = false;
@@ -1201,8 +1210,11 @@
     if ('IntersectionObserver' in root) new IntersectionObserver(es => el.classList.toggle('run', es[0].isIntersecting)).observe(el); else el.classList.add('run');
   }
   function init() {
+    ALL = FCS.termine ? FCS.termine() : [];
     const d = pickDate();
     live = document.createElement('p'); live.className = 'sr'; live.setAttribute('role', 'status'); document.body.appendChild(live);
+    // Gäste: Termine nur für Mitglieder (Natan 28.10.2026), statt „gibt es nicht“ das Code-Feld zeigen
+    if (!(FCS.member && FCS.member.ok)) { showGuest(); return; }
     if (!d) { show404(new URLSearchParams(location.search).get('d')); return; }
     T.d = d; T.t = ALL.find(t => t.d === d);
     renderTable(); initForm(); dlgInit(); dragInit(); bars();
