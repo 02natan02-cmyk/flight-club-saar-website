@@ -139,6 +139,9 @@ FCS.data = {
     { d: '2023-12-27', t: 'Erste Indoor-Session', u: 'Tiny-Whoop-Wintersaison 2023/24 in der Halle.', img: 'media/chronik/2023-12-27.webp' },
     { d: '2024-02-22', t: 'Time Axis', u: 'Unser Film vom Techno-Klassiker mit 13 DJs.', img: 'media/chronik/2024-02-22.webp' },
     { d: '2025-02-02', t: 'Ayedo steigt ein', u: 'Ayedo wird Sponsor und Partner des Vereins.', img: 'media/chronik/2025-02-02.webp' },
+    { d: '2024-06-15', t: 'Erstmals auf der Make It', u: 'Unser erster Stand beim Maker Festival make-it.saarland im E-Werk Saarbrücken.' },
+    { d: '2025-06-14', t: 'Make It: beliebtester Stand', u: 'Großer Drohnenkäfig im E-Werk: Hunderte Besucher und viele Kinder fliegen mit FPV-Brille echte Drohnen.' },
+    { d: '2026-06-13', t: 'Make It 2026', u: 'Zum dritten Mal im E-Werk, mit Dutzenden Drohnen und mehreren Simulatoren.', img: 'media/chronik/2026-06-13.webp' },
     { d: '2026-09-14', t: 'Addicted to Dance 2026', u: 'FPV-Bilder von der saarländischen Tanz- und Kulturmeisterschaft. Unser meistgesehenes Reel.', img: 'media/chronik/2026-09-14.webp' },
     { d: '2026-10-17', t: 'Hallensaison 2026', u: 'Start der Wintersaison in der Großwaldhalle Eiweiler.' }
   ],
