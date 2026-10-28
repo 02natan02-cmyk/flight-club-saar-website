@@ -333,6 +333,9 @@ export async function render(job, hooks = {}) {
   const tracks = new Map();
   const track = async f => { if (!tracks.has(f)) tracks.set(f, await inp(f).getPrimaryVideoTrack()); return tracks.get(f); };
   const iters = [];
+  // drawn[i]: hat Szene i schon ein echtes Bild auf ihrer Zeichenfläche? Vorher zeigt ihre Fläche nichts (schwarz) oder
+  // ein altes Bild einer anderen Szene. Dann wird im Übergang nicht überblendet, sondern hart geschnitten.
+  const drawn = [];
   const abort = () => { if (job.signal && job.signal.aborted) throw new DOMException('abgebrochen', 'AbortError'); };
   await output.start();
   // Ton in 2-Sekunden-Stücken, passend zum Bild, damit der Muxer nichts lange puffern muss
@@ -352,7 +355,7 @@ export async function render(job, hooks = {}) {
     const I = iters[i], r = await I.it.next(); I.n++;
     if (!r.done && r.value) {
       const x = scratch(i)[1];
-      try { await drawTo(x, r.value, s.crop, s.mode, 'flatExport'); } finally { r.value.close(); }
+      try { await drawTo(x, r.value, s.crop, s.mode, 'flatExport'); drawn[i] = true; } finally { r.value.close(); }
     }
     if (r.done || I.n >= s.times.length) { try { await I.it.return(); } catch (e) {} iters[i] = 'done'; }
   };
@@ -368,9 +371,12 @@ export async function render(job, hooks = {}) {
       if (inTr) await pull(seg - 1);
       const t = f / fps;
       const fade = job.fadeFrames > 0 ? Math.max(0, (f - (frames - job.fadeFrames)) / job.fadeFrames) : 0;
-      const A = inTr ? scratch(seg - 1)[0] : scratch(seg)[0], B = inTr ? scratch(seg)[0] : null;
-      const tr = inTr ? { type: cut.type, p: (f - cut.f + .5) / cut.d, seed: f % 97 } : null;
-      const useGL = !!((inTr || look || fade > 0) && job.gl && job.gl.ok && !job.gl.lost);
+      let A = inTr ? scratch(seg - 1)[0] : scratch(seg)[0], B = inTr ? scratch(seg)[0] : null;
+      let tr = inTr ? { type: cut.type, p: (f - cut.f + .5) / cut.d, seed: f % 97 } : null;
+      if (inTr && !drawn[seg]) { B = null; tr = null; }
+      else if (inTr && !drawn[seg - 1]) { A = B; B = null; tr = null; }
+      else if (!inTr && !drawn[seg] && seg > 0 && drawn[seg - 1]) A = scratch(seg - 1)[0];
+      const useGL = !!((tr || look || fade > 0) && job.gl && job.gl.ok && !job.gl.lost);
       if (useGL) {
         job.gl.render({ A, B, tr, look, fade });
         out.drawImage(job.gl.canvas, 0, 0, W, H);
@@ -380,10 +386,10 @@ export async function render(job, hooks = {}) {
         const base = look && job.cssLook ? job.cssLook(look.id, look.k) : 'none';
         if ('filter' in out) out.filter = base;
         out.globalAlpha = 1;
-        if (inTr && B && job.tr2d) job.tr2d(out, A, null, B, null, tr, W, H, base);
+        if (tr && B && job.tr2d) job.tr2d(out, A, null, B, null, tr, W, H, base);
         else {
           out.drawImage(A, 0, 0, W, H);
-          if (inTr && B) {
+          if (tr && B) {
             const p = Math.max(0, Math.min(1, tr.p));
             if (cut.type === 'blitz') { out.drawImage(B, 0, 0, W, H); out.filter = 'none'; out.fillStyle = '#fff'; out.globalAlpha = Math.pow(1 - p, 2.2) * .95; out.fillRect(0, 0, W, H); }
             else { out.globalAlpha = p * p * (3 - 2 * p); out.drawImage(B, 0, 0, W, H); }

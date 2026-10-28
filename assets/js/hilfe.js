@@ -280,7 +280,7 @@
       more: ['kanaele'] },
 
     { id: 'halle', cat: 'Sonstiges', t: 'Hallenfliegen',
-      kw: 'halle:3 hallenfliegen:4 hallenabend:3 indoor:3 whoop:3 whoops:3 tinywhoop:3 termin:2 termine:2 wann:1 eiweiler:3 holz:2',
+      kw: 'halle:3 hallenfliegen:4 hallenabend:3 indoor:3 whoop:3 whoops:3 tinywhoop:3 termin:2 termine:2 wann:1',
       i: 'Im Winter fliegen wir mit Tiny Whoops in der Halle.',
       s: ['Mitbringen: Whoop mit Propellerschutz, Brille, Funke, mehrere Akkus und Ladegerät.', 'Bei analogem Video den Kanal vor Ort absprechen.', 'Termine, Hallen und Anfahrt stehen auf der Seite <a href="hallenfliegen.html">Hallenfliegen</a>.'],
       more: ['faq_halle', 'kanaele'] },

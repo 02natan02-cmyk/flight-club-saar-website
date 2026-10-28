@@ -7,7 +7,7 @@
    Module (werden erst bei Bedarf geladen): studio-media.js, studio-gl.js, studio-cloud.js, studio-beat.js (Worker). */
 (function () {
   'use strict';
-  const REV = '2026-10-24-g';
+  const REV = '2026-10-28-a';
   const SELF = document.currentScript && document.currentScript.src || '';
   const BASE = SELF ? SELF.replace(/[^/?#]*([?#].*)?$/, '') : 'assets/js/';
   const VQ = '?r=' + REV + (SELF.includes('?v=') ? '&' + SELF.split('?')[1] : '');
@@ -119,6 +119,10 @@
     v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = 'auto'; v.crossOrigin = 'anonymous';
     ['playsinline', 'webkit-playsinline', 'muted', 'disablepictureinpicture', 'disableremoteplayback'].forEach(a => v.setAttribute(a, ''));
     v.setAttribute('aria-hidden', 'true'); v.tabIndex = -1; v.className = 'vid';
+    // Zeitpunkt des letzten Suchens merken (vReady): kurz nach dem Suchen ist das Bild am Handy oft noch nicht da
+    v.addEventListener('seeking', () => { v._sk = performance.now(); });
+    v.addEventListener('seeked', () => { v._sk = performance.now(); P.dirty = true; });
+    v.addEventListener('emptied', () => { v._sk = performance.now(); });
     if (poster) v.poster = poster;
     vids.appendChild(v);
     if (src) v.src = src;
@@ -453,6 +457,10 @@
         const T = (window.__fcsTrans || {})[s.tr] || { d: 0 };
         s.d = s.tr === 'schnitt' ? 0 : Math.min(T.d || .4, segs[i - 1].len * .45, s.len * .45);
       } else { s.tr = null; s.d = 0; }
+      // Video-Element der Szene: folgt sie im selben Clip nicht nahtlos auf die vorige, nimmt sie das zweite Element (el2)
+      const pv = segs[i - 1];
+      if (pv && pv.c === s.c) s.slot = Math.abs(pv.src(pv.len) - s.src(0)) < .12 ? pv.slot : 1 - pv.slot; else s.slot = 0;
+      if (s.slot && !s.c.el2 && vids && s.c.src) s.c.el2 = mkVideo(s.c.src);
     });
     S.seq = { segs, total: Math.min(at, MAXLEN), style: st ? S.style : null, fade: st ? st.fade : (S.fadeEnd && segs.length > 1 ? .6 : 0) };
     return S.seq;
@@ -460,6 +468,13 @@
   function rebuild() {
     buildSeq(); sbDraw(); sumLine(); markUI();
     if (playMode() === 'seq') { P.t = clamp(P.t, 0, Math.max(0, S.seq.total - .05)); if (!P.on) seekView(); }
+  }
+  const vidOf = s => (s.slot && s.c.el2) || s.c.el;
+  /* Hat das Video an seiner Stelle wirklich ein Bild? (nicht beim Suchen und kurz danach: Android liefert dann schwarze oder lila Flächen) */
+  function vReady(v) {
+    if (!v) return false;
+    if (!('readyState' in v)) return true;
+    return v.readyState >= 2 && !v.seeking && !(v._sk > 0 && performance.now() - v._sk < 60) && v.videoWidth > 0;
   }
   function seqAt(t) {
     const segs = S.seq ? S.seq.segs : []; if (!segs.length) return null;
@@ -491,13 +506,14 @@
     if (!v || !v.paused) return;
     const p = v.play(); if (p && p.catch) p.catch(e => { if (e && e.name === 'NotAllowedError') { const t = $('#st-tap'); if (t) t.hidden = false; } });
   }
-  function drive(v, want, rate, run) {
+  function drive(v, want, rate, run, tolRun) {
     if (!v || !isFinite(want)) return;
     want = clamp(want, 0, Math.max(0, (v.duration || 1e9) - .04));
-    const tol = run ? .3 : .045;
+    const tol = run ? (tolRun || .3) : .045;
     if (!v.seeking && Math.abs(v.currentTime - want) > tol) { try { v.currentTime = want; } catch (e) {} }
     const r = clamp(rate || 1, .25, 4); if (Math.abs(v.playbackRate - r) > .01) { try { v.playbackRate = r; } catch (e) {} }
-    if (run) tryPlay(v); else if (!v.paused) v.pause();
+    // Am Clip-Ende nicht wieder starten: play() auf ein beendetes Video springt an den Anfang (falsches Bild, am Handy schwarz)
+    if (run) { if (!v.ended) tryPlay(v); } else if (!v.paused) v.pause();
   }
   function seekView() { if (!P.raf && P.visible) P.raf = requestAnimationFrame(frame); P.dirty = true; }
   function frame(now) {
@@ -525,27 +541,29 @@
         const aRun = !!(a && !a.paused && !a.seeking && a.readyState >= 2 && !S.busy);
         if (aRun) { const ca = a.currentTime, d = ca - (P.aLast == null ? ca : P.aLast); P.aLast = ca; P.t += d >= 0 && d < .5 ? d : dt; }
         else if (a && !a.paused && !S.busy) { P.aLast = null; } // Musik lädt oder sucht gerade: Bild wartet mit, statt davonzulaufen
-        else { P.aLast = null; const r0 = seqAt(P.t), main = r0 && r0.s.c.el; if (!(main && main.seeking)) P.t += dt; }
+        else { P.aLast = null; const r0 = seqAt(P.t), main = r0 && vidOf(r0.s); if (!(main && main.seeking)) P.t += dt; }
         if (P.t >= seq.total) { P.t = 0; P.aLast = null; }
       }
       const r = seqAt(P.t);
       if (r) {
         const s = r.s; cB = null;
         cA = s.c;
-        let vMain = s.c.el;
+        // Jede Szene hat ihr festes Video-Element (vidOf): zwei Szenen aus demselben Clip wechseln zwischen el und el2,
+        // damit im Übergang keines der beiden Videos springen (suchen) muss. Suchende Videos zeigen am Handy schwarze oder lila Flächen.
+        const vMain = vidOf(s);
         if (r.prev) {
-          const pv = r.prev; const contiguous = pv.c === s.c && Math.abs(pv.src(pv.len) - s.src(0)) < .12;
-          let vPrev = pv.c.el;
-          if (pv.c === s.c && !contiguous) { if (!s.c.el2) { s.c.el2 = mkVideo(s.c.src); } vPrev = s.c.el2; }
-          drive(vPrev, pv.src(pv.len + r.l), rateAt(pv, pv.len), P.on);
-          if (vPrev !== vMain) drive(vMain, s.src(r.l), rateAt(s, r.l), P.on);
+          const pv = r.prev, vPrev = vidOf(pv);
+          // Im Übergang nur bei großem Versatz nachstellen: jedes Suchen kostet am Handy Bilder
+          drive(vPrev, pv.src(pv.len + r.l), rateAt(pv, pv.len), P.on, 1.5);
+          if (vPrev !== vMain) drive(vMain, s.src(r.l), rateAt(s, r.l), P.on, 1.5);
           A = vPrev; B = vMain; cA = pv.c; cB = s.c; tr = { type: s.tr, p: r.p, seed: Math.floor(P.t * 30) % 97 };
           stopAll([vPrev, vMain, S.music && S.music.el]);
         } else {
           drive(vMain, s.src(r.l), rateAt(s, r.l), P.on); A = vMain;
           const nx = seq.segs[r.i + 1];
           const keep = [vMain, S.music && S.music.el];
-          if (nx && nx.at - P.t < .7) { const nv = nx.c === s.c ? (nx.d > 0 && Math.abs(s.src(s.len) - nx.src(0)) >= .12 ? null : null) : nx.c.el; if (nv) { drive(nv, nx.src(0), 1, false); keep.push(nv); } }
+          // Nächste Szene früh vorbereiten (pausiert an ihrem ersten Bild), damit sie beim Übergang schon ein Bild hat
+          if (nx && nx.at - P.t < 1.6) { const nv = vidOf(nx); if (nv && nv !== vMain) { drive(nv, nx.src(0), 1, false); keep.push(nv); } }
           stopAll(keep);
         }
         audioFor(B || A, (s.kind === '1' || !s.kind) ? S.origVol : 0);
@@ -556,7 +574,7 @@
     }
     P.cur = cA;
     // Ruhezustand: nichts hat sich geändert → nicht neu zeichnen (spart Akku)
-    const key = [A && A.currentTime, A && A.readyState, B && B.currentTime, P.t, mode, S.look, S.lookK, box.w].join('|');
+    const key = [A && A.currentTime, A && A.readyState, vReady(A), B && B.currentTime, B && B.readyState, vReady(B), P.t, mode, S.look, S.lookK, box.w].join('|');
     if (P.on || P.dirty || key !== P.lastKey) {
       P.lastKey = key;
       paint(A, B, cA, cB, tr, fade);
@@ -605,13 +623,20 @@
   }
   let glTestFor = null;
   function paint(A, B, cA, cB, tr, fade) {
+    // Übergang nur zeichnen, wenn beide Videos an ihrer Stelle ein Bild haben. Sonst lieber harter Schnitt
+    // (altes Bild bleibt, bis das neue da ist) als eine schwarze oder lila Fläche.
+    if (tr && B && A !== B) {
+      const aOk = vReady(A), bOk = vReady(B);
+      if (!bOk && (aOk || !(B.readyState >= 2))) { B = null; cB = null; tr = null; }
+      else if (!aOk && bOk) { A = B; cA = cB; B = null; cB = null; tr = null; }
+    }
     const look = S.look !== 'natur' && S.lookK > 0;
     if (GL && GL.lost) glLost();
     const need = !!(A && !glOff && (look || tr || fade > 0) && !(cA && cA.glBad) && !(cB && cB.glBad));
     if (need) needGL();
     const want = !!(need && GL && GL.ok && (A.readyState >= 2 || P.glUse));
     // Sucht ein Video gerade (readyState < 2), bleibt das letzte WebGL-Bild stehen, statt auf den Ersatzweg zu springen
-    const ready = !!(A && A.readyState >= 2 && (!B || !tr || B.readyState >= 2));
+    const ready = !!(A && A.readyState >= 2 && !A.seeking && (!B || !tr || vReady(B)));
     S.clips.forEach(c => [c.el, c.el2].forEach(v => { if (!v) return; const on = v === A || v === B; v.classList.toggle('on', on); }));
     // Fallback-Übergang ohne WebGL: Überblenden per Deckkraft, Blitz als weiße Fläche
     const fx = $('#st-fx');
@@ -641,8 +666,9 @@
     if (!want) { if (P.glUse) { glc.classList.remove('on'); P.glUse = false; } return; }
     const dpr = Math.min(devicePixelRatio || 1, 2), w = Math.round(box.w * dpr), h = Math.round(box.h * dpr);
     const sc = Math.min(1, 1920 / Math.max(w, h));
-    GL.size(w * sc, h * sc);
+    // Erst prüfen, dann die Größe setzen: eine neue Größe leert den Canvas (schwarz), und ohne Bild bliebe er leer stehen
     if (!ready) return;
+    GL.size(w * sc, h * sc);
     const ok = GL.render({ A, B: tr ? B : null, ra: cropN(cA, A), rb: cB ? cropN(cB, B) : null, tr, look: look ? { id: S.look, k: S.lookK } : null, fade });
     if (!ok) { glc.classList.remove('on'); P.glUse = false; return; }
     // Wächter: WebGL-Bild gegen das Video-Element prüfen, bevor es gezeigt wird (erstes Bild), danach etwa jede Sekunde.
@@ -1733,11 +1759,15 @@
         const r = seqAt(Math.min(P.t, total - .001)); if (!r) { stop(new Error('leer')); return; }
         const f = Math.floor(P.t * fps);
         if (f > lastF && f < job.frames) {
-          const s = r.s, A = r.prev ? (r.prev.c === s.c ? (s.c.el2 || s.c.el) : r.prev.c.el) : s.c.el, B = r.prev ? s.c.el : null;
-          if (A.readyState >= 2) {
-            const tr = r.prev ? { type: s.tr, p: r.p, seed: f % 97 } : null;
+          const s = r.s;
+          // Dieselben Video-Elemente wie die Vorschau (vidOf). Hat eines im Übergang noch kein Bild: harter Schnitt statt leerer Fläche.
+          let A = r.prev ? vidOf(r.prev) : vidOf(s), B = r.prev ? vidOf(s) : null, cA = r.prev ? r.prev.c : s.c, inTr = !!B;
+          if (inTr && !vReady(B)) inTr = false;
+          else if (inTr && !vReady(A)) { A = B; cA = s.c; inTr = false; }
+          if (!inTr) B = null;
+          if (A.readyState >= 2 && !A.seeking) {
+            const tr = inTr ? { type: s.tr, p: r.p, seed: f % 97 } : null;
             const fade = job.fadeFrames > 0 ? Math.max(0, (f - (job.frames - job.fadeFrames)) / job.fadeFrames) : 0;
-            const cA = r.prev ? r.prev.c : s.c;
             const useGL = !!(job.gl && job.gl.ok);
             if (useGL) { job.gl.render({ A, B, ra: cropN(cA, A), rb: B ? cropN(s.c, B) : null, tr, look, fade }); out.drawImage(job.gl.canvas, 0, 0, W, H); if (flagT('gl')) purple(); }
             else {
@@ -1745,7 +1775,7 @@
               const dst = job.liveCpu ? (lc || (lc = (() => { const c2 = document.createElement('canvas'); c2.width = W; c2.height = H; return c2.getContext('2d', { alpha: false, willReadFrequently: true }); })())) : out;
               const base = look && job.cssLook ? job.cssLook(look.id, look.k) : 'none';
               const cr = cropPx(A.videoWidth, A.videoHeight, W / H, cA.pan), ra = [cr.left, cr.top, cr.width, cr.height];
-              if (B && tr && B.readyState >= 2 && job.tr2d) { const c2 = cropPx(B.videoWidth, B.videoHeight, W / H, s.c.pan); job.tr2d(dst, A, ra, B, [c2.left, c2.top, c2.width, c2.height], tr, W, H, base); }
+              if (B && tr && job.tr2d) { const c2 = cropPx(B.videoWidth, B.videoHeight, W / H, s.c.pan); job.tr2d(dst, A, ra, B, [c2.left, c2.top, c2.width, c2.height], tr, W, H, base); }
               else { if ('filter' in dst) dst.filter = base; dst.globalAlpha = 1; dst.drawImage(A, ra[0], ra[1], ra[2], ra[3], 0, 0, W, H); }
               if ('filter' in dst) dst.filter = 'none';
               if (fade > 0) { dst.fillStyle = '#000'; dst.globalAlpha = clamp(fade, 0, 1); dst.fillRect(0, 0, W, H); dst.globalAlpha = 1; }
@@ -1977,7 +2007,7 @@
       const api = ((D.api || {}).mitglied || '').trim();
       const C = await cloud(); const c = C.normCode(code.value);
       if (!api) { msg.textContent = 'Die Freischaltung ist bald verfügbar.'; return; }
-      if (!C.codeOk(c)) { msg.textContent = 'Der Code hat die Form FCS-XXXX-XXXX.'; msg.className = 'st-code-msg bad'; code.focus(); return; }
+      if (!C.codeOk(c)) { msg.textContent = 'Dieser Code ist zu kurz oder enthält Sonderzeichen. Tipp ihn so ein, wie du ihn vom Vorstand bekommen hast.'; msg.className = 'st-code-msg bad'; code.focus(); return; }
       msg.textContent = 'Wird geprüft …'; msg.className = 'st-code-msg';
       const btn = form.querySelector('[type=submit]'); btn.disabled = true;
       const r = await C.checkMember(api, c); btn.disabled = false;

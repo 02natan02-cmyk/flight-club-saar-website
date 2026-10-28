@@ -250,7 +250,7 @@
   };
 
   /* ---------- Termin aus der Adresse ---------- */
-  const ALL = (FCS.termine ? FCS.termine() : []);
+  let ALL = []; // erst nach dem Laden füllen: Termine stehen nur verschlüsselt im Mitgliederbereich
   const T = { d: '', t: null, st: 'idle', regs: [], plans: [], planErr: false, plan: null, pub: null, src: 'auto', dirty: false, notice: '', sel: null, showAll: false, replace: null, done: null, hintSeen: {} };
   function pickDate() {
     const q = new URLSearchParams(location.search).get('d');
@@ -262,7 +262,7 @@
   const DEF = () => ({ b: toMin((D.zeit || {}).von) || 1080, e: toMin((D.zeit || {}).bis) || 1260, slot: 3, pause: 2, k: 0, all: 0, mode: 'g' });
   function fromReg(r, o) {
     const sys = C.sysOf(r.kat), chs = C.parseCh(r.titel, sys), nt = C.parseNote(r.t);
-    return { key: r.id, ref: r.id, n: String(r.n || 'Pilot').slice(0, 40), sys, fix: chs.fix || null, wish: chs.wish || null, ch: null, lock: false, here: true, cls: nt.cls, note: nt.note.slice(0, 200), o, d: r.d || '' };
+    return { key: r.id, ref: r.id, n: String(r.n || 'Pilot').slice(0, 40), sys, fix: chs.fix || null, wish: chs.wish || null, ch: null, lock: false, here: true, cls: nt.cls, note: nt.note.slice(0, 200), o, d: r.d || '', gast: r.art === 'gast' ? 1 : 0 };
   }
   const regsOf = d => T.regs.filter(x => x && x.b === 'termin:' + d).sort((a, b) => String(a.d || '').localeCompare(String(b.d || '')) || String(a.id).localeCompare(String(b.id)));
   const B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -302,7 +302,7 @@
   function reconcile(pl, regsD) {
     let changed = false; const by = new Map(regsD.map(r => [r.id, r]));
     pl.pilots = pl.pilots.filter(p => { if (!p.ref) return true; if (!by.has(p.ref)) { changed = true; return false; } return true; });
-    pl.pilots.forEach(p => { if (!p.ref) return; const f = fromReg(by.get(p.ref), p.o); p.n = f.n; p.cls = f.cls; p.note = f.note; p.d = f.d; p.fix = f.fix; p.wish = f.wish; if (!p.sysx && p.sys !== f.sys) { p.sys = f.sys; p.ch = null; p.lock = false; changed = true; } delete p.gone; });
+    pl.pilots.forEach(p => { if (!p.ref) return; const f = fromReg(by.get(p.ref), p.o); p.n = f.n; p.gast = f.gast; p.cls = f.cls; p.note = f.note; p.d = f.d; p.fix = f.fix; p.wish = f.wish; if (!p.sysx && p.sys !== f.sys) { p.sys = f.sys; p.ch = null; p.lock = false; changed = true; } delete p.gone; });
     let o = pl.pilots.reduce((m, p) => Math.max(m, p.o), -1);
     regsD.forEach(r => { if (!pl.pilots.some(p => p.ref === r.id)) { pl.pilots.push(fromReg(r, ++o)); changed = true; } });
     const keys = new Set(pl.pilots.map(p => p.key));
@@ -401,12 +401,12 @@
   function meKey() {
     if (!T.plan) return null;
     const m = FCS.board ? FCS.board.mine() : {};
-    const own = T.plan.pilots.find(p => p.ref && m[p.ref] && m[p.ref].pw && String(m[p.ref].b || '') === 'termin:' + T.d);
+    const own = T.plan.pilots.find(p => !p.gast && p.ref && m[p.ref] && m[p.ref].pw && String(m[p.ref].b || '') === 'termin:' + T.d);
     if (own) return own.key;
     const pick = store.get('fcs-plan-ich:' + T.d, null); if (pick && T.plan.pilots.some(p => p.key === pick)) return pick;
     return null;
   }
-  const ownReg = () => { const m = FCS.board ? FCS.board.mine() : {}; const r = regsOf(T.d).find(x => m[x.id] && m[x.id].pw && String(m[x.id].b || '') === 'termin:' + T.d); return r ? { r, pw: m[r.id].pw } : null; };
+  const ownReg = () => { const m = FCS.board ? FCS.board.mine() : {}; const r = regsOf(T.d).find(x => x.art !== 'gast' && m[x.id] && m[x.id].pw && String(m[x.id].b || '') === 'termin:' + T.d); return r ? { r, pw: m[r.id].pw } : null; };
 
   /* ---------- Farben je Frequenz ---------- */
   // Kanäle auf (fast) derselben Frequenz (unter 6 MHz Abstand) bilden einen Platz im Band, zum Beispiel Analog R4 (5769) und DJI CH1 (5768,5)
@@ -470,6 +470,9 @@
   function renderMe() {
     const box = $('#tp-me'), form = $('#tp-form'); if (!box || !T.plan) return;
     const key = meKey(), p = key && pOf(key), own = ownReg();
+    const gb = $('#tp-guest-btn');
+    if (T.guestMode) { box.hidden = true; form.hidden = false; if (gb) gb.hidden = true; return; }
+    if (gb) gb.hidden = false;
     if (T.done) { box.hidden = true; form.hidden = true; return; }
     if (!p && T.t && T.t.vorbei) {
       const n = FCS.next && FCS.next();
@@ -515,6 +518,10 @@
     // Selbst-Impuls: die Videosysteme leuchten einmal nacheinander auf
     if (anim() && root.ScrollTrigger) ScrollTrigger.create({ trigger: chips, start: 'top 80%', once: true, onEnter: () => { if ($('input[name=tp-sys]:checked')) return; const sp = $$('.chip span', chips); sp.forEach((x, i) => setTimeout(() => { x.classList.add('demo'); setTimeout(() => x.classList.remove('demo'), 420); }, i * 130)); gsap.fromTo(sp, { scale: 1 }, { scale: 1.07, duration: .21, stagger: .13, yoyo: true, repeat: 1, ease: 'power2.out', clearProps: 'transform' }); } });
     $('#tp-late-f').addEventListener('submit', e => { e.preventDefault(); addLate(); });
+    const gt = $('#tp-guest'), lab = $('label[for=tp-name]');
+    const guestUI = () => { const on = gt.checked; lab.firstChild.textContent = on ? 'Name des Gasts ' : 'Dein Name oder Pilotenname '; $('#tp-name').value = on ? '' : myName(); $('#tp-submit').textContent = on ? 'Gast eintragen' : 'Eintragen'; const m = $('#tp-form-msg'); m.hidden = true; m.classList.remove('ok'); if (!on && T.guestMode) { T.guestMode = false; renderMe(); } };
+    if (gt) gt.addEventListener('change', guestUI);
+    const gb = $('#tp-guest-btn'); if (gb) gb.addEventListener('click', () => { T.guestMode = true; T.done = null; $('#tp-done').hidden = true; gt.checked = true; guestUI(); renderMe(); FCS.scrollTo('#tp-form', -120); setTimeout(() => $('#tp-name').focus({ preventScroll: true }), 400); });
   }
   function fieldBad(id, bad) { const f = $(id); if (f) f.classList.toggle('bad', !!bad); return !bad; }
   async function submit() {
@@ -523,14 +530,24 @@
     const msg = $('#tp-form-msg'); msg.hidden = true;
     if (ok.includes(false)) { const first = $('#tp-form .bad'); if (first) { FCS.scrollTo(first, -170); const i = $('input', first); if (i) i.focus({ preventScroll: true }); } return; }
     const ch = $('#tp-ch').value, fix = $('#tp-fix').checked && !!ch, cls = ($('input[name=tp-cls]:checked') || {}).value || '', note = $('#tp-note').value.trim().slice(0, 200);
+    const guest = !!($('#tp-guest') && $('#tp-guest').checked);
     const fields = { b: 'termin:' + T.d, n: name, kat: SYS[sys].kat, pw };
+    if (guest) fields.art = 'gast';
     if (ch) fields.titel = C.fmtCh(ch, fix);
     const t = (cls ? '[' + cls + '] ' : '') + note; if (t.trim()) fields.t = t.trim();
     const btn = $('#tp-submit'); btn.disabled = true; btn.textContent = 'Wird eingetragen …';
     let r = { ok: false, err: 'netz' };
     try { r = await FCS.board.add(fields); } catch (e) {}
-    btn.disabled = false; btn.textContent = 'Eintragen';
+    btn.disabled = false; btn.textContent = guest ? 'Gast eintragen' : 'Eintragen';
     if (!r.ok) { msg.textContent = r.err === 'abgelehnt' ? 'Das hat nicht geklappt. Prüf deinen Namen und versuch es nochmal.' : r.err === 'aus' ? 'Eintragen ist gerade nicht möglich.' : 'Gerade nicht erreichbar, versuch es gleich nochmal.'; msg.hidden = false; say(msg.textContent); return; }
+    if (guest) {
+      // Gast (nicht im Verein, Natan 28.10.2026): steht im Plan, der eigene Eintrag bleibt unverändert
+      T.regs.unshift({ id: r.id, b: 'termin:' + T.d, n: name, kat: fields.kat, art: 'gast', titel: fields.titel || null, t: fields.t || null, d: new Date().toISOString().slice(0, 19) });
+      $('#tp-name').value = ''; $('#tp-note').value = ''; $('#tp-pw').value = FCS.board && FCS.board.code ? FCS.board.code() : '';
+      rebuildKeep();
+      msg.textContent = `${name} ist als Gast eingetragen und steht im Plan. Noch ein Gast? Einfach den nächsten Namen eintragen.`; msg.classList.add('ok'); msg.hidden = false;
+      return;
+    }
     keepName(name);
     const old = T.replace; T.replace = null; T.formOpen = false; $('#tp-form-x').hidden = true;
     T.regs.unshift({ id: r.id, b: 'termin:' + T.d, n: name, kat: fields.kat, titel: fields.titel || null, t: fields.t || null, d: new Date().toISOString().slice(0, 19) });
@@ -589,7 +606,7 @@
     if (!ps.length) { ul.innerHTML = err + (T.st !== 'err' ? '<li class="tp-empty"><p>Noch niemand eingetragen. Sei die oder der Erste!</p></li>' : ''); return; }
     ul.innerHTML = err + ps.map(p => {
       const c = m[p.key], col = colorOf(p.key, gs);
-      const sub = [SYS[p.sys].n, p.cls, p.local ? 'vor Ort dazu' : '', p.fix ? 'Kanal fest' : p.wish ? 'Wunsch ' + p.wish : ''].filter(Boolean).join(' · ');
+      const sub = [p.gast ? 'Gast' : '', SYS[p.sys].n, p.cls, p.local ? 'vor Ort dazu' : '', p.fix ? 'Kanal fest' : p.wish ? 'Wunsch ' + p.wish : ''].filter(Boolean).join(' · ');
       return `<li class="tp-p${p.here ? '' : ' away'}${p.key === me ? ' me' : ''}" data-k="${esc(p.key)}">
         <button class="tp-p-b" type="button" data-pk="${esc(p.key)}" aria-label="${esc(p.n)}: Kanal, Anwesenheit und mehr">
           <span class="tp-av" style="--c:${col}" aria-hidden="true">${esc(ini(p.n))}</span>
@@ -1189,6 +1206,15 @@
     $('#tp-switch').innerHTML = '';
     const tc = $('.toc'); if (tc) tc.remove(); document.body.classList.remove('has-toc');
   }
+  function showGuest() {
+    $$('main > section:not(.pagehead):not(#mitglieder)').forEach(s => { s.hidden = true; s.removeAttribute('data-toc'); });
+    const g = $('#mitglieder'); if (g) g.hidden = false;
+    $('#tp-datum').textContent = 'für Mitglieder'; $('.tp-h1-k').textContent = 'Hallenabend';
+    $('#tp-ort').textContent = 'Datum, Halle, Abendplan und Kanäle siehst du mit deinem Mitgliedscode.';
+    const st = $('.tp-stats'); if (st) st.hidden = true; const bt = $('.tp-btns'); if (bt) bt.hidden = true;
+    const sw = $('#tp-switch'); if (sw) sw.innerHTML = '';
+    const tc = $('.toc'); if (tc) tc.remove(); document.body.classList.remove('has-toc');
+  }
   function switchTo(d, push) {
     if (d === T.d) return;
     T.d = d; T.t = ALL.find(t => t.d === d); T.sel = null; T.done = null; T.replace = null; T.showAll = false; T.onlyMe = false;
@@ -1201,8 +1227,11 @@
     if ('IntersectionObserver' in root) new IntersectionObserver(es => el.classList.toggle('run', es[0].isIntersecting)).observe(el); else el.classList.add('run');
   }
   function init() {
+    ALL = FCS.termine ? FCS.termine() : [];
     const d = pickDate();
     live = document.createElement('p'); live.className = 'sr'; live.setAttribute('role', 'status'); document.body.appendChild(live);
+    // Gäste: Termine nur für Mitglieder (Natan 28.10.2026), statt „gibt es nicht“ das Code-Feld zeigen
+    if (!(FCS.member && FCS.member.ok)) { showGuest(); return; }
     if (!d) { show404(new URLSearchParams(location.search).get('d')); return; }
     T.d = d; T.t = ALL.find(t => t.d === d);
     renderTable(); initForm(); dlgInit(); dragInit(); bars();

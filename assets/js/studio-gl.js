@@ -37,7 +37,17 @@ export const TRANS = {
 };
 /* Übergänge ohne WebGL, mit 2D-Zeichnen (Export-Ersatz und Echtzeit-Weg). A/B: Quelle, ra/rb: [sx, sy, sw, sh] oder null,
    tr: {type, p, seed}, base: Canvas-Filter des Looks ('none' oder zum Beispiel 'contrast(1.1)') */
+// Hat eine Quelle ein Bild? Video-Elemente erst ab readyState 2 und nicht beim Suchen, sonst zeichnen Handys schwarz oder lila.
+export function srcOk(s) {
+  if (!s) return false;
+  if (typeof HTMLVideoElement !== 'undefined' && s instanceof HTMLVideoElement) return s.readyState >= 2 && !s.seeking && s.videoWidth > 0;
+  if ('width' in s && 'height' in s && !(s.width > 0 && s.height > 0)) return false;
+  return true;
+}
 export function tr2d(ctx, A, ra, B, rb, tr, W, H, base) {
+  // Fehlt einer der beiden Clips noch, harter Schnitt statt leerer Fläche
+  if (!srcOk(B)) { B = null; } else if (!srcOk(A)) { A = B; ra = rb; B = null; }
+  if (!B) tr = { type: 'nurA', p: 0, seed: 0 };
   const d = (S, r, x, y, w, h) => { if (r) ctx.drawImage(S, r[0], r[1], r[2], r[3], x, y, w, h); else ctx.drawImage(S, x, y, w, h); };
   const f0 = base && base !== 'none' ? base : '', setF = extra => { if ('filter' in ctx) ctx.filter = (f0 + ' ' + (extra || '')).trim() || 'none'; };
   const p = Math.max(0, Math.min(1, tr.p)), e = p * p * (3 - 2 * p);
@@ -70,6 +80,7 @@ export function tr2d(ctx, A, ra, B, rb, tr, W, H, base) {
       break;
     }
     case 'schnitt': d(B, rb, 0, 0, W, H); break;
+    case 'nurA': d(A, ra, 0, 0, W, H); break;
     default: d(A, ra, 0, 0, W, H); ctx.globalAlpha = e; d(B, rb, 0, 0, W, H);
   }
   ctx.globalAlpha = 1; if ('filter' in ctx) ctx.filter = 'none';
@@ -231,9 +242,16 @@ export function compositor(canvas) {
       if (api.lost) return false;
       // Testschalter: simuliert ein Handy, dessen WebGL nur eine leere lila Fläche liefert
       if (window.FCS_STUDIO_TEST && window.FCS_STUDIO_TEST.flatGL) { gl.clearColor(.184, .051, .2, 1); gl.clear(gl.COLOR_BUFFER_BIT); return true; }
-      if (A) upload(tA, 0, A);
-      const hasB = !!(B && tr && tr.type && tr.type !== 'schnitt');
-      if (hasB) upload(tB, 1, B);
+      // Quelle ohne Bild (Video lädt oder sucht noch) nie hochladen: die Textur wäre schwarz oder (Android) lila.
+      // Fehlt B, nur A zeigen (harter Schnitt); fehlt A, B allein; fehlen beide, bleibt das letzte Bild stehen.
+      const wantB = !!(B && tr && tr.type && tr.type !== 'schnitt');
+      let okA = srcOk(A), okB = wantB && srcOk(B);
+      if (!okA && okB) { A = B; ra = rb; okA = true; okB = false; tr = null; }
+      if (!okA) return true;
+      try { upload(tA, 0, A); } catch (e) { return false; }
+      let hasB = okB;
+      if (hasB) { try { upload(tB, 1, B); } catch (e) { hasB = false; } }
+      if (!hasB && wantB) tr = null;
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tA);
       gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, hasB ? tB : tA);
       if (lut) { gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_3D, lut); }

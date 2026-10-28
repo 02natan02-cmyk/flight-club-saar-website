@@ -820,7 +820,8 @@ function schaltplan() {
       }
       ds.forEach(([d]) => el('path', { class: 'sp-hit', d }, g));
       ds.forEach(([d, col]) => { const p = el('path', { class: 'sp-line', d }, g); if (col) p.style.stroke = col; });
-      ds.forEach(([d]) => el('path', { class: 'sp-flow', d }, g));
+      // Stromkreis (Natan 25.10.): auf Plus fließt der Strom zum Verbraucher, auf Minus zurück zum Akku
+      ds.forEach(([d, col]) => el('path', { class: 'sp-flow' + ((w.harn ? col === SP_COL.p : w.c === 'n') ? ' rev' : ''), d }, g));
     });
     if (!wires.some(w => w.id === cur.id) && cur.kind === 'w') cur = { kind: 'w', id: wires[0].id };
     show(cur, false);
@@ -834,13 +835,17 @@ function schaltplan() {
   function show(sel, scroll) {
     cur = sel;
     $$('.sp-w', svg).forEach(g => g.classList.toggle('on', sel.kind === 'w' && g.dataset.w === sel.id));
+    const PAIR = { bat_p: 'bat_n', xt_p: 'xt_n', rx_5v: 'rx_gnd', cam_5v: 'cam_gnd', vtx_pwr: 'vtx_gnd', du_pwr: 'du_gnd' };
+    Object.entries(PAIR).forEach(([a, b]) => { PAIR[b] = a; });
+    const partner = sel.kind === 'w' ? PAIR[sel.id] : null;
+    $$('.sp-w', svg).forEach(g => g.classList.toggle('kreis', !!partner && g.dataset.w === partner));
     $$('.sp-c', svg).forEach(g => g.classList.toggle('on', sel.kind === 'c' && g.dataset.c === sel.id));
     svg.classList.add('dim');
     let d;
     if (sel.kind === 'w') {
       const i = wires.findIndex(w => w.id === sel.id); d = wires[i];
       out.k.textContent = 'Leitung'; out.c.textContent = `${i + 1} / ${wires.length}`;
-      out.p.textContent = d.p;
+      out.p.textContent = d.p + (partner ? ' · Stromkreis: hin über Plus, zurück über Minus' : '');
     } else {
       d = SP_COMP[sel.id](mode, rxm); out.k.textContent = 'Bauteil'; out.p.textContent = '';
       out.c.textContent = `${wires.length} Leitungen`;

@@ -178,7 +178,10 @@ body:not(.nav-hidden) .wi-drone.is-3d.scrub.stuck .wi-stage-head,body:not(.nav-h
 .sp-w:hover .sp-line,.sp-w:focus-visible .sp-line{stroke-width:4.5}
 .sp-w.on .sp-line{stroke-width:5;filter:drop-shadow(0 0 6px currentColor)}
 .sp-w.on .sp-flow{opacity:.95;animation:sp-flow .6s linear infinite}
-.wi-sp-svg.dim .sp-w:not(.on) .sp-line{opacity:.42}
+.sp-w.kreis .sp-line{stroke-width:4.5;filter:drop-shadow(0 0 5px currentColor)}
+.sp-w.kreis .sp-flow{opacity:.9;animation:sp-flow .6s linear infinite}
+.sp-flow.rev{animation-direction:reverse!important}
+.wi-sp-svg.dim .sp-w:not(.on):not(.kreis) .sp-line{opacity:.42}
 .wi-sp-svg.dim .sp-c:not(.on):not(.lit) .box{opacity:.8}
 @keyframes sp-flow{to{stroke-dashoffset:-16}}
 

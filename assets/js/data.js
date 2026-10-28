@@ -70,7 +70,7 @@ FCS.data = {
     { ch: 3, a: 'Stay Fly', o: 'Bando-Session', clip: 'media/kanal/stayfly.mp4', ig: 'stay_fly.sb' },
     { ch: 4, a: 'GrobsFPV', o: 'Bando Time', clip: 'media/kanal/grobsfpv.mp4', ig: 'grobsfpv' },
     { ch: 5, a: 'Orcinus', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
-    { ch: 6, a: 'Booyaka FPV', o: 'Grube Göttelborn', clip: 'media/kanal/booyaka.mp4', ig: 'wojtasczyk_natan' }
+    { ch: 6, a: 'Booyaka FPV', o: 'Alte Grube', clip: 'media/kanal/booyaka.mp4', ig: 'wojtasczyk_natan' }
   ],
   // Bestenliste „Kannst du fliegen?“: Make-Szenario 8156727 (Webhook → Datenspeicher „FCS Whoop Bestenliste“)
   highscore: { url: 'https://hook.eu1.make.com/gq3bv9u25ybq6tzu5o2l9ecf4tcnuovk' },
@@ -85,7 +85,7 @@ FCS.data = {
     { id: 'DO5XzLCiHc3', v: 2720, d: '2025-09-22', t: 'Addicted to Dance 2025', c: 'Impressionen', clip: 1 },
     { id: 'DdgTJM5IyBx', v: 2715, d: '2026-09-20', t: 'POV über der Bühne', c: 'Addicted to Dance 2026', clip: 1 },
     { id: 'DXjZWCuDW4y', v: 1573, d: '2026-04-25', t: 'Kopter im Ayedo-Look', c: 'mit @weareayedo', clip: 1 },
-    { id: 'DZZPCmpNo-_', v: 1463, d: '2026-06-10', t: 'Grubengelände Göttelborn', c: 'Booyaka FPV', clip: 1 },
+    { id: 'DZZPCmpNo-_', v: 1463, d: '2026-06-10', t: 'Altes Grubengelände', c: 'Booyaka FPV', clip: 1 },
     { id: 'DcjJwc8yiwl', v: 1173, d: '2026-08-27', t: 'Wüste Gobi, Mongolei', c: 'Enduro und FPV', clip: 1 },
     { id: 'DeI-1Hzo-me', v: 613, d: '2026-10-06', t: 'Technikmuseum Sinsheim', c: 'eine traumhafte Sammlung', clip: 1 }
   ],

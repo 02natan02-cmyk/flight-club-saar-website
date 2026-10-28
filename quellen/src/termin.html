@@ -37,6 +37,7 @@
       <p class="tp-new panel" data-reveal><b>Zum ersten Mal dabei?</b> Einfach vorbeikommen, Anfänger sind willkommen. Was in die Tasche gehört, steht auf der <a href="hallenfliegen.html#mitbringen">Hallenseite</a>. Ohne eigenen Whoop: zuschauen und die anderen fragen.</p>
       <div id="tp-me" class="tp-me panel" hidden></div>
       <form id="tp-form" class="panel tp-form" novalidate data-reveal>
+        <label class="check tp-guest" for="tp-guest"><input type="checkbox" id="tp-guest"><span><b>Ich trage einen Gast ein.</b> Jemand, der nicht im Verein ist, will mitfliegen? Dann steht er im Plan und bekommt einen Kanal und eine Flugzeit.</span></label>
         <div class="field" id="tp-f-name"><label for="tp-name">Dein Name oder Pilotenname <b class="req" aria-hidden="true">*</b></label><input id="tp-name" name="n" maxlength="40" autocomplete="nickname" enterkeyhint="next" required><span class="err">Bitte gib einen Namen mit mindestens 2 Zeichen ein.</span></div>
         <fieldset class="field tp-sys" id="tp-f-sys"><legend class="lbl">Videosystem <b class="req" aria-hidden="true">*</b></legend><div class="chips" id="tp-sys-chips"></div><span class="err">Wähl dein Videosystem oder „weiß nicht“.</span></fieldset>
         <div class="tp-chrow">
@@ -57,15 +58,16 @@
         <p class="hp-hint tp-hint" id="tp-form-hint"><span class="dot" aria-hidden="true"></span>Tipp dein Videosystem an. Unsicher? Dann „weiß nicht“.</p>
       </form>
       <div id="tp-done" class="panel tp-done" hidden></div>
+      <button class="btn ghost tp-guest-btn" type="button" id="tp-guest-btn" hidden>Gast eintragen (nicht im Verein) <span class="arr">→</span></button>
     </div>
     <div class="panel tp-who" data-reveal>
       <div class="tp-who-h"><h3 class="h3">Wer kommt</h3><p class="tp-who-n hud" id="tp-who-n" aria-live="polite"></p><button class="tp-mini" type="button" id="tp-reload" aria-label="Liste neu laden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg><span>Neu laden</span></button></div>
       <ul class="tp-list" id="tp-list" aria-label="Eingetragene Piloten"></ul>
       <details class="fold tp-late">
-        <summary>Vor Ort dazugekommen?</summary>
+        <summary>Gast oder Nachzügler vor Ort aufnehmen</summary>
         <div class="fold-in">
           <form id="tp-late-f" class="tp-late-f" novalidate>
-            <p class="mute">Nachzügler ohne Handy hier aufnehmen. Sie stehen dann im Plan dieses Geräts und nach dem Veröffentlichen bei allen.</p>
+            <p class="mute">Für die Organisation: Gäste, die nicht im Verein sind, oder Nachzügler ohne Handy hier aufnehmen. Sie stehen dann im Plan dieses Geräts und nach dem Veröffentlichen bei allen.</p>
             <div class="field"><label for="tp-late-n">Name</label><input id="tp-late-n" maxlength="40" autocomplete="off" required><span class="err">Bitte einen Namen eingeben.</span></div>
             <div class="field"><label for="tp-late-s">Videosystem</label><select id="tp-late-s"></select></div>
             <button class="btn solid" type="submit">In den Plan aufnehmen</button>

@@ -54,7 +54,9 @@
   const MKEY = 'fcs-mitglied', BKEY = 'fcs-bereich';
   const M = FCS.member = { ok: false, key: null };
   const mNorm = c => String(c || '').toUpperCase().replace(/[\s\-_.]/g, '');
-  const fcsCode = s => { const r = String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), c = r.startsWith('FCS') ? r.slice(3) : r; return c.length === 8 ? `FCS-${c.slice(0, 4)}-${c.slice(4)}` : String(s || '').trim().toUpperCase(); };
+  // Codes: FCS-XXXX-XXXX oder einfach ein Wort mit Zahl (Natan 25.10.: „maximal ein Wort oder Name mit einer Zahl“)
+  const fcsCode = s => { const r = String(s || '').toUpperCase().replace(/[^A-Z0-9ÄÖÜ]/g, ''), c = r.startsWith('FCS') ? r.slice(3) : r; return r.startsWith('FCS') && c.length === 8 ? `FCS-${c.slice(0, 4)}-${c.slice(4)}` : r; };
+  const codeOk = c => /^FCS-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(c) || /^[A-ZÄÖÜ0-9]{8,24}$/.test(c);
   const lsJ = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
   const lsS = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); } catch (e) {} };
   const u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
@@ -87,7 +89,7 @@
   // Anmelden mit dem eigenen Mitgliedscode: gilt danach auch im Clip-Studio (Gyroflow, Premium)
   M.unlock = async (input) => {
     const c = fcsCode(input);
-    if (!/^FCS-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(c)) return 'form';
+    if (!codeOk(c)) return 'form';
     const r = await mCheck(c); if (!r.ok) return r.net ? 'net' : 'nein';
     if (r.bis && r.bis < new Date().getFullYear()) return 'alt';
     try { const key = await mDerive(r.k); await mLoad(key); } catch (e) { return 'nein'; }
@@ -107,6 +109,20 @@
     else if (!r.net) lsS(MKEY, null);
     return false;
   })();
+  // Login oben in der Leiste (Natan 28.10.: „wo gebe ich den Code eigentlich ein?“): ein Ort für alle Seiten
+  function loginUI() {
+    const btn = $('[data-login]'); if (!btn) return;
+    const m = (() => { try { return JSON.parse(localStorage.getItem(MKEY) || 'null'); } catch (e) { return null; } })();
+    if (M.ok) { btn.classList.add('on'); $('.nl-t', btn).textContent = (m && m.n ? m.n : 'Mitglied').slice(0, 14); btn.setAttribute('aria-label', 'Angemeldet als Mitglied, Abmelden'); }
+    else btn.setAttribute('aria-label', 'Mitglieder-Login mit deinem Code');
+    const dlg = document.createElement('dialog'); dlg.className = 'ml-dlg'; dlg.setAttribute('aria-label', 'Mitglieder-Login');
+    dlg.innerHTML = `<button class="ml-x" type="button" aria-label="Schließen">×</button>${M.ok ? `<div class="ml-box ml-box-in"><svg class="ml-ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="21" width="28" height="21" rx="4"/><path d="M16 21v-6a8 8 0 0 1 15-4"/><circle cx="24" cy="31" r="3"/></svg><div class="ml-txt"><h3 class="h3">Du bist angemeldet${m && m.n ? ', ' + String(m.n).replace(/[<>&"]/g, '') : ''}</h3><p>Spots, Hallentermine, Abendplan und Gyroflow sind für dich frei, auf allen Seiten und im Clip-Studio.</p></div><div class="btns"><a class="btn solid" href="spots.html">Zur Spot-Karte</a><a class="btn" href="hallenfliegen.html#termine">Hallentermine</a><button class="btn ghost ml-out" type="button">Abmelden</button></div></div>` : `<div data-mitglied-lock="Mitglieder-Login|Gib den Code ein, den du als Mitglied vom Vorstand bekommen hast. Dann siehst du Spots, Hallentermine und den Abendplan und kannst Gyroflow nutzen."></div>`}`;
+    document.body.appendChild(dlg);
+    btn.addEventListener('click', () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); setTimeout(() => { const i = $('input', dlg); if (i) i.focus(); }, 50); });
+    $('.ml-x', dlg).addEventListener('click', () => dlg.close ? dlg.close() : dlg.removeAttribute('open'));
+    dlg.addEventListener('click', e => { if (e.target === dlg && dlg.close) dlg.close(); });
+    const out = $('.ml-out', dlg); if (out) out.addEventListener('click', M.logout);
+  }
   // Sperr-Kasten: <div data-mitglied-lock="Titel|Text"></div>
   function locks() {
     // Inhaltsverzeichnis nur mit den sichtbaren Abschnitten
@@ -118,7 +134,7 @@
       el.innerHTML = `<div class="ml-box">
         <svg class="ml-ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="21" width="28" height="21" rx="4"/><path d="M16 21v-6a8 8 0 0 1 16 0v6"/><circle cx="24" cy="31" r="3"/><path d="M24 34v3"/></svg>
         <div class="ml-txt"><h3 class="h3">${t || 'Nur für Mitglieder'}</h3><p>${x || 'Mit deinem Mitgliedscode siehst du alles.'}</p></div>
-        <form class="ml-form" novalidate><label for="ml-c${i}">Dein Mitgliedscode</label><div class="ml-row"><input id="ml-c${i}" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="FCS-XXXX-XXXX" required><button class="btn amber solid" type="submit">Freischalten</button></div>
+        <form class="ml-form" novalidate><label for="ml-c${i}">Dein Mitgliedscode</label><div class="ml-row"><input id="ml-c${i}" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code vom Vorstand" required><button class="btn amber solid" type="submit">Freischalten</button></div>
         <p class="ml-err" role="alert" hidden></p></form>
         <p class="ml-alt">Noch kein Mitglied? <a href="mitglied.html">Mitglied werden</a>${wa ? ` · Code vergessen? <a href="https://wa.me/${wa}?text=${encodeURIComponent('Hallo, ich bin Mitglied im Flight Club Saar und brauche meinen Mitgliedscode für die Website.')}" target="_blank" rel="noopener">Vorstand fragen</a>` : ''}</p>
       </div>`;
@@ -128,7 +144,7 @@
         btn.disabled = true; const bt = btn.textContent; btn.textContent = 'Prüfe …'; err.hidden = true;
         const res = await M.unlock(inp.value);
         if (res === 'ok') { btn.textContent = 'Freigeschaltet'; location.reload(); return; }
-        err.textContent = { form: 'Dein Code hat die Form FCS-XXXX-XXXX.', net: 'Gerade keine Verbindung, versuch es gleich nochmal.', alt: 'Dieser Code ist abgelaufen. Den neuen Code bekommst du vom Vorstand.' }[res] || 'Dieser Code stimmt nicht. Achte auf die Schreibweise oder frag den Vorstand.';
+        err.textContent = { form: 'Dieser Code ist zu kurz oder enthält Sonderzeichen. Tipp ihn so ein, wie du ihn vom Vorstand bekommen hast.', net: 'Gerade keine Verbindung, versuch es gleich nochmal.', alt: 'Dieser Code ist abgelaufen. Den neuen Code bekommst du vom Vorstand.' }[res] || 'Dieser Code stimmt nicht. Achte auf die Schreibweise oder frag den Vorstand.';
         btn.disabled = false; btn.textContent = bt; err.hidden = false; inp.select();
       });
     });
@@ -140,7 +156,7 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 
