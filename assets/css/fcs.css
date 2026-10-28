@@ -338,3 +338,24 @@ html.is-member .nav-cta{display:none}
 .nav-links a,.nav-cta{white-space:nowrap}
 @media (max-width:1440px){.nav{gap:10px}.nav-links{gap:0}.nav-links a{padding:9px 9px;letter-spacing:.08em;font-size:12px}}
 @media (max-width:1300px){html:not(.is-member) .nav-cta{padding:11px 13px;font-size:12.5px;letter-spacing:.08em}.brand>span small{display:none}}
+
+/* Eröffnungsfilm */
+.film-open,.film-open body{overflow:hidden}
+.film{position:fixed;inset:0;z-index:2147483000;background:#000;display:grid;place-items:center;opacity:1;transition:opacity .6s var(--ease)}
+.film.out{opacity:0;pointer-events:none}
+.film-v{width:100%;height:100%;object-fit:contain;background:#000}
+.film-v::cue{font:600 clamp(15px,2.2vw,26px)/1.35 var(--body);background:rgba(0,0,0,.62);color:#fff}
+.film-shade{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 60%,rgba(4,9,18,.35),rgba(4,9,18,.9));transition:opacity .6s var(--ease);pointer-events:none}
+.film-start{position:absolute;inset:auto 0 0 0;padding:0 max(20px,env(safe-area-inset-left)) clamp(90px,14vh,150px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.film-kick{color:var(--sig);letter-spacing:.24em;text-transform:uppercase;font-size:12px;margin:0}
+.film-h{font:400 clamp(44px,8vw,110px)/.92 var(--big);margin:0;color:#fff;text-shadow:0 0 40px rgba(63,224,255,.35)}
+.film-sub{color:var(--osd);opacity:.85;margin:0 0 8px;max-width:34ch}
+.film-play{font-size:15px;padding:18px 28px}
+.film.on .film-shade,.film.on .film-start{opacity:0;pointer-events:none}
+.film.on .film-start{transform:translateY(20px)}
+.film-bar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px;padding:0 max(18px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+.film-prog{flex:1;height:3px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+.film-prog i{display:block;height:100%;background:var(--sig);transform-origin:0 50%;transform:scaleX(0)}
+.film-skip,.film-snd{border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.45);color:#fff;border-radius:999px;padding:12px 18px;font:600 12px var(--hud);letter-spacing:.18em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.film-skip:hover,.film-snd:hover,.film-skip:focus-visible,.film-snd:focus-visible{background:#fff;color:#000}
+@media (max-width:560px){.film-start{padding-bottom:110px}.film-sub{font-size:15px}}

@@ -156,8 +156,44 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    film(); loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
+  }
+
+
+  /* ---------- Eröffnungsfilm: beim ersten Besuch bis Mitte November, danach über ?film ---------- */
+  function film() {
+    const H = document.documentElement; if (!H.classList.contains('film-on')) return;
+    const V = 'assets/film/';
+    const box = document.createElement('div');
+    box.className = 'film'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Eröffnungsfilm des Flight Club Saar');
+    box.innerHTML = `<video class="film-v" playsinline muted preload="auto" poster="${V}poster.jpg"><source src="${V}eroeffnung.mp4" type="video/mp4"><track kind="captions" src="${V}eroeffnung.vtt" srclang="de" label="Deutsch" default></video>
+      <div class="film-shade"></div>
+      <div class="film-start"><p class="hud film-kick">Flight Club Saar · Die neue Website</p><h2 class="film-h">Die Seite ist offen.</h2><p class="film-sub">Zweieinhalb Minuten, die dir alles zeigen. Mit Ton am schönsten.</p>
+        <button class="btn solid film-play" type="button"><span aria-hidden="true">▶</span> Film ab, mit Ton</button></div>
+      <div class="film-bar"><span class="film-prog"><i></i></span><button class="film-snd" type="button" hidden>Ton an</button><button class="film-skip" type="button">Überspringen ›</button></div>`;
+    document.body.appendChild(box); H.classList.add('film-open');
+    const v = box.querySelector('video'), prog = box.querySelector('.film-prog i'), snd = box.querySelector('.film-snd');
+    const done = () => {
+      try { localStorage.setItem('fcs-film', String(Date.now())); } catch (e) {}
+      box.classList.add('out'); H.classList.remove('film-open', 'film-on');
+      try { v.pause(); } catch (e) {}
+      setTimeout(() => box.remove(), 700);
+      if (/[?&]film/.test(location.search)) history.replaceState(null, '', location.pathname + location.hash);
+      document.removeEventListener('keydown', key);
+    };
+    const key = e => { if (e.key === 'Escape') done(); };
+    document.addEventListener('keydown', key);
+    const play = () => { box.classList.add('on'); v.muted = false; v.currentTime = 0; snd.hidden = true; const p = v.play(); if (p && p.catch) p.catch(() => { v.muted = true; v.play().catch(() => {}); snd.hidden = false; }); };
+    box.querySelector('.film-play').addEventListener('click', play);
+    box.querySelector('.film-skip').addEventListener('click', done);
+    snd.addEventListener('click', () => { v.muted = false; snd.hidden = true; });
+    v.addEventListener('timeupdate', () => { if (v.duration) prog.style.transform = `scaleX(${v.currentTime / v.duration})`; });
+    v.addEventListener('ended', () => { if (box.classList.contains('on')) done(); else { v.currentTime = 0; v.play().catch(() => {}); } });
+    v.addEventListener('click', () => { if (!box.classList.contains('on')) play(); });
+    // stummer Vorgeschmack im Hintergrund, bis jemand auf Play drückt
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    setTimeout(() => box.querySelector('.film-play').focus({ preventScroll: true }), 60);
   }
 
   /* Natives Scrollen (ruckelt nicht). Sprungmarken gleiten mit Abstand zur Leiste oben. */
