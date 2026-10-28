@@ -50,7 +50,7 @@ FCS.data = {
     { n: 'Julian B.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '' },
     { n: 'Alexander K.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
     { n: 'Dimitri S.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
-    { n: '', a: 'Jonny FPV Magic', r: 'Jugend', seit: 2024, stil: 'Aggro Acro · Whoops · Cinematic', ort: 'Riegelsberg', ok: 1 }
+    { n: '', a: 'Jonny FPV Magic', r: 'Jugend', seit: 2024, stil: 'Aggro Acro · Whoops · Cinematic', ok: 1 }
   ],
   // Spots: nur, was der Vorstand freigegeben hat. Neue Spots kommen über das Formular und werden geprüft.
   spots: [
@@ -152,7 +152,7 @@ FCS.data = {
     { a: 'GrobsFPV', n: 'Tom', ort: 'Merzig', seit: 2023, stil: 'Freestyle, Cinematic', yt: 'GrobsFPV', tt: 'grobsfpv', ig: 'grobsfpv', img: 'media/piloten/grobsfpv.webp' },
     { a: 'Orcinus', n: 'Ruben', ort: '', seit: 2020, stil: 'Freestyle, Cinema, Whoops', ig: 'orcinus.fpv', img: 'media/piloten/orcafpv.webp' },
     { a: 'Crystal FPV', n: 'Julian', ort: 'Völklingen', seit: 2023, stil: 'Cinema, Whoop, Freestyle', img: 'media/piloten/crystal-fpv.webp' },
-    { a: 'Jonny FPV Magic', n: '', ort: 'Riegelsberg', seit: 2024, stil: 'Aggro Acro, Whoops, Freestyle, Cinematic' },
+    { a: 'Jonny FPV Magic', n: '', ort: '', seit: 2024, stil: 'Aggro Acro, Whoops, Freestyle, Cinematic' },
     { a: 'Lord FPV', n: 'Waldemar', ort: 'Saarlouis', seit: 2019, stil: 'Race, Freestyle, Long Range', img: 'media/piloten/lord-fpv.webp' },
     { a: 'Kenny FPV', n: 'Kenny', ort: 'Merzig', seit: 2020, stil: 'Freestyle', img: 'media/piloten/kenny-fpv.webp' },
     { a: 'Metty FPV', n: 'Matthias', ort: 'Weiskirchen', seit: 2020, stil: 'Freestyle', img: 'media/piloten/metty-fpv.webp' },

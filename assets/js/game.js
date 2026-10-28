@@ -5,7 +5,7 @@
    Version 3: zehn Level (Tabelle LV), Power-ups (Akku, Schild, Punkte ×2), Tricks per Knopf, Klick oder
    Leertaste (Flip, Spin, Powerloop) mit Trick-Kamera, Wind, kreisende Gates, Turnringe, Gate-Ketten, Nachtflug,
    Rekord- und Platz-Meldungen. Bestenliste unverändert (Felder n|s|g|c|t|d, Prüfsumme über n|s|g|t).
-   Testabkürzung nur mit ?gamedebug in der Adresse (z. B. ?gamedebug=6 startet jede Runde in Level 6).
+   Testabkürzung nur mit ?gamedebug in der Adresse (zum Beispiel ?gamedebug=6 startet jede Runde in Level 6).
    Einbinden: <div data-game="whoop" data-board="#id-der-bestenliste"></div> plus assets/css/game.css und assets/js/game.js.
    Klassisches Skript, Canvas 2D (Pseudo-3D), keine Bibliotheken nötig.
    Globale Variablen: window.FCSGame (mount, instances, Testhilfe end/finish) und window.FCSScores (Bestenliste). */
@@ -19,7 +19,7 @@
   const BAT_T = 90;                                    // Sekunden bis 3.50 V = LAND NOW
   const LOW_V = 3.62;
   const SEG = 1, CF = 1.6;                             // Streckenraster (m), Fliehkraft in Kurven
-  const EASY_AT = 85;                                  // Streckenmeter: einfacher Anfang (ca. 10 s)
+  const EASY_AT = 85;                                  // Streckenmeter: einfacher Anfang (etwa 10 s)
   const FOG = '#050b17', FOGC = [5, 11, 23];
   const SIG = [63, 224, 255], AMB = [255, 176, 32], RED = [255, 75, 92], WHT = [234, 244, 255];
   const BLU = [90, 162, 255], WOOD = [196, 150, 98], HOT = [255, 255, 255], VIO = [196, 150, 255], ALU = [200, 214, 234];
@@ -35,7 +35,7 @@
 
   /* Level: ab Streckenmeter „at“. Level 1 bis 3 wie in Version 2, ab Level 4 neue Zutaten.
      st: Gerade zwischen Kurven (m) · km: Kurvenstärke · ss: Anteil S-Kurven · obs: Anteil Hindernisse nach einem Gate
-     mix: welche Hindernisse · mv/mv2/mv3: Anteil bewegter Gates, davon senkrecht bzw. kreisend · sc: Gate-Größe
+     mix: welche Hindernisse · mv/mv2/mv3: Anteil bewegter Gates, davon senkrecht beziehungsweise kreisend · sc: Gate-Größe
      vmax: Höchsttempo (m/s) · wind: Seitenwind (m Versatz) · chain: Anteil Gate-Ketten · dy: Höhenwechsel · bat: Sekunden pro Akku */
   const MIX3 = { ladder: 0.3, hoop: 0.25, dive: 0.2, over: 0.13, under: 0.12 };
   const LV = [null,
@@ -209,7 +209,7 @@
     return fetch(url + (url.indexOf('?') < 0 ? '?' : '&') + q, { method: 'GET', cache: 'no-store', credentials: 'omit', signal: ctl ? ctl.signal : undefined })
       .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
       .then((txt) => {
-        let j = null; try { j = JSON.parse(txt); } catch (e) { /* z. B. „Accepted“ */ }
+        let j = null; try { j = JSON.parse(txt); } catch (e) { /* zum Beispiel „Accepted“ */ }
         if (!j || j.ok !== true || !Array.isArray(j.list)) { const err = new Error('nicht angenommen'); err.rejected = true; throw err; }
         return j.list;
       })
@@ -1017,7 +1017,7 @@
     const shape = (d, dz, mx) => { const a = Math.abs(d); if (a <= dz) return 0; let u = Math.min(1, (a - dz) / (mx - dz)); u = 0.6 * u + 0.4 * u * u * u; return d < 0 ? -u : u; };
     function steerTilt(dt) {
       if (!tilt.have) return;
-      const al = 1 - Math.exp(-dt / 0.06);                     // Glättung ca. 60 ms
+      const al = 1 - Math.exp(-dt / 0.06);                     // Glättung etwa 60 ms
       tilt.s[0] += (tilt.raw[0] - tilt.s[0]) * al;
       tilt.s[1] += (tilt.raw[1] - tilt.s[1]) * al;
       if (state === 'count') { tilt.n0[0] = tilt.s[0]; tilt.n0[1] = tilt.s[1]; }   // Haltung beim Herunterzählen = Mitte
@@ -2052,7 +2052,7 @@
       o1.start(); o2.start(); o3.start(); ns.start();
       Object.assign(au, { ac, out, master, lp, o1, o2, o3, fx, nb });
     }
-    // AudioContext nur nach einem Tipp oder Klick anlegen bzw. wecken (Autoplay-Regeln, vor allem iOS)
+    // AudioContext nur nach einem Tipp oder Klick anlegen beziehungsweise wecken (Autoplay-Regeln, vor allem iOS)
     function ensureAudio() {
       if (au.ac) { if (au.on && au.ac.state !== 'running') au.ac.resume().catch(() => {}); return true; }
       const AC = window.AudioContext || window.webkitAudioContext;

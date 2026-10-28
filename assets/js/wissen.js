@@ -692,11 +692,11 @@ function spWires(m, r) {
     { id: 'rx_rx', a: 'f_ra', b: 'r_b', c: 's', x2: true, t: 'FC TX zu Empfänger RX', p: cf ? 'FC TX2 → Empfänger CH2 (RX)' : 'FC TX2 → Empfänger RX', x: 'Der Rückkanal: Der FC schickt Telemetrie zur Funke, zum Beispiel die Akkuspannung. Auch hier gilt TX an RX.', e: 'Leitung vergessen: Steuern klappt oft trotzdem, aber die Telemetrie fehlt. Bei ExpressLRS gehen ohne sie auch keine Updates über den FC.' }
   ];
   if (!dig) L.push(
-    { id: 'cam_5v', a: 'f_c5v', b: 'c5v', c: 'p', t: 'Strom für die Kamera', p: 'FC 5V → Kamera 5V', x: 'Analoge FPV-Kameras laufen an 5 V. Viele vertragen mehr (steht dann als Bereich auf der Kamera, z. B. 5 bis 40 V), dann gehen auch 9 V oder VBAT.', e: 'Eine Kamera, die nur 5 V verträgt, an VBAT gelötet: Sie brennt beim ersten Einstecken durch. 5 V verträgt jede gängige analoge FPV-Kamera.' },
+    { id: 'cam_5v', a: 'f_c5v', b: 'c5v', c: 'p', t: 'Strom für die Kamera', p: 'FC 5V → Kamera 5V', x: 'Analoge FPV-Kameras laufen an 5 V. Viele vertragen mehr (steht dann als Bereich auf der Kamera, zum Beispiel 5 bis 40 V), dann gehen auch 9 V oder VBAT.', e: 'Eine Kamera, die nur 5 V verträgt, an VBAT gelötet: Sie brennt beim ersten Einstecken durch. 5 V verträgt jede gängige analoge FPV-Kamera.' },
     { id: 'cam_gnd', a: 'f_cgnd', b: 'cgnd', c: 'n', t: 'Masse der Kamera', p: 'FC GND → Kamera GND', x: 'Die Masse für Strom und Videosignal.', e: 'Schlecht gelötete Masse: Streifen und Flackern im Bild.' },
     { id: 'cam_vid', a: 'cvid', b: 'f_cvid', c: 'v', t: 'Kamerabild zum FC', p: 'Kamera VIDEO → FC CAM', x: 'Das analoge Bild geht zuerst in den FC. Dort blendet der OSD-Chip Akkuspannung, Flugzeit und Warnungen ein.', e: 'Video an das VTX-Pad statt an CAM gelötet: Dann fehlt das OSD oder das Bild bleibt schwarz.' },
     { id: 'vtx_vid', a: 'f_va', b: 'v_a', c: 'v', t: 'Bild mit OSD zum Videosender', p: 'FC VTX → Videosender VIDEO', x: 'Vom FC geht das Bild samt Einblendungen in den Videosender und von dort per Funk in deine Brille.', e: 'Videoleitung lang und direkt neben den Motorkabeln: Störungen im Bild. Kurz halten und Abstand zu den Phasen lassen.' },
-    { id: 'vtx_pwr', a: 'f_vpwr', b: 'v_pwr', c: 'p', t: 'Strom für den Videosender', p: 'FC VBAT oder 9-V-Pad → Videosender VIN', x: 'Steht beim Sender 2S bis 6S (z. B. 7 bis 26 V), kommt er direkt an VBAT. Steht dort 5 V, gehört er an ein 5-V-Pad, bei 7 bis 13 V an ein 9-V- oder 10-V-Pad.', e: 'Videosender am falschen Spannungspad: Ein 5-V-Sender an VBAT brennt durch, ein Sender, der mehr braucht, startet an 5 V nicht sauber.' },
+    { id: 'vtx_pwr', a: 'f_vpwr', b: 'v_pwr', c: 'p', t: 'Strom für den Videosender', p: 'FC VBAT oder 9-V-Pad → Videosender VIN', x: 'Steht beim Sender 2S bis 6S (zum Beispiel 7 bis 26 V), kommt er direkt an VBAT. Steht dort 5 V, gehört er an ein 5-V-Pad, bei 7 bis 13 V an ein 9-V- oder 10-V-Pad.', e: 'Videosender am falschen Spannungspad: Ein 5-V-Sender an VBAT brennt durch, ein Sender, der mehr braucht, startet an 5 V nicht sauber.' },
     { id: 'vtx_gnd', a: 'f_vgnd', b: 'v_gnd', c: 'n', t: 'Masse des Videosenders', p: 'FC GND → Videosender GND', x: 'Gemeinsame Masse mit FC und Kamera.', e: 'Masse an einem weit entfernten Pad: Störstreifen im Bild. Masse dicht neben der Videoleitung führen.' },
     { id: 'vtx_sa', a: 'v_b', b: 'f_vb', c: 's', t: 'SmartAudio oder Tramp', p: 'Videosender SA → FC TX1', x: 'Eine einzelne Leitung, über die der FC Kanal und Leistung des Senders einstellt, direkt im OSD-Menü. In Betaflight im Ports-Tab bei UART1 „VTX (TBS SmartAudio)“ oder „VTX (IRC Tramp)“ wählen.', e: 'An ein RX-Pad gelötet: Dann reagiert der Sender nicht. SmartAudio und Tramp gehören an TX.' }
   );
@@ -1067,7 +1067,7 @@ function kanaele() {
     const zone = el('g', {}, svg);
     el('rect', { x: X(DE_LO), y: 26, width: X(DE_HI) - X(DE_LO), height: yAxis - 26, rx: 6, fill: 'rgba(62,224,138,.08)', stroke: 'rgba(62,224,138,.45)', 'stroke-dasharray': '4 5' }, zone);
     const zt = el('text', { x: (X(DE_LO) + X(DE_HI)) / 2, y: 14, 'text-anchor': 'middle', 'font-size': narrow ? 10 : 11.5, 'font-weight': 600, fill: '#3ee08a', 'letter-spacing': '.08em' }, zone);
-    zt.textContent = narrow ? 'DE ERLAUBT · 25 mW' : 'IN DE ERLAUBT · 5725 BIS 5875 MHz · 25 mW EIRP';
+    zt.textContent = narrow ? 'IN DEUTSCHLAND ERLAUBT' : 'IN DEUTSCHLAND ERLAUBT · 5725 BIS 5875 MHz · 25 mW';
     // Achse
     el('line', { x1: padL, x2: w - padR, y1: yAxis, y2: yAxis, stroke: 'rgba(158,196,255,.4)' }, svg);
     for (let f = 5640; f <= 5960; f += 20) {

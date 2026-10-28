@@ -114,7 +114,7 @@
         ${head('Code vergessen?', `Schreib dem Vorstand kurz, dann löscht er ${opt.acc} für dich.`)}
         <div class="lv-g"><label class="lv-l" for="${k}-fn">Dein Name</label><input class="lv-in" id="${k}-fn" name="name" required maxlength="40" autocomplete="nickname" value="${lvEsc(lvName())}"></div>
         <div class="lv-g"><label class="lv-l" for="${k}-fk">Wie erreichen wir dich? <span class="lv-opt">freiwillig</span></label><input class="lv-in" id="${k}-fk" name="kontakt" maxlength="80" autocomplete="email" placeholder="E-Mail oder Handynummer"></div>
-        <div class="lv-g"><label class="lv-l" for="${k}-ft">Nachricht <span class="lv-opt">freiwillig</span></label><textarea class="lv-in" id="${k}-ft" name="txt" rows="2" maxlength="500" placeholder="z. B. Das ist von mir, bitte löschen."></textarea></div>
+        <div class="lv-g"><label class="lv-l" for="${k}-ft">Nachricht <span class="lv-opt">freiwillig</span></label><textarea class="lv-in" id="${k}-ft" name="txt" rows="2" maxlength="500" placeholder="zum Beispiel Das ist von mir, bitte löschen."></textarea></div>
         <p class="lv-msg" role="alert"></p>
         <div class="lv-row lv-row-b"><button class="lv-go" type="submit">An den Vorstand senden</button><button class="lv-back" type="button" data-lv-x>Abbrechen</button></div>
       </form>`;
@@ -1093,7 +1093,7 @@
     if (!M.map) makeMap(v);
     else {
       if (M.kind !== v) setLayer(v); else if (M.failed) retry();
-      // Behälter war versteckt: Größe neu messen, Ausschnitt bleibt (Straße ↔ Satellit) bzw. kommt vom Radar
+      // Behälter war versteckt: Größe neu messen, Ausschnitt bleibt (Straße ↔ Satellit) beziehungsweise kommt vom Radar
       requestAnimationFrame(() => { M.map.invalidateSize({ pan: false }); if (was === 'radar') radarToMap(); });
     }
   }

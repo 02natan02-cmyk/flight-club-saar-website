@@ -100,7 +100,7 @@
       const min = +a.value, ges = +g.value, lade = $('input[name=lade]:checked').value === '1';
       $('#a-min-v').textContent = String(min).replace('.', ','); $('#a-ges-v').textContent = ges;
       const fluege = Math.ceil(ges / min);
-      // Mit Nachladen: grob ein Drittel der Flüge aus nachgeladenen Akkus (1S lädt in ca. 20 bis 30 Minuten)
+      // Mit Nachladen: grob ein Drittel der Flüge aus nachgeladenen Akkus (1S lädt in etwa 20 bis 30 Minuten)
       const n = lade ? Math.min(fluege, Math.max(4, Math.ceil(fluege * 0.65))) : fluege;
       $('#a-n').textContent = n;
       $('#a-txt').textContent = lade ? `Für ${fluege} Flüge reichen dir mit Nachladen vor Ort etwa ${n} Akkus.` : `Für ${fluege} Flüge ohne Nachladen brauchst du ${n} Akkus.`;

@@ -36,7 +36,7 @@ function analyse(pcm, sr) {
     for (let i = s; i < e; i += 4) { const v = pcm[i]; if (v < mn) mn = v; if (v > mx) mx = v; }
     peaks[c * 2] = mn; peaks[c * 2 + 1] = mx;
   }
-  // Auf ca. 11 kHz herunterrechnen (Mittelwert als einfacher Tiefpass)
+  // Auf etwa 11 kHz herunterrechnen (Mittelwert als einfacher Tiefpass)
   const k = Math.max(1, Math.round(sr / 11025)), fs = sr / k, n = Math.floor(pcm.length / k);
   const x = new Float32Array(n);
   for (let i = 0; i < n; i++) { let s = 0; for (let j = 0; j < k; j++) s += pcm[i * k + j]; x[i] = s / k; }
@@ -61,7 +61,7 @@ function analyse(pcm, sr) {
     const t = prev; prev = cur; cur = t;
   }
   // Hüllkurven: gleitenden Mittelwert abziehen, gleichrichten, normieren.
-  // Der Bass (Tiefpass bis ca. 160 Hz: Kick und Bass) zählt dreimal so stark, damit die Schnitte auf den Bässen sitzen.
+  // Der Bass (Tiefpass bis etwa 160 Hz: Kick und Bass) zählt dreimal so stark, damit die Schnitte auf den Bässen sitzen.
   const W = Math.max(3, Math.round(.4 / hop));
   const norm = src => {
     const out = new Float32Array(frames); let acc = 0; const q = [];

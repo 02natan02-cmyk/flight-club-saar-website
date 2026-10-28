@@ -148,7 +148,7 @@
   .bk-stage{height:42svh;top:58px}
   .bk-bar{grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:6px;padding:8px 10px}
   .bk-bar .bk-m:nth-child(3),.bk-bar .bk-go{display:none}
-  .bk-check{min-height:40px;padding:0 10px;font-size:0;gap:0}
+  .bk-check{min-height:44px;padding:4px 10px;font-size:11px;gap:6px;white-space:normal;max-width:118px;line-height:1.15;text-align:left}
   .bk-check i{width:14px;height:14px}
   .bk-panel button{scroll-margin-bottom:90px}
   .bk-klassen{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}

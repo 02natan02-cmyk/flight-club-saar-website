@@ -228,20 +228,20 @@
     { n: 'GoPro HERO13 Black', t: 'Action-Cam', g: 159, gt: '159 g mit Akku', s: '5.3K60, 4K120, 10 Bit, Log, bis 120 Mbit/s, HyperSmooth 6.0', gy: 'ja', k: ['fuenf', 'lr'] },
     { n: 'DJI Osmo Action 6', t: 'Action-Cam', g: 149, gt: '149 g', s: '4K bis 120 fps, auch quadratisch 3840 × 3840, 1/1,1-Zoll-Sensor, Blende f/2,0 bis f/4,0, D-Log M in 10 Bit', gy: 'ja', k: ['fuenf', 'lr'] },
     { n: 'DJI Osmo Action 5 Pro', t: 'Action-Cam', g: 146, gt: '146 g', s: '4K120, 1/1,3-Zoll-Sensor, 155°, RockSteady 3.0+', gy: 'ja', k: ['fuenf', 'lr'] },
-    { n: 'GoPro Mission 1 Pro', t: 'Action-Cam', g: 207, gt: 'ca. 207 g', s: 'Seit Mai 2026: 1-Zoll-Sensor mit 50 Megapixeln, 8K60, 4K240. Die Mission 1 ohne Pro schafft 8K30 und 4K120. Gyroflow listet keine der beiden Mission-Kameras, also nutz die Stabilisierung in der Kamera.', gy: 'nein', k: ['fuenf', 'lr'] },
+    { n: 'GoPro Mission 1 Pro', t: 'Action-Cam', g: 207, gt: 'etwa 207 g', s: 'Seit Mai 2026: 1-Zoll-Sensor mit 50 Megapixeln, 8K60, 4K240. Die Mission 1 ohne Pro schafft 8K30 und 4K120. Gyroflow listet keine der beiden Mission-Kameras, also nutz die Stabilisierung in der Kamera.', gy: 'nein', k: ['fuenf', 'lr'] },
     { n: 'Naked GoPro (Beispiel HERO9)', t: 'Naked', g: 49, gt: '49 g im Flywoo-Case', s: 'Bild wie das Original, Strom vom Kopter (2S bis 6S), nicht wasserdicht', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
     { n: 'RunCam Thumb 2', t: 'Mini-HD', g: 27, gt: '27 g', s: '4K60, 1080p120, 5 V. Für Gyroflow: .gcsv-Datei neben dem Video, Synchronisation nötig.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
     { n: 'Insta360 GO 3S', t: 'Mini-HD', g: 39, gt: '39 g Kamera allein', s: '4K, FlowState-Stabilisierung. Gyroflow braucht keine Synchronisation.', gy: 'ja', k: ['cine', 'fuenf'] },
     { n: 'Insta360 GO Ultra', t: 'Mini-HD', g: 53, gt: '53 g', s: '4K60, 1/1,28-Zoll-Sensor, 156°, bis 180 Mbit/s. Gyroflow liest ihre Bewegungsdaten, in der Kameratabelle der Doku steht sie noch nicht.', gy: 'ja', k: ['cine', 'fuenf'] },
-    { n: 'Caddx Walnut', t: 'Mini-HD', g: 60, gt: 'ca. 60 g', s: '4K60, 1/2,3-Zoll-Sensor, Strom 2S bis 6S, IP64. Für Gyroflow: .gcsv-Datei, Synchronisation nötig, interne Verzerrungskorrektur aus.', gy: 'ja', k: ['fuenf', 'lr'] },
-    { n: 'DJI O4 Air Unit', t: 'Digital', g: 8.2, gt: 'ca. 8,2 g mit Kamera', s: '4K60, 1080p120, 1/2-Zoll-Sensor, 117,6°, bis 100 Mbit/s, 23 GB intern', gy: 'ja', k: ['whoop', 'cine', 'fuenf'] },
-    { n: 'DJI O4 Air Unit Pro', t: 'Digital', g: 32, gt: 'ca. 32 g mit Kamera', s: '4K120, 1/1,3-Zoll-Sensor, 155°, D-Log M, bis 130 Mbit/s. Bei Einheiten von 2026 mit dem Gyro-Chip 1469D meldet das Gyro unter Vibration falsche Bewegung: dann die Optische Korrektur in Gyroflow nutzen.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
-    { n: 'Walksnail Avatar Moonlight', t: 'Digital', g: 38.5, gt: 'ca. 38,5 g ohne Antenne', s: '4K60, 1080p100, bis 150 Mbit/s. Für Gyroflow: eigene Gyro-Datei, Synchronisation von Hand, eingebaute Stabilisierung aus.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
+    { n: 'Caddx Walnut', t: 'Mini-HD', g: 60, gt: 'etwa 60 g', s: '4K60, 1/2,3-Zoll-Sensor, Strom 2S bis 6S, IP64. Für Gyroflow: .gcsv-Datei, Synchronisation nötig, interne Verzerrungskorrektur aus.', gy: 'ja', k: ['fuenf', 'lr'] },
+    { n: 'DJI O4 Air Unit', t: 'Digital', g: 8.2, gt: 'etwa 8,2 g mit Kamera', s: '4K60, 1080p120, 1/2-Zoll-Sensor, 117,6°, bis 100 Mbit/s, 23 GB intern', gy: 'ja', k: ['whoop', 'cine', 'fuenf'] },
+    { n: 'DJI O4 Air Unit Pro', t: 'Digital', g: 32, gt: 'etwa 32 g mit Kamera', s: '4K120, 1/1,3-Zoll-Sensor, 155°, D-Log M, bis 130 Mbit/s. Bei Einheiten von 2026 mit dem Gyro-Chip 1469D meldet das Gyro unter Vibration falsche Bewegung: dann die Optische Korrektur in Gyroflow nutzen.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
+    { n: 'Walksnail Avatar Moonlight', t: 'Digital', g: 38.5, gt: 'etwa 38,5 g ohne Antenne', s: '4K60, 1080p100, bis 150 Mbit/s. Für Gyroflow: eigene Gyro-Datei, Synchronisation von Hand, eingebaute Stabilisierung aus.', gy: 'ja', k: ['cine', 'fuenf', 'lr'] },
     { n: 'HDZero', t: 'Digital', g: null, gt: 'Aufnahme in der Brille', gs: 'in der Brille', s: 'DVR in der Brille, gut zum Auswerten. Für Filme eine zusätzliche HD-Kamera mitnehmen.', gy: 'nein', k: ['whoop', 'cine', 'fuenf'] },
     { n: 'Insta360 X6', t: '360 Grad', g: 196, gt: '196 g', s: 'Seit August 2026: 8K50 rundum, Einzellinse bis 5K60, I-Log', gy: '360', k: ['fuenf', 'lr'] },
     { n: 'Insta360 X5', t: '360 Grad', g: 201, gt: '201 g', s: '8K rundum, austauschbare Linsen', gy: '360', k: ['fuenf', 'lr'] },
     { n: 'GoPro Max 2', t: '360 Grad', g: 195, gt: '195 g', s: 'Seit September 2025: 8K30 rundum, 5.6K60, austauschbare Linsen. Keine ND-Filter von GoPro.', gy: '360', k: ['fuenf', 'lr'] },
-    { n: 'DJI Avata 360', t: '360-Grad-Drohne', g: null, gt: 'ca. 455 g, komplette Drohne', gs: 'ganze Drohne', s: 'Seit März 2026: 8K60 rundum, Einzellinse 4K60, Reframing in DJI Fly und DJI Studio. Gyroflow liest nur die Bewegungsdaten und spielt das Video nicht ab.', gy: '360', k: [] }
+    { n: 'DJI Avata 360', t: '360-Grad-Drohne', g: null, gt: 'etwa 455 g, komplette Drohne', gs: 'ganze Drohne', s: 'Seit März 2026: 8K60 rundum, Einzellinse 4K60, Reframing in DJI Fly und DJI Studio. Gyroflow liest nur die Bewegungsdaten und spielt das Video nicht ab.', gy: '360', k: [] }
   ];
   function shelf() {
     const list = $('#fm-shelf'); if (!list) return;
@@ -972,7 +972,7 @@
      12 CHECKLISTE (gespeichert im Browser)
      ========================================================= */
   const CK = [
-    ['Kamera', ['Linse und ND-Filter sauber geputzt', 'ND-Filter passend zum Licht aufgesteckt', 'Bildrate und Shutter eingestellt, z. B. 25p mit 1/50 oder 50p mit 1/100', 'ISO fest oder begrenzt, Weißabgleich fest', 'Profil gewählt (Log oder Standard), Bitrate auf hoch', 'Stabilisierung aus, wenn Gyroflow geplant ist (bei DJI Pflicht)', 'Speicherkarte leer, schnell genug und formatiert', 'Kamera-Akku voll, Ersatz dabei', 'Kamera fest montiert, Halter und Dämpfer geprüft']],
+    ['Kamera', ['Linse und ND-Filter sauber geputzt', 'ND-Filter passend zum Licht aufgesteckt', 'Bildrate und Shutter eingestellt, zum Beispiel 25p mit 1/50 oder 50p mit 1/100', 'ISO fest oder begrenzt, Weißabgleich fest', 'Profil gewählt (Log oder Standard), Bitrate auf hoch', 'Stabilisierung aus, wenn Gyroflow geplant ist (bei DJI Pflicht)', 'Speicherkarte leer, schnell genug und formatiert', 'Kamera-Akku voll, Ersatz dabei', 'Kamera fest montiert, Halter und Dämpfer geprüft']],
     ['Kopter', ['Propeller ohne Macken, sonst Vibrationen und Jello', 'Uptilt passt zur geplanten Geschwindigkeit', 'Blackbox an, falls sie die Gyro-Quelle ist', 'Flugakkus geladen, Reihenfolge für die Takes geplant']],
     ['Spot und Regeln', ['Fliegen hier erlaubt, Eigentümer gefragt', 'Keine Menschenansammlungen im Flugbereich, Abstand zu Unbeteiligten', 'Spotter dabei, wenn du mit Brille fliegst', 'Wetter, Wind und Sonnenstand geprüft']],
     ['Aufnahme', ['Linie geplant: Anfang, Höhepunkt, Ende', 'Probeflug gemacht und Aufnahme kurz geprüft', 'Aufnahme läuft wirklich (roter Punkt)']]
@@ -1173,7 +1173,7 @@
     const st = auto(ctrl, null, 0, addHint(ctrl, 'Begriff eintippen'));
     if (!RM) {
       const iv = setInterval(() => {
-        if (!st.on || document.activeElement === input) { input.placeholder = 'z. B. Shutter, LUT, Gyro'; if (!st.on) clearInterval(iv); return; }
+        if (!st.on || document.activeElement === input) { input.placeholder = 'zum Beispiel Shutter, LUT, Gyro'; if (!st.on) clearInterval(iv); return; }
         const word = words[w]; ch += dir;
         if (ch > word.length + 6) { dir = -1; ch = word.length; } else if (ch < 0) { dir = 1; ch = 0; w = (w + 1) % words.length; }
         input.placeholder = word.slice(0, clamp(ch, 0, word.length)) + (ch <= word.length ? '|' : '');

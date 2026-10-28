@@ -247,7 +247,7 @@
     let j = {}; try { j = await res.json(); } catch (e) {}
     return { ok: res.ok && String(j.success) !== 'false', j };
   };
-  // Kurze Nachricht an den Vorstand ohne sichtbares Formular (z. B. „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
+  // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
   FCS.notify = async (subject, fields = {}) => {
     const mail = (D.verein || {}).formMail || 'info@falcon-eye.de';
     const body = Object.assign({ _subject: subject, _template: 'table', _captcha: 'false', Seite: location.href }, fields);

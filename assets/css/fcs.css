@@ -281,3 +281,5 @@ details.fold>.fold-in{padding:0 22px 22px}
 .only-touch{display:none}
 @media (pointer:coarse){.only-touch{display:inline}.only-fine{display:none}
  .toc a,.toc button{min-height:44px;display:inline-flex;align-items:center}}
+@media (max-width:620px){.nav-cta{min-height:42px;display:inline-flex;align-items:center}}
+.foot a,.menu-foot a{display:inline-flex;align-items:center;min-height:32px}

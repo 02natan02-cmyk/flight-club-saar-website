@@ -27,7 +27,7 @@
                                                                  https://www.firstquadcopter.com/news/walksnail-avatar-range-hack-and-fcc-unlock/ (CE: Kanäle 1 bis 3 und 8),
                                                                  https://blog.unmanned.tech/racing-with-digital-walksnail-avatars-nano-v3-vtx-review/ (Race-Modus)
      · Frei nutzbar ohne Lizenz: 5725 bis 5875 MHz mit 25 mW EIRP (ERC/REC 70-03, Anhang 1, nicht spezifische Funkanwendungen
-       geringer Reichweite; z. B. https://www.mca.org.mt/sites/default/files/Schedule%2004%20-%20Non-specific%20SRDs.pdf).
+       geringer Reichweite; zum Beispiel https://www.mca.org.mt/sites/default/files/Schedule%2004%20-%20Non-specific%20SRDs.pdf).
        Ein Kanal gilt als frei nutzbar, wenn seine Mittenfrequenz in diesem Bereich liegt (Analog also R3 bis R6, wie im Verein üblich).
 
      Mindestabstand zweier Kanäle (Mitte zu Mitte):
@@ -151,7 +151,7 @@
     }
 
     /* Durchgänge: jeder kommt gleich oft dran (wer am wenigsten geflogen ist und am längsten wartet, zuerst),
-       im selben Durchgang nur Kanäle, die sich vertragen. keep = schon festgelegte Durchgänge (z. B. bereits geflogen). */
+       im selben Durchgang nur Kanäle, die sich vertragen. keep = schon festgelegte Durchgänge (zum Beispiel bereits geflogen). */
     function heats(pilots, chOf, k, nH, keep = []) {
       const fl = {}, last = {}, out = [];
       pilots.forEach(p => { fl[p.key] = 0; last[p.key] = -1e9; });
@@ -409,7 +409,7 @@
   const ownReg = () => { const m = FCS.board ? FCS.board.mine() : {}; const r = regsOf(T.d).find(x => m[x.id] && m[x.id].pw && String(m[x.id].b || '') === 'termin:' + T.d); return r ? { r, pw: m[r.id].pw } : null; };
 
   /* ---------- Farben je Frequenz ---------- */
-  // Kanäle auf (fast) derselben Frequenz (unter 6 MHz Abstand) bilden einen Platz im Band, z. B. Analog R4 (5769) und DJI CH1 (5768,5)
+  // Kanäle auf (fast) derselben Frequenz (unter 6 MHz Abstand) bilden einen Platz im Band, zum Beispiel Analog R4 (5769) und DJI CH1 (5768,5)
   function groups(pl = T.plan) {
     const m = chMap(pl), items = [];
     present(pl).forEach(p => { const c = m[p.key]; if (c) items.push({ p, c }); });

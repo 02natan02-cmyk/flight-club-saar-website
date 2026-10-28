@@ -32,7 +32,7 @@
       const raw = i.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
       i.value = raw.replace(/(.{4})/g, '$1 ').trim();
       const de = raw.startsWith('DE'), len = de ? 22 : 15, good = raw.length >= 15 && FCS.checks.iban(raw);
-      ok.textContent = !raw ? '' : good ? '✓ IBAN geprüft' : raw.length < len ? `${raw.length} von ${de ? 22 : 'mind. 15'} Zeichen` : 'Prüfziffer passt nicht. Bitte noch einmal vergleichen.';
+      ok.textContent = !raw ? '' : good ? '✓ IBAN geprüft' : raw.length < len ? `${raw.length} von ${de ? 22 : 'mindestens 15'} Zeichen` : 'Prüfziffer passt nicht. Bitte noch einmal vergleichen.';
       ok.className = 'iban-ok' + (good ? ' good' : raw.length >= len ? ' warn' : '');
       if (good) i.closest('.field').classList.remove('bad');
     });

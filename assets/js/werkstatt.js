@@ -699,7 +699,7 @@
   /* ---------- Demo: Modi ---------- */
   DEMOS.modes = (() => {
     let p, rows, msg, did = false, turtleBeforeArm = false;
-    const ON = 91.7, OFF = 8.3; // Position der Markierung in Prozent (1000 bzw. 2000 auf der Skala 900 bis 2100)
+    const ON = 91.7, OFF = 8.3; // Position der Markierung in Prozent (1000 beziehungsweise 2000 auf der Skala 900 bis 2100)
     function setRow(li, on) {
       const sw = $('.ws-sw', li); sw.setAttribute('aria-checked', on);
       li.classList.toggle('on', on);

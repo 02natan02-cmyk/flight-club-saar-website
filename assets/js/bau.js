@@ -124,7 +124,8 @@ function checks(st = B) {
     if (m) { const [lo, hi] = range(m.empfohlen_s); if (lo && (c < lo || c > hi)) add('warn', `Motor ist für ${lo === hi ? lo : lo + '–' + hi}S gedacht`, `Mit ${c}S drehen die Motoren ${c > hi ? 'zu schnell und werden heiß' : 'zu langsam, die Drohne wirkt müde'}.`); }
     if (v) {
       const [vlo, vhi] = range(v.eingang_v); const vmax = c * 4.2, vmin = c * 3.5;
-      if (vlo && vhi && v.typ === 'digital' && (vmax > vhi)) add('warn', `${esc(v.name)} nicht direkt an den Akku`, `Voll geladen hat dein Akku ${de(vmax, 1)} V, das Videosystem verträgt bis ${de(vhi, 1)} V. Über den Spannungsregler des Flugcontrollers anschließen.`);
+      const dro = b && (layoutFor(b) || {}).rollen && layoutFor(b).rollen.digital, viaReg = dro && (dro.buchse || (dro.pads && dro.pads.Plus));
+      if (vlo && vhi && v.typ === 'digital' && (vmax > vhi)) { if (viaReg) add('ok', `${esc(v.name)} über den Spannungsregler`, `Voll geladen hat dein Akku ${de(vmax, 1)} V, das Videosystem verträgt bis ${de(vhi, 1)} V. Es bekommt seinen Strom deshalb vom 9-V-Ausgang der Platine${/jumper|lötbrücke/i.test(dro.text || '') ? '. Die Lötbrücke für die Spannung steht im Lötplan' : ''}.`); else add('warn', `${esc(v.name)} nicht direkt an den Akku`, `Voll geladen hat dein Akku ${de(vmax, 1)} V, das Videosystem verträgt bis ${de(vhi, 1)} V. Über den Spannungsregler des Flugcontrollers anschließen.`); }
       if (vlo && vmax < vlo) add('bad', `${esc(v.name)} bekommt zu wenig Spannung`, `Braucht mindestens ${de(vlo, 1)} V, dein ${c}S-Akku liefert höchstens ${de(vmax, 1)} V.`);
       else if (vlo && vmin < vlo && c >= 2) add('warn', `${esc(v.name)} wird gegen Ende knapp`, `Unter ${de(vlo, 1)} V kann das Bild ausfallen. Lieber einen Akku mit mehr Zellen.`);
     }
@@ -415,7 +416,7 @@ function renderBody() {
       if (k === 'kamera' && (!P(B.video) || P(B.video).typ === 'digital')) continue;
       const L = ex.filter(p => re.test((p.typ || '') + ' ' + (p.name || '')));
       if (!L.length) continue;
-      h += `<h4 class="bk-h4">${t}</h4><div class="bk-opts">${L.map(p => { const on = B[k] === p.id; return `<button type="button" class="bk-opt ${on ? 'on' : ''} f-ok" data-extra="${k}" data-id="${esc(p.id)}" aria-pressed="${on}"><span class="bk-opt-ic" aria-hidden="true">${icon(k, p)}</span><span class="bk-opt-t"><b>${esc(nameOf(p))}</b><small>${specLine('extra', p)}${p.anschluss ? ' · ' + esc(Array.isArray(p.anschluss) ? p.anschluss.join(', ') : p.anschluss) : ''}</small></span><span class="bk-fit"><i></i>${on ? 'drin' : 'dazu'}</span></button>`; }).join('')}</div>`;
+      h += `<h4 class="bk-h4">${t}</h4><div class="bk-opts">${L.map(p => { const on = B[k] === p.id; return `<button type="button" class="bk-opt ${on ? 'on' : ''} f-ok" data-extra="${k}" data-id="${esc(p.id)}" aria-pressed="${on}"><span class="bk-opt-ic" aria-hidden="true">${icon(k, p)}</span><span class="bk-opt-t"><b>${esc(nameOf(p))}</b><small>${specLine('extra', p)}${p.anschluss ? ' · ' + esc(Array.isArray(p.anschluss) ? p.anschluss.join(', ') : p.anschluss) : ''}</small></span><span class="bk-fit"><i></i>${on ? 'Eingebaut' : 'Hinzufügen'}</span></button>`; }).join('')}</div>`;
     }
   } else if (s.id === 'loeten') {
     const plan = wiring();
@@ -432,7 +433,7 @@ function renderBody() {
     h = `<h3 class="bk-h">Abheben</h3>`;
     if (need.length) h += `<p class="bk-empty">Es fehlen noch: ${need.map(k => STEPS.find(s => s.id === k).t).join(', ')}.</p>`;
     else if (bad.length) h += `<p class="bk-empty">Erst die roten Punkte beheben, sonst hebt hier nichts ab:</p><ul class="bk-cl">${bad.map(c => `<li class="f-bad"><b>${c.t}</b><span>${c.d}</span></li>`).join('')}</ul>`;
-    else h += `<p class="bk-p">Alles verbunden. Props drauf, Akku dran, und los. Danach kannst du genau diesen Kopter im Vereins-Simulator durch unsere Turnhalle fliegen.</p><div class="btns"><button class="btn amber solid" type="button" data-bk-go2>Abheben</button><a class="btn" href="simulator.html?bau=1" data-bk-sim2>Im Simulator fliegen <span class="arr">→</span></a></div>`;
+    else h += `<p class="bk-p">Alles verbunden. Propeller drauf, Akku dran, und los. Danach kannst du genau diesen Kopter im Vereins-Simulator durch unsere Turnhalle fliegen.</p><div class="btns"><button class="btn amber solid" type="button" data-bk-go2>Abheben</button><a class="btn" href="simulator.html?bau=1#simulator" data-bk-sim2>Im Simulator fliegen <span class="arr">→</span></a></div>`;
     h += `<div class="bk-share"><button class="btn ghost" type="button" data-bk-share>Bau als Link teilen</button><button class="btn ghost" type="button" data-bk-reset>Neu anfangen</button></div>`;
   }
   ui.body.innerHTML = h;
@@ -443,7 +444,7 @@ function renderBar() {
   ui.m.gewicht.textContent = m.gewicht ? de(Math.round(m.gewicht)) + ' g' : '–';
   ui.m.twr.textContent = m.twr ? de(m.twr, 1) + ' : 1' : '–';
   ui.m.hover.textContent = m.hover ? de(Math.round(m.hover * 100)) + ' %' : '–';
-  ui.m.zeit.textContent = m.zeit ? 'ca. ' + de(Math.max(1, Math.round(m.zeit * .85))) + '–' + de(Math.round(m.zeit * 1.15)) + ' min' : '–';
+  ui.m.zeit.textContent = m.zeit ? 'etwa ' + de(Math.max(1, Math.round(m.zeit * .85))) + '–' + de(Math.round(m.zeit * 1.15)) + ' min' : '–';
   const bad = L.filter(c => c.lvl === 'bad').length, warn = L.filter(c => c.lvl === 'warn').length;
   const any = Object.keys(B).some(k => k !== 'klasse' && B[k]);
   ui.ampel.className = !any ? '' : bad ? 'bad' : warn ? 'warn' : 'ok';
@@ -501,7 +502,7 @@ function solderSteps(plan) {
   plan.wires.forEach(w => { (grp[w.teil] = grp[w.teil] || []).push(w); });
   for (const teil of Object.keys(grp)) {
     const ws = grp[teil];
-    S.push({ pads: ws.map(w => w.pad), ids: ws.map(w => w.padId || w.pad), teil, html: `<b>${esc(teil)}</b>: ${ws.map(w => `${esc(w.kabel)} → <code>${esc(w.pad)}</code>`).join(', ')}.${ws.some(w => w.notiz) ? ' <span class="mute">' + ws.filter(w => w.notiz).map(w => esc(w.notiz)).join('. ') + '.</span>' : ''}` });
+    S.push({ pads: ws.map(w => w.pad), ids: ws.map(w => w.padId || w.pad), teil, html: `<b>${esc(teil)}</b>: ${ws.map(w => `${esc(w.kabel)} → <code>${esc(w.pad)}</code>`).join(', ')}.${ws.some(w => w.notiz) ? ' <span class="mute">' + ws.filter(w => w.notiz).map(w => esc(w.notiz).replace(/[.\s]+$/, '')).join('. ') + '.</span>' : ''}` });
   }
   S.push({ pads: [], html: `<b>Prüfen vor dem ersten Akku:</b> Durchgang zwischen Plus und Minus messen (darf nicht piepen), dann mit Smoke-Stopper und ohne Propeller anstecken.` });
   return S;
@@ -1096,7 +1097,7 @@ function bindUI(app) {
   ui.steps.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) go(+b.dataset.i); });
   ui.prev.addEventListener('click', () => go(step - 1));
   ui.next.addEventListener('click', () => go(step + 1));
-  ui.checkB.addEventListener('click', () => { const open = ui.checks.hidden; ui.checks.hidden = !open; ui.checkB.setAttribute('aria-expanded', open); });
+  ui.checkB.addEventListener('click', () => { const open = ui.checks.hidden; ui.checks.hidden = !open; ui.checkB.setAttribute('aria-expanded', open); if (open) requestAnimationFrame(() => { const r = ui.checks.getBoundingClientRect(); if (r.bottom > innerHeight || r.top < 0) ui.checks.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'nearest' }); }); });
   ui.go.addEventListener('click', liftoff);
   $('[data-bk-land]', app).addEventListener('click', land);
   $('[data-bk-sim]', app).addEventListener('click', toSim);
