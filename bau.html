@@ -18,7 +18,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=bc9954ef">
-<link rel="stylesheet" href="assets/css/bau.css?v=20b2e79a">
+<link rel="stylesheet" href="assets/css/bau.css?v=3db2d602">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -36,10 +36,10 @@
   <div class="wrap bk-head-in">
     <p class="crumb"><a href="index.html">Start</a> / <a href="wissen.html">FPV lernen</a> / Bau deine Drohne</p>
     <h1 class="h1" id="bk-h1">Bau deine Drohne</h1>
-    <p class="lede">Such dir echte Teile aus: Flugcontroller, Motoren, Videosystem, Empfänger. Die Werkbank prüft, ob alles zusammenpasst, baut deinen Kopter in 3D zusammen und zeigt dir jede Lötstelle. Danach hebst du ab und fliegst ihn im Vereins-Simulator.</p>
+    <p class="lede">Beantworte drei einfache Fragen, dann stellt die Werkbank ein passendes Set aus echten Teilen zusammen und erklärt jedes davon. Du siehst deinen Kopter in 3D, bekommst einen Lötplan für jede Lötstelle und fliegst ihn danach im Vereins-Simulator. Vorwissen brauchst du keins.</p>
     <div class="btns">
-      <a class="btn amber solid" href="#werkbank">Werkbank öffnen <span class="arr">↓</span></a>
-      <button class="btn" type="button" data-bk-preset="mamba-o4-crsf">Beispiel: Mamba, DJI O4, Crossfire</button>
+      <a class="btn amber solid" href="#werkbank">Jetzt starten <span class="arr">↓</span></a>
+      <button class="btn" type="button" data-bk-preset="mamba-o4-crsf">Fertiges Beispiel ansehen</button>
     </div>
   </div>
 </section>
@@ -48,25 +48,25 @@
   <h2 class="sr" id="bk-h2">Werkbank</h2>
   <div class="bk-app" data-bk-app>
     <!-- Bühne: 3D-Zusammenbau, Lötplan oder Abheben -->
-    <div class="bk-stage" data-bk-stage>
-      <canvas class="bk-cv" aria-hidden="true"></canvas>
-      <svg class="bk-solder" data-bk-solder viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Lötplan" hidden></svg>
-      <div class="bk-osd" aria-hidden="true">
-        <span class="bk-osd-tl" data-bk-osd-name>DEIN KOPTER</span>
-        <span class="bk-osd-tr" data-bk-osd-w>0 g</span>
-        <span class="bk-osd-bl" data-bk-osd-mode>WERKBANK</span>
-      </div>
+    <div class="bk-stagecol">
+    <div class="bk-tools">
+      <p class="bk-tname"><span data-bk-osd-name>Dein Kopter</span><b data-bk-osd-w>0 g</b></p>
       <div class="bk-views" role="group" aria-label="Ansicht">
         <button type="button" class="on" data-bk-view="3d" aria-pressed="true">3D</button>
         <button type="button" data-bk-view="loeten" aria-pressed="false">Lötplan</button>
-        <button type="button" data-bk-view="explode" aria-pressed="false">Zerlegen</button>
+        <button type="button" data-bk-view="explode" aria-pressed="false">Zerlegt</button>
       </div>
+    </div>
+    <div class="bk-stage" data-bk-stage>
+      <canvas class="bk-cv" aria-hidden="true"></canvas>
+      <svg class="bk-solder" data-bk-solder viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Lötplan" hidden></svg>
       <p class="bk-hint" data-bk-hint aria-live="polite"><span class="dot" aria-hidden="true"></span><span data-bk-hint-t>Ziehen dreht die Drohne</span></p>
       <div class="bk-fly" data-bk-flyhud hidden>
         <p class="bk-fly-t" data-bk-fly-t>Abheben …</p>
         <div class="btns"><a class="btn amber solid" href="simulator.html?bau=1#simulator" data-bk-sim>Im Simulator fliegen <span class="arr">→</span></a><button class="btn ghost" type="button" data-bk-land>Landen</button></div>
       </div>
       <p class="bk-nogl" data-bk-nogl hidden>Dein Gerät zeigt kein 3D. Auswahl, Prüfung und Lötplan funktionieren trotzdem.</p>
+    </div>
     </div>
 
     <!-- Bedienfeld -->
@@ -81,10 +81,10 @@
 
     <!-- Datenleiste: Gewicht, Schub, Flugzeit, Prüfung -->
     <div class="bk-bar" data-bk-bar>
-      <div class="bk-m"><span>Abfluggewicht</span><b data-bk-m="gewicht">–</b></div>
+      <div class="bk-m"><span>Gewicht</span><b data-bk-m="gewicht">–</b></div>
       <div class="bk-m"><span>Schub zu Gewicht</span><b data-bk-m="twr">–</b></div>
-      <div class="bk-m"><span>Schwebegas</span><b data-bk-m="hover">–</b></div>
-      <div class="bk-m"><span>Flugzeit (Schätzung)</span><b data-bk-m="zeit">–</b></div>
+      <div class="bk-m bk-m-hov"><span>Schwebegas</span><b data-bk-m="hover">–</b></div>
+      <div class="bk-m"><span>Flugzeit</span><b data-bk-m="zeit">–</b></div>
       <button class="bk-check" type="button" data-bk-check aria-expanded="false" aria-controls="bk-checks"><i data-bk-ampel></i><span data-bk-check-t>Noch keine Teile</span></button>
       <button class="btn amber solid bk-go" type="button" data-bk-go disabled>Abheben</button>
     </div>
@@ -129,6 +129,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=314c10ac"></script>
-<script src="assets/js/bau.js?v=c8a54ad2" type="module"></script>
+<script src="assets/js/bau.js?v=0cfa1007" type="module"></script>
 </body>
 </html>
