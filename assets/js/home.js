@@ -86,11 +86,11 @@
     const n = FCS.next(), list = $('#t-list'); if (!list) return;
     const all = FCS.termine();
     $('#stat-hallen') && ($('#stat-hallen').dataset.count = all.length);
-    list.innerHTML = all.map(t => `<li class="${t.vorbei ? 'past' : ''}${n && t.d === n.d ? ' nx' : ''}"><span>${FCS.fmtDate(t.d)}</span><span class="mute">${t.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}</span></li>`).join('');
+    list.innerHTML = all.map(t => `<li class="${t.vorbei ? 'past' : ''}${n && t.d === n.d ? ' nx' : ''}"><span>${FCS.fmtDate(t.d)}</span><span class="mute">${t.halle.geheim ? 'Halle' : t.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}</span></li>`).join('');
     if (!n) { $('#t-datum').textContent = 'Neue Termine folgen'; $('#t-ort').textContent = 'Die nächste Saison kündigen wir in der Gruppe und hier an.'; $('#t-cd').hidden = true; return; }
     $('#t-datum').textContent = FCS.fmtDate(n.d, 1);
-    $('#t-ort').textContent = `${n.halle.name} · ${D.zeit.von.replace(':00', '')} bis ${D.zeit.bis.replace(':00', '')} Uhr`;
-    $('#t-route').href = FCS.route(n.halle.lat, n.halle.lng, n.halle.adresse);
+    $('#t-ort').textContent = `${n.halle.name} · ${D.zeit.von.replace(':00', '')} bis ${D.zeit.bis.replace(':00', '')} Uhr${n.halle.geheim ? ' · Ort für Mitglieder' : ''}`;
+    if (n.halle.geheim) { const r = $('#t-route'); r.removeAttribute('target'); r.href = 'hallenfliegen.html#termine'; r.innerHTML = 'Ort für Mitglieder <span class="arr">→</span>'; } else $('#t-route').href = FCS.route(n.halle.lat, n.halle.lng, n.halle.adresse);
     $('#t-ics').addEventListener('click', () => FCS.ics(n));
     FCS.countdown($('#t-cd'), n.start.getTime());
     if (window.gsap && window.ScrollTrigger && !RM) {

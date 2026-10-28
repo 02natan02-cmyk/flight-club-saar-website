@@ -5,10 +5,11 @@
   <div class="wrap">
     <p class="crumb"><a href="index.html">Start</a> / Spot-Karte</p>
     <h1 class="h1" data-split>Spot-Karte</h1>
-    <p class="lede sp-lede">Spots ansehen, Route starten, bewerten und eigenen Spot melden.</p>
+    <p class="lede sp-lede">Spots ansehen, Route starten, bewerten und eigenen Spot melden. Die Karte ist für Mitglieder.</p>
     <div class="btns">
-      <a class="btn amber solid" href="#karte"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Zur Karte</a>
-      <a class="btn" href="#einsenden"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Spot melden</a>
+      <a class="btn amber solid nur-mitglied" href="#karte"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Zur Karte</a>
+      <a class="btn amber solid nur-gast" href="#karte-gast">Zur Karte für Mitglieder</a>
+      <a class="btn nur-mitglied" href="#einsenden"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Spot melden</a>
     </div>
   </div>
 </section>
@@ -68,7 +69,25 @@
 </section>
 
 <!-- 2 · Karte: Saarland-Radar (ohne Klick) oder Straßenkarte/Satellit (nach Klick) + Spot-Liste -->
-<section class="sec sp-sec sp-map" id="karte" data-toc="Karte" aria-labelledby="karte-h">
+<!-- Für Gäste: Werbung für die Karte, Code-Eingabe (Natan 28.10.2026: Spots und Hallen nur für Mitglieder) -->
+<section class="sec sp-sec sp-gast nur-gast" id="karte-gast" data-toc="Karte" aria-labelledby="gast-h">
+  <div class="wrap sp-gast-grid">
+    <div class="sp-gast-txt">
+      <h2 class="h2 sp-h2" id="gast-h" data-split>Unsere Spots</h2>
+      <p class="lede" data-reveal>Lost Places, Industriekultur, weite Felder und unsere Winterhallen: Auf der Karte stehen alle Spots des Vereins mit Regeln, Route, Fotos, Videos und Bewertungen. Mitglieder melden neue Spots direkt dazu.</p>
+      <p class="mute" data-reveal>Die genaue Lage sehen nur Mitglieder. So bleiben die Plätze sauber, und niemand steht ungefragt auf einem Gelände, das wir uns mit Eigentümern und Anwohnern teilen.</p>
+      <div data-mitglied-lock="Karte für Mitglieder|Gib deinen Mitgliedscode ein (FCS-XXXX-XXXX, derselbe wie für Gyroflow im Clip-Studio). Er schaltet Spot-Karte, Hallenabende und Gyroflow frei." data-reveal></div>
+    </div>
+    <div class="sp-gast-radar" aria-hidden="true">
+      <div class="sg-ring"></div><div class="sg-ring r2"></div><div class="sg-ring r3"></div><i class="sg-sweep"></i>
+      <b style="--x:31%;--y:58%"></b><b style="--x:57%;--y:36%"></b><b style="--x:69%;--y:64%"></b><b style="--x:44%;--y:72%"></b><b style="--x:78%;--y:44%"></b><b style="--x:38%;--y:30%"></b><b style="--x:61%;--y:52%"></b>
+      <span class="sg-lock hud">GESPERRT · NUR MITGLIEDER</span>
+    </div>
+  </div>
+</section>
+
+<section class="sec sp-sec sp-map nur-mitglied" id="karte" data-toc="Karte" aria-labelledby="karte-h">
+  <div class="wrap"><div data-mitglied-lock></div></div>
   <div class="wrap">
     <div class="mp-head">
       <h2 class="h2 sp-h2" id="karte-h" data-split>Unsere Spots</h2>
@@ -150,11 +169,11 @@
 </section>
 
 <!-- 3 · Spot melden: ein kurzes Formular auf einer Seite -->
-<section class="sec sp-sec sp-send" id="einsenden" data-toc="Spot melden" aria-labelledby="send-h">
+<section class="sec sp-sec sp-send nur-mitglied" id="einsenden" data-toc="Spot melden" aria-labelledby="send-h">
   <div class="wrap send-grid">
     <div class="send-side">
       <h2 class="h2 sp-h2" id="send-h" data-split>Spot melden</h2>
-      <p class="send-intro">Du kennst einen guten Platz? Trag ihn ein. Er steht sofort als „neu gemeldet“ auf der Karte, und du kannst gleich den nächsten eintragen.</p>
+      <p class="send-intro">Du kennst einen guten Platz? Trag ihn ein. Er steht sofort als „neu gemeldet“ auf der Karte, die nur Mitglieder sehen, und du kannst gleich den nächsten eintragen. Die Lage wird verschlüsselt gespeichert.</p>
       <ol class="send-flow" aria-label="So geht es nach dem Senden weiter">
         <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg>Du trägst den Spot ein</li>
         <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>Er steht sofort auf der Karte</li>

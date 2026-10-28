@@ -443,7 +443,16 @@
   async function rtLoad() {
     if (!live() || RT.st === 'load') return;
     RT.st = 'load'; rtPaint();
-    try { const srv = await FCS.board.list('spot:'); RT.list = [...RT.list.filter(x => x._new && !srv.some(y => y.id === x.id)), ...srv]; RT.st = 'ok'; } catch (e) { RT.st = 'err'; }
+    try {
+      const srv0 = await FCS.board.list('spot:'), M = FCS.member || {};
+      // Gemeldete Spots sind verschlüsselt (Mitglieder-Code); ohne Code werden sie nicht angezeigt
+      const srv = (await Promise.all(srv0.map(async x => {
+        if (!M.isEnc || !M.isEnc(x.t)) return x;
+        if (!M.ok) return null;
+        try { const o = JSON.parse(await M.dec(x.t)); return Object.assign({}, x, { t: o.t, ort: o.ort || '', link: o.link || '', titel: o.titel || x.titel }); } catch (e) { return null; }
+      }))).filter(Boolean);
+      RT.list = [...RT.list.filter(x => x._new && !srv.some(y => y.id === x.id)), ...srv]; RT.st = 'ok';
+    } catch (e) { RT.st = 'err'; }
     if (RT.st === 'ok') mergeNeu();
     rtPaint();
     if (RT.st !== 'ok') return;
@@ -1499,7 +1508,10 @@
         const files = inp && inp.files && inp.files[0] ? [inp.files[0]] : [];
         const map = `https://www.google.com/maps?q=${o.la},${o.lo}`;
         const fields = { b: NEU, n: von, titel: name, t: JSON.stringify(o), ort: (o.o || fmtLL(o.la, o.lo)).slice(0, 60), link: map };
-        let r = { ok: false }; try { r = await FCS.board.add(fields, files); } catch (er) {}
+        // Lage verschlüsselt senden: auf dem Server steht nur Name, Melder und der verschlüsselte Ort (Mitglieder-Code)
+        const send = Object.assign({}, fields);
+        if (FCS.member && FCS.member.ok) { send.t = await FCS.member.enc(JSON.stringify({ t: fields.t, ort: fields.ort, link: map, titel: name })); send.ort = ''; send.link = ''; send.titel = 'Spot'; }
+        let r = { ok: false }; try { r = await FCS.board.add(send, files); } catch (er) {}
         if (!r.ok) { fail('Gerade nicht erreichbar. Bitte versuch es gleich noch einmal, deine Eingaben bleiben stehen.'); return; }
         lvKeepName(von);
         RT.list.unshift({ id: r.id, b: NEU, n: von, titel: name, t: fields.t, ort: fields.ort, link: map, nf: files.length ? 1 : 0, d: lvNow(), _new: 1 });

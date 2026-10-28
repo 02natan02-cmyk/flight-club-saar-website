@@ -250,3 +250,4 @@ main [hidden]{display:none!important}
 .t-plan:hover span{transform:translateX(4px)}
 .ticket.done .t-plan{color:#cfdcec}
 .hp-big .btns .btn.amber{order:-1}
+.hp-lock{margin-top:28px}

@@ -521,3 +521,19 @@ textarea.lv-in{min-height:72px;resize:vertical}
 .sp-ok .sf-ok-b .btn{grid-column:auto;min-height:44px}
 .sf-ok-b .btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:560px){.sendform .sf-ok{grid-template-columns:1fr;gap:10px}.sf-ok-b .btn{flex:1 1 100%;justify-content:center}}
+
+/* ---------- Gäste: Karte gesperrt ---------- */
+.sp-gast-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,64px);align-items:center}
+.sp-gast-txt .lede{margin-bottom:12px}
+.sp-gast-txt .mute{margin:0 0 24px;max-width:60ch}
+.sp-gast-radar{position:relative;aspect-ratio:1;width:100%;max-width:460px;justify-self:center;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(63,224,255,.10),rgba(4,12,26,.9) 70%);border:1px solid rgba(63,224,255,.35);overflow:hidden;filter:saturate(1.1)}
+.sg-ring{position:absolute;inset:16%;border-radius:50%;border:1px solid rgba(63,224,255,.22)}
+.sg-ring.r2{inset:32%}.sg-ring.r3{inset:46%}
+.sg-sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(63,224,255,.38),transparent 22%);animation:sg-rot 4.5s linear infinite}
+@keyframes sg-rot{to{transform:rotate(360deg)}}
+.sp-gast-radar b{position:absolute;left:var(--x);top:var(--y);width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--amber);box-shadow:0 0 14px var(--amber);filter:blur(5px);animation:sg-blip 2.6s ease-in-out infinite}
+.sp-gast-radar b:nth-of-type(2n){animation-delay:.8s}.sp-gast-radar b:nth-of-type(3n){animation-delay:1.5s}
+@keyframes sg-blip{50%{opacity:.35;transform:scale(1.6)}}
+.sg-lock{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);white-space:nowrap;font-size:11px;letter-spacing:.2em;color:var(--amber);background:rgba(4,9,18,.75);border:1px solid rgba(255,176,32,.45);border-radius:999px;padding:7px 14px}
+@media (max-width:860px){.sp-gast-grid{grid-template-columns:minmax(0,1fr)}.sp-gast-radar{max-width:320px;order:-1}}
+@media (prefers-reduced-motion:reduce){.sg-sweep,.sp-gast-radar b{animation:none}}

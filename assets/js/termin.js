@@ -443,17 +443,17 @@
     $('.tp-h1-k').textContent = `Hallenabend · ${wd}`;
     const pl = T.plan, s = pl ? pl.s : DEF();
     $('#tp-ort').innerHTML = `<b>${esc(t.halle.name)}</b> · ${esc(t.halle.adresse)} · ${fmtMin(s.b)} bis ${fmtMin(s.e)} Uhr${t.vorbei ? ' · <span class="tp-past">Schon geflogen</span>' : ''}`;
-    $('#tp-route').href = FCS.route(t.halle.lat, t.halle.lng, t.halle.adresse);
+    if (t.halle.geheim) $('#tp-route').hidden = true; else $('#tp-route').href = FCS.route(t.halle.lat, t.halle.lng, t.halle.adresse);
     $('#tp-route').setAttribute('aria-label', `Route zur ${t.halle.name} (öffnet Google Maps)`);
     const nReg = regsOf(t.d).length;
     setNum('#tp-st-n', T.st === 'load' ? null : T.st === 'err' || T.st === 'off' || !Number.isFinite(nReg) ? '–' : nReg);
     setNum('#tp-st-k', pl ? Math.max(1, Math.min(kEff(pl), kMax(pl) || kEff(pl))) : 4);
     setNum('#tp-st-h', pl ? C.heatCount(pl.s) : 0);
     $('#tp-osd-k').textContent = pl && pl.s.all ? 'R1 bis R8' : 'R3 bis R6';
-    const cta = $('#tp-cta'); if (cta) { const me = meKey(); cta.innerHTML = me ? 'Mein Abend <span class="arr">→</span>' : t.vorbei ? 'Wer dabei war <span class="arr">→</span>' : 'Ich bin dabei <span class="arr">→</span>'; }
+    const cta = $('#tp-cta'); if (cta) { const me = meKey(); cta.innerHTML = me ? 'Mein Abend <span class="arr">→</span>' : t.vorbei ? 'Wer dabei war <span class="arr">→</span>' : 'Ich bin dabei <span class="arr">→</span>'; if (!(FCS.member && FCS.member.ok)) { cta.href = '#mitglieder'; cta.innerHTML = 'Für Mitglieder: Code eingeben <span class="arr">→</span>'; } }
     // Umschalter
     const sw = $('#tp-switch');
-    sw.innerHTML = ALL.map(x => { const n = T.st === 'ok' ? regsOf(x.d).length : null; return `<a class="tp-sw${x.d === t.d ? ' on' : ''}${x.vorbei ? ' done' : ''}" href="termin.html?d=${x.d}"${x.d === t.d ? ' aria-current="page"' : ''} data-d="${x.d}"><b>${esc(FCS.fmtDate(x.d))}</b><span>${esc(x.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', ''))}</span>${n ? `<i aria-label="${n} eingetragen">${n}</i>` : ''}</a>`; }).join('');
+    sw.innerHTML = ALL.map(x => { const n = T.st === 'ok' ? regsOf(x.d).length : null; return `<a class="tp-sw${x.d === t.d ? ' on' : ''}${x.vorbei ? ' done' : ''}" href="termin.html?d=${x.d}"${x.d === t.d ? ' aria-current="page"' : ''} data-d="${x.d}"><b>${esc(FCS.fmtDate(x.d))}</b><span>${esc(x.halle.geheim ? 'Halle' : x.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', ''))}</span>${n ? `<i aria-label="${n} eingetragen">${n}</i>` : ''}</a>`; }).join('');
     const on = $('.tp-sw.on', sw); if (on && sw.scrollWidth > sw.clientWidth) sw.scrollLeft = on.offsetLeft - sw.clientWidth / 2 + on.offsetWidth / 2;
     document.title = `Hallenabend ${FCS.fmtDate(t.d)} · Flight Club Saar e. V.`;
   }
