@@ -156,7 +156,7 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    film(); kontaktUI(); loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    film(); kontaktUI(); loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 
@@ -208,18 +208,18 @@
         <h3 class="h3" id="kt-h">Erstmal Kontakt aufnehmen</h3>
         <p class="kt-p">Frag uns einfach: Hallenfliegen, deine erste Drohne, Technik oder wie der Verein tickt. Mitglied werden kannst du später immer noch.</p>
         ${K.length ? `<div class="kt-wa">${K.map(k => `<a class="btn" href="${wa(k)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 9.5c.4 2 2 3.6 4.4 4.6l1.2-1.1 1.9.8-.4 1.6c-3.6.3-7.3-3.2-7.6-6.6L10 8.5l.9 1.8z"/></svg>WhatsApp an ${k.name} <small>${k.rolle || ''}</small></a>`).join('')}</div><p class="kt-or"><span>oder schreib uns hier</span></p>` : ''}
-        <form class="kt-form" data-fcs-form novalidate>
+        <form class="kt-form" data-fcs-form data-antwort="kontakt" novalidate>
           <input type="hidden" name="_subject" value="Kontaktanfrage über die Website (Flight Club Saar)">
           <input type="hidden" name="Formular" value="Kontakt aufnehmen">
           <input type="hidden" name="Seite" value="${location.pathname.split('/').pop() || 'index.html'}">
           <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
           <div class="kt-chips" role="group" aria-label="Worum geht es?">${['Allgemeine Frage', 'In die WhatsApp-Gruppe', 'Hallenfliegen', 'Erste Drohne', 'Mitgliedschaft', 'Technik'].map((x, i) => `<label class="kt-chip"><input type="radio" name="Thema" value="${x}" ${i ? '' : 'checked'}><span>${x}</span></label>`).join('')}</div>
           <div class="field"><label for="kt-n">Dein Name</label><input id="kt-n" name="Name" autocomplete="name" required><span class="err">Bitte gib deinen Namen an.</span></div>
-          <div class="field"><label for="kt-k">Wie erreichen wir dich? <small>E-Mail oder Handynummer</small></label><input id="kt-k" name="Kontakt" autocomplete="email" required><span class="err">Wir brauchen eine E-Mail-Adresse oder Handynummer für die Antwort.</span></div>
+          <div class="kt-two"><div class="field"><label for="kt-k">Deine E-Mail <small>für Antwort und Bestätigung</small></label><input id="kt-k" name="email" type="email" inputmode="email" autocomplete="email" required><span class="err">Bitte eine gültige E-Mail-Adresse eingeben, zum Beispiel name@beispiel.de.</span></div><div class="field"><label for="kt-t">Handynummer <small>freiwillig, für WhatsApp</small></label><input id="kt-t" name="Handy (WhatsApp)" type="tel" inputmode="tel" autocomplete="tel"></div></div>
           <div class="field"><label for="kt-m">Deine Nachricht</label><textarea id="kt-m" name="Nachricht" rows="4" required placeholder="Zum Beispiel: Ich würde gern mal beim Hallenfliegen zuschauen."></textarea><span class="err">Schreib uns kurz, worum es geht.</span></div>
           <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Ihr dürft meine Angaben nutzen, um mir zu antworten (<a href="datenschutz.html">Datenschutz</a>).</span></label>
           <div class="btns"><button class="btn amber solid" type="submit">Nachricht senden <span class="arr">→</span></button></div>
-          <div class="form-ok" hidden><b>Danke!</b> Deine Nachricht ist beim Vorstand angekommen. Wir melden uns bei dir.</div>
+          <div class="form-ok" hidden><b>Danke!</b> Deine Nachricht ist beim Vorstand angekommen. Eine Bestätigung ist unterwegs in dein Postfach, wir melden uns, sobald einer unserer Piloten Zeit hat.</div>
           <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schreib uns per WhatsApp.</div>
         </form>
         <p class="kt-alt">Lieber gleich dabei sein? <a href="mitglied.html">Mitglied werden</a></p>
@@ -423,11 +423,18 @@
     });
   }
 
-  /* ---------- Formulare (Entwurf: alles an Falcon Eye) ---------- */
+  /* ---------- Formulare: alles an info@flightclub-saar.de, wer eine E-Mail angibt, bekommt eine Bestätigung (Natan 29.10. 00:06) ---------- */
+  const GRUSS = '\n\nBrille an, Welt aus!\nDein Flight Club Saar e. V.\nflightclub-saar.de';
+  const ANTWORT = {
+    kontakt: 'Hallo,\n\ndanke fürs Ausfüllen und willkommen beim Flight Club Saar!\n\nDeine Nachricht ist bei uns angekommen. Wir melden uns, sobald einer unserer Piloten Zeit hat.' + GRUSS,
+    antrag: 'Hallo,\n\ndanke fürs Ausfüllen deines Mitgliedsantrags und willkommen beim Flight Club Saar!\n\nDein Antrag ist bei uns angekommen. Der Vorstand schaut ihn sich an und meldet sich bei dir, sobald einer unserer Piloten Zeit hat. Wenn alles geklärt ist, bekommst du deinen persönlichen Mitgliedscode für Spot-Karte, Hallentermine und Gyroflow.' + GRUSS,
+    frage: 'Hallo,\n\ndanke für deine Frage und willkommen beim Flight Club Saar!\n\nSie ist bei uns angekommen. Wir melden uns, sobald einer unserer Piloten Zeit hat.' + GRUSS
+  };
   FCS.send = async (form, extra = {}) => {
-    const mail = (D.verein || {}).formMail || 'info@falcon-eye.de';
+    const mail = (D.verein || {}).formMail || 'info@flightclub-saar.de';
     const fd = new FormData(form);
     if (fd.get('_honey')) return { ok: true };
+    const an = ANTWORT[form.dataset.antwort]; if (an && String(fd.get('email') || '').includes('@') && !fd.get('_autoresponse')) fd.append('_autoresponse', an);
     Object.entries(extra).forEach(([k, v]) => v instanceof Blob ? fd.append(k, v, k + '.png') : fd.append(k, v));
     fd.append('_template', 'table'); fd.append('_captcha', 'false');
     const hasFile = [...fd.values()].some(v => v instanceof Blob && v.size);
@@ -439,7 +446,7 @@
   };
   // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
   FCS.notify = async (subject, fields = {}) => {
-    const mail = (D.verein || {}).formMail || 'info@falcon-eye.de';
+    const mail = (D.verein || {}).formMail || 'info@flightclub-saar.de';
     const body = Object.assign({ _subject: subject, _template: 'table', _captcha: 'false', Seite: location.href }, fields);
     try {
       const res = await fetch('https://formsubmit.co/ajax/' + mail, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });

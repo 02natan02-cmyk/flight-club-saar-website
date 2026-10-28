@@ -48,8 +48,8 @@
         <div class="progress" aria-hidden="true"><i id="prog"></i></div>
         <p class="step-now hud" id="step-now" aria-live="polite">Schritt 1 von 5 · Über dich</p>
 
-        <form class="antrag panel" id="antragform" data-fcs-form novalidate>
-          <input type="hidden" name="_subject" value="Mitgliedsantrag (Flight Club Saar, Entwurf)">
+        <form class="antrag panel" id="antragform" data-fcs-form data-antwort="antrag" novalidate>
+          <input type="hidden" name="_subject" value="Mitgliedsantrag über die Website (Flight Club Saar)">
           <input type="hidden" name="Formular" value="Mitgliedsantrag">
           <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
 
@@ -63,7 +63,7 @@
               <div class="field"><label for="a-str">Straße und Hausnummer</label><input id="a-str" name="Straße" required autocomplete="street-address"><span class="err">Bitte Straße und Hausnummer eingeben.</span></div>
               <div class="field"><label for="a-ort">PLZ und Ort</label><input id="a-ort" name="PLZ Ort" required autocomplete="postal-code"><span class="err">Bitte Postleitzahl und Ort eingeben.</span></div>
               <div class="field"><label for="a-tel">Telefon</label><input id="a-tel" name="Telefon" type="tel" inputmode="tel" required autocomplete="tel"><span class="err">Bitte eine Telefonnummer für Rückfragen eingeben.</span></div>
-              <div class="field"><label for="a-mail">E-Mail</label><input id="a-mail" name="E-Mail" type="email" inputmode="email" required autocomplete="email"><span class="err">Bitte eine gültige E-Mail-Adresse eingeben, zum Beispiel name@beispiel.de.</span></div>
+              <div class="field"><label for="a-mail">E-Mail</label><input id="a-mail" name="email" type="email" inputmode="email" required autocomplete="email"><span class="err">Bitte eine gültige E-Mail-Adresse eingeben, zum Beispiel name@beispiel.de.</span></div>
             </div>
             <details class="fold mg-more" id="a-more">
               <summary>Beruf und Eintrittsdatum</summary>
@@ -141,7 +141,7 @@
               <span class="err" id="sig-err">Bitte im Feld unterschreiben.</span>
             </div>
             <p class="mute" id="u18-sig" hidden>Bei Mitgliedern unter 18 unterschreibt ein Elternteil.</p>
-            <p class="draftnote">Entwurf: Anträge gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben. Bankdaten werden nur zur Beitragszahlung verwendet.</p>
+            <p class="mute mg-small">Dein Antrag geht direkt an den Vorstand, du bekommst eine Bestätigung per E-Mail. Bankdaten werden nur zur Beitragszahlung verwendet.</p>
           </fieldset>
 
           <div class="mg-errsum" id="errsum" role="alert" hidden></div>

@@ -18,7 +18,7 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fcs.css?v=62a6ec5d">
+<link rel="stylesheet" href="assets/css/fcs.css?v=6dc020c9">
 <link rel="stylesheet" href="assets/css/mitglied.css?v=cf983d9d">
 </head>
 <body>
@@ -27,7 +27,7 @@
   <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
   <nav class="nav-links" aria-label="Hauptmenü"><a href="hallenfliegen.html">Hallenfliegen</a><a href="spots.html">Spots</a><a href="simulator.html">Simulator</a><a href="wissen.html">FPV lernen</a><a href="studio.html">Clip-Studio</a><a href="crew.html">Crew</a></nav>
   <button class="nav-login" type="button" data-login aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path class="sh" d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span class="nl-t">Login</span></button>
-  <button class="nav-kontakt" type="button" data-kontakt aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><span class="nk-t">Kontakt</span></button>
+  <button class="nav-kontakt" type="button" data-kontakt aria-haspopup="dialog" aria-label="Kontakt aufnehmen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><span class="nk-t">Kontakt</span></button>
   <a class="btn solid nav-cta" href="mitglied.html" aria-current=page>Mitglied werden</a>
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Menü</span></button>
 </header>
@@ -83,8 +83,8 @@
         <div class="progress" aria-hidden="true"><i id="prog"></i></div>
         <p class="step-now hud" id="step-now" aria-live="polite">Schritt 1 von 5 · Über dich</p>
 
-        <form class="antrag panel" id="antragform" data-fcs-form novalidate>
-          <input type="hidden" name="_subject" value="Mitgliedsantrag (Flight Club Saar, Entwurf)">
+        <form class="antrag panel" id="antragform" data-fcs-form data-antwort="antrag" novalidate>
+          <input type="hidden" name="_subject" value="Mitgliedsantrag über die Website (Flight Club Saar)">
           <input type="hidden" name="Formular" value="Mitgliedsantrag">
           <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
 
@@ -98,7 +98,7 @@
               <div class="field"><label for="a-str">Straße und Hausnummer</label><input id="a-str" name="Straße" required autocomplete="street-address"><span class="err">Bitte Straße und Hausnummer eingeben.</span></div>
               <div class="field"><label for="a-ort">PLZ und Ort</label><input id="a-ort" name="PLZ Ort" required autocomplete="postal-code"><span class="err">Bitte Postleitzahl und Ort eingeben.</span></div>
               <div class="field"><label for="a-tel">Telefon</label><input id="a-tel" name="Telefon" type="tel" inputmode="tel" required autocomplete="tel"><span class="err">Bitte eine Telefonnummer für Rückfragen eingeben.</span></div>
-              <div class="field"><label for="a-mail">E-Mail</label><input id="a-mail" name="E-Mail" type="email" inputmode="email" required autocomplete="email"><span class="err">Bitte eine gültige E-Mail-Adresse eingeben, zum Beispiel name@beispiel.de.</span></div>
+              <div class="field"><label for="a-mail">E-Mail</label><input id="a-mail" name="email" type="email" inputmode="email" required autocomplete="email"><span class="err">Bitte eine gültige E-Mail-Adresse eingeben, zum Beispiel name@beispiel.de.</span></div>
             </div>
             <details class="fold mg-more" id="a-more">
               <summary>Beruf und Eintrittsdatum</summary>
@@ -176,7 +176,7 @@
               <span class="err" id="sig-err">Bitte im Feld unterschreiben.</span>
             </div>
             <p class="mute" id="u18-sig" hidden>Bei Mitgliedern unter 18 unterschreibt ein Elternteil.</p>
-            <p class="draftnote">Entwurf: Anträge gehen vorerst an Falcon Eye und werden an den Vorstand weitergegeben. Bankdaten werden nur zur Beitragszahlung verwendet.</p>
+            <p class="mute mg-small">Dein Antrag geht direkt an den Vorstand, du bekommst eine Bestätigung per E-Mail. Bankdaten werden nur zur Beitragszahlung verwendet.</p>
           </fieldset>
 
           <div class="mg-errsum" id="errsum" role="alert" hidden></div>
@@ -224,7 +224,7 @@
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Mitglieder des Vereins · Website: <a href="https://falcon-eye.de/" target="_blank" rel="noopener">Falcon Eye</a></span></div>
   </div>
 </footer>
-<script src="assets/js/data.js?v=0bc24dbd"></script>
+<script src="assets/js/data.js?v=f6106180"></script>
 <script src="assets/lib/gsap.min.js"></script>
 <script src="assets/lib/ScrollTrigger.min.js"></script>
 <script src="assets/lib/SplitText.min.js"></script>
@@ -233,7 +233,7 @@
 <script src="assets/lib/InertiaPlugin.min.js"></script>
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
-<script src="assets/js/fcs.js?v=32f5f827"></script>
+<script src="assets/js/fcs.js?v=25a2653c"></script>
 <script src="assets/js/mitglied.js?v=41af0eb8"></script>
 </body>
 </html>

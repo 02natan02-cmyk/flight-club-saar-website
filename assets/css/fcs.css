@@ -400,3 +400,6 @@ html.is-member .nav-cta{display:none}
 .kt-box{background:linear-gradient(180deg,#0e2142,#071225);border:1px solid var(--line-hi);border-radius:var(--r);padding:24px 22px 20px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
 .kt-dlg .ml-x{z-index:2}
 @media (max-width:560px){.kt-box{padding:20px 16px 16px}}
+/* Kontakt: E-Mail (Pflicht, für die Bestätigung) und Handynummer (freiwillig) nebeneinander */
+.kt-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+@media (max-width:560px){.kt-two{grid-template-columns:minmax(0,1fr)}}

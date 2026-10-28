@@ -16,7 +16,7 @@ PAGES = [
   ('werkstatt.html', 'Betaflight & Löten · Flight Club Saar e. V.', 'Betaflight einfach erklärt: Version, Flashen, die wichtigsten Einstellungen, dazu Löten Schritt für Schritt. Mit Animationen und Videos.', 'werkstatt', ['werkstatt']),
   ('hilfe.html', 'Technik-Hilfe · Flight Club Saar e. V.', 'Der FPV-Doktor hilft bei Betaflight, VTX, ELRS, Kanälen und Kompatibilität. Plus Forum-Fragen an den Verein.', 'hilfe', ['hilfe']),
   ('mitglied.html', 'Mitglied werden · Flight Club Saar e. V.', 'Online-Mitgliedsantrag mit SEPA-Lastschrift: 30 € im Jahr, 20 € unter 18, einmalig 20 € Aufnahme. Plus deine Mitgliedskarte zum Mitnehmen.', 'mitglied', ['mitglied']),
-  ('bau.html', 'Bau deine Drohne · Flight Club Saar e. V.', 'Bau deine FPV-Drohne aus echten Teilen: Flugcontroller, Motoren, DJI O4, Crossfire, ELRS. Die Werkbank prüft, ob alles passt, zeigt jede Lötstelle und lässt dich den Kopter im Simulator fliegen.', 'bau', ['three', 'bau']),
+  ('bau.html', 'Bau deine Drohne · Flight Club Saar e. V.', 'Bau deine FPV-Drohne Schritt für Schritt aus echten Teilen: nur was zusammenpasst, jede Lötstelle, danach im Simulator fliegen.', 'bau', ['three', 'bau']),
   ('studio.html', 'Clip-Studio · Flight Club Saar e. V.', 'Das Clip-Studio des Vereins: Video schneiden, Musik im Takt, Looks, Vereinslogo und dein Tag. Für Mitglieder stabilisieren wir dein FPV-Video mit Gyroflow.', 'studio', ['studio']),
   ('filmen.html', 'FPV filmen · Flight Club Saar e. V.', 'Der Film-Ratgeber für FPV: Kameras, ND-Filter, Einstellungen, Schnitt und Musik. Plus Gyroflow für Mitglieder und das Clip-Studio des Vereins.', 'filmen', ['filmen']),
   ('simulator.html', 'FPV-Simulator · Flight Club Saar e. V.', 'FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.', 'sim', ['three', 'sim']),
@@ -113,7 +113,7 @@ def nav(key):
   <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
   <nav class="nav-links" aria-label="Hauptmenü">{links}</nav>
   <button class="nav-login" type="button" data-login aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path class="sh" d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span class="nl-t">Login</span></button>
-  <button class="nav-kontakt" type="button" data-kontakt aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><span class="nk-t">Kontakt</span></button>
+  <button class="nav-kontakt" type="button" data-kontakt aria-haspopup="dialog" aria-label="Kontakt aufnehmen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><span class="nk-t">Kontakt</span></button>
   <a class="btn solid nav-cta" href="mitglied.html"{' aria-current=page' if key == 'mitglied' else ''}>Mitglied werden</a>
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Menü</span></button>
 </header>
