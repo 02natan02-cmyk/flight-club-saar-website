@@ -4,7 +4,7 @@ Aufruf: python3 quellen/build.py  → schreibt die Seiten in den Repo-Stamm"""
 import os, re, json, hashlib, pathlib
 ROOT = pathlib.Path(__file__).parent
 SRC, OUT = ROOT / 'src', ROOT.parent  # Quellen in quellen/, fertige Seite im Repo-Stamm (GitHub Pages)
-BASE_URL = os.environ.get('FCS_BASE', 'https://02natan02-cmyk.github.io/flight-club-saar-website/')
+BASE_URL = os.environ.get('FCS_BASE', 'https://flightclub-saar.de/')
 
 PAGES = [
   # datei, titel, beschreibung, menü-schlüssel, zusätzliche skripte
@@ -83,11 +83,11 @@ def head(file, title, desc):
 <head>
 <meta charset="utf-8">
 <script data-fe="bald">try{{if(new URLSearchParams(location.search).has("vorschau"))localStorage.setItem("fcs-vorschau","1");if(Date.now()<Date.parse("2026-10-29T08:00:00+01:00")&&!localStorage.getItem("fcs-vorschau"))location.replace(new URL("bald/",document.baseURI).href)}}catch(e){{}}</script>
+<script data-fe="film">try{{var q=location.search;if(/[?&]film/.test(q)||(Date.now()<Date.parse("2026-11-16T00:00:00+01:00")&&!localStorage.getItem("fcs-film")&&!/[?&](intro|nofilm)/.test(q)&&!navigator.webdriver))document.documentElement.classList.add("film-on","no-intro")}}catch(e){{}}</script>
 <script data-fe="intro">try{{if(Date.now()-(+localStorage.getItem("fcs-intro")||0)<2592e5&&!/[?&]intro/.test(location.search))document.documentElement.classList.add("no-intro")}}catch(e){{}}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#040912">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website"><meta property="og:locale" content="de_DE"><meta property="og:site_name" content="Flight Club Saar e. V.">
@@ -112,10 +112,11 @@ def nav(key):
   <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
   <nav class="nav-links" aria-label="Hauptmenü">{links}</nav>
   <button class="nav-login" type="button" data-login aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path class="sh" d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span class="nl-t">Login</span></button>
+  <button class="nav-kontakt" type="button" data-kontakt aria-haspopup="dialog" aria-label="Kontakt aufnehmen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><span class="nk-t">Kontakt</span></button>
   <a class="btn solid nav-cta" href="mitglied.html"{' aria-current=page' if key == 'mitglied' else ''}>Mitglied werden</a>
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Menü</span></button>
 </header>
-<div class="menu" id="menu" aria-label="Übersicht aller Seiten"><div class="menu-in wrap">{groups}<p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V. · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p></div></div>
+<div class="menu" id="menu" aria-label="Übersicht aller Seiten"><div class="menu-in wrap">{groups}<p class="menu-k"><button class="btn" type="button" data-kontakt>Erstmal Kontakt aufnehmen</button> <a class="btn solid" href="mitglied.html">Mitglied werden</a></p><p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V. · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p></div></div>
 '''
 
 def foot():
@@ -129,7 +130,7 @@ def foot():
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social">{soc}</div></div>
       <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
       <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="bau.html">Bau deine Drohne</a></li><li><a href="werkstatt.html">Betaflight &amp; Löten</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="simulator.html">FPV-Simulator</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
-      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="studio.html">Clip-Studio</a></li><li><a href="termin.html">Hallenabend-Planer</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li><li><a href="index.html?intro">Intro nochmal ansehen</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><button type="button" class="foot-btn" data-kontakt>Kontakt aufnehmen</button></li><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="studio.html">Clip-Studio</a></li><li><a href="termin.html">Hallenabend-Planer</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li><li><a href="index.html?film">Eröffnungsfilm ansehen</a></li><li><a href="index.html?intro">Intro nochmal ansehen</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Mitglieder des Vereins · Website: <a href="https://falcon-eye.de/" target="_blank" rel="noopener">Falcon Eye</a></span></div>

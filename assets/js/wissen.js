@@ -934,7 +934,7 @@ const VS = {
   analog: { name: 'Analog', tag: 'Analog', lat: 'SEHR DIREKT', rows: [['Latenz-Gefühl', 'Sehr direkt. Das Bild kommt ohne Umweg über Komprimierung in die Brille.'], ['Bild', 'Geringe Auflösung. Bei schwachem Signal Rauschen und Streifen.'], ['Bei schwachem Signal', 'Das Bild wird langsam schlechter, bleibt aber meist noch erkennbar.'], ['Kompatibilität', 'Jede analoge Brille, auch von verschiedenen Herstellern.'], ['Preis-Klasse', 'Günstigster Einstieg, gebraucht gut zu finden.']] },
   dji: { name: 'DJI O4', tag: 'Digital', lat: 'GERING', rows: [['Latenz-Gefühl', 'Gering. Für Freestyle und Filmaufnahmen weit verbreitet.'], ['Bild', 'Die höchste Bildqualität der vier Systeme, in HD.'], ['Bei schwachem Signal', 'Bleibt lange klar, dann ruckelt das Bild oder friert ein.'], ['Kompatibilität', 'Nur mit DJI-Brillen: Goggles 3 und N3, seit der Firmware vom Januar 2025 auch Goggles 2 und Integra (dann mit etwas mehr Latenz).'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] },
   walksnail: { name: 'Walksnail Avatar', tag: 'Digital', lat: 'GERING', rows: [['Latenz-Gefühl', 'Gering.'], ['Bild', 'HD, scharfes Bild.'], ['Bei schwachem Signal', 'Bleibt lange klar, dann ruckelt das Bild oder friert ein.'], ['Kompatibilität', 'Nur mit Walksnail-Brillen oder dem Walksnail-Empfänger.'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] },
-  hdzero: { name: 'HDZero', tag: 'Digital', lat: 'SEHR GERING, FEST', rows: [['Latenz-Gefühl', 'Sehr gering und immer gleich: Die Latenz ist fest.'], ['Bild', 'HD, klar. Beliebt bei Rennpiloten.'], ['Bei schwachem Signal', 'Eher Bildfehler als ein stehendes Bild.'], ['Kompatibilität', 'Nur mit HDZero-Brillen oder dem HDZero-Empfänger.'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] }
+  hdzero: { name: 'HDZero', tag: 'Digital', lat: 'SEHR GERING, FEST', rows: [['Latenz-Gefühl', 'Sehr gering und immer gleich: Die Latenz ist fest.'], ['Bild', 'HD, klar. Beliebt bei Rennpiloten.'], ['Bei schwachem Signal', 'Kein Standbild und keine Blöcke: Einzelne Bildpunkte bekommen zufällige Farben, es entsteht buntes Rauschen.'], ['Kompatibilität', 'Nur mit HDZero-Brillen oder dem HDZero-Empfänger.'], ['Preis-Klasse', 'Teurer als analog. Brille und Sender als Paket planen.']] }
 };
 function videosysteme() {
   const sec = $('#video'); if (!sec) return;
@@ -978,7 +978,16 @@ function videosysteme() {
     ctx.clearRect(0, 0, cw, ch);
     const weak = 1 - sig;
     if (sys === 'analog') {
-      const a = .05 + Math.pow(weak, 1.4) * .9;
+      // Echtes Analog-Bild (Rückmeldung Mitglied 28.10.): geringe Auflösung, weiche Kanten, blasse Farben, Zeilen, immer etwas Rauschen
+      if (ready) {
+        const sw = Math.max(80, Math.round(cw / 4.2)), sh = Math.max(60, Math.round(ch / 4.2));
+        if (small.width !== sw || small.height !== sh) { small.width = sw; small.height = sh; }
+        sctx.filter = 'saturate(.62) contrast(1.18) brightness(1.04)'; sctx.drawImage(vid, 0, 0, sw, sh); sctx.filter = 'none';
+        ctx.imageSmoothingEnabled = true; ctx.drawImage(small, 0, 0, sw, sh, 0, 0, cw, ch);
+        ctx.globalAlpha = .18; ctx.globalCompositeOperation = 'screen'; ctx.drawImage(small, 0, 0, sw, sh, 3 * dpr, 0, cw, ch); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+        ctx.fillStyle = 'rgba(0,0,0,.16)'; for (let y = 0; y < ch; y += 3 * dpr) ctx.fillRect(0, y, cw, dpr);
+      }
+      const a = .1 + Math.pow(weak, 1.4) * .85;
       ctx.globalAlpha = a; ctx.globalCompositeOperation = 'source-over'; ctx.imageSmoothingEnabled = true;
       ctx.drawImage(noise[(Math.random() * 4) | 0], 0, 0, cw, ch);
       ctx.globalAlpha = 1;
@@ -988,13 +997,17 @@ function videosysteme() {
       }
       if (weak > .6) { ctx.fillStyle = `rgba(255,255,255,${(weak - .6) * .35 * Math.random()})`; ctx.fillRect(0, 0, cw, ch); }
     } else if (ready) {
-      const block = sig < .55 ? Math.round(lerp(2, 26, clamp((.55 - sig) / .45))) : 1;
+      if (sys === 'hdzero') {
+        // HDZero (Rückmeldung Mitglied 28.10.): kein Standbild, keine Blöcke – einzelne Bildpunkte bekommen zufällige Farben
+        if (sig < .6) { const d = clamp((.6 - sig) / .55), sw = Math.max(80, Math.round(cw / 3)), sh = Math.max(50, Math.round(ch / 3)); if (small.width !== sw || small.height !== sh) { small.width = sw; small.height = sh; } const img = sctx.createImageData(sw, sh), px = img.data, pr = d * d * .6; for (let i = 0; i < px.length; i += 4) if (Math.random() < pr) { px[i] = Math.random() * 255; px[i + 1] = Math.random() * 255; px[i + 2] = Math.random() * 255; px[i + 3] = 255; } sctx.putImageData(img, 0, 0); ctx.imageSmoothingEnabled = false; ctx.drawImage(small, 0, 0, sw, sh, 0, 0, cw, ch); ctx.imageSmoothingEnabled = true; }
+      }
+      const block = sys !== 'hdzero' && sig < .55 ? Math.round(lerp(2, 26, clamp((.55 - sig) / .45))) : 1;
       const freeze = sys !== 'hdzero' && sig < .22;
       if (freeze) {
         if (!frozen || now - lastDraw > lerp(900, 300, clamp(sig / .22))) { drawPix(block); lastDraw = now; frozen = true; } else { ctx.drawImage(small, 0, 0, small.width, small.height, 0, 0, cw, ch); }
       } else if (block > 1) { frozen = false; drawPix(block); }
       else frozen = false;
-      if (sys === 'hdzero' && sig < .5) { // Blockfehler statt Standbild
+      if (false) { // alte Blockfehler-Darstellung (HDZero), ersetzt durch Pixelrauschen
         const n = Math.round((.5 - sig) * 40);
         for (let i = 0; i < n; i++) { const bw = 20 + Math.random() * 80, bh = 10 + Math.random() * 30, x = Math.random() * cw, y = Math.random() * ch; ctx.drawImage(vid, x / cw * vid.videoWidth, y / ch * vid.videoHeight, bw / cw * vid.videoWidth, bh / ch * vid.videoHeight, x + (Math.random() - .5) * 30, y, bw, bh); if (Math.random() < .3) { ctx.fillStyle = 'rgba(120,120,120,.6)'; ctx.fillRect(x, y, bw, bh); } }
       }
@@ -1007,7 +1020,7 @@ function videosysteme() {
     }
     if (flash > 0) { ctx.globalAlpha = flash; ctx.drawImage(noise[(Math.random() * 4) | 0], 0, 0, cw, ch); ctx.globalAlpha = 1; flash = Math.max(0, flash - .06); }
     // Digital bei gutem Signal: Bild ist sauber, nichts zu zeichnen. Schleife ruht bis zur nächsten Änderung.
-    if (sys !== 'analog' && sig >= .55 && flash <= 0) return;
+    if (sys !== 'analog' && (sys === 'hdzero' ? sig >= .6 : sig >= .55) && flash <= 0) return;
     raf = requestAnimationFrame(draw);
   }
   function loop() { if (visible && !raf) raf = requestAnimationFrame(draw); }

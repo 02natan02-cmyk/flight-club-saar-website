@@ -8,8 +8,8 @@ FCS.data = {
     adresse: 'Hedwigstraße 16, 66763 Dillingen',
     register: 'Vereinsregister Saarlouis · VR 1665',
     mail: 'info@flightclub-saar.de',
-    // Solange die Seite ein Entwurf ist, gehen alle Formulare an Falcon Eye (Natan, 24.10.2026)
-    formMail: 'info@falcon-eye.de',
+    // Alle Formulare gehen an info@flightclub-saar.de (Natan 28.10.2026: „Alles soll auf Info Flight Club gehen“), IONOS leitet weiter
+    formMail: 'info@flightclub-saar.de',
     glaeubigerId: 'DE65ZZZ00002925192',
     iban: 'DE87 8306 5408 0007 0100 28', bic: 'GENODEF1SLR', bank: 'Deutsche Skatbank',
     beitrag: { erwachsen: 30, u18: 20, aufnahme: 20 }
@@ -28,7 +28,7 @@ FCS.data = {
   hallen: {},
   termine: [],
   zeit: { von: '18:00', bis: '21:00' },
-  hallenBeitrag: 'bisher 10 € pro Abend',
+  hallenBeitrag: 'ein kleiner Beitrag pro Abend, Infos in der WhatsApp-Gruppe',
   // Crew 2026: Mitglieder mit Beitrag 2026 (Stand Kassenbuch 21.10.2026) + Vorstand.
   // Datenschutz: ok:1 = Einwilligung liegt vor (stand schon auf der alten Vereinsseite, Natan 24.10.2026). Ohne ok erscheint nur die Anzahl.
   // Jugendliche nur mit Pilotennamen.

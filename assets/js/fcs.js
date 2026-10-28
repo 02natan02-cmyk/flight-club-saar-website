@@ -136,7 +136,7 @@
         <div class="ml-txt"><h3 class="h3">${t || 'Nur für Mitglieder'}</h3><p>${x || 'Mit deinem Mitgliedscode siehst du alles.'}</p></div>
         <form class="ml-form" novalidate><label for="ml-c${i}">Dein Mitgliedscode</label><div class="ml-row"><input id="ml-c${i}" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code vom Vorstand" required><button class="btn amber solid" type="submit">Freischalten</button></div>
         <p class="ml-err" role="alert" hidden></p></form>
-        <p class="ml-alt">Noch kein Mitglied? <a href="mitglied.html">Mitglied werden</a>${wa ? ` · Code vergessen? <a href="https://wa.me/${wa}?text=${encodeURIComponent('Hallo, ich bin Mitglied im Flight Club Saar und brauche meinen Mitgliedscode für die Website.')}" target="_blank" rel="noopener">Vorstand fragen</a>` : ''}</p>
+        <p class="ml-alt">Noch kein Mitglied? <a href="mitglied.html">Mitglied werden</a> · <button type="button" class="linkbtn" data-kontakt>Erstmal Kontakt aufnehmen</button>${wa ? ` · Code vergessen? <a href="https://wa.me/${wa}?text=${encodeURIComponent('Hallo, ich bin Mitglied im Flight Club Saar und brauche meinen Mitgliedscode für die Website.')}" target="_blank" rel="noopener">Vorstand fragen</a>` : ''}</p>
       </div>`;
       const f = $('form', el), inp = $('input', f), err = $('.ml-err', f), btn = $('button', f);
       f.addEventListener('submit', async e => {
@@ -156,8 +156,80 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    film(); kontaktUI(); loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
+  }
+
+
+  /* ---------- Eröffnungsfilm: beim ersten Besuch bis Mitte November, danach über ?film ---------- */
+  function film() {
+    const H = document.documentElement; if (!H.classList.contains('film-on')) return;
+    const V = 'assets/film/';
+    const box = document.createElement('div');
+    box.className = 'film'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Eröffnungsfilm des Flight Club Saar');
+    box.innerHTML = `<video class="film-v" playsinline muted preload="auto" poster="${V}poster.jpg"><source src="${V}eroeffnung.mp4" type="video/mp4"><track kind="captions" src="${V}eroeffnung.vtt" srclang="de" label="Deutsch" default></video>
+      <div class="film-shade"></div>
+      <div class="film-start"><p class="hud film-kick">Flight Club Saar · Die neue Website</p><h2 class="film-h">Die Seite ist offen.</h2><p class="film-sub">Zweieinhalb Minuten, die dir alles zeigen. Mit Ton am schönsten.</p>
+        <button class="btn solid film-play" type="button"><span aria-hidden="true">▶</span> Film ab, mit Ton</button></div>
+      <div class="film-bar"><span class="film-prog"><i></i></span><button class="film-snd" type="button" hidden>Ton an</button><button class="film-skip" type="button">Überspringen ›</button></div>`;
+    document.body.appendChild(box); H.classList.add('film-open');
+    const v = box.querySelector('video'), prog = box.querySelector('.film-prog i'), snd = box.querySelector('.film-snd');
+    const done = () => {
+      try { localStorage.setItem('fcs-film', String(Date.now())); } catch (e) {}
+      box.classList.add('out'); H.classList.remove('film-open', 'film-on');
+      try { v.pause(); } catch (e) {}
+      setTimeout(() => box.remove(), 700);
+      if (/[?&]film/.test(location.search)) history.replaceState(null, '', location.pathname + location.hash);
+      document.removeEventListener('keydown', key);
+    };
+    const key = e => { if (e.key === 'Escape') done(); };
+    document.addEventListener('keydown', key);
+    const play = () => { box.classList.add('on'); v.muted = false; v.currentTime = 0; snd.hidden = true; const p = v.play(); if (p && p.catch) p.catch(() => { v.muted = true; v.play().catch(() => {}); snd.hidden = false; }); };
+    box.querySelector('.film-play').addEventListener('click', play);
+    box.querySelector('.film-skip').addEventListener('click', done);
+    snd.addEventListener('click', () => { v.muted = false; snd.hidden = true; });
+    v.addEventListener('timeupdate', () => { if (v.duration) prog.style.transform = `scaleX(${v.currentTime / v.duration})`; });
+    v.addEventListener('ended', () => { if (box.classList.contains('on')) done(); else { v.currentTime = 0; v.play().catch(() => {}); } });
+    v.addEventListener('click', () => { if (!box.classList.contains('on')) play(); });
+    // stummer Vorgeschmack im Hintergrund, bis jemand auf Play drückt
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    setTimeout(() => box.querySelector('.film-play').focus({ preventScroll: true }), 60);
+  }
+
+
+  /* ---------- Kontakt: „Erstmal Kontakt aufnehmen“ gleichwertig neben „Mitglied werden“ (Natan 28.10. 23:32) ---------- */
+  function kontaktUI() {
+    const K = (D.kontakte || []).filter(k => k.wa);
+    const dlg = document.createElement('dialog'); dlg.className = 'ml-dlg kt-dlg'; dlg.setAttribute('aria-labelledby', 'kt-h');
+    const wa = (k) => `https://wa.me/${k.wa}?text=${encodeURIComponent('Hallo ' + k.name + ', ich habe eine Frage zum Flight Club Saar: ')}`;
+    dlg.innerHTML = `<button class="ml-x" type="button" aria-label="Schließen">×</button>
+      <div class="kt-box">
+        <p class="hud kt-kick">Unverbindlich und kostenlos</p>
+        <h3 class="h3" id="kt-h">Erstmal Kontakt aufnehmen</h3>
+        <p class="kt-p">Frag uns einfach: Hallenfliegen, deine erste Drohne, Technik oder wie der Verein tickt. Mitglied werden kannst du später immer noch.</p>
+        ${K.length ? `<div class="kt-wa">${K.map(k => `<a class="btn" href="${wa(k)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 9.5c.4 2 2 3.6 4.4 4.6l1.2-1.1 1.9.8-.4 1.6c-3.6.3-7.3-3.2-7.6-6.6L10 8.5l.9 1.8z"/></svg>WhatsApp an ${k.name} <small>${k.rolle || ''}</small></a>`).join('')}</div><p class="kt-or"><span>oder schreib uns hier</span></p>` : ''}
+        <form class="kt-form" data-fcs-form data-antwort="kontakt" novalidate>
+          <input type="hidden" name="_subject" value="Kontaktanfrage über die Website (Flight Club Saar)">
+          <input type="hidden" name="Formular" value="Kontakt aufnehmen">
+          <input type="hidden" name="Seite" value="${location.pathname.split('/').pop() || 'index.html'}">
+          <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
+          <div class="kt-chips" role="group" aria-label="Worum geht es?">${['Allgemeine Frage', 'In die WhatsApp-Gruppe', 'Hallenfliegen', 'Erste Drohne', 'Mitgliedschaft', 'Technik'].map((x, i) => `<label class="kt-chip"><input type="radio" name="Thema" value="${x}" ${i ? '' : 'checked'}><span>${x}</span></label>`).join('')}</div>
+          <div class="field"><label for="kt-n">Dein Name</label><input id="kt-n" name="Name" autocomplete="name" required><span class="err">Bitte gib deinen Namen an.</span></div>
+          <div class="kt-two"><div class="field"><label for="kt-k">Deine E-Mail <small>für Antwort und Bestätigung</small></label><input id="kt-k" name="email" type="email" inputmode="email" autocomplete="email" required><span class="err">Bitte eine gültige E-Mail-Adresse eingeben, zum Beispiel name@beispiel.de.</span></div><div class="field"><label for="kt-t">Handynummer <small>freiwillig, für WhatsApp</small></label><input id="kt-t" name="Handy (WhatsApp)" type="tel" inputmode="tel" autocomplete="tel"></div></div>
+          <div class="field"><label for="kt-m">Deine Nachricht</label><textarea id="kt-m" name="Nachricht" rows="4" required placeholder="Zum Beispiel: Ich würde gern mal beim Hallenfliegen zuschauen."></textarea><span class="err">Schreib uns kurz, worum es geht.</span></div>
+          <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Ihr dürft meine Angaben nutzen, um mir zu antworten (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+          <div class="btns"><button class="btn amber solid" type="submit">Nachricht senden <span class="arr">→</span></button></div>
+          <div class="form-ok" hidden><b>Danke!</b> Deine Nachricht ist beim Vorstand angekommen. Eine Bestätigung ist unterwegs in dein Postfach, wir melden uns, sobald einer unserer Piloten Zeit hat.</div>
+          <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schreib uns per WhatsApp.</div>
+        </form>
+        <p class="kt-alt">Lieber gleich dabei sein? <a href="mitglied.html">Mitglied werden</a></p>
+      </div>`;
+    document.body.appendChild(dlg);
+    const open = () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); setTimeout(() => { const i = $('#kt-n', dlg); if (i) i.focus(); }, 60); };
+    document.addEventListener('click', e => { const b = e.target.closest('[data-kontakt]'); if (!b) return; e.preventDefault(); const md = b.closest('dialog'); if (md && md !== dlg && md.close) md.close(); const mn = $('.menu.open, .menu[data-open]'); if (mn) { const bg = $('.burger'); if (bg && bg.getAttribute('aria-expanded') === 'true') bg.click(); } open(); });
+    $('.ml-x', dlg).addEventListener('click', () => dlg.close ? dlg.close() : dlg.removeAttribute('open'));
+    dlg.addEventListener('click', e => { if (e.target === dlg && dlg.close) dlg.close(); });
+    if (/[#&]kontakt\b/.test(location.hash)) setTimeout(open, 400);
   }
 
   /* Natives Scrollen (ruckelt nicht). Sprungmarken gleiten mit Abstand zur Leiste oben. */
@@ -269,6 +341,9 @@
     document.documentElement.classList.add('dronecur');
     const r = document.createElement('div'); r.className = 'cdrone'; r.setAttribute('aria-hidden', 'true');
     r.innerHTML = `<svg class="cd-q" viewBox="-50 -50 100 100"><circle class="cd-ring" r="46"/><g class="cd-arms"><path d="M-24-24L24 24M24-24L-24 24"/></g><rect class="cd-body" x="-11" y="-11" width="22" height="22" rx="6" transform="rotate(45)"/>${[[-24,-24],[24,-24],[-24,24],[24,24]].map(([x,y],i)=>`<g transform="translate(${x} ${y})"><circle class="cd-pr" r="12"/><g class="cd-bl ${i%2?'ccw':'cw'}"><path d="M-11 0H11"/></g><circle class="cd-hub" r="3"/></g>`).join('')}</svg>`;
+    // In Werkbank, Simulator und Clip-Studio stört die Begleit-Drohne (Natan 28.10.): dort nur das Fadenkreuz
+    // Natan 28.10. 23:35: die Begleit-Drohne nervt, nur noch das Fadenkreuz
+    r.classList.add('off');
     document.body.appendChild(r);
     const L = document.createElement('div'); L.className = 'cd-lock'; L.setAttribute('aria-hidden', 'true'); L.innerHTML = '<i></i><i></i><i></i><i></i><span>LOCK</span>'; document.body.appendChild(L);
     // Genauer Zeiger = Fadenkreuz aus dem FPV-OSD mit künstlichem Horizont (Natan 28.10.: größer und passend zum Thema)
@@ -288,13 +363,16 @@
     const hzEl = dot.querySelector('.cx-hz');
     const loop = () => {
       // Feder-Dämpfer: fliegt wie ein Kopter hinterher
-      const ax = (tx + 30 - x) * .09, ay = (ty + 30 - y) * .09; // fliegt als Begleiter schräg hinter dem Fadenkreuz vx = (vx + ax) * .72; vy = (vy + ay) * .72; x += vx; y += vy;
+      // fliegt als Begleiter schräg hinter dem Fadenkreuz
+      const ax = (tx + 30 - x) * .09, ay = (ty + 30 - y) * .09; vx = (vx + ax) * .72; vy = (vy + ay) * .72; x += vx; y += vy;
       if (flip > 0) { ang += 24; if (ang >= 360) { ang = 0; flip = 0; } }
       const bank = Math.max(-38, Math.min(38, vx * 2.2)), pitch = Math.max(-38, Math.min(38, -vy * 2.2));
       r.style.transform = `translate(${x}px,${y}px) perspective(300px) rotateX(${pitch}deg) rotateY(${bank}deg) rotate(${ang}deg)`;
       dot.style.transform = `translate(${tx}px,${ty}px)`;
       hz += (Math.max(-32, Math.min(32, (tx - px) * 1.6)) - hz) * .18; px = tx; hzEl.style.transform = `rotate(${hz.toFixed(1)}deg)`;
       dot.classList.toggle('lock', !!lock);
+      // Ziel weg (z. B. neu gezeichnet): Rahmen nicht in die Ecke fliegen lassen
+      if (lock && !lock.isConnected) { lock = null; L.classList.remove('on'); r.classList.remove('lock'); }
       if (lock) { const b = lock.getBoundingClientRect(); L.style.width = (b.width + 16) + 'px'; L.style.height = (b.height + 16) + 'px'; L.style.transform = `translate(${b.left - 8}px,${b.top - 8}px)`; }
       requestAnimationFrame(loop);
     };
@@ -345,11 +423,18 @@
     });
   }
 
-  /* ---------- Formulare (Entwurf: alles an Falcon Eye) ---------- */
+  /* ---------- Formulare: alles an info@flightclub-saar.de, wer eine E-Mail angibt, bekommt eine Bestätigung (Natan 29.10. 00:06) ---------- */
+  const GRUSS = '\n\nBrille an, Welt aus!\nDein Flight Club Saar e. V.\nflightclub-saar.de';
+  const ANTWORT = {
+    kontakt: 'Hallo,\n\ndanke fürs Ausfüllen und willkommen beim Flight Club Saar!\n\nDeine Nachricht ist bei uns angekommen. Wir melden uns, sobald einer unserer Piloten Zeit hat.' + GRUSS,
+    antrag: 'Hallo,\n\ndanke fürs Ausfüllen deines Mitgliedsantrags und willkommen beim Flight Club Saar!\n\nDein Antrag ist bei uns angekommen. Der Vorstand schaut ihn sich an und meldet sich bei dir, sobald einer unserer Piloten Zeit hat. Wenn alles geklärt ist, bekommst du deinen persönlichen Mitgliedscode für Spot-Karte, Hallentermine und Gyroflow.' + GRUSS,
+    frage: 'Hallo,\n\ndanke für deine Frage und willkommen beim Flight Club Saar!\n\nSie ist bei uns angekommen. Wir melden uns, sobald einer unserer Piloten Zeit hat.' + GRUSS
+  };
   FCS.send = async (form, extra = {}) => {
-    const mail = (D.verein || {}).formMail || 'info@falcon-eye.de';
+    const mail = (D.verein || {}).formMail || 'info@flightclub-saar.de';
     const fd = new FormData(form);
     if (fd.get('_honey')) return { ok: true };
+    const an = ANTWORT[form.dataset.antwort]; if (an && String(fd.get('email') || '').includes('@') && !fd.get('_autoresponse')) fd.append('_autoresponse', an);
     Object.entries(extra).forEach(([k, v]) => v instanceof Blob ? fd.append(k, v, k + '.png') : fd.append(k, v));
     fd.append('_template', 'table'); fd.append('_captcha', 'false');
     const hasFile = [...fd.values()].some(v => v instanceof Blob && v.size);
@@ -361,7 +446,7 @@
   };
   // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
   FCS.notify = async (subject, fields = {}) => {
-    const mail = (D.verein || {}).formMail || 'info@falcon-eye.de';
+    const mail = (D.verein || {}).formMail || 'info@flightclub-saar.de';
     const body = Object.assign({ _subject: subject, _template: 'table', _captcha: 'false', Seite: location.href }, fields);
     try {
       const res = await fetch('https://formsubmit.co/ajax/' + mail, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });

@@ -155,7 +155,10 @@
     renderClips(); steps(); goState(); syncUp();
     const tag = $('#st-tag'); if (tag) { tag.textContent = 'DEIN VIDEO'; tag.classList.add('own'); }
     const drop = $('#st-drop'); if (drop) drop.classList.add('gone'); hideHint();
-    if (!inView(stage)) go($('#st-steps') || wrap, -100);
+    // Rückmeldung Mitglied 28.10.: nach der Auswahl immer zum Editor springen und zeigen, dass das Video drin ist
+    go($('#st-steps') || wrap, -100);
+    if (stage) { stage.classList.remove('st-loaded'); void stage.offsetWidth; stage.classList.add('st-loaded'); }
+    { const nn = $('#clips-note'); if (!nn || nn.hidden) note1(files.length > 1 ? `${files.length} Videos geladen. Jetzt hier im Editor schneiden.` : 'Dein Video ist geladen. Jetzt hier im Editor schneiden.'); }
   }
   function removeClip(c, quiet) {
     const i = S.clips.indexOf(c); if (i < 0) return;
