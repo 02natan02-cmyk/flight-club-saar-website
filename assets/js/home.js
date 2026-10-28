@@ -86,6 +86,18 @@
     const n = FCS.next(), list = $('#t-list'); if (!list) return;
     const all = FCS.termine();
     $('#stat-hallen') && ($('#stat-hallen').dataset.count = all.length);
+    // Gäste: Termine nur für Mitglieder (Natan 28.10.2026), statt Datum ein Anreißer mit Code-Feld auf der Hallenseite
+    if (!(FCS.member && FCS.member.ok)) {
+      $('#termin').classList.add('t-gast');
+      $('#t-datum').textContent = 'Hallenfliegen für Mitglieder';
+      $('#t-ort').textContent = 'Den ganzen Winter samstagabends in einer Halle im Saarland. Termine und Ort siehst du mit deinem Mitgliedscode.';
+      $('#t-cd').innerHTML = '<div><b>??</b><span>Tage</span></div><div><b>??</b><span>Stunden</span></div><div><b>??</b><span>Minuten</span></div><div><b>??</b><span>Sekunden</span></div>';
+      $('#t-ics').style.display = 'none';
+      const r = $('#t-route'); r.removeAttribute('target'); r.href = 'hallenfliegen.html#termine-gast'; r.className = 'btn solid'; r.innerHTML = 'Code eingeben <span class="arr">→</span>';
+      const al = $('#termin .btns a.ghost'); if (al) { al.href = 'mitglied.html'; al.textContent = 'Mitglied werden'; }
+      list.innerHTML = '<li class="lock"><span>Sa ··.··.</span><span class="mute">Halle</span></li>'.repeat(3);
+      return;
+    }
     list.innerHTML = all.map(t => `<li class="${t.vorbei ? 'past' : ''}${n && t.d === n.d ? ' nx' : ''}"><span>${FCS.fmtDate(t.d)}</span><span class="mute">${t.halle.geheim ? 'Halle' : t.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}</span></li>`).join('');
     if (!n) { $('#t-datum').textContent = 'Neue Termine folgen'; $('#t-ort').textContent = 'Die nächste Saison kündigen wir in der Gruppe und hier an.'; $('#t-cd').hidden = true; return; }
     $('#t-datum').textContent = FCS.fmtDate(n.d, 1);

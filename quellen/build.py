@@ -45,7 +45,7 @@ MI = {
  'sim': '<rect x="3" y="9" width="18" height="11" rx="3"/><circle cx="8.5" cy="14.5" r="2.2"/><circle cx="15.5" cy="14.5" r="2.2"/><path d="M6.5 9V4M17.5 9V4"/>',
 }
 MENU = [
- ('Fliegen', [('hallenfliegen.html', 'halle', 'Hallenfliegen', 'Tiny Whoops im Winter. Nächster Termin: <span data-next>bald</span>'),
+ ('Fliegen', [('hallenfliegen.html', 'halle', 'Hallenfliegen', 'Tiny Whoops im Winter. Nächster Termin: <span data-next>für Mitglieder</span>'),
               ('termin.html', 'termin', 'Hallenabend-Planer', 'Dabei sein, Kanal und Gruppe für den Abend'),
               ('spots.html', 'spots', 'Spot-Karte', 'Wo wir draußen fliegen, mit Route, Regeln und Bewertungen'),
               ('simulator.html', 'sim', 'FPV-Simulator', 'Mit Funke, Controller oder Handy im Browser fliegen')]),

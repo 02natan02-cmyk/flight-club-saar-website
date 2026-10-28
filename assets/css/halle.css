@@ -251,3 +251,23 @@ main [hidden]{display:none!important}
 .ticket.done .t-plan{color:#cfdcec}
 .hp-big .btns .btn.amber{order:-1}
 .hp-lock{margin-top:28px}
+/* Gäste: Termine nur für Mitglieder (Natan 28.10.2026) */
+.hp-gast-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(18px,2.4vw,32px);align-items:center}
+.hp-gast-grid .hp-lock{margin-top:0}
+.hp-gast-tease{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;padding:20px;border-radius:var(--r);border:1px solid var(--line-hi);background:linear-gradient(180deg,rgba(13,31,61,.7),rgba(7,18,37,.7));overflow:hidden}
+.hp-gast-ring{position:relative;width:150px;aspect-ratio:1}
+.hp-gast-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hp-gast-ring .r-bg{fill:none;stroke:var(--line);stroke-width:8}
+.hp-gast-ring .r-fg{fill:none;stroke:var(--amber);stroke-width:8;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:.72;animation:hpGastSpin 6s linear infinite}
+@keyframes hpGastSpin{to{stroke-dashoffset:-.28}}
+.hp-gast-in{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:2px}
+.hp-gast-in b{font:400 46px/1 var(--big);color:var(--amber);animation:hpGastBlink 1.4s steps(2) infinite}
+@keyframes hpGastBlink{50%{opacity:.35}}
+.hp-gast-in span,.hp-gast-in small{font:600 11px/1.2 var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.hp-gast-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.hp-gast-list li{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(4,12,28,.5);filter:blur(2.5px);opacity:.75}
+.hp-gast-list b{font:400 24px/1 var(--big);color:var(--osd)}
+.hp-gast-list span{color:var(--mute)}
+@media (max-width:980px){.hp-gast-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:420px){.hp-gast-tease{grid-template-columns:minmax(0,1fr);justify-items:center}.hp-gast-list{width:100%}}
+@media (prefers-reduced-motion:reduce){.hp-gast-ring .r-fg,.hp-gast-in b{animation:none}}
