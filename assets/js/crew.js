@@ -1,5 +1,5 @@
 /* Flight Club Saar – Crew-Seite
-   Seitenkopf mit OSD-Menü, Verweis-Karte zum Clip-Studio (filmen.html), Crew 2026, Piloten aus der Community
+   Seitenkopf mit OSD-Menü, Verweis-Karte zum Clip-Studio (studio.html), Crew 2026, Piloten aus der Community
    als dichtes Raster mit Wendekarten, Profil mit Live-Karte, Pinnwand.
    Das Clip-Studio selbst liegt in studio.js. Jede Funktion bricht ab, wenn ihr Element fehlt. */
 (function () {
@@ -502,7 +502,7 @@
       $('#pin-lede').textContent = 'Neuer Kopter, gelungener Flug, Frage an alle: Schreib einen Beitrag. Der Vorstand gibt ihn frei, dann steht er hier.';
       $('#nosig-t').textContent = 'Die ersten Beiträge erscheinen nach Freigabe.';
       const cf = $('#pw-code-f'); cf.hidden = true; $('#pw-code').required = false;
-      $('#pw-go').innerHTML = 'Beitrag senden <span class="arr">→</span>'; $('#pw-draft').hidden = false;
+      $('#pw-go').innerHTML = 'Beitrag senden <span class="arr">→</span>'; { const pd = $('#pw-draft'); if (pd) pd.hidden = false; }
       $('#pw-dsgvo').innerHTML = 'Mein Beitrag darf mit meinem Namen auf der Seite erscheinen (<a href="datenschutz.html">Datenschutz</a>).';
     }
     noSignal();

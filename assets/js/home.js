@@ -13,9 +13,10 @@
   function intro() {
     const el = $('#intro'); if (!el) return Promise.resolve();
     const q = location.search;
-    let seen = false; try { seen = !!sessionStorage.getItem('fcs-intro'); } catch (e) {}
+    // Intro nur beim ersten Besuch und danach höchstens alle drei Tage (Natan 25.10.), „Überspringen“ jederzeit
+    let seen = document.documentElement.classList.contains('no-intro');
     if (q.includes('nointro') || (seen && !q.includes('intro')) || RM || !window.gsap) { el.classList.add('gone'); return Promise.resolve(); }
-    try { sessionStorage.setItem('fcs-intro', '1'); } catch (e) {}
+    try { localStorage.setItem('fcs-intro', String(Date.now())); } catch (e) {}
     // Neues 3D-Intro (Kreis, Drohne fliegt ein, wird zum Logo). Ohne WebGL oder bei Fehler: altes Intro.
     const v = el.dataset.i3d || '1';
     const url = new URL('assets/js/intro3d.js?v=' + v, document.baseURI).href;

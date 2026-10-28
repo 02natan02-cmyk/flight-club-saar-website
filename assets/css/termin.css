@@ -433,3 +433,9 @@ fieldset.field legend{padding:0;margin-bottom:8px}
 @media (max-width:560px){.tp-tm-h .tp-step{flex:1 1 100%}.tp-tms{grid-template-columns:1fr}}
 .tp-hh{flex-wrap:wrap}
 @media (max-width:400px){.tp-hg{font-size:10.5px;padding:4px 7px}}
+
+/* Neulinge und Organisation getrennt (28.10.) */
+.tp-new{margin:0 0 14px;padding:14px 16px;font-size:15px;line-height:1.5}
+.tp-new a{color:var(--sig)}
+.tp-orga{margin:0 0 16px}
+.tp-orga .fold-in{padding-top:12px}

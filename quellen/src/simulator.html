@@ -5,6 +5,10 @@
       <p class="crumb"><a href="index.html">Start</a> / Simulator</p>
       <h1 class="h1" id="sim-h1">FPV-Simulator</h1>
       <p class="lede">Flieg mit Funke, Controller, Touch oder Tastatur durch unsere Turnhalle. Frei herumfliegen oder ein gewertetes Rennen gegen die Crew, direkt im Browser.</p>
+      <ol class="sim-steps" aria-label="So startest du">
+        <li><b>1</b><span><strong>Steuerung wählen:</strong> Tastatur, Touch, Controller oder Funke. Der Simulator erkennt es meist von allein.</span></li>
+        <li><b>2</b><span><strong>Losfliegen:</strong> Freiflug oder Rennen starten. Alles Weitere kannst du später einstellen.</span></li>
+      </ol>
     </div>
     <div class="btns sim-head-b">
       <button type="button" class="btn solid" data-sim-start>Simulator starten <span class="arr" aria-hidden="true">→</span></button>
@@ -153,6 +157,14 @@
             <span class="sim-src-dot" aria-hidden="true"></span>
             <div><b data-src-n>Tastatur</b><span data-src-s>Klick in die Bühne, dann W, A, S, D und Pfeiltasten.</span></div>
           </div>
+          <div class="sim-touchguide" role="note">
+            <h3 class="sim-h3">Am Handy: so steuerst du</h3>
+            <ul>
+              <li><b>Linker Daumen:</b> Gas (hoch und runter) und Gieren (links und rechts drehen).</li>
+              <li><b>Rechter Daumen:</b> Nicken (vor und zurück) und Rollen (zur Seite kippen).</li>
+              <li>Leg beide Daumen auf die Bildschirmhälften. Der Stick erscheint dort, wo du hintippst. Loslassen zentriert den rechten Stick.</li>
+            </ul>
+          </div>
           <p class="sim-note" data-pad-hint>Funke per USB anstecken oder Controller koppeln, dann einen Stick bewegen oder einen Knopf drücken. Browser zeigen Controller erst nach einer Eingabe.</p>
           <div class="sim-field" data-pad-pick hidden>
             <label for="sim-pad">Controller</label>
@@ -193,6 +205,9 @@
             </div>
           </div>
 
+          <details class="fold sim-fold sim-adv">
+            <summary>Erweitert: Totzone, Achsen umkehren, Stick-Belegung</summary>
+            <div class="fold-in">
           <div class="sim-field">
             <label for="sim-dz">Totzone in der Stickmitte <output data-out="dz">4 %</output></label>
             <input type="range" id="sim-dz" class="sim-range" min="0" max="20" step="1" value="4" data-set="dz">
@@ -215,6 +230,8 @@
               <label><input type="radio" name="sim-padmode" value="1" data-set="padMode"><span>Mode 1: Gas rechts</span></label>
             </div>
           </fieldset>
+            </div>
+          </details>
 
           <details class="fold sim-fold">
             <summary>Tastatur, Touch und Controller</summary>
@@ -255,6 +272,9 @@
             <p class="sim-note sm" data-craft-note></p>
           </fieldset>
 
+          <details class="fold sim-fold sim-adv">
+            <summary>Erweitert: Winkel, Airmode, Rates und Gas</summary>
+            <div class="fold-in">
           <div class="sim-angle" data-angle-box>
             <label class="check sim-check"><input type="checkbox" data-set="hoverHelp"><span><b>Schwebe-Hilfe:</b> Gas-Mitte hält die Höhe, darüber steigst du, darunter sinkst du.</span></label>
             <div class="sim-field">
@@ -324,6 +344,8 @@
             <input type="range" id="sim-texpo" class="sim-range" min="0" max="100" step="1" value="0" data-set="thrExpo">
           </div>
           <p class="sim-note sm" data-hover-note>Schwebegas mit diesem Kopter: ungefähr <b data-hover>41 %</b></p>
+            </div>
+          </details>
 
           <h3 class="sim-h3">Deine Bestzeiten auf diesem Gerät</h3>
           <ul class="sim-best" data-best></ul>

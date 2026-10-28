@@ -357,3 +357,10 @@
 .th-cv-ok{color:var(--green)}
 .th-cv-warn{color:var(--amber)}
 .th-cv-no{color:var(--red)}
+
+/* Nicht gelöst? */
+.th-ask{margin:10px 0 0;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,176,32,.35);background:rgba(255,176,32,.06);font-size:14px;color:#e6eef7;overflow-wrap:anywhere}
+.th-ask a{color:var(--sig);text-decoration:underline}
+.th-ask-static{margin-top:22px;max-width:68ch}
+.th-ask-static h3{margin:0 0 6px}
+.th-ask-static p{margin:0;font-size:15px}

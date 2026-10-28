@@ -1,4 +1,4 @@
-<!-- INTRO: „Brille an“ – läuft bei jedem Öffnen, „Überspringen“ jederzeit -->
+<!-- INTRO: „Brille an“ – beim ersten Besuch, danach höchstens alle drei Tage, „Überspringen“ jederzeit -->
 <div class="intro" id="intro" role="dialog" aria-label="Intro" data-i3d="%%V:assets/js/intro3d.js%%">
   <canvas class="intro-noise"></canvas>
   <svg class="intro-lens" viewBox="0 0 100 60" preserveAspectRatio="xMidYMid slice"><defs><mask id="lensmask"><rect width="100" height="60" fill="#fff"/><g class="lens-holes"><ellipse class="lh l" cx="33" cy="30" rx="0" ry="0" fill="#000"/><ellipse class="lh r" cx="67" cy="30" rx="0" ry="0" fill="#000"/></g></mask></defs><rect width="100" height="60" fill="#02050b" mask="url(#lensmask)"/></svg>
@@ -28,7 +28,7 @@
     <p class="lede hero-l">Wir fliegen FPV-Drohnen, bauen sie selbst, crashen sie und reparieren sie zusammen. Im Frühjahr draußen an den Spots, im Winter in der Halle. Komm vorbei!</p>
     <div class="btns hero-b">
       <a class="btn amber solid" href="hallenfliegen.html"><span class="dot" style="color:var(--night)"></span>Hallenfliegen <span data-next="kurz">Sa 14.11.</span></a>
-      <a class="btn" href="#ueberblick">Alles im Überblick <span class="arr">↓</span></a>
+      <a class="btn" href="mitglied.html">Mitglied werden <span class="arr">→</span></a>
     </div>
   </div>
   <a class="scrollhint" href="#ueberblick"><span>Entdecken</span><i aria-hidden="true"></i></a>
@@ -55,7 +55,7 @@
       </a>
       <a class="go-t go-member" href="mitglied.html" data-reveal>
         <span class="go-m go-card" aria-hidden="true"><span class="gc"><img src="assets/img/logo-mark.svg" alt="" width="34" height="34"><em>Mitgliedskarte 2026</em><strong>Dein Name</strong></span></span>
-        <b class="go-h">Mitglied werden</b><span class="go-p">Antrag online, in ein paar Minuten.</span><span class="go-go">Zum Antrag <span class="arr">→</span></span>
+        <b class="go-h">Mitglied werden</b><span class="go-p">Kosten, Vorteile und Antrag in ein paar Minuten.</span><span class="go-go">Zum Antrag <span class="arr">→</span></span>
       </a>
       <a class="go-t go-wissen" href="wissen.html" data-reveal>
         <span class="go-m"><img src="media/hg_whoops_v1.webp" alt="" loading="lazy" width="800" height="450"></span>
@@ -65,9 +65,9 @@
         <span class="go-m go-term hud" aria-hidden="true"><span>&gt; status</span><span class="warn">Arming disabled: RXLOSS</span><span>&gt; FPV-Doktor: Kein Signal vom Empfänger. So behebst du es<i class="blink">_</i></span></span>
         <b class="go-h">Technik-Hilfe</b><span class="go-p">Kopter armt nicht? Der FPV-Doktor hilft.</span><span class="go-go">Fehler finden <span class="arr">→</span></span>
       </a>
-      <a class="go-t go-studio" href="filmen.html" data-reveal>
+      <a class="go-t go-studio" href="studio.html" data-reveal>
         <span class="go-m"><video data-auto muted loop playsinline preload="none" poster="media/kanal/stayfly.webp" data-src="media/kanal/stayfly.mp4"></video><img class="go-stk" src="assets/img/logo-mark.svg" alt="" width="54" height="54"><img class="go-stk2" src="assets/img/partner/fpv-alien.webp" alt="" width="60" height="84"></span>
-        <b class="go-h">Clip-Studio</b><span class="go-p">Video hochladen, Logo und Sticker drauf, runterladen oder einsenden.</span><span class="go-go">Video machen <span class="arr">→</span></span>
+        <b class="go-h">Clip-Studio</b><span class="go-p">Schneiden, Musik, Logo drauf. Für Mitglieder mit Gyroflow.</span><span class="go-go">Video machen <span class="arr">→</span></span>
       </a>
       <a class="go-t go-crew sm" href="crew.html" data-reveal>
         <span class="go-faces" id="go-faces" aria-hidden="true"></span>
@@ -76,6 +76,10 @@
       <a class="go-t go-markt sm" href="markt.html" data-reveal>
         <span class="go-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/></svg></span>
         <b class="go-h">Biete/Suche</b><span class="go-p">Teile von Piloten für Piloten.</span>
+      </a>
+      <a class="go-t go-sim sm" href="simulator.html" data-reveal>
+        <span class="go-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="11" rx="5.5"/><path d="M7.5 10.5v4M5.5 12.5h4"/><circle cx="16" cy="11.5" r="1.2"/><circle cx="18" cy="14" r="1.2"/></svg></span>
+        <b class="go-h">Simulator</b><span class="go-p">Im Browser durch unsere Halle fliegen, ohne Crash-Kosten.</span>
       </a>
       <a class="go-t go-spiel sm" href="#spiel" data-reveal>
         <span class="go-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.2 8.2l2.3 2.3M15.8 8.2l-2.3 2.3M8.2 15.8l2.3-2.3M15.8 15.8l-2.3-2.3"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg></span>

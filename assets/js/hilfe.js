@@ -441,6 +441,7 @@
     t.remove();
   }
   const chip = (label, data, cls = '') => `<button type="button" class="th-chip ${cls}" ${Object.entries(data).map(([k, v]) => `data-${k}="${esc(v)}"`).join(' ')}>${esc(label)}</button>`;
+  const vereinHint = () => '<p class="th-ask"><b>Nicht gelöst? Frag den Verein.</b> Schreib auf die <a href="crew.html#pinnwand">Pinnwand der Crew</a> oder bring den Kopter zum <a href="hallenfliegen.html">Hallenabend</a> mit.</p>';
   const stdChips = () => chip('Hat geholfen', { act: 'ok' }, 'ok') + chip('Frage an den Verein schicken', { act: 'verein' }, 'ask');
   const label = (id) => (BY[id] && (BY[id].flag ? BY[id].flag.n + ': ' + BY[id].flag.t : BY[id].t)) || id;
 
@@ -483,7 +484,7 @@
       return showNode(n, e, opts.alts);
     }
     await typing(Math.min(1300, 450 + (e.s ? e.s.length * 110 : 200)));
-    const m = bubble('bot', entryHTML(e) + `<div class="th-chips">${entryChips(e, opts.alts)}</div>`);
+    const m = bubble('bot', entryHTML(e) + vereinHint() + `<div class="th-chips">${entryChips(e, opts.alts)}</div>`);
     animIn(m, true);
   }
   async function showNode(id, e, alts) {
@@ -501,7 +502,7 @@
       else c += chip(l, { node: to });
     });
     if (n.end) c += stdChips();
-    const m = bubble('bot', h + `<div class="th-chips">${c}</div>`);
+    const m = bubble('bot', h + (n.end ? vereinHint() : '') + `<div class="th-chips">${c}</div>`);
     animIn(m, true);
   }
   async function smallTalk(e) {

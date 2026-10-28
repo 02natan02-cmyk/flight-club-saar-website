@@ -87,7 +87,7 @@
     addEventListener('scroll', on, { passive: true }); on();
     const b = $('.burger'), m = $('.menu');
     const setOpen = open => {
-      b.setAttribute('aria-expanded', open); m.classList.toggle('open', open); document.body.classList.toggle('menu-open', open);
+      b.setAttribute('aria-expanded', open); b.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen'); m.classList.toggle('open', open); document.body.classList.toggle('menu-open', open);
       document.documentElement.style.overflow = open ? 'hidden' : '';
       if (open && has('gsap') && !RM) gsap.fromTo($$('.menu .mt'), { y: 40, opacity: 0 }, { y: 0, opacity: 1, stagger: .035, duration: .6, ease: 'expo.out', delay: .12 });
     };

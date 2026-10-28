@@ -558,3 +558,17 @@ html.sim-hidecur .cdrone,html.sim-hidecur .cdot,html.sim-hidecur .cd-lock{opacit
   .sim-card,.sim-lbx,.sim-dlg[open],.lb-list.in .lb-row,.lb-list.in .lb-row.p1 .lb-b.gh,.sim-count b.pop{animation:none}
   .lb-row.sk .lb-rk::after,.lb-row.sk .lb-n b::after,.lb-row.sk .lb-t::after{animation:none}
 }
+
+/* Einstieg in zwei Schritten, Touch-Anleitung, eingeklappte Profi-Einstellungen */
+.sim-steps{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px;max-width:60ch}
+.sim-steps li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:#d3e1f3}
+.sim-steps b{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--sig);color:var(--sig);font-size:13px}
+.sim-steps strong{color:#fff}
+.sim-touchguide{display:none;margin:0 0 12px;padding:10px 14px;border-radius:12px;border:1px solid rgba(63,224,255,.35);background:rgba(63,224,255,.06)}
+.sim-touchguide h3{margin:0 0 6px}
+.sim-touchguide ul{margin:0;padding-left:18px;font-size:14px;line-height:1.5;color:#d3e1f3}
+.sim-touchguide li{margin:0 0 4px}
+.sim-app:has(.sim-stage.is-touch) .sim-touchguide{display:block}
+@media(pointer:coarse){.sim-touchguide{display:block}}
+.sim-adv{margin:12px 0}
+.sim-adv>summary{font-size:15px}

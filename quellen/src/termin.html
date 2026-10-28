@@ -34,6 +34,7 @@
   <div class="wrap tp-sign-grid">
     <div class="tp-sign-l">
       <div class="sec-head tp-sh"><h2 class="h2" data-split>Trag dich ein</h2><p class="lede" data-reveal>Name und Videosystem reichen. Den Kanal teilt der Plan automatisch zu, so stört keiner den anderen.</p></div>
+      <p class="tp-new panel" data-reveal><b>Zum ersten Mal dabei?</b> Einfach vorbeikommen, Anfänger sind willkommen. Was in die Tasche gehört, steht auf der <a href="hallenfliegen.html#mitbringen">Hallenseite</a>. Ohne eigenen Whoop: zuschauen und die anderen fragen.</p>
       <div id="tp-me" class="tp-me panel" hidden></div>
       <form id="tp-form" class="panel tp-form" novalidate data-reveal>
         <div class="field" id="tp-f-name"><label for="tp-name">Dein Name oder Pilotenname <b class="req" aria-hidden="true">*</b></label><input id="tp-name" name="n" maxlength="40" autocomplete="nickname" enterkeyhint="next" required><span class="err">Bitte gib einen Namen mit mindestens 2 Zeichen ein.</span></div>
@@ -99,8 +100,11 @@
 
 <section class="sec tp-sec tp-plan" id="plan" data-toc="Abendplan">
   <div class="wrap">
-    <div class="sec-head tp-sh"><h2 class="h2" data-split>Der Abendplan</h2><p class="lede" data-reveal>Jeder kommt gleich oft dran. Stell Beginn, Flugzeit und Wechselpause ein, der Plan rechnet sofort neu.</p></div>
-    <div class="panel tp-set" id="tp-set" data-reveal></div>
+    <div class="sec-head tp-sh"><h2 class="h2" data-split>Der Abendplan</h2><p class="lede" data-reveal>Jeder kommt gleich oft dran. Such deinen Namen: Da steht deine Gruppe und dein Kanal. Mit „Nur meine“ siehst du nur deine Durchgänge.</p></div>
+    <details class="fold tp-orga" data-reveal>
+      <summary>Für die Organisation: Beginn, Flugzeit und Wechselpause einstellen</summary>
+      <div class="fold-in"><div class="panel tp-set" id="tp-set"></div></div>
+    </details>
     <div class="tp-tools" id="tp-tools"></div>
     <div class="tp-heats" id="tp-heats" aria-live="polite"></div>
     <div class="panel tp-pub" id="tp-pub"></div>
@@ -111,7 +115,7 @@
   <div class="wrap">
     <div class="panel tp-livecard" data-reveal>
       <div class="tp-livecard-t">
-        <p class="tag sig"><span class="dot"></span>Für Tablet oder Bildschirm in der Halle</p>
+        <p class="tag sig"><span class="dot"></span>Für die Organisation · Tablet oder Bildschirm in der Halle</p>
         <h2 class="h2">Live-Modus</h2>
         <p class="lede">Groß und gut lesbar: wer jetzt fliegt, auf welchem Kanal, wie lange noch und wer als Nächstes dran ist. Mit Signalton beim Wechsel, Vollbild und wachem Bildschirm.</p>
         <div class="btns"><button class="btn solid" type="button" id="tp-live-go">Live-Modus starten</button></div>
