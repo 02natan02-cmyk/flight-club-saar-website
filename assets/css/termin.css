@@ -439,3 +439,10 @@ fieldset.field legend{padding:0;margin-bottom:8px}
 .tp-new a{color:var(--sig)}
 .tp-orga{margin:0 0 16px}
 .tp-orga .fold-in{padding-top:12px}
+
+/* Gäste beim Hallenabend (Natan 28.10.2026) */
+.tp-guest{margin-bottom:14px;border-color:rgba(255,176,32,.45);background:rgba(255,176,32,.06)}
+.tp-guest span{font-size:14.5px;line-height:1.45}
+.tp-msg.ok{background:rgba(62,224,138,.1);border-color:rgba(62,224,138,.45);color:#c9f7dd}
+.tp-guest-btn{margin-top:12px}
+#tp-form:not([hidden]) ~ .tp-guest-btn{display:none}
