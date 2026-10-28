@@ -109,6 +109,20 @@
     else if (!r.net) lsS(MKEY, null);
     return false;
   })();
+  // Login oben in der Leiste (Natan 28.10.: „wo gebe ich den Code eigentlich ein?“): ein Ort für alle Seiten
+  function loginUI() {
+    const btn = $('[data-login]'); if (!btn) return;
+    const m = (() => { try { return JSON.parse(localStorage.getItem(MKEY) || 'null'); } catch (e) { return null; } })();
+    if (M.ok) { btn.classList.add('on'); $('.nl-t', btn).textContent = (m && m.n ? m.n : 'Mitglied').slice(0, 14); btn.setAttribute('aria-label', 'Angemeldet als Mitglied, Abmelden'); }
+    else btn.setAttribute('aria-label', 'Mitglieder-Login mit deinem Code');
+    const dlg = document.createElement('dialog'); dlg.className = 'ml-dlg'; dlg.setAttribute('aria-label', 'Mitglieder-Login');
+    dlg.innerHTML = `<button class="ml-x" type="button" aria-label="Schließen">×</button>${M.ok ? `<div class="ml-box ml-box-in"><svg class="ml-ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="21" width="28" height="21" rx="4"/><path d="M16 21v-6a8 8 0 0 1 15-4"/><circle cx="24" cy="31" r="3"/></svg><div class="ml-txt"><h3 class="h3">Du bist angemeldet${m && m.n ? ', ' + String(m.n).replace(/[<>&"]/g, '') : ''}</h3><p>Spots, Hallentermine, Abendplan und Gyroflow sind für dich frei, auf allen Seiten und im Clip-Studio.</p></div><div class="btns"><a class="btn solid" href="spots.html">Zur Spot-Karte</a><a class="btn" href="hallenfliegen.html#termine">Hallentermine</a><button class="btn ghost ml-out" type="button">Abmelden</button></div></div>` : `<div data-mitglied-lock="Mitglieder-Login|Gib den Code ein, den du als Mitglied vom Vorstand bekommen hast. Dann siehst du Spots, Hallentermine und den Abendplan und kannst Gyroflow nutzen."></div>`}`;
+    document.body.appendChild(dlg);
+    btn.addEventListener('click', () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); setTimeout(() => { const i = $('input', dlg); if (i) i.focus(); }, 50); });
+    $('.ml-x', dlg).addEventListener('click', () => dlg.close ? dlg.close() : dlg.removeAttribute('open'));
+    dlg.addEventListener('click', e => { if (e.target === dlg && dlg.close) dlg.close(); });
+    const out = $('.ml-out', dlg); if (out) out.addEventListener('click', M.logout);
+  }
   // Sperr-Kasten: <div data-mitglied-lock="Titel|Text"></div>
   function locks() {
     // Inhaltsverzeichnis nur mit den sichtbaren Abschnitten
@@ -142,7 +156,7 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 

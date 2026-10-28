@@ -111,6 +111,7 @@ def nav(key):
 <header class="nav">
   <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
   <nav class="nav-links" aria-label="Hauptmenü">{links}</nav>
+  <button class="nav-login" type="button" data-login aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path class="sh" d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span class="nl-t">Login</span></button>
   <a class="btn solid nav-cta" href="mitglied.html"{' aria-current=page' if key == 'mitglied' else ''}>Mitglied werden</a>
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Menü</span></button>
 </header>
