@@ -9,13 +9,14 @@ BASE_URL = os.environ.get('FCS_BASE', 'https://02natan02-cmyk.github.io/flight-c
 PAGES = [
   # datei, titel, beschreibung, menü-schlüssel, zusätzliche skripte
   ('index.html', 'Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!', 'Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält.', 'start', ['home', 'game', 'intro3d']),
-  ('hallenfliegen.html', 'Hallenfliegen · Flight Club Saar e. V.', 'Tiny Whoops in der Halle: alle Termine der Wintersaison in Eiweiler und Holz, mit Kalender-Export und Route. Kommt einfach vorbei!', 'halle', ['halle']),
+  ('hallenfliegen.html', 'Hallenfliegen · Flight Club Saar e. V.', 'Tiny Whoops in der Halle: alle Termine der Wintersaison mit Kalender-Export, Ort und Abendplan für Mitglieder.', 'halle', ['halle']),
   ('termin.html', 'Hallenabend planen · Flight Club Saar e. V.', 'Der Abendplan fürs Hallenfliegen: Piloten eintragen, Kanäle ohne Störungen zuteilen, Flugzeiten einteilen und vor Ort live steuern.', 'halle', ['termin']),
   ('spots.html', 'Spot-Karte · Flight Club Saar e. V.', 'Unsere FPV-Spots im Saarland mit Route per Klick, Bewertungen und Spot-Vorschlag. Mit den Regeln, die für jeden Piloten gelten.', 'spots', ['leaflet', 'spots']),
   ('wissen.html', 'FPV-Wissen · Flight Club Saar e. V.', 'FPV einfach erklärt: Bauteile einer Drohne in 3D, Schaltplan zum Anklicken, Videosysteme, Kanäle und der Weg vom Simulator zum ersten Flug.', 'wissen', ['three', 'wissen']),
   ('werkstatt.html', 'Betaflight & Löten · Flight Club Saar e. V.', 'Betaflight einfach erklärt: Version, Flashen, die wichtigsten Einstellungen, dazu Löten Schritt für Schritt. Mit Animationen und Videos.', 'werkstatt', ['werkstatt']),
   ('hilfe.html', 'Technik-Hilfe · Flight Club Saar e. V.', 'Der FPV-Doktor hilft bei Betaflight, VTX, ELRS, Kanälen und Kompatibilität. Plus Forum-Fragen an den Verein.', 'hilfe', ['hilfe']),
   ('mitglied.html', 'Mitglied werden · Flight Club Saar e. V.', 'Online-Mitgliedsantrag mit SEPA-Lastschrift: 30 € im Jahr, 20 € unter 18, einmalig 20 € Aufnahme. Plus deine Mitgliedskarte zum Mitnehmen.', 'mitglied', ['mitglied']),
+  ('bau.html', 'Bau deine Drohne · Flight Club Saar e. V.', 'Bau deine FPV-Drohne aus echten Teilen: Flugcontroller, Motoren, DJI O4, Crossfire, ELRS. Die Werkbank prüft, ob alles passt, zeigt jede Lötstelle und lässt dich den Kopter im Simulator fliegen.', 'bau', ['three', 'bau']),
   ('studio.html', 'Clip-Studio · Flight Club Saar e. V.', 'Das Clip-Studio des Vereins: Video schneiden, Musik im Takt, Looks, Vereinslogo und dein Tag. Für Mitglieder stabilisieren wir dein FPV-Video mit Gyroflow.', 'studio', ['studio']),
   ('filmen.html', 'FPV filmen · Flight Club Saar e. V.', 'Der Film-Ratgeber für FPV: Kameras, ND-Filter, Einstellungen, Schnitt und Musik. Plus Gyroflow für Mitglieder und das Clip-Studio des Vereins.', 'filmen', ['filmen']),
   ('simulator.html', 'FPV-Simulator · Flight Club Saar e. V.', 'FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.', 'sim', ['three', 'sim']),
@@ -38,6 +39,7 @@ MI = {
  'markt': '<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/>',
  'start': '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M7.5 12h9"/>',
  'werkstatt': '<path d="M4 20l7-7"/><path d="M13.5 6.5l4 4-6 6-4-4z"/><path d="M17.5 2.5l4 4-2 2-4-4z"/><circle cx="6" cy="18" r="1"/>',
+ 'bau': '<path d="M14.5 6.5l3 3-8 8H6.5v-3z"/><path d="M13 8l3 3"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M17.5 13.5v1.5M17.5 20v1.5M13.5 17.5H15M20 17.5h1.5"/>',
  'studio': '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9h19M7 5l2 4M12 5l2 4M17 5l2 4"/><path d="M10 12.2v4.6l4-2.3z"/>',
  'termin': '<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 14h3M8 17h6"/>',
  'sim': '<rect x="3" y="9" width="18" height="11" rx="3"/><circle cx="8.5" cy="14.5" r="2.2"/><circle cx="15.5" cy="14.5" r="2.2"/><path d="M6.5 9V4M17.5 9V4"/>',
@@ -48,6 +50,7 @@ MENU = [
               ('spots.html', 'spots', 'Spot-Karte', 'Wo wir draußen fliegen, mit Route, Regeln und Bewertungen'),
               ('simulator.html', 'sim', 'FPV-Simulator', 'Mit Funke, Controller oder Handy im Browser fliegen')]),
  ('Lernen', [('wissen.html', 'wissen', 'FPV lernen', 'Neu dabei? Drohne in 3D, Schaltplan, dein erster Flug'),
+              ('bau.html', 'bau', 'Bau deine Drohne', 'Teile wählen, Lötplan, im Simulator fliegen'),
               ('werkstatt.html', 'werkstatt', 'Betaflight & Löten', 'Einrichten und Löten, Schritt für Schritt'),
               ('hilfe.html', 'hilfe', 'Technik-Hilfe', 'Kopter armt nicht? Der FPV-Doktor hilft'),
               ('filmen.html', 'filmen', 'FPV filmen', 'Kameras, Einstellungen, Schnitt. Gyroflow für Mitglieder')]),
@@ -98,7 +101,7 @@ def head(file, title, desc):
 ''' + (LDJSON if file == 'index.html' else '')
 
 def nav(key):
-    top = {'termin': 'halle', 'werkstatt': 'wissen', 'hilfe': 'wissen', 'filmen': 'wissen', 'markt': 'crew'}.get(key, key)
+    top = {'termin': 'halle', 'werkstatt': 'wissen', 'hilfe': 'wissen', 'bau': 'wissen', 'filmen': 'wissen', 'markt': 'crew'}.get(key, key)
     links = ''.join(f'<a href="{h}"{" aria-current=page" if k == key else (" aria-current=true" if k == top else "")}>{t}</a>' for h, k, t in NAV)
     groups = ''
     for g, items in MENU:
@@ -124,7 +127,7 @@ def foot():
     <div class="foot-grid">
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social">{soc}</div></div>
       <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
-      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="werkstatt.html">Betaflight &amp; Löten</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="simulator.html">FPV-Simulator</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
+      <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="bau.html">Bau deine Drohne</a></li><li><a href="werkstatt.html">Betaflight &amp; Löten</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="simulator.html">FPV-Simulator</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
       <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="studio.html">Clip-Studio</a></li><li><a href="termin.html">Hallenabend-Planer</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
@@ -143,7 +146,7 @@ def scripts(extra, file):
         if e in ('leaflet', 'three', 'intro3d'): continue
         js = f'assets/js/{e}.js'
         if (OUT / js).exists():
-            mod = ' type="module"' if 'three' in extra and e in ('home', 'wissen', 'sim') else ''
+            mod = ' type="module"' if 'three' in extra and e in ('home', 'wissen', 'sim', 'bau') else ''
             tags.append(f'<script src="{js}?v={ver(js)}"{mod}></script>')
         css = f'assets/css/{e}.css'
     return '\n'.join(tags)

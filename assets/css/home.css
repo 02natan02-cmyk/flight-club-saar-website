@@ -589,3 +589,43 @@
 .mc-back .mc-br{margin-top:4px;font-size:9.5px}
 /* Drohnenshow: Knöpfe passen am schmalen Handy in eine Zeile */
 @media (max-width:420px){.show-dots{gap:5px;padding:0 8px}.show-dots button{padding:7px 9px;letter-spacing:.08em}}
+
+/* ---------- Make It Saarbrücken: Stationen + Videostapel ---------- */
+.mi-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(28px,5vw,72px);align-items:center}
+.mi-st{display:grid;gap:8px;margin:26px 0 22px}
+.mi-st button{position:relative;display:grid;gap:2px;text-align:left;padding:14px 18px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(11,26,51,.45);cursor:pointer;overflow:hidden;transition:background .35s var(--ease),border-color .35s var(--ease),transform .35s var(--ease)}
+.mi-st button b{font:700 17px var(--hud);text-transform:uppercase;letter-spacing:.04em}
+.mi-st button span{color:var(--mute);font-size:14.5px;line-height:1.45}
+.mi-st button:hover{border-color:var(--line-hi);transform:translateX(3px)}
+.mi-st button.on{background:linear-gradient(100deg,rgba(255,176,32,.14),rgba(11,26,51,.6) 70%);border-color:rgba(255,176,32,.5)}
+.mi-st button.on b{color:var(--amber)}
+.mi-bar{position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--amber);transform-origin:left;transform:scaleX(0)}
+.mi-st button.on .mi-bar{animation:mi-run var(--mi-t,6s) linear forwards}
+.mi-st.stop button.on .mi-bar{animation:none;transform:scaleX(1);opacity:.5}
+@keyframes mi-run{to{transform:scaleX(1)}}
+.mi-btns .mute{font:500 11px var(--hud);letter-spacing:.08em;opacity:.75;margin-left:6px;color:inherit}
+.mi-stage{position:relative;aspect-ratio:9/13;max-height:78vh;width:100%;max-width:440px;justify-self:center;perspective:1400px}
+.mi-card{position:absolute;inset:0;margin:0;border-radius:26px;overflow:hidden;background:#000;box-shadow:0 30px 60px -20px rgba(0,0,0,.7),0 0 0 1px var(--line-hi);transition:transform .9s var(--ease),filter .9s var(--ease),opacity .9s var(--ease);will-change:transform}
+.mi-card video{width:100%;height:100%;object-fit:cover}
+.mi-card[data-pos="0"]{transform:translate3d(0,0,0) rotateY(0);z-index:3}
+.mi-card[data-pos="1"]{transform:translate3d(28%,4%,-220px) rotateY(-22deg);filter:brightness(.45) saturate(.6);z-index:2}
+.mi-card[data-pos="2"]{transform:translate3d(-28%,4%,-220px) rotateY(22deg);filter:brightness(.45) saturate(.6);z-index:1}
+.mi-osd{position:absolute;inset:14px 16px auto;z-index:4;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-size:11px;letter-spacing:.14em;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);pointer-events:none}
+.mi-osd b{flex-basis:100%;font:700 15px var(--hud);color:var(--amber);letter-spacing:.1em}
+.mi-osd .rec{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;vertical-align:1px;animation:mi-rec 1.2s steps(2) infinite}
+@keyframes mi-rec{50%{opacity:.2}}
+.mi-hint{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%);margin:0;white-space:nowrap;font-size:11px;letter-spacing:.18em;color:var(--mute);display:flex;align-items:center;gap:8px}
+.mi-hint .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.mi-iv{padding:0;border:0;background:transparent;max-width:min(92vw,440px);width:100%}
+.mi-iv::backdrop{background:rgba(2,6,14,.86);backdrop-filter:blur(6px)}
+.mi-iv video{width:100%;max-height:86vh;border-radius:20px;background:#000}
+.mi-iv .lb-x{position:absolute;top:8px;right:8px;z-index:2}
+@media (max-width:860px){.mi-grid{grid-template-columns:minmax(0,1fr)}.mi-stage{max-width:340px;margin-bottom:40px}.mi-card[data-pos="1"]{transform:translate3d(16%,3%,-200px) rotateY(-18deg)}.mi-card[data-pos="2"]{transform:translate3d(-16%,3%,-200px) rotateY(18deg)}}
+@media (prefers-reduced-motion:reduce){.mi-card{transition:none}.mi-st button.on .mi-bar{animation:none}}
+.mi-hint[hidden]{display:none}
+.makeit{overflow-x:clip}
+@media (max-width:860px){
+  .mi-grid{gap:0}
+  .mi-txt{display:contents}
+  .mi-txt .h2{order:1}.mi-txt .lede{order:2}.mi-stage{order:3;margin:26px auto 52px}.mi-st{order:4;margin-top:0}.mi-btns{order:5}
+}

@@ -24,16 +24,14 @@ FCS.data = {
     { k: 'youtube', name: 'YouTube', h: '@flightclubsaar', u: 'https://www.youtube.com/@flightclubsaar' }
   ],
   // Hallenfliegen Wintersaison 2026 (Ankündigung Sebastian Wiederhold, 14.10.2026)
-  hallen: {
-    eiweiler: { name: 'Großwaldhalle Eiweiler', adresse: 'Hambacher Weg 12, 66265 Heusweiler-Eiweiler', lat: 49.3640113, lng: 6.935687 },
-    holz: { name: 'Glück-Auf-Halle Holz', adresse: 'Glück-Auf-Weg 5, 66265 Heusweiler-Holz', lat: 49.330219, lng: 6.987745 }
-  },
+  // Hallen, Halle je Termin und Spots stehen nur verschlüsselt in assets/data/mitglieder.enc.json (eigener Mitgliedscode wie bei Gyroflow, Natan 28.10.2026)
+  hallen: {},
   termine: [
-    { d: '2026-10-17', h: 'eiweiler', img: 'media/chronik/2026-10-17.webp' },
-    { d: '2026-11-14', h: 'eiweiler' },
-    { d: '2026-12-05', h: 'holz' },
-    { d: '2026-12-12', h: 'holz' },
-    { d: '2026-12-19', h: 'eiweiler' }
+    { d: '2026-10-17', img: 'media/chronik/2026-10-17.webp' },
+    { d: '2026-11-14' },
+    { d: '2026-12-05' },
+    { d: '2026-12-12' },
+    { d: '2026-12-19' }
   ],
   zeit: { von: '18:00', bis: '21:00' },
   hallenBeitrag: 'bisher 10 € pro Abend',
@@ -50,28 +48,10 @@ FCS.data = {
     { n: 'Julian B.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '' },
     { n: 'Alexander K.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
     { n: 'Dimitri S.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
-    { n: '', a: 'Jonny FPV Magic', r: 'Jugend', seit: 2024, stil: 'Aggro Acro · Whoops · Cinematic', ort: 'Riegelsberg', ok: 1 }
+    { n: '', a: 'Jonny FPV Magic', r: 'Jugend', seit: 2024, stil: 'Aggro Acro · Whoops · Cinematic', ok: 1 }
   ],
   // Spots: nur, was der Vorstand freigegeben hat. Neue Spots kommen über das Formular und werden geprüft.
-  spots: [
-    { id: 'eiweiler', n: 'Großwaldhalle Eiweiler', typ: 'halle', lat: 49.3640113, lng: 6.935687, adr: 'Hambacher Weg 12, 66265 Heusweiler-Eiweiler',
-      t: 'Unsere Winterhalle: Tiny Whoops, Gates, Licht aus und Brille auf. Nur an den Hallenterminen.', regel: 'Nur zu Vereinsterminen', stern: null, k: [],
-      foto: 'media/chronik/2026-10-17.webp', fotoAlt: 'Leuchtende Tiny Whoops beim Saisonstart in Eiweiler' },
-    { id: 'holz', n: 'Glück-Auf-Halle Holz', typ: 'halle', lat: 49.330219, lng: 6.987745, adr: 'Glück-Auf-Weg 5, 66265 Heusweiler-Holz',
-      t: 'Zweite Winterhalle im Dezember. Gleiche Regeln wie in Eiweiler.', regel: 'Nur zu Vereinsterminen', stern: null, k: [] },
-    { id: 'goettelborn', n: 'Förderturm Göttelborn', typ: 'industrie', lat: 49.3435266, lng: 7.0386915, adr: 'Göttelborn, 66287 Quierschied',
-      t: 'Hier hatten wir unseren Flugtag am Förderturm. Industriekultur von oben, nur mit Genehmigung des Eigentümers.', regel: 'Nur mit Genehmigung / zu Vereins-Flugtagen', stern: null, k: [],
-      foto: 'media/spots/goettelborn.webp', fotoAlt: 'Stahlgerüst am Förderturm Göttelborn' },
-    // Von Natan (Vorstand) am 25.10.2026 eingetragen
-    { id: 'lost-sportplatz', n: 'Lost Place hinter dem Sportplatz', typ: 'lost', lat: 49.305833, lng: 7.063861, adr: '49°18\'21" N, 7°03\'50" O',
-      t: 'Verlassenes Gebäude hinter einem Sportplatz: zwei Etagen, Löcher im Dach. Durch die Öffnungen lässt sich durchfliegen.', regel: 'Eigentümer vorher fragen. Vorsicht, das Dach ist beschädigt, nicht hineingehen.', stern: null, k: [] },
-    { id: 'feld-friedhof', n: 'Feld hinter dem Friedhof', typ: 'feld', lat: 49.3240715, lng: 6.9477823, adr: '49,32407 N, 6,94778 O',
-      t: 'Freies Feld hinter einem Friedhof, viel Platz zum Üben.', regel: 'Nicht über den Friedhof fliegen, Rücksicht auf Besucher.', stern: null, k: [] },
-    { id: 'feld-frankreich', n: 'Feld in Frankreich', typ: 'feld', lat: 49.1979501, lng: 6.9571201, adr: '49,19795 N, 6,95712 O (Frankreich)',
-      t: 'Feld kurz hinter der Grenze in Frankreich.', regel: 'Liegt in Frankreich: Deine EU-Registrierung gilt dort auch.', stern: null, k: [] },
-    { id: 'feld-dillingen', n: 'Feld bei Dillingen mit Hütte', typ: 'feld', lat: 49.34494, lng: 6.706215, adr: 'Bei Dillingen/Saar, 49,34494 N, 6,70622 O',
-      t: 'Feld mit Sitzmöglichkeit und Hütte, gut für eine Pause zwischen den Akkus.', regel: 'Rücksicht auf Spaziergänger und Tiere.', stern: null, k: [] }
-  ],
+  spots: [],
   spotTypen: {
     halle: { n: 'Halle', c: '#3fe0ff' },
     lost: { n: 'Lost Place', c: '#ffb020' },
@@ -95,14 +75,14 @@ FCS.data = {
   kanal: [
     { ch: 3, a: 'Stay Fly', o: 'Bando-Session', clip: 'media/kanal/stayfly.mp4', ig: 'stay_fly.sb' },
     { ch: 4, a: 'GrobsFPV', o: 'Bando Time', clip: 'media/kanal/grobsfpv.mp4', ig: 'grobsfpv' },
-    { ch: 5, a: 'OrcaFPV', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
+    { ch: 5, a: 'Orcinus', o: 'Kühlturm-Dive', clip: 'media/kanal/orcafpv.mp4', ig: 'orcinus.fpv' },
     { ch: 6, a: 'Booyaka FPV', o: 'Grube Göttelborn', clip: 'media/kanal/booyaka.mp4', ig: 'wojtasczyk_natan' }
   ],
   // Bestenliste „Kannst du fliegen?“: Make-Szenario 8156727 (Webhook → Datenspeicher „FCS Whoop Bestenliste“)
   highscore: { url: 'https://hook.eu1.make.com/gq3bv9u25ybq6tzu5o2l9ecf4tcnuovk' },
   // Live-Beiträge (Markt, Pinnwand, Spot-Bewertungen, Termin-Zusagen): Make-Szenario 8157184 → Datenspeicher „FCS Website-Beiträge“ + „FCS Website-Fotos“. Zugriff nur über FCS.board (fcs.js).
-  // Make-Webhooks. mitglied = Mitgliedscode prüfen (Clip-Studio Premium), clips = Upload in den Vereins-OneDrive und Gyroflow (gleicher Webhook, Unterscheidung über a=)
-  api: { beitraege: 'https://hook.eu1.make.com/q8ldn199ovql1h99k95oedbgf4ko5ktl', mitglied: 'https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i', clips: 'https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i' },
+  // Make-Webhooks. bereich = Mitgliedscode prüfen und Schlüssel für Spots/Hallen holen (Szenario 8240408), mitglied = Mitgliedscode prüfen (Clip-Studio Premium), clips = Upload in den Vereins-OneDrive und Gyroflow (gleicher Webhook, Unterscheidung über a=)
+  api: { beitraege: 'https://hook.eu1.make.com/q8ldn199ovql1h99k95oedbgf4ko5ktl', mitglied: 'https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i', clips: 'https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i', bereich: 'https://hook.eu1.make.com/06rl3qh9dynwm1j9limhua76ju9rrljz' },
   // Instagram @flightclubsaar, Aufrufe Stand 24.10.2026
   reels: [
     { id: 'DdRQZOsI0vS', v: 6203, d: '2026-09-14', t: 'Addicted to Dance 2026', c: 'mit @addicted2dancecontest', clip: 1 },
@@ -139,8 +119,11 @@ FCS.data = {
     { d: '2023-12-27', t: 'Erste Indoor-Session', u: 'Tiny-Whoop-Wintersaison 2023/24 in der Halle.', img: 'media/chronik/2023-12-27.webp' },
     { d: '2024-02-22', t: 'Time Axis', u: 'Unser Film vom Techno-Klassiker mit 13 DJs.', img: 'media/chronik/2024-02-22.webp' },
     { d: '2025-02-02', t: 'Ayedo steigt ein', u: 'Ayedo wird Sponsor und Partner des Vereins.', img: 'media/chronik/2025-02-02.webp' },
+    { d: '2024-06-15', t: 'Erstmals auf der Make It', u: 'Unser erster Stand beim Maker Festival make-it.saarland im E-Werk Saarbrücken.' },
+    { d: '2025-06-14', t: 'Make It: beliebtester Stand', u: 'Großer Drohnenkäfig im E-Werk: Hunderte Besucher und viele Kinder fliegen mit FPV-Brille echte Drohnen.' },
+    { d: '2026-06-13', t: 'Make It 2026', u: 'Zum dritten Mal im E-Werk, mit Dutzenden Drohnen und mehreren Simulatoren.', img: 'media/chronik/2026-06-13.webp' },
     { d: '2026-09-14', t: 'Addicted to Dance 2026', u: 'FPV-Bilder von der saarländischen Tanz- und Kulturmeisterschaft. Unser meistgesehenes Reel.', img: 'media/chronik/2026-09-14.webp' },
-    { d: '2026-10-17', t: 'Hallensaison 2026', u: 'Start der Wintersaison in der Großwaldhalle Eiweiler.' }
+    { d: '2026-10-17', t: 'Hallensaison 2026', u: 'Start der Wintersaison in der Halle.' }
   ],
   // Piloten von der alten Vereinsseite (öffentlich gelistet). Vor dem Livegang mit dem Vorstand abgleichen, wer noch dabei ist.
   piloten: [
@@ -150,9 +133,9 @@ FCS.data = {
     { a: 'Stay Fly', n: 'Tobias', ort: 'Scheidt', seit: 2019, stil: 'Juicy SBang, Freestyle, Cinematic', yt: 'stayflysb', tt: 'stayfly.sb', ig: 'stay_fly.sb', img: 'media/piloten/stay-fly.webp' },
     { a: 'Fireblast FPV', n: 'Sebastian', ort: 'Riegelsberg', seit: 2017, stil: 'Freestyle, 3D', tt: 'fireblast_fpv', ig: 'fireblast_fpv', img: 'media/piloten/fireblast-fpv.webp' },
     { a: 'GrobsFPV', n: 'Tom', ort: 'Merzig', seit: 2023, stil: 'Freestyle, Cinematic', yt: 'GrobsFPV', tt: 'grobsfpv', ig: 'grobsfpv', img: 'media/piloten/grobsfpv.webp' },
-    { a: 'OrcaFPV', n: '', ort: '', seit: 2020, stil: 'Freestyle, Cinema, Whoops', ig: 'orcinus.fpv', img: 'media/piloten/orcafpv.webp' },
+    { a: 'Orcinus', n: 'Ruben', ort: '', seit: 2020, stil: 'Freestyle, Cinema, Whoops', ig: 'orcinus.fpv', img: 'media/piloten/orcafpv.webp' },
     { a: 'Crystal FPV', n: 'Julian', ort: 'Völklingen', seit: 2023, stil: 'Cinema, Whoop, Freestyle', img: 'media/piloten/crystal-fpv.webp' },
-    { a: 'Jonny FPV Magic', n: '', ort: 'Riegelsberg', seit: 2024, stil: 'Aggro Acro, Whoops, Freestyle, Cinematic' },
+    { a: 'Jonny FPV Magic', n: '', ort: '', seit: 2024, stil: 'Aggro Acro, Whoops, Freestyle, Cinematic' },
     { a: 'Lord FPV', n: 'Waldemar', ort: 'Saarlouis', seit: 2019, stil: 'Race, Freestyle, Long Range', img: 'media/piloten/lord-fpv.webp' },
     { a: 'Kenny FPV', n: 'Kenny', ort: 'Merzig', seit: 2020, stil: 'Freestyle', img: 'media/piloten/kenny-fpv.webp' },
     { a: 'Metty FPV', n: 'Matthias', ort: 'Weiskirchen', seit: 2020, stil: 'Freestyle', img: 'media/piloten/metty-fpv.webp' },

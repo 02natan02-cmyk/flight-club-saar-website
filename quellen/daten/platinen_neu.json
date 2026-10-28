@@ -1,0 +1,6062 @@
+{
+ "schema_version": 1,
+ "hinweis": "Lage der Lötpads, nachgezeichnet aus den offiziellen Anschlussplänen der Hersteller. Koordinaten relativ zur Platinenbreite (0 = linke bzw. obere Kante, 1 = rechte Kante). Ansicht von oben, Pfeil (Flugrichtung) zeigt nach oben. Buchsen der Unterseite in Draufsicht-Koordinaten (gespiegelt), Pin-Reihenfolge wie im Herstellerplan.",
+ "platinen": [
+  {
+   "id": "mamba-f405-mk4-mini",
+   "name": "Diatone Mamba F405 MK4 Mini (20x20)",
+   "match": "mamba.*f405.*(mk4|mini)|mk4.*f405.*mamba|mamba f405 ?mini",
+   "quelle": "https://cdn.shopifycdn.net/s/files/1/0027/2708/4144/files/MK4F405MINI_42688P_-01_21580dd8-0527-45c0-8365-09ccc439fb83.jpg",
+   "h": 1.0,
+   "farbe": "#46473f",
+   "loecher": [
+    [
+     0.155,
+     0.155
+    ],
+    [
+     0.845,
+     0.155
+    ],
+    [
+     0.155,
+     0.845
+    ],
+    [
+     0.845,
+     0.845
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.827,
+     "y": 0.413,
+     "w": 0.204,
+     "h": 0.328
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.525,
+     "y": 0.579
+    },
+    {
+     "typ": "knopf",
+     "x": 0.049,
+     "y": 0.642,
+     "lab": "BOOT"
+    }
+   ],
+   "pads": [
+    {
+     "n": "VCC",
+     "x": 0.272,
+     "y": 0.038,
+     "g": "strom",
+     "id": "VCC_O"
+    },
+    {
+     "n": "5V",
+     "x": 0.359,
+     "y": 0.038,
+     "g": "strom",
+     "id": "5V_O"
+    },
+    {
+     "n": "GND",
+     "x": 0.442,
+     "y": 0.038,
+     "g": "gnd",
+     "id": "GND_O"
+    },
+    {
+     "n": "CAM",
+     "x": 0.525,
+     "y": 0.038,
+     "g": "video"
+    },
+    {
+     "n": "S5",
+     "x": 0.608,
+     "y": 0.038
+    },
+    {
+     "n": "S6",
+     "x": 0.69,
+     "y": 0.038
+    },
+    {
+     "n": "3.3V",
+     "x": 0.045,
+     "y": 0.267,
+     "g": "strom"
+    },
+    {
+     "n": "5V",
+     "x": 0.045,
+     "y": 0.364,
+     "g": "strom",
+     "id": "5V_L"
+    },
+    {
+     "n": "GND",
+     "x": 0.045,
+     "y": 0.456,
+     "g": "gnd",
+     "id": "GND_L"
+    },
+    {
+     "n": "RX1",
+     "x": 0.045,
+     "y": 0.551,
+     "uart": 1
+    },
+    {
+     "n": "TX1",
+     "x": 0.045,
+     "y": 0.643,
+     "uart": 1
+    },
+    {
+     "n": "TX5",
+     "x": 0.045,
+     "y": 0.738,
+     "uart": 5,
+     "lab": "S/F.PORT"
+    },
+    {
+     "n": "5V",
+     "x": 0.137,
+     "y": 0.284,
+     "g": "strom",
+     "id": "5V_I"
+    },
+    {
+     "n": "GND",
+     "x": 0.137,
+     "y": 0.371,
+     "g": "gnd",
+     "id": "GND_I"
+    },
+    {
+     "n": "TX2",
+     "x": 0.137,
+     "y": 0.456,
+     "uart": 2
+    },
+    {
+     "n": "RX2",
+     "x": 0.137,
+     "y": 0.544,
+     "uart": 2
+    },
+    {
+     "n": "SCL",
+     "x": 0.137,
+     "y": 0.629
+    },
+    {
+     "n": "SDA",
+     "x": 0.137,
+     "y": 0.716
+    },
+    {
+     "n": "5V",
+     "x": 0.965,
+     "y": 0.222,
+     "g": "strom",
+     "id": "5V_R"
+    },
+    {
+     "n": "GND",
+     "x": 0.965,
+     "y": 0.298,
+     "g": "gnd",
+     "id": "GND_R"
+    },
+    {
+     "n": "LED",
+     "x": 0.965,
+     "y": 0.374
+    },
+    {
+     "n": "BZ+",
+     "x": 0.868,
+     "y": 0.298,
+     "lab": "BUZ+"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.868,
+     "y": 0.374,
+     "lab": "BUZ-"
+    },
+    {
+     "n": "9V/VCC",
+     "x": 0.208,
+     "y": 0.966,
+     "g": "strom",
+     "id": "9V_VTX",
+     "lab": "VCC/9V"
+    },
+    {
+     "n": "GND",
+     "x": 0.293,
+     "y": 0.966,
+     "g": "gnd",
+     "id": "GND_U1"
+    },
+    {
+     "n": "TX3",
+     "x": 0.376,
+     "y": 0.966,
+     "uart": 3
+    },
+    {
+     "n": "VTX",
+     "x": 0.459,
+     "y": 0.966,
+     "g": "video"
+    },
+    {
+     "n": "5V",
+     "x": 0.541,
+     "y": 0.966,
+     "g": "strom",
+     "id": "5V_U"
+    },
+    {
+     "n": "GND",
+     "x": 0.624,
+     "y": 0.966,
+     "g": "gnd",
+     "id": "GND_U2"
+    },
+    {
+     "n": "TX4",
+     "x": 0.707,
+     "y": 0.966,
+     "uart": 4
+    },
+    {
+     "n": "RX4",
+     "x": 0.794,
+     "y": 0.966,
+     "uart": 4
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "DJI",
+      "lab": "DJI-Buchse (SH 1,0, 6-polig)",
+      "x": 0.42,
+      "y": 0.9,
+      "w": 0.3,
+      "h": 0.19,
+      "pins": [
+       "9V/VCC",
+       "GND",
+       "TX3",
+       "RX3",
+       "GND",
+       "SBUS (RX1)"
+      ]
+     },
+     {
+      "n": "ESC",
+      "lab": "ESC-Buchse (8-polig)",
+      "x": 0.5,
+      "y": 0.096,
+      "w": 0.385,
+      "h": 0.19,
+      "pins": [
+       "CURR",
+       "RX6",
+       "S4",
+       "S3",
+       "S2",
+       "S1",
+       "VCC",
+       "GND"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 1,
+     "pads": {
+      "TX": "RX1",
+      "RX": "TX1",
+      "5V": "5V_L",
+      "GND": "GND_L"
+     },
+     "text": "TBS Crossfire Nano im Diatone-Plan: CH1 an RX1, CH2 an TX1, 5V und GND links. SBUS-Empfänger: SBUS an RX1, S.Port an S/F.PORT (UART5) – SBUS und F.Port nicht gleichzeitig."
+    },
+    "gps": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "5V_I",
+      "GND": "GND_I"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_O",
+      "Masse": "GND_O"
+     },
+     "text": "Im Plan geht das Plus der Kamera (5–36 V) an das 5V-Pad oben."
+    },
+    "vtx_analog": {
+     "uart": 3,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "5V_U",
+      "Masse": "GND_U1",
+      "SmartAudio": "TX3"
+     },
+     "text": "Im Plan TX500/Ultra Tiny: VIDEO-IN an VTX, DATA (IRC) an TX3, 5V-IN an 5V unten."
+    },
+    "digital": {
+     "uart": 3,
+     "buchse": "DJI",
+     "pads": {
+      "Plus": "9V_VTX",
+      "Masse": "GND_U1",
+      "RX": "TX3"
+     },
+     "text": "DJI O3: Kabel in die DJI-Buchse auf der Unterseite. Spannung am Lötjumper neben der Buchse wählen: VCC für 3–4S, 9V für 6S. Der VCC/9V-Ausgang ist über USER1 (PINIO) schaltbar. Ohne DJI-Fernsteuerung die SBUS-Leitung (RX1) abtrennen. RX3 gibt es nur an der Buchse, nicht als Lötpad."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_R",
+      "GND": "GND_R",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "esc": {
+    "name": "Diatone Mamba F30 Mini / F40 BLS Mini ESC",
+    "h": 0.963,
+    "farbe": "#1d1d1d",
+    "loecher": [
+     [
+      0.851,
+      0.107
+     ],
+     [
+      0.851,
+      0.806
+     ],
+     [
+      0.152,
+      0.107
+     ],
+     [
+      0.152,
+      0.806
+     ]
+    ],
+    "teile": [
+     {
+      "typ": "stecker",
+      "x": 0.315,
+      "y": -0.03,
+      "w": 0.37,
+      "h": 0.05,
+      "lab": "8-polig zum FC",
+      "pins": [
+       "CURR",
+       "TELE",
+       "S4",
+       "S3",
+       "S2",
+       "S1",
+       "VCC",
+       "GND"
+      ]
+     },
+     {
+      "typ": "kondensator",
+      "x": 0.5,
+      "y": 1.0,
+      "lab": "35 V 470 µF an BAT+/BAT−"
+     }
+    ],
+    "pads": [
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.152,
+      "id": "M2_1",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.272,
+      "id": "M2_2",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.396,
+      "id": "M2_3",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.517,
+      "id": "M1_1",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.64,
+      "id": "M1_2",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.761,
+      "id": "M1_3",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.152,
+      "id": "M4_1",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.272,
+      "id": "M4_2",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.396,
+      "id": "M4_3",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.517,
+      "id": "M3_1",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.64,
+      "id": "M3_2",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.761,
+      "id": "M3_3",
+      "g": "motor"
+     },
+     {
+      "n": "BAT+",
+      "x": 0.385,
+      "y": 0.919,
+      "g": "strom",
+      "lab": "+"
+     },
+     {
+      "n": "BAT-",
+      "x": 0.612,
+      "y": 0.919,
+      "g": "gnd",
+      "lab": "−"
+     }
+    ],
+    "unsicher": "Im Herstellerplan ist der ESC um 90 Grad gedreht gezeichnet (Stecker links). Hier im Uhrzeigersinn gedreht, damit Motor 1 hinten rechts, 2 vorne rechts, 3 hinten links, 4 vorne links liegt (Betaflight-Standard) – passt zur Motorgrafik im Plan. Akkupads ragen über den Rand, daher h > Platinenkörper."
+   },
+   "unsicher": "Pads per Farberkennung aus dem Plan vermessen (±0,005). Lochmitten aus dem Kreis innerhalb der offenen Kerbe geschätzt (±0,01). USB-Umriss inklusive Statusanzeige-Kasten aus dem Plan, Lage der BOOT-Taste aus der Unterseitenansicht gespiegelt. Pad S/F.PORT laut Spezifikation UART5 (F.Port) – als TX5 eingetragen, Beschriftung im Plan nur S/F.PORT."
+  },
+  {
+   "id": "speedybee-f405-v4",
+   "name": "SpeedyBee F405 V4 (30x30)",
+   "match": "speedy ?bee.*f405.*v4|f405 v4.*speedy ?bee|sb.?f405.?v4",
+   "quelle": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_SpeedyBee_F405_V4_Stack/SB_F405V4-Other-7.jpg",
+   "quelle_belegung": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_SpeedyBee_F405_V4_Stack/SB_F405V4-Other-2.jpg",
+   "h": 1.061,
+   "farbe": "#242424",
+   "loecher": [
+    [
+     0.108,
+     0.108
+    ],
+    [
+     0.892,
+     0.106
+    ],
+    [
+     0.108,
+     0.879
+    ],
+    [
+     0.89,
+     0.876
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.778,
+     "y": 0.319,
+     "w": 0.209,
+     "h": 0.245
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.822,
+     "y": 0.742
+    },
+    {
+     "typ": "knopf",
+     "x": 0.058,
+     "y": 0.757,
+     "lab": "BOOT"
+    }
+   ],
+   "pads": [
+    {
+     "n": "5V",
+     "x": 0.261,
+     "y": 0.117,
+     "g": "strom",
+     "id": "5V_O"
+    },
+    {
+     "n": "GND",
+     "x": 0.314,
+     "y": 0.117,
+     "g": "gnd",
+     "id": "GND_O",
+     "lab": "G"
+    },
+    {
+     "n": "CAM",
+     "x": 0.366,
+     "y": 0.117,
+     "g": "video"
+    },
+    {
+     "n": "CC",
+     "x": 0.418,
+     "y": 0.117,
+     "lab": "CC"
+    },
+    {
+     "n": "RS",
+     "x": 0.47,
+     "y": 0.117
+    },
+    {
+     "n": "3V3",
+     "x": 0.523,
+     "y": 0.117,
+     "g": "strom",
+     "lab": "3V3"
+    },
+    {
+     "n": "GND",
+     "x": 0.573,
+     "y": 0.117,
+     "g": "gnd",
+     "id": "GND_RX",
+     "lab": "G"
+    },
+    {
+     "n": "4V5",
+     "x": 0.625,
+     "y": 0.117,
+     "g": "strom",
+     "id": "4V5_RX"
+    },
+    {
+     "n": "RX2",
+     "x": 0.677,
+     "y": 0.117,
+     "uart": 2,
+     "lab": "R2"
+    },
+    {
+     "n": "TX2",
+     "x": 0.73,
+     "y": 0.117,
+     "uart": 2,
+     "lab": "T2"
+    },
+    {
+     "n": "RX3",
+     "x": 0.261,
+     "y": 0.205,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "TX3",
+     "x": 0.314,
+     "y": 0.205,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "GND",
+     "x": 0.366,
+     "y": 0.205,
+     "g": "gnd",
+     "id": "GND_M",
+     "lab": "G"
+    },
+    {
+     "n": "M5",
+     "x": 0.418,
+     "y": 0.205
+    },
+    {
+     "n": "M6",
+     "x": 0.47,
+     "y": 0.205
+    },
+    {
+     "n": "M7",
+     "x": 0.523,
+     "y": 0.205
+    },
+    {
+     "n": "M8",
+     "x": 0.573,
+     "y": 0.205
+    },
+    {
+     "n": "TEL",
+     "x": 0.625,
+     "y": 0.205
+    },
+    {
+     "n": "S9",
+     "x": 0.677,
+     "y": 0.205
+    },
+    {
+     "n": "SBUS",
+     "x": 0.73,
+     "y": 0.205,
+     "id": "SBUS_O",
+     "lab": "SBUS(R2)"
+    },
+    {
+     "n": "SDA",
+     "x": 0.232,
+     "y": 0.926
+    },
+    {
+     "n": "SCL",
+     "x": 0.285,
+     "y": 0.926
+    },
+    {
+     "n": "5V",
+     "x": 0.337,
+     "y": 0.926,
+     "g": "strom",
+     "id": "5V_LED"
+    },
+    {
+     "n": "GND",
+     "x": 0.391,
+     "y": 0.926,
+     "g": "gnd",
+     "id": "GND_LED",
+     "lab": "G"
+    },
+    {
+     "n": "LED",
+     "x": 0.443,
+     "y": 0.926
+    },
+    {
+     "n": "5V",
+     "x": 0.495,
+     "y": 0.926,
+     "g": "strom",
+     "id": "5V_VTX"
+    },
+    {
+     "n": "BAT",
+     "x": 0.55,
+     "y": 0.926,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.602,
+     "y": 0.926,
+     "g": "gnd",
+     "id": "GND_U1",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.654,
+     "y": 0.926,
+     "g": "strom",
+     "id": "5V_U1"
+    },
+    {
+     "n": "BZ+",
+     "x": 0.706,
+     "y": 0.926
+    },
+    {
+     "n": "BZ-",
+     "x": 0.759,
+     "y": 0.926
+    },
+    {
+     "n": "4V5",
+     "x": 0.258,
+     "y": 1.016,
+     "g": "strom",
+     "id": "4V5_GPS"
+    },
+    {
+     "n": "GND",
+     "x": 0.312,
+     "y": 1.016,
+     "g": "gnd",
+     "id": "GND_GPS",
+     "lab": "G"
+    },
+    {
+     "n": "TX6",
+     "x": 0.364,
+     "y": 1.016,
+     "uart": 6,
+     "lab": "T6"
+    },
+    {
+     "n": "RX6",
+     "x": 0.416,
+     "y": 1.016,
+     "uart": 6,
+     "lab": "R6"
+    },
+    {
+     "n": "9V",
+     "x": 0.468,
+     "y": 1.016,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.523,
+     "y": 1.016,
+     "g": "gnd",
+     "id": "GND_VTX",
+     "lab": "G"
+    },
+    {
+     "n": "VTX",
+     "x": 0.575,
+     "y": 1.016,
+     "g": "video"
+    },
+    {
+     "n": "TX1",
+     "x": 0.627,
+     "y": 1.016,
+     "uart": 1,
+     "lab": "T1"
+    },
+    {
+     "n": "RX1",
+     "x": 0.679,
+     "y": 1.016,
+     "uart": 1,
+     "lab": "R1"
+    },
+    {
+     "n": "SBUS",
+     "x": 0.733,
+     "y": 1.016,
+     "id": "SBUS_U",
+     "lab": "SBUS(R2)"
+    },
+    {
+     "n": "GND",
+     "x": 0.025,
+     "y": 0.123,
+     "g": "gnd",
+     "id": "GND_D4",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.052,
+     "y": 0.047,
+     "g": "strom",
+     "id": "5V_D4"
+    },
+    {
+     "n": "D4",
+     "x": 0.124,
+     "y": 0.022
+    },
+    {
+     "n": "GND",
+     "x": 0.877,
+     "y": 0.023,
+     "g": "gnd",
+     "id": "GND_D2",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.953,
+     "y": 0.05,
+     "g": "strom",
+     "id": "5V_D2"
+    },
+    {
+     "n": "D2",
+     "x": 0.978,
+     "y": 0.123
+    },
+    {
+     "n": "GND",
+     "x": 0.973,
+     "y": 0.861,
+     "g": "gnd",
+     "id": "GND_D1",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.946,
+     "y": 0.937,
+     "g": "strom",
+     "id": "5V_D1"
+    },
+    {
+     "n": "D1",
+     "x": 0.874,
+     "y": 0.962
+    },
+    {
+     "n": "GND",
+     "x": 0.123,
+     "y": 0.96,
+     "g": "gnd",
+     "id": "GND_D3",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.047,
+     "y": 0.933,
+     "g": "strom",
+     "id": "5V_D3"
+    },
+    {
+     "n": "D3",
+     "x": 0.022,
+     "y": 0.861
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "DJI",
+      "lab": "DJI-Buchse (6-polig)",
+      "x": 0.491,
+      "y": 0.967,
+      "w": 0.21,
+      "h": 0.14,
+      "pins": [
+       "9V",
+       "G",
+       "T1",
+       "R1",
+       "G",
+       "SBUS (R2)"
+      ]
+     },
+     {
+      "n": "ESC",
+      "lab": "ESC-Buchse (8-polig)",
+      "x": 0.479,
+      "y": 0.168,
+      "w": 0.31,
+      "h": 0.17,
+      "pins": [
+       "G",
+       "V",
+       "1",
+       "2",
+       "3",
+       "4",
+       "C",
+       "T"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "4V5_RX",
+      "GND": "GND_RX"
+     },
+     "text": "ELRS im SpeedyBee-Plan: TX an R2, RX an T2, 5V an 4V5, G an G (obere Reihe). Crossfire Nano: CH1 an R2, CH2 an T2. SBUS-Empfänger: SBUS an das Pad SBUS(R2). Spektrum: S an T2, + an 3V3."
+    },
+    "gps": {
+     "uart": 6,
+     "pads": {
+      "TX": "RX6",
+      "RX": "TX6",
+      "5V": "4V5_GPS",
+      "GND": "GND_GPS",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_O",
+      "Masse": "GND_O",
+      "OSD-Menü": "CC"
+     }
+    },
+    "vtx_analog": {
+     "uart": 1,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "5V_VTX",
+      "Masse": "GND_VTX",
+      "SmartAudio": "TX1"
+     },
+     "text": "Im Plan: VTX-Video an VTX, IRC/SmartAudio an T1, 5V an das 5V neben BAT, GND an G unten."
+    },
+    "digital": {
+     "uart": 1,
+     "buchse": "DJI",
+     "pads": {
+      "Plus": "9V",
+      "Masse": "GND_VTX",
+      "TX": "RX1",
+      "RX": "TX1",
+      "SBUS": "SBUS_U"
+     },
+     "text": "DJI O3/Link/Vista/Air Unit: 6-poliges Kabel in die DJI-Buchse auf der Unterseite (UART1 für OSD, SBUS auf UART2) oder an die Pads 9V, G, T1, R1, SBUS löten. Bei ELRS- oder SBUS-Empfänger zusätzlich den SBUS-Draht im DJI-Kabel abtrennen."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_LED",
+      "GND": "GND_LED",
+      "DIN": "LED"
+     },
+     "text": "Zusätzlich vier Eck-LED-Anschlüsse (D1–D4 mit 5V und G) für LED-Leisten an den Armen."
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    },
+    "servo": {
+     "pads": {
+      "Signal": "S9",
+      "5V": "5V_U1",
+      "GND": "GND_U1"
+     },
+     "text": "Im Plan: Servo-Signal an S9 (zusätzlicher PWM-Ausgang)."
+    }
+   },
+   "esc": {
+    "name": "SpeedyBee BLS 55A 4-in-1 ESC (30x30)",
+    "h": 0.99,
+    "farbe": "#1d1d1d",
+    "loecher": [
+     [
+      0.155,
+      0.064
+     ],
+     [
+      0.84,
+      0.064
+     ],
+     [
+      0.155,
+      0.758
+     ],
+     [
+      0.84,
+      0.758
+     ]
+    ],
+    "teile": [
+     {
+      "typ": "kondensator",
+      "x": 0.5,
+      "y": 0.95,
+      "lab": "Low-ESR-Kondensator an die Kondensator-Löcher neben BAT−/BAT+"
+     }
+    ],
+    "pads": [
+     {
+      "n": "M4",
+      "x": 0.043,
+      "y": 0.158,
+      "id": "M4_1",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.043,
+      "y": 0.263,
+      "id": "M4_2",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.043,
+      "y": 0.369,
+      "id": "M4_3",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.043,
+      "y": 0.476,
+      "id": "M3_1",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.043,
+      "y": 0.581,
+      "id": "M3_2",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.043,
+      "y": 0.687,
+      "id": "M3_3",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.957,
+      "y": 0.156,
+      "id": "M2_1",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.957,
+      "y": 0.263,
+      "id": "M2_2",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.957,
+      "y": 0.369,
+      "id": "M2_3",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.957,
+      "y": 0.476,
+      "id": "M1_1",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.957,
+      "y": 0.581,
+      "id": "M1_2",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.957,
+      "y": 0.687,
+      "id": "M1_3",
+      "g": "motor"
+     },
+     {
+      "n": "BAT-",
+      "x": 0.41,
+      "y": 0.931,
+      "g": "gnd",
+      "lab": "−"
+     },
+     {
+      "n": "BAT+",
+      "x": 0.59,
+      "y": 0.931,
+      "g": "strom",
+      "lab": "+"
+     }
+    ],
+    "unterseite": {
+     "buchsen": [
+      {
+       "n": "FC",
+       "lab": "8-polige Buchse zum FC",
+       "x": 0.5,
+       "y": 0.05,
+       "w": 0.3,
+       "h": 0.07,
+       "pins": [
+        "−",
+        "+",
+        "1",
+        "2",
+        "3",
+        "4",
+        "C",
+        "T"
+       ]
+      }
+     ]
+    },
+    "unsicher": "Rahmen inklusive seitlich überstehender Motorpads; Lage der 8-poligen Buchse auf der Unterseite nur grob (Ansicht im Plan nur angeschnitten)."
+   },
+   "unsicher": "Pads per Farberkennung vermessen (±0,005). Untere Platinenkante liegt im Plan unter farbigen Markierungsfeldern, h aus den Abmessungen geschätzt. Die vier Eck-Pads (D1–D4, 5V, G) sind sehr klein und unten teils verdeckt, Lage dort per Drehsymmetrie aus den oberen Ecken ergänzt (±0,01). Bedeutung des Pads 'RS' ist im Plan nicht erklärt. Servo-Stromzuordnung (welches 5V/G) im Plan nicht eindeutig."
+  },
+  {
+   "id": "speedybee-f405-v5",
+   "name": "SpeedyBee F405 V5 (30x30)",
+   "match": "speedy ?bee.*f405.*v5|f405 v5.*speedy ?bee|sb.?f405.?v5",
+   "quelle": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_speedybee_f405_v5_55a_stack/f405_v5_27.jpg",
+   "quelle_belegung": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_speedybee_f405_v5_55a_stack/f405_v5_24.jpg",
+   "h": 1.016,
+   "farbe": "#2a2a2a",
+   "loecher": [
+    [
+     0.098,
+     0.096
+    ],
+    [
+     0.902,
+     0.094
+    ],
+    [
+     0.096,
+     0.909
+    ],
+    [
+     0.902,
+     0.909
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.766,
+     "y": 0.337,
+     "w": 0.211,
+     "h": 0.244
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.665,
+     "y": 0.703
+    },
+    {
+     "typ": "knopf",
+     "x": 0.183,
+     "y": 0.635,
+     "lab": "BOOT"
+    }
+   ],
+   "pads": [
+    {
+     "n": "5V",
+     "x": 0.202,
+     "y": 0.051,
+     "g": "strom",
+     "id": "5V_CAM"
+    },
+    {
+     "n": "GND",
+     "x": 0.262,
+     "y": 0.051,
+     "g": "gnd",
+     "id": "GND_CAM",
+     "lab": "G"
+    },
+    {
+     "n": "CAM",
+     "x": 0.321,
+     "y": 0.051,
+     "g": "video"
+    },
+    {
+     "n": "CC",
+     "x": 0.38,
+     "y": 0.051
+    },
+    {
+     "n": "BZ+",
+     "x": 0.443,
+     "y": 0.051,
+     "lab": "B+"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.503,
+     "y": 0.051,
+     "lab": "B-"
+    },
+    {
+     "n": "P+",
+     "x": 0.564,
+     "y": 0.051
+    },
+    {
+     "n": "P-",
+     "x": 0.623,
+     "y": 0.051
+    },
+    {
+     "n": "GND",
+     "x": 0.684,
+     "y": 0.051,
+     "g": "gnd",
+     "id": "GND_LED",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.745,
+     "y": 0.051,
+     "g": "strom",
+     "id": "5V_LED"
+    },
+    {
+     "n": "LED",
+     "x": 0.805,
+     "y": 0.051
+    },
+    {
+     "n": "TX2",
+     "x": 0.229,
+     "y": 0.14,
+     "uart": 2,
+     "lab": "T2"
+    },
+    {
+     "n": "RX2",
+     "x": 0.29,
+     "y": 0.14,
+     "uart": 2,
+     "lab": "R2"
+    },
+    {
+     "n": "4V5",
+     "x": 0.351,
+     "y": 0.14,
+     "g": "strom",
+     "id": "4V5_O"
+    },
+    {
+     "n": "GND",
+     "x": 0.412,
+     "y": 0.14,
+     "g": "gnd",
+     "id": "GND_O",
+     "lab": "G"
+    },
+    {
+     "n": "GND",
+     "x": 0.471,
+     "y": 0.14,
+     "g": "gnd",
+     "id": "GND_S5",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.532,
+     "y": 0.14,
+     "g": "strom",
+     "id": "5V_S5"
+    },
+    {
+     "n": "S5",
+     "x": 0.593,
+     "y": 0.14
+    },
+    {
+     "n": "GND",
+     "x": 0.654,
+     "y": 0.14,
+     "g": "gnd",
+     "id": "GND_S6",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.716,
+     "y": 0.14,
+     "g": "strom",
+     "id": "5V_S6"
+    },
+    {
+     "n": "S6",
+     "x": 0.777,
+     "y": 0.14
+    },
+    {
+     "n": "GND",
+     "x": 0.072,
+     "y": 0.237,
+     "g": "gnd",
+     "id": "GND_LED4",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.124,
+     "y": 0.237,
+     "g": "strom",
+     "id": "5V_LED4"
+    },
+    {
+     "n": "LED4",
+     "x": 0.173,
+     "y": 0.237,
+     "lab": "D"
+    },
+    {
+     "n": "GND",
+     "x": 0.834,
+     "y": 0.239,
+     "g": "gnd",
+     "id": "GND_LED2",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.885,
+     "y": 0.239,
+     "g": "strom",
+     "id": "5V_LED2"
+    },
+    {
+     "n": "LED2",
+     "x": 0.935,
+     "y": 0.239,
+     "lab": "D"
+    },
+    {
+     "n": "LED3",
+     "x": 0.072,
+     "y": 0.789,
+     "lab": "D"
+    },
+    {
+     "n": "5V",
+     "x": 0.122,
+     "y": 0.789,
+     "g": "strom",
+     "id": "5V_LED3"
+    },
+    {
+     "n": "GND",
+     "x": 0.173,
+     "y": 0.789,
+     "g": "gnd",
+     "id": "GND_LED3",
+     "lab": "G"
+    },
+    {
+     "n": "LED1",
+     "x": 0.834,
+     "y": 0.791,
+     "lab": "D"
+    },
+    {
+     "n": "5V",
+     "x": 0.885,
+     "y": 0.791,
+     "g": "strom",
+     "id": "5V_LED1"
+    },
+    {
+     "n": "GND",
+     "x": 0.934,
+     "y": 0.791,
+     "g": "gnd",
+     "id": "GND_LED1",
+     "lab": "G"
+    },
+    {
+     "n": "GND",
+     "x": 0.229,
+     "y": 0.862,
+     "g": "gnd",
+     "id": "GND_GPS",
+     "lab": "G"
+    },
+    {
+     "n": "TX4",
+     "x": 0.29,
+     "y": 0.862,
+     "uart": 4,
+     "lab": "T4"
+    },
+    {
+     "n": "RX4",
+     "x": 0.351,
+     "y": 0.862,
+     "uart": 4,
+     "lab": "R4"
+    },
+    {
+     "n": "5V",
+     "x": 0.412,
+     "y": 0.862,
+     "g": "strom",
+     "id": "5V_VTX"
+    },
+    {
+     "n": "VTX",
+     "x": 0.473,
+     "y": 0.862,
+     "g": "video"
+    },
+    {
+     "n": "GND",
+     "x": 0.534,
+     "y": 0.862,
+     "g": "gnd",
+     "id": "GND_SBUS",
+     "lab": "G"
+    },
+    {
+     "n": "SBUS",
+     "x": 0.595,
+     "y": 0.862
+    },
+    {
+     "n": "RX6",
+     "x": 0.654,
+     "y": 0.862,
+     "uart": 6,
+     "lab": "R6"
+    },
+    {
+     "n": "TX6",
+     "x": 0.716,
+     "y": 0.862,
+     "uart": 6,
+     "lab": "T6"
+    },
+    {
+     "n": "3V3",
+     "x": 0.777,
+     "y": 0.862,
+     "g": "strom"
+    },
+    {
+     "n": "SDA",
+     "x": 0.229,
+     "y": 0.955,
+     "lab": "DA"
+    },
+    {
+     "n": "SCL",
+     "x": 0.29,
+     "y": 0.955,
+     "lab": "CL"
+    },
+    {
+     "n": "4V5",
+     "x": 0.351,
+     "y": 0.955,
+     "g": "strom",
+     "id": "4V5_GPS"
+    },
+    {
+     "n": "9V",
+     "x": 0.412,
+     "y": 0.955,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.473,
+     "y": 0.955,
+     "g": "gnd",
+     "id": "GND_VTX",
+     "lab": "G"
+    },
+    {
+     "n": "TX3",
+     "x": 0.534,
+     "y": 0.955,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "RX3",
+     "x": 0.593,
+     "y": 0.955,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "GND",
+     "x": 0.654,
+     "y": 0.955,
+     "g": "gnd",
+     "id": "GND_RX",
+     "lab": "G"
+    },
+    {
+     "n": "4V5",
+     "x": 0.716,
+     "y": 0.955,
+     "g": "strom",
+     "id": "4V5_RX"
+    },
+    {
+     "n": "RS",
+     "x": 0.777,
+     "y": 0.955
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "ESC",
+      "lab": "ESC-Buchse (10-polig)",
+      "x": 0.619,
+      "y": 0.14,
+      "w": 0.324,
+      "h": 0.158,
+      "pins": [
+       "4",
+       "3",
+       "2",
+       "1",
+       "T",
+       "C",
+       "G",
+       "G",
+       "V",
+       "V"
+      ]
+     },
+     {
+      "n": "GPS",
+      "lab": "GPS-Buchse",
+      "x": 0.326,
+      "y": 0.14,
+      "w": 0.224,
+      "h": 0.158,
+      "pins": [
+       "CL",
+       "DA",
+       "T4",
+       "R4",
+       "G",
+       "4V5"
+      ]
+     },
+     {
+      "n": "RX",
+      "lab": "Empfänger-Buchse",
+      "x": 0.616,
+      "y": 0.894,
+      "w": 0.18,
+      "h": 0.158,
+      "pins": [
+       "4V5",
+       "G",
+       "R6",
+       "T6"
+      ]
+     },
+     {
+      "n": "DJI",
+      "lab": "HD-VTX-Buchse (DJI/HD)",
+      "x": 0.405,
+      "y": 0.894,
+      "w": 0.21,
+      "h": 0.158,
+      "pins": [
+       "9V",
+       "G",
+       "T3",
+       "R3",
+       "G",
+       "SBUS (R6)"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 6,
+     "pads": {
+      "TX": "RX6",
+      "RX": "TX6",
+      "5V": "4V5_RX",
+      "GND": "GND_RX"
+     },
+     "text": "TBS/ELRS im SpeedyBee-Plan: TX an R6, RX an T6, VCC an 4V5, GND an G (untere Reihe rechts). SBUS-Empfänger: SBUS an das Pad SBUS. Alternativ Stecker in die Empfänger-Buchse auf der Unterseite."
+    },
+    "gps": {
+     "uart": 4,
+     "pads": {
+      "TX": "RX4",
+      "RX": "TX4",
+      "5V": "4V5_GPS",
+      "GND": "GND_GPS",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_CAM",
+      "Masse": "GND_CAM",
+      "OSD-Menü": "CC"
+     }
+    },
+    "vtx_analog": {
+     "uart": 3,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "9V",
+      "Masse": "GND_VTX",
+      "SmartAudio": "TX3"
+     },
+     "text": "Im Plan: TX Ultra mit 9V, TX800 mit 5V (Pad 5V neben VTX); Video an VTX, RX (SmartAudio) an T3."
+    },
+    "digital": {
+     "uart": 3,
+     "buchse": "DJI",
+     "pads": {
+      "Plus": "9V",
+      "Masse": "GND_VTX",
+      "TX": "RX3",
+      "RX": "TX3"
+     },
+     "text": "HD-Systeme (DJI O3/O4, Walksnail): Stecker in die HD-VTX-Buchse auf der Unterseite (9V, G, T3, R3, G, SBUS)."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_LED",
+      "GND": "GND_LED",
+      "DIN": "LED"
+     },
+     "text": "Zusätzlich vier Eck-Anschlüsse LED1–LED4 (D, 5V, G) für LED-Leisten."
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    },
+    "servo": {
+     "pads": {
+      "Signal": "S5",
+      "5V": "5V_S5",
+      "GND": "GND_S5"
+     },
+     "text": "Zweiter Servo an G, 5V, S6."
+    }
+   },
+   "esc": {
+    "name": "SpeedyBee BLS 55A 4-in-1 ESC (F405 V5 Stack)",
+    "h": 1.065,
+    "farbe": "#1d1d1d",
+    "loecher": [
+     [
+      0.137,
+      0.119
+     ],
+     [
+      0.853,
+      0.119
+     ],
+     [
+      0.137,
+      0.853
+     ],
+     [
+      0.853,
+      0.853
+     ]
+    ],
+    "teile": [],
+    "pads": [
+     {
+      "n": "M4",
+      "x": 0.045,
+      "y": 0.229,
+      "id": "M4_1",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.045,
+      "y": 0.323,
+      "id": "M4_2",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.045,
+      "y": 0.417,
+      "id": "M4_3",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.045,
+      "y": 0.564,
+      "id": "M3_1",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.045,
+      "y": 0.663,
+      "id": "M3_2",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.045,
+      "y": 0.761,
+      "id": "M3_3",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.945,
+      "y": 0.229,
+      "id": "M2_1",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.945,
+      "y": 0.323,
+      "id": "M2_2",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.945,
+      "y": 0.417,
+      "id": "M2_3",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.945,
+      "y": 0.564,
+      "id": "M1_1",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.945,
+      "y": 0.663,
+      "id": "M1_2",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.945,
+      "y": 0.761,
+      "id": "M1_3",
+      "g": "motor"
+     },
+     {
+      "n": "BAT+",
+      "x": 0.372,
+      "y": 1.004,
+      "g": "strom",
+      "lab": "+"
+     },
+     {
+      "n": "BAT-",
+      "x": 0.626,
+      "y": 1.004,
+      "g": "gnd",
+      "lab": "−"
+     },
+     {
+      "n": "V",
+      "x": 0.315,
+      "y": 0.027,
+      "id": "FC_V",
+      "lab": "V",
+      "g": "strom"
+     },
+     {
+      "n": "G",
+      "x": 0.368,
+      "y": 0.027,
+      "id": "FC_G",
+      "lab": "G",
+      "g": "gnd"
+     },
+     {
+      "n": "C",
+      "x": 0.419,
+      "y": 0.027,
+      "id": "FC_C",
+      "lab": "C"
+     },
+     {
+      "n": "T",
+      "x": 0.472,
+      "y": 0.027,
+      "id": "FC_T",
+      "lab": "T"
+     },
+     {
+      "n": "1",
+      "x": 0.526,
+      "y": 0.027,
+      "id": "FC_1",
+      "lab": "1"
+     },
+     {
+      "n": "2",
+      "x": 0.577,
+      "y": 0.027,
+      "id": "FC_2",
+      "lab": "2"
+     },
+     {
+      "n": "3",
+      "x": 0.63,
+      "y": 0.027,
+      "id": "FC_3",
+      "lab": "3"
+     },
+     {
+      "n": "4",
+      "x": 0.683,
+      "y": 0.027,
+      "id": "FC_4",
+      "lab": "4"
+     }
+    ],
+    "unterseite": {
+     "buchsen": [
+      {
+       "n": "FC",
+       "lab": "10-polige Buchse zum FC",
+       "x": 0.5,
+       "y": 0.05,
+       "w": 0.33,
+       "h": 0.08,
+       "pins": [
+        "4",
+        "3",
+        "2",
+        "1",
+        "T",
+        "C",
+        "G",
+        "G",
+        "V",
+        "V"
+       ]
+      }
+     ]
+    },
+    "unsicher": "Die drei Motorpads je Motor sind im Plan zu einem Feld verschmolzen und hier gleichmäßig geteilt (±0,01). Rechte Motorpads spiegelsymmetrisch zur Lochmitte ergänzt. Die acht kleinen Pads an der Oberkante (V G C T 1 2 3 4) sind die Direktlöt-Anschlüsse zum FC; Pin-Reihenfolge der Unterseiten-Buchse aus der FC-Ansicht übernommen."
+   },
+   "unsicher": "Pads per Farberkennung vermessen (±0,005). Platine hat seitlich eingezogene Kanten zwischen den Ohren; Rahmen = Außenmaß der Ohren. Kleine Lötjumper neben 'SBUS' und '9V' auf der Oberseite sind im Plan nicht erklärt und nicht eingetragen. Bedeutung von 'RS' und 'P+/P−' (Electronic Switch) nur aus der Legende."
+  },
+  {
+   "id": "foxeer-f722-v4",
+   "name": "Foxeer F722 V4 (30x30, Reaper-Stack)",
+   "match": "^(?!.*mini).*(foxeer.*f722.*v4|f722 v4.*foxeer|reaper.*f722)",
+   "quelle": "https://inew.foxeer.com/upload/image/20250516/20250516020108_17502.png",
+   "h": 1.012,
+   "farbe": "#1c1c1c",
+   "loecher": [
+    [
+     0.083,
+     0.079
+    ],
+    [
+     0.919,
+     0.086
+    ],
+    [
+     0.079,
+     0.917
+    ],
+    [
+     0.912,
+     0.921
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": -0.002,
+     "y": 0.481,
+     "w": 0.209,
+     "h": 0.329
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.355,
+     "y": 0.283
+    },
+    {
+     "typ": "knopf",
+     "x": 0.224,
+     "y": 0.376,
+     "lab": "BOOT"
+    },
+    {
+     "typ": "jumper",
+     "lab": "12V/5V Kamera",
+     "x": 0.731,
+     "y": 0.086,
+     "w": 0.052,
+     "h": 0.031
+    },
+    {
+     "typ": "jumper",
+     "lab": "PASS",
+     "x": 0.826,
+     "y": 0.317,
+     "w": 0.038,
+     "h": 0.073
+    },
+    {
+     "typ": "buchse",
+     "n": "ESC",
+     "lab": "ESC-Buchse (8-polig)",
+     "pins": [
+      "VCC",
+      "GND",
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "Curr",
+      "RX4"
+     ],
+     "x": 0.188,
+     "y": -0.002,
+     "w": 0.302,
+     "h": 0.133
+    },
+    {
+     "typ": "buchse",
+     "n": "DJI",
+     "lab": "DJI-Buchse (6-polig)",
+     "pins": [
+      "12V",
+      "G",
+      "T6",
+      "R6",
+      "G",
+      "R2"
+     ],
+     "x": 0.195,
+     "y": 0.848,
+     "w": 0.231,
+     "h": 0.112
+    }
+   ],
+   "pads": [
+    {
+     "n": "CC",
+     "x": 0.633,
+     "y": 0.038
+    },
+    {
+     "n": "CAM",
+     "x": 0.688,
+     "y": 0.038,
+     "g": "video"
+    },
+    {
+     "n": "+",
+     "x": 0.743,
+     "y": 0.038,
+     "g": "strom",
+     "id": "CAM_PLUS",
+     "lab": "+"
+    },
+    {
+     "n": "GND",
+     "x": 0.798,
+     "y": 0.038,
+     "g": "gnd",
+     "id": "GND_CAM"
+    },
+    {
+     "n": "GND",
+     "x": 0.914,
+     "y": 0.205,
+     "g": "gnd",
+     "id": "GND_VTX"
+    },
+    {
+     "n": "12V",
+     "x": 0.914,
+     "y": 0.26,
+     "g": "strom"
+    },
+    {
+     "n": "VTX",
+     "x": 0.914,
+     "y": 0.314,
+     "g": "video"
+    },
+    {
+     "n": "TX5",
+     "x": 0.914,
+     "y": 0.367,
+     "uart": 5,
+     "lab": "T5"
+    },
+    {
+     "n": "RX5",
+     "x": 0.914,
+     "y": 0.419,
+     "uart": 5,
+     "lab": "R5"
+    },
+    {
+     "n": "RX1",
+     "x": 0.914,
+     "y": 0.476,
+     "uart": 1,
+     "lab": "R1"
+    },
+    {
+     "n": "4V7",
+     "x": 0.914,
+     "y": 0.529,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.914,
+     "y": 0.583,
+     "g": "gnd",
+     "id": "GND_RA",
+     "lab": "G"
+    },
+    {
+     "n": "SDA",
+     "x": 0.914,
+     "y": 0.638
+    },
+    {
+     "n": "SCL",
+     "x": 0.914,
+     "y": 0.693
+    },
+    {
+     "n": "5V",
+     "x": 0.914,
+     "y": 0.748,
+     "g": "strom",
+     "id": "5V_RA"
+    },
+    {
+     "n": "GND",
+     "x": 0.914,
+     "y": 0.802,
+     "g": "gnd",
+     "id": "GND_RA2"
+    },
+    {
+     "n": "TX4",
+     "x": 0.845,
+     "y": 0.419,
+     "uart": 4,
+     "lab": "T4"
+    },
+    {
+     "n": "TX1",
+     "x": 0.845,
+     "y": 0.474,
+     "uart": 1,
+     "lab": "T1"
+    },
+    {
+     "n": "5V",
+     "x": 0.845,
+     "y": 0.529,
+     "g": "strom",
+     "id": "5V_RI"
+    },
+    {
+     "n": "GND",
+     "x": 0.845,
+     "y": 0.583,
+     "g": "gnd",
+     "id": "GND_RI",
+     "lab": "G"
+    },
+    {
+     "n": "RX3",
+     "x": 0.845,
+     "y": 0.638,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "TX3",
+     "x": 0.845,
+     "y": 0.693,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "5V",
+     "x": 0.845,
+     "y": 0.748,
+     "g": "strom",
+     "id": "5V_RI2"
+    },
+    {
+     "n": "GND",
+     "x": 0.845,
+     "y": 0.802,
+     "g": "gnd",
+     "id": "GND_RI2"
+    },
+    {
+     "n": "TX2",
+     "x": 0.521,
+     "y": 0.967,
+     "uart": 2
+    },
+    {
+     "n": "LED",
+     "x": 0.574,
+     "y": 0.967
+    },
+    {
+     "n": "GND",
+     "x": 0.629,
+     "y": 0.967,
+     "g": "gnd",
+     "id": "GND_U",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.683,
+     "y": 0.967,
+     "g": "strom",
+     "id": "5V_U1"
+    },
+    {
+     "n": "5V",
+     "x": 0.738,
+     "y": 0.967,
+     "g": "strom",
+     "id": "5V_U2"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.793,
+     "y": 0.967,
+     "lab": "B-"
+    }
+   ],
+   "unterseite": {
+    "buchsen": []
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 1,
+     "pads": {
+      "TX": "RX1",
+      "RX": "TX1",
+      "5V": "5V_RI",
+      "GND": "GND_RI"
+     },
+     "text": "Im Foxeer-Plan: Empfänger RX an T1, TX an R1, 5V und GND aus der inneren Reihe."
+    },
+    "gps": {
+     "uart": 3,
+     "pads": {
+      "TX": "RX3",
+      "RX": "TX3",
+      "5V": "5V_RA",
+      "GND": "GND_RA2",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "CAM_PLUS",
+      "Masse": "GND_CAM",
+      "OSD-Menü": "CC"
+     },
+     "text": "Kameraspannung am Lötjumper neben den Pads wählen: 12V oder 5V."
+    },
+    "vtx_analog": {
+     "uart": 5,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "12V",
+      "Masse": "GND_VTX",
+      "SmartAudio": "TX5"
+     },
+     "text": "Im Plan Foxeer Reaper Extreme: Strom an 12V, Video an VTX, IRC Tramp/SmartAudio an T5."
+    },
+    "digital": {
+     "uart": 6,
+     "buchse": "DJI",
+     "pads": {},
+     "text": "DJI Vista/Air Unit über die 6-polige Buchse unten: 12V, G, T6, R6, G, R2 (SBUS). Keine eigenen Lötpads für die HD-Leitung – Kabel in die Buchse oder an die Kabellitzen löten."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_U1",
+      "GND": "GND_U",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "5V_U2",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "unsicher": "Plan ist ein Platinenfoto, Pads per Goldfarb-Erkennung vermessen (±0,01). Pad-Beschriftung rechts steht zweizeilig neben der inneren Reihe; Zuordnung innen/außen aus der Verkabelung im Plan abgeleitet (T1 innen/R1 außen, R3 innen/SDA außen usw.). R4 liegt nur an der ESC-Buchse (ESC-Telemetrie). Pin-Reihenfolge der ESC-Buchse (VCC/GND) unsicher. Kein ESC-Plan mit Motorpads auf der Herstellerseite, daher kein esc-Block. Pad-Belegung der beiden Seitenbuchsen als teile mit typ 'buchse' eingetragen, weil sie auf der Oberseite sitzen."
+  },
+  {
+   "id": "iflight-blitz-f7",
+   "name": "iFlight BLITZ F7 V1.2 (30x30)",
+   "match": "^(?!.*mini).*(blitz.*f7|iflight.*f7 v1)",
+   "quelle": "https://cdn.shopify.com/s/files/1/1285/4651/files/iflight-iflight-blitz-f7-v1-2-2-6s-30x30-stack-combo-f7-fc-e55-32bit-55a-4in1-esc-stack-31333960974449.png",
+   "quelle_belegung": "https://cdn.shopify.com/s/files/1/1285/4651/files/6666_bdb08122-7a02-4841-8a1c-28168d3f48ee.jpg",
+   "h": 1.071,
+   "farbe": "#2f9e44",
+   "loecher": [
+    [
+     0.042,
+     0.091
+    ],
+    [
+     0.956,
+     0.091
+    ],
+    [
+     0.042,
+     0.984
+    ],
+    [
+     0.956,
+     0.984
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": -0.033,
+     "y": 0.391,
+     "w": 0.209,
+     "h": 0.273
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.452,
+     "y": 0.346
+    },
+    {
+     "typ": "knopf",
+     "x": 0.053,
+     "y": 0.806,
+     "lab": "BOOT"
+    },
+    {
+     "typ": "buchse",
+     "n": "LED",
+     "lab": "LED/Buzzer-Buchse (4-polig)",
+     "pins": [
+      "5V",
+      "G",
+      "LED",
+      "BUZ-"
+     ],
+     "x": 0.168,
+     "y": -0.004,
+     "w": 0.185,
+     "h": 0.128
+    }
+   ],
+   "pads": [
+    {
+     "n": "GND",
+     "x": 0.452,
+     "y": 0.024,
+     "g": "gnd",
+     "id": "GND_T1",
+     "lab": "G"
+    },
+    {
+     "n": "GND",
+     "x": 0.539,
+     "y": 0.024,
+     "g": "gnd",
+     "id": "GND_T2",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.627,
+     "y": 0.024,
+     "g": "strom",
+     "id": "5V_CAM"
+    },
+    {
+     "n": "GND",
+     "x": 0.717,
+     "y": 0.024,
+     "g": "gnd",
+     "id": "GND_CAM",
+     "lab": "G"
+    },
+    {
+     "n": "VI",
+     "x": 0.804,
+     "y": 0.024,
+     "g": "video",
+     "lab": "VI"
+    },
+    {
+     "n": "BAT",
+     "x": 0.452,
+     "y": 0.102,
+     "g": "strom"
+    },
+    {
+     "n": "M5",
+     "x": 0.539,
+     "y": 0.102
+    },
+    {
+     "n": "M6",
+     "x": 0.627,
+     "y": 0.102
+    },
+    {
+     "n": "M7",
+     "x": 0.717,
+     "y": 0.102
+    },
+    {
+     "n": "M8",
+     "x": 0.804,
+     "y": 0.102
+    },
+    {
+     "n": "RX5",
+     "x": 0.856,
+     "y": 0.559,
+     "uart": 5,
+     "lab": "R5"
+    },
+    {
+     "n": "TX5",
+     "x": 0.965,
+     "y": 0.559,
+     "uart": 5,
+     "lab": "T5"
+    },
+    {
+     "n": "5V",
+     "x": 0.856,
+     "y": 0.623,
+     "g": "strom",
+     "id": "5V_R1"
+    },
+    {
+     "n": "GND",
+     "x": 0.965,
+     "y": 0.623,
+     "g": "gnd",
+     "id": "GND_R1",
+     "lab": "G"
+    },
+    {
+     "n": "RX3",
+     "x": 0.856,
+     "y": 0.687,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "TX3",
+     "x": 0.965,
+     "y": 0.687,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "5V",
+     "x": 0.856,
+     "y": 0.751,
+     "g": "strom",
+     "id": "5V_R2"
+    },
+    {
+     "n": "GND",
+     "x": 0.965,
+     "y": 0.751,
+     "g": "gnd",
+     "id": "GND_R2",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.212,
+     "y": 0.969,
+     "g": "strom",
+     "id": "5V_U1"
+    },
+    {
+     "n": "RX4",
+     "x": 0.298,
+     "y": 0.969,
+     "uart": 4,
+     "lab": "R4"
+    },
+    {
+     "n": "SDA",
+     "x": 0.382,
+     "y": 0.969
+    },
+    {
+     "n": "5V",
+     "x": 0.466,
+     "y": 0.969,
+     "g": "strom",
+     "id": "5V_U2"
+    },
+    {
+     "n": "RX2",
+     "x": 0.552,
+     "y": 0.969,
+     "uart": 2,
+     "lab": "R2"
+    },
+    {
+     "n": "5V",
+     "x": 0.636,
+     "y": 0.969,
+     "g": "strom",
+     "id": "5V_U3"
+    },
+    {
+     "n": "RX1",
+     "x": 0.722,
+     "y": 0.969,
+     "uart": 1,
+     "lab": "R1"
+    },
+    {
+     "n": "9V",
+     "x": 0.806,
+     "y": 0.969,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.212,
+     "y": 1.049,
+     "g": "gnd",
+     "id": "GND_U1",
+     "lab": "G"
+    },
+    {
+     "n": "TX4",
+     "x": 0.298,
+     "y": 1.049,
+     "uart": 4,
+     "lab": "T4"
+    },
+    {
+     "n": "SCL",
+     "x": 0.382,
+     "y": 1.049
+    },
+    {
+     "n": "GND",
+     "x": 0.466,
+     "y": 1.049,
+     "g": "gnd",
+     "id": "GND_U2",
+     "lab": "G"
+    },
+    {
+     "n": "TX2",
+     "x": 0.552,
+     "y": 1.049,
+     "uart": 2,
+     "lab": "T2"
+    },
+    {
+     "n": "VO",
+     "x": 0.636,
+     "y": 1.049,
+     "g": "video",
+     "lab": "VO"
+    },
+    {
+     "n": "TX1",
+     "x": 0.722,
+     "y": 1.049,
+     "uart": 1,
+     "lab": "T1"
+    },
+    {
+     "n": "GND",
+     "x": 0.806,
+     "y": 1.049,
+     "g": "gnd",
+     "id": "GND_U4",
+     "lab": "G"
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "CAM",
+      "lab": "Kamera-Buchse (4-polig)",
+      "x": 0.72,
+      "y": 0.062,
+      "w": 0.17,
+      "h": 0.12,
+      "pins": [
+       "5V",
+       "G",
+       "VI",
+       "NC"
+      ]
+     },
+     {
+      "n": "ESC",
+      "lab": "ESC-Buchse (10-polig)",
+      "x": 0.433,
+      "y": 0.062,
+      "w": 0.21,
+      "h": 0.12,
+      "pins": [
+       "R6",
+       "CUR",
+       "M4",
+       "M3",
+       "M2",
+       "M1",
+       "BAT",
+       "BAT",
+       "GND",
+       "GND"
+      ]
+     },
+     {
+      "n": "DJI",
+      "lab": "DJI-/VTX-Buchse (5-polig)",
+      "x": 0.734,
+      "y": 1.0,
+      "w": 0.2,
+      "h": 0.12,
+      "pins": [
+       "R1",
+       "T1",
+       "G",
+       "9V",
+       "VO"
+      ]
+     },
+     {
+      "n": "RX",
+      "lab": "Empfänger-Buchse (6-polig)",
+      "x": 0.497,
+      "y": 1.0,
+      "w": 0.22,
+      "h": 0.12,
+      "pins": [
+       "3V3",
+       "R2",
+       "5V",
+       "G",
+       "R2",
+       "T2"
+      ]
+     },
+     {
+      "n": "GPS",
+      "lab": "GPS-Buchse (4-polig)",
+      "x": 0.273,
+      "y": 1.0,
+      "w": 0.17,
+      "h": 0.12,
+      "pins": [
+       "T4",
+       "R4",
+       "G",
+       "5V"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "5V_U2",
+      "GND": "GND_U2"
+     },
+     "text": "Im iFlight-Plan: Empfänger an UART2 (Serial RX), SBUS an R2. Alternativ über die Empfänger-Buchse auf der Unterseite."
+    },
+    "gps": {
+     "uart": 3,
+     "pads": {
+      "TX": "RX3",
+      "RX": "TX3",
+      "5V": "5V_R2",
+      "GND": "GND_R2",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     },
+     "text": "Betaflight-Tabelle im Plan: GPS auf UART3."
+    },
+    "kamera": {
+     "pads": {
+      "Video": "VI",
+      "Plus": "5V_CAM",
+      "Masse": "GND_CAM"
+     },
+     "text": "Kamera an VI (Video In), 5V und G oben – oder über die Kamera-Buchse."
+    },
+    "vtx_analog": {
+     "uart": 1,
+     "pads": {
+      "Video": "VO",
+      "Plus": "9V",
+      "Masse": "GND_U4",
+      "SmartAudio": "TX1"
+     },
+     "text": "Im Plan: VTX an VO (Video Out), 9V, G und T1 (IRC Tramp/SmartAudio auf UART1)."
+    },
+    "digital": {
+     "uart": 1,
+     "buchse": "DJI",
+     "pads": {
+      "Plus": "9V",
+      "Masse": "GND_U4",
+      "TX": "RX1",
+      "RX": "TX1",
+      "SBUS": "RX2"
+     },
+     "text": "DJI Air Unit/Vista über die Plug-&-Play-Buchse. Achtung laut iFlight: Die Buchse reicht VBAT durch – die DJI Air Unit verträgt nur bis 4S, darüber ein separates BEC verwenden. Ohne DJI-Fernsteuerung SBUS und GND nicht anschließen."
+    },
+    "led": {
+     "buchse": "LED",
+     "pads": {},
+     "text": "LED-Streifen nur über die 4-polige Buchse oben links (5V, G, LED)."
+    },
+    "buzzer": {
+     "buchse": "LED",
+     "pads": {},
+     "text": "Buzzer über dieselbe Buchse (5V und BUZ-)."
+    }
+   },
+   "esc": {
+    "name": "iFlight BLITZ E55 4-in-1 ESC",
+    "h": 1.139,
+    "farbe": "#2f9e44",
+    "loecher": [
+     [
+      0.166,
+      0.168
+     ],
+     [
+      0.841,
+      0.168
+     ],
+     [
+      0.166,
+      0.836
+     ],
+     [
+      0.841,
+      0.836
+     ]
+    ],
+    "teile": [],
+    "pads": [
+     {
+      "n": "M4",
+      "x": 0.125,
+      "y": 0.032,
+      "id": "M4_1",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.08,
+      "y": 0.078,
+      "id": "M4_2",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.025,
+      "y": 0.122,
+      "id": "M4_3",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.878,
+      "y": 0.034,
+      "id": "M2_1",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.924,
+      "y": 0.078,
+      "id": "M2_2",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.978,
+      "y": 0.122,
+      "id": "M2_3",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.124,
+      "y": 0.969,
+      "id": "M3_1",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.08,
+      "y": 0.924,
+      "id": "M3_2",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.025,
+      "y": 0.88,
+      "id": "M3_3",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.88,
+      "y": 0.973,
+      "id": "M1_1",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.929,
+      "y": 0.931,
+      "id": "M1_2",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.978,
+      "y": 0.88,
+      "id": "M1_3",
+      "g": "motor"
+     },
+     {
+      "n": "BAT+",
+      "x": 0.427,
+      "y": 1.095,
+      "g": "strom",
+      "lab": "+"
+     },
+     {
+      "n": "BAT-",
+      "x": 0.573,
+      "y": 1.097,
+      "g": "gnd",
+      "lab": "−"
+     }
+    ],
+    "unsicher": "Aus einem Produktfoto (nicht aus dem Anschlussplan) vermessen; Motorpads liegen schräg an den Armenden, teils per Symmetrie ergänzt (±0,015)."
+   },
+   "unsicher": "Pads aus dem Hersteller-Render der V1.2 per Farberkennung vermessen (±0,005), Belegung aus dem BLITZ-F7-Wiring-Diagram (gleiche Beschriftung). Die Lochmitten sind offene Kerben, daher ±0,01. Lage der Unterseiten-Buchsen nur grob aus der Rückansicht gespiegelt. Für V1.0/V1.1 kann die Lage abweichen."
+  },
+  {
+   "id": "kakute-h7-v2",
+   "name": "Holybro Kakute H7 V2 (30x30)",
+   "match": "kakute.*h7.*v2|kakute h7(?!.*mini)",
+   "quelle": "https://docs.holybro.com/fpv-flight-controller/kakute-h7-v2/pinout (Bild: KakuteH7v2 PCB Single Line.jpg)",
+   "quelle_belegung": "https://cdn.shopify.com/s/files/1/0604/5905/7341/files/KakuteH7v2_Wiring_Diagram.jpg",
+   "h": 1.0,
+   "farbe": "#141414",
+   "loecher": [
+    [
+     0.074,
+     0.071
+    ],
+    [
+     0.923,
+     0.071
+    ],
+    [
+     0.074,
+     0.92
+    ],
+    [
+     0.923,
+     0.92
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.805,
+     "y": 0.556,
+     "w": 0.225,
+     "h": 0.267
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.496,
+     "y": 0.17
+    },
+    {
+     "typ": "buchse",
+     "n": "ESC1",
+     "lab": "ESC-Buchse 1 (JST-SH 8-polig)",
+     "pins": [
+      "B+",
+      "R7",
+      "GND",
+      "CUR",
+      "M1",
+      "M2",
+      "M3",
+      "M4"
+     ],
+     "x": 0.532,
+     "y": 0.027,
+     "w": 0.268,
+     "h": 0.15
+    },
+    {
+     "typ": "buchse",
+     "n": "ESC2",
+     "lab": "ESC-Buchse 2 (JST-SH 8-polig, M5–M8)",
+     "pins": [
+      "B+",
+      "R7",
+      "GND",
+      "CUR",
+      "M5",
+      "M6",
+      "M7",
+      "M8"
+     ],
+     "x": 0.82,
+     "y": 0.2,
+     "w": 0.15,
+     "h": 0.304
+    },
+    {
+     "typ": "buchse",
+     "n": "DJI",
+     "lab": "DJI-/HD-Buchse (JST-GH 6-polig)",
+     "pins": [
+      "R6",
+      "GND",
+      "R1",
+      "T1",
+      "GND",
+      "VTX+ (9V)"
+     ],
+     "x": 0.528,
+     "y": 0.824,
+     "w": 0.275,
+     "h": 0.152
+    }
+   ],
+   "pads": [
+    {
+     "n": "GND",
+     "x": 0.217,
+     "y": 0.05,
+     "g": "gnd",
+     "id": "GND_CAM"
+    },
+    {
+     "n": "5V",
+     "x": 0.287,
+     "y": 0.05,
+     "g": "strom",
+     "id": "5V_CAM"
+    },
+    {
+     "n": "Vi",
+     "x": 0.358,
+     "y": 0.05,
+     "g": "video",
+     "lab": "Vi"
+    },
+    {
+     "n": "CAM",
+     "x": 0.429,
+     "y": 0.05,
+     "g": "video"
+    },
+    {
+     "n": "VTX+",
+     "x": 0.05,
+     "y": 0.212,
+     "g": "strom",
+     "lab": "VTX+"
+    },
+    {
+     "n": "Vo",
+     "x": 0.12,
+     "y": 0.212,
+     "g": "video",
+     "lab": "Vo"
+    },
+    {
+     "n": "GND",
+     "x": 0.05,
+     "y": 0.283,
+     "g": "gnd",
+     "id": "GND_L1",
+     "lab": "Gnd"
+    },
+    {
+     "n": "GND",
+     "x": 0.12,
+     "y": 0.283,
+     "g": "gnd",
+     "id": "GND_R1",
+     "lab": "Gnd"
+    },
+    {
+     "n": "RX3",
+     "x": 0.05,
+     "y": 0.353,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "TX3",
+     "x": 0.12,
+     "y": 0.353,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "GND",
+     "x": 0.05,
+     "y": 0.424,
+     "g": "gnd",
+     "id": "GND_L2",
+     "lab": "Gnd"
+    },
+    {
+     "n": "5V",
+     "x": 0.12,
+     "y": 0.424,
+     "g": "strom",
+     "id": "5V_R2"
+    },
+    {
+     "n": "RX4",
+     "x": 0.05,
+     "y": 0.495,
+     "uart": 4,
+     "lab": "R4"
+    },
+    {
+     "n": "TX4",
+     "x": 0.12,
+     "y": 0.495,
+     "uart": 4,
+     "lab": "T4"
+    },
+    {
+     "n": "SDA",
+     "x": 0.05,
+     "y": 0.565,
+     "lab": "Sda"
+    },
+    {
+     "n": "SCL",
+     "x": 0.12,
+     "y": 0.565,
+     "lab": "Scl"
+    },
+    {
+     "n": "RX6",
+     "x": 0.05,
+     "y": 0.636,
+     "uart": 6,
+     "lab": "R6"
+    },
+    {
+     "n": "TX6",
+     "x": 0.12,
+     "y": 0.636,
+     "uart": 6,
+     "lab": "T6"
+    },
+    {
+     "n": "RSSI",
+     "x": 0.05,
+     "y": 0.707,
+     "lab": "Rsi"
+    },
+    {
+     "n": "5V",
+     "x": 0.12,
+     "y": 0.707,
+     "g": "strom",
+     "id": "5V_R3"
+    },
+    {
+     "n": "GND",
+     "x": 0.05,
+     "y": 0.777,
+     "g": "gnd",
+     "id": "GND_L3",
+     "lab": "Gnd"
+    },
+    {
+     "n": "3V3",
+     "x": 0.12,
+     "y": 0.777,
+     "g": "strom"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.202,
+     "y": 0.941,
+     "lab": "Z-"
+    },
+    {
+     "n": "5V",
+     "x": 0.274,
+     "y": 0.941,
+     "g": "strom",
+     "id": "5V_U"
+    },
+    {
+     "n": "GND",
+     "x": 0.344,
+     "y": 0.941,
+     "g": "gnd",
+     "id": "GND_U",
+     "lab": "G"
+    },
+    {
+     "n": "LED",
+     "x": 0.415,
+     "y": 0.941
+    }
+   ],
+   "unterseite": {
+    "buchsen": []
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 6,
+     "pads": {
+      "TX": "RX6",
+      "RX": "TX6",
+      "5V": "5V_R3",
+      "GND": "GND_L3"
+     },
+     "text": "Im Holybro-Plan: ELRS/Crossfire TX an R6, RX an T6, 5V und GND links. SBUS-Empfänger: SBUS an R6. Bei DJI-Fernsteuerung kommt SBUS über die DJI-Buchse auf R6."
+    },
+    "gps": {
+     "uart": 4,
+     "pads": {
+      "TX": "RX4",
+      "RX": "TX4",
+      "5V": "5V_R2",
+      "GND": "GND_L2",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_CAM",
+      "Masse": "GND_CAM"
+     }
+    },
+    "vtx_analog": {
+     "uart": 3,
+     "pads": {
+      "Video": "Vo",
+      "Plus": "VTX+",
+      "Masse": "GND_L1",
+      "SmartAudio": "TX3"
+     },
+     "text": "VTX+ liefert 9 V und lässt sich per USER1 (Pit Switch) abschalten. SmartAudio/Tramp an T3."
+    },
+    "digital": {
+     "uart": 1,
+     "buchse": "DJI",
+     "pads": {},
+     "text": "DJI Air Unit/Vista/O3 über die JST-GH-6-Buchse unten: VTX+ (9V), GND, T1, R1, GND, R6 (SBUS). Mit DJI-Fernsteuerung den VTX-Pit-Switch nicht aktivieren."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_U",
+      "GND": "GND_U",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "5V_U",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "unsicher": "Vermessen aus der Strichzeichnung der Holybro-Doku (720 px, ±0,005). Platinenrand = Umrisslinie der Zeichnung. Pads 'Vi' (Video-Eingang oben) und 'Vo' (Video-Ausgang links) laut Beschriftung. Kein ESC-Plan mit Motorpads (Holybro zeigt nur Tekko32 mit Steckern)."
+  },
+  {
+   "id": "speedybee-f405-aio-40a",
+   "name": "SpeedyBee F405 AIO 40A (25,5x25,5)",
+   "match": "speedy ?bee.*f405.*aio|f405 aio.*speedy ?bee",
+   "quelle": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_speedybee_f405_aio_40a/F405-AIO-5-EN_10.jpg",
+   "h": 1.0,
+   "farbe": "#2a2a2a",
+   "loecher": [
+    [
+     0.113,
+     0.113
+    ],
+    [
+     0.887,
+     0.113
+    ],
+    [
+     0.108,
+     0.901
+    ],
+    [
+     0.887,
+     0.892
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.0,
+     "y": 0.5,
+     "w": 0.171,
+     "h": 0.296
+    }
+   ],
+   "pads": [
+    {
+     "n": "M4",
+     "x": 0.224,
+     "y": 0.028,
+     "id": "M4_1",
+     "g": "motor"
+    },
+    {
+     "n": "M4",
+     "x": 0.326,
+     "y": 0.028,
+     "id": "M4_2",
+     "g": "motor"
+    },
+    {
+     "n": "M4",
+     "x": 0.425,
+     "y": 0.028,
+     "id": "M4_3",
+     "g": "motor"
+    },
+    {
+     "n": "M2",
+     "x": 0.983,
+     "y": 0.586,
+     "id": "M2_1",
+     "g": "motor"
+    },
+    {
+     "n": "M2",
+     "x": 0.983,
+     "y": 0.685,
+     "id": "M2_2",
+     "g": "motor"
+    },
+    {
+     "n": "M2",
+     "x": 0.983,
+     "y": 0.79,
+     "id": "M2_3",
+     "g": "motor"
+    },
+    {
+     "n": "M3",
+     "x": 0.017,
+     "y": 0.232,
+     "id": "M3_1",
+     "g": "motor"
+    },
+    {
+     "n": "M3",
+     "x": 0.017,
+     "y": 0.334,
+     "id": "M3_2",
+     "g": "motor"
+    },
+    {
+     "n": "M3",
+     "x": 0.017,
+     "y": 0.439,
+     "id": "M3_3",
+     "g": "motor"
+    },
+    {
+     "n": "M1",
+     "x": 0.572,
+     "y": 0.986,
+     "id": "M1_1",
+     "g": "motor"
+    },
+    {
+     "n": "M1",
+     "x": 0.677,
+     "y": 0.986,
+     "id": "M1_2",
+     "g": "motor"
+    },
+    {
+     "n": "M1",
+     "x": 0.776,
+     "y": 0.986,
+     "id": "M1_3",
+     "g": "motor"
+    },
+    {
+     "n": "BAT-",
+     "x": 0.224,
+     "y": 0.981,
+     "g": "gnd",
+     "lab": "−"
+    },
+    {
+     "n": "BAT+",
+     "x": 0.356,
+     "y": 0.981,
+     "g": "strom",
+     "lab": "+"
+    },
+    {
+     "n": "RX3",
+     "x": 0.522,
+     "y": 0.033,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "TX3",
+     "x": 0.583,
+     "y": 0.033,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "VTX",
+     "x": 0.644,
+     "y": 0.033,
+     "g": "video"
+    },
+    {
+     "n": "CAM",
+     "x": 0.707,
+     "y": 0.033,
+     "g": "video"
+    },
+    {
+     "n": "CC",
+     "x": 0.771,
+     "y": 0.033
+    },
+    {
+     "n": "RX4",
+     "x": 0.831,
+     "y": 0.033,
+     "uart": 4,
+     "lab": "R4"
+    },
+    {
+     "n": "GND",
+     "x": 0.558,
+     "y": 0.113,
+     "g": "gnd",
+     "id": "GND_A",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.616,
+     "y": 0.113,
+     "g": "strom",
+     "id": "5V_B"
+    },
+    {
+     "n": "BAT",
+     "x": 0.677,
+     "y": 0.113,
+     "g": "strom",
+     "id": "BAT_C"
+    },
+    {
+     "n": "5V",
+     "x": 0.738,
+     "y": 0.113,
+     "g": "strom",
+     "id": "5V_D"
+    },
+    {
+     "n": "GND",
+     "x": 0.798,
+     "y": 0.113,
+     "g": "gnd",
+     "id": "GND_E",
+     "lab": "G"
+    },
+    {
+     "n": "LED",
+     "x": 0.892,
+     "y": 0.017
+    },
+    {
+     "n": "5V",
+     "x": 0.953,
+     "y": 0.047,
+     "g": "strom",
+     "id": "5V_L"
+    },
+    {
+     "n": "GND",
+     "x": 0.994,
+     "y": 0.116,
+     "g": "gnd",
+     "id": "GND_M",
+     "lab": "G"
+    },
+    {
+     "n": "GND",
+     "x": 0.892,
+     "y": 0.213,
+     "g": "gnd",
+     "id": "GND_F",
+     "lab": "G"
+    },
+    {
+     "n": "TX5",
+     "x": 0.892,
+     "y": 0.273,
+     "uart": 5,
+     "lab": "T5"
+    },
+    {
+     "n": "RX5",
+     "x": 0.892,
+     "y": 0.334,
+     "uart": 5,
+     "lab": "R5"
+    },
+    {
+     "n": "RX6",
+     "x": 0.892,
+     "y": 0.395,
+     "uart": 6,
+     "lab": "R6"
+    },
+    {
+     "n": "TX6",
+     "x": 0.892,
+     "y": 0.453,
+     "uart": 6,
+     "lab": "T6"
+    },
+    {
+     "n": "SDA",
+     "x": 0.975,
+     "y": 0.18,
+     "lab": "DA"
+    },
+    {
+     "n": "SCL",
+     "x": 0.975,
+     "y": 0.24,
+     "lab": "CL"
+    },
+    {
+     "n": "4V5",
+     "x": 0.975,
+     "y": 0.301,
+     "g": "strom",
+     "id": "4V5_1"
+    },
+    {
+     "n": "GND",
+     "x": 0.975,
+     "y": 0.365,
+     "g": "gnd",
+     "id": "GND_O",
+     "lab": "G"
+    },
+    {
+     "n": "4V5",
+     "x": 0.975,
+     "y": 0.425,
+     "g": "strom",
+     "id": "4V5_2"
+    },
+    {
+     "n": "SBUS",
+     "x": 0.975,
+     "y": 0.486,
+     "lab": "SBUS(R2)"
+    },
+    {
+     "n": "BZ+",
+     "x": 0.45,
+     "y": 0.906
+    },
+    {
+     "n": "BZ-",
+     "x": 0.472,
+     "y": 0.989
+    }
+   ],
+   "unterseite": {
+    "buchsen": []
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 6,
+     "pads": {
+      "TX": "RX6",
+      "RX": "TX6",
+      "5V": "4V5_2",
+      "GND": "GND_O"
+     },
+     "text": "TBS/ELRS im SpeedyBee-Plan: RX des Empfängers an T6 (J), TX an R6 (I), 5V an 4V5, GND rechts. SBUS-Empfänger: SBUS an das Pad SBUS."
+    },
+    "gps": {
+     "uart": 5,
+     "pads": {
+      "TX": "RX5",
+      "RX": "TX5",
+      "5V": "4V5_1",
+      "GND": "GND_F",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_D",
+      "Masse": "GND_E",
+      "OSD-Menü": "CC"
+     }
+    },
+    "vtx_analog": {
+     "uart": 3,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "BAT_C",
+      "Masse": "GND_A",
+      "SmartAudio": "TX3"
+     },
+     "text": "Im Plan: TX1600 (7–28 V) an BAT (C), TX800 (3,7–5 V) an 5V (B); Video an VTX, IRC an T3, GND an A."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_L",
+      "GND": "GND_M",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "unsicher": "Die Plan-Grafik schneidet die Platine an Rändern wellenförmig ab; Rahmen aus den Lochabständen (25,5 mm) und der Herstellerangabe 33 mm berechnet. Motorpads M3 (links) gespiegelt ergänzt, Motor- und Akkupads unten leicht angeschnitten (±0,01). Ein rautenförmiges Pad neben F und kleine Pads unten links (BAT/5V/G) sind im Plan nicht eindeutig beschriftet und fehlen. DJI-Direktbuchse laut Text vorhanden, im Plan aber nicht gezeigt. Pfeil und BOOT-Taste im Plan verdeckt."
+  },
+  {
+   "id": "betafpv-matrix-1s-5in1-ii",
+   "name": "BetaFPV Matrix 1S 5IN1 II (Whoop-AIO, Nachfolger F4 1S AIO)",
+   "match": "matrix.*1s|betafpv.*f4.*1s|f4 1s.*aio|1s.*brushless.*flight controller",
+   "quelle": "https://cdn.shopify.com/s/files/1/1778/6615/files/Matrix_1S_5IN1_II_Brushless_Flight_Controller_connection_diagram.jpg",
+   "h": 0.89,
+   "farbe": "#1e1e1e",
+   "form": "raute",
+   "loecher": [
+    [
+     0.068,
+     0.391
+    ],
+    [
+     0.932,
+     0.391
+    ],
+    [
+     0.496,
+     0.822
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "pfeil",
+     "x": 0.482,
+     "y": 0.603
+    },
+    {
+     "typ": "buchse",
+     "n": "CAM",
+     "lab": "Kamera-Buchse (3-polig)",
+     "pins": [
+      "CAM",
+      "GND",
+      "+5V"
+     ],
+     "x": 0.612,
+     "y": 0.327,
+     "w": 0.103,
+     "h": 0.105
+    }
+   ],
+   "pads": [
+    {
+     "n": "GND",
+     "x": 0.13,
+     "y": 0.342,
+     "g": "gnd",
+     "id": "GND_L"
+    },
+    {
+     "n": "TX1",
+     "x": 0.146,
+     "y": 0.375,
+     "uart": 1
+    },
+    {
+     "n": "RX1",
+     "x": 0.146,
+     "y": 0.409,
+     "uart": 1
+    },
+    {
+     "n": "5V",
+     "x": 0.13,
+     "y": 0.443,
+     "g": "strom",
+     "id": "5V_L",
+     "lab": "+5V"
+    },
+    {
+     "n": "5V",
+     "x": 0.867,
+     "y": 0.342,
+     "g": "strom",
+     "id": "5V_R",
+     "lab": "+5V"
+    },
+    {
+     "n": "LED",
+     "x": 0.851,
+     "y": 0.393
+    },
+    {
+     "n": "GND",
+     "x": 0.867,
+     "y": 0.443,
+     "g": "gnd",
+     "id": "GND_R"
+    },
+    {
+     "n": "BZ+",
+     "x": 0.457,
+     "y": 0.025,
+     "unten": true
+    },
+    {
+     "n": "BZ-",
+     "x": 0.518,
+     "y": 0.025,
+     "unten": true
+    },
+    {
+     "n": "USB D+",
+     "x": 0.459,
+     "y": 0.76,
+     "unten": true,
+     "lab": "USB-D+"
+    },
+    {
+     "n": "USB D-",
+     "x": 0.546,
+     "y": 0.76,
+     "unten": true,
+     "lab": "USB-D-"
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "USB",
+      "lab": "USB-Steckplatz (4-polig)",
+      "x": 0.5,
+      "y": 0.705,
+      "w": 0.2,
+      "h": 0.07,
+      "pins": []
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 1,
+     "pads": {
+      "TX": "RX1",
+      "RX": "TX1",
+      "5V": "5V_L",
+      "GND": "GND_L"
+     },
+     "text": "Externer Empfänger an die linken Pads (GND, TX1, RX1, +5V). Achtung: BetaFPV schreibt im selben Plan, den Empfänger in Betaflight auf UART3 zu stellen – Beschriftung und Text widersprechen sich, im Zweifel im Ports-Tab prüfen."
+    },
+    "kamera": {
+     "buchse": "CAM",
+     "pads": {},
+     "text": "Kamera per Stecker in die 3-polige Buchse (CAM, GND, +5V)."
+    },
+    "vtx_analog": {
+     "uart": 2,
+     "pads": {},
+     "text": "Analoger VTX ist bei der 5IN1-Version auf der Platine; SmartAudio intern auf UART2 (laut Plan in Betaflight einstellen)."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_R",
+      "GND": "GND_R",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     },
+     "text": "Buzzer-Pads auf der Unterseite."
+    }
+   },
+   "unsicher": "Rautenförmige Whoop-Platine: Rahmen = umschließendes Rechteck, nur drei Befestigungsohren im Plan. Pads der Unterseite (BZ±, USB-D±) aus der Rückansicht gespiegelt und mit 'unten': true markiert (±0,02). Drei kleine runde Pads unten links mit +/− sind im Plan nicht beschriftet und fehlen. Keine Motorpads im Plan (Motoren per Stecker). Die alte 'F4 1S AIO' wird bei BetaFPV nicht mehr geführt; das ist der aktuelle Nachfolger."
+  },
+  {
+   "id": "happymodel-x12-elrs-pro",
+   "name": "HappyModel X12 ELRS Pro V1.1 (5-in-1 Whoop-AIO)",
+   "match": "happy ?model.*x12|x12.*(aio|elrs)",
+   "quelle": "https://www.happymodel.cn/wp-content/uploads/2023/11/11.jpg",
+   "h": 0.986,
+   "farbe": "#1b1b1b",
+   "form": "raute",
+   "loecher": [
+    [
+     0.5,
+     0.06
+    ],
+    [
+     0.95,
+     0.493
+    ],
+    [
+     0.497,
+     0.931
+    ],
+    [
+     0.043,
+     0.489
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "pfeil",
+     "x": 0.413,
+     "y": 0.88
+    },
+    {
+     "typ": "antenne",
+     "x": 0.29,
+     "y": 0.19,
+     "w": 0.05,
+     "h": 0.05,
+     "lab": "IPEX (ELRS)"
+    }
+   ],
+   "pads": [
+    {
+     "n": "GND",
+     "x": 0.064,
+     "y": 0.407,
+     "g": "gnd",
+     "id": "GND_L"
+    },
+    {
+     "n": "TX2",
+     "x": 0.097,
+     "y": 0.527,
+     "uart": 2
+    },
+    {
+     "n": "RX2",
+     "x": 0.066,
+     "y": 0.557,
+     "uart": 2
+    },
+    {
+     "n": "RX1",
+     "x": 0.129,
+     "y": 0.554,
+     "uart": 1
+    },
+    {
+     "n": "5V",
+     "x": 0.096,
+     "y": 0.586,
+     "g": "strom",
+     "id": "5V_L",
+     "lab": "+5V"
+    },
+    {
+     "n": "BAT+",
+     "x": 0.311,
+     "y": 0.777,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.361,
+     "y": 0.836,
+     "g": "gnd",
+     "id": "GND_BAT"
+    },
+    {
+     "n": "BZ+",
+     "x": 0.591,
+     "y": 0.891,
+     "lab": "BUZ+"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.563,
+     "y": 0.921,
+     "lab": "BUZ-"
+    },
+    {
+     "n": "Video_in",
+     "x": 0.747,
+     "y": 0.719,
+     "g": "video",
+     "lab": "Video_in"
+    },
+    {
+     "n": "Video_out",
+     "x": 0.72,
+     "y": 0.747,
+     "g": "video",
+     "lab": "Video_out"
+    },
+    {
+     "n": "5V",
+     "x": 0.689,
+     "y": 0.777,
+     "g": "strom",
+     "id": "5V_V",
+     "lab": "+5V"
+    },
+    {
+     "n": "GND",
+     "x": 0.656,
+     "y": 0.807,
+     "g": "gnd",
+     "id": "GND_V"
+    },
+    {
+     "n": "TX1",
+     "x": 0.926,
+     "y": 0.409,
+     "uart": 1
+    },
+    {
+     "n": "GND",
+     "x": 0.946,
+     "y": 0.569,
+     "g": "gnd",
+     "id": "GND_R"
+    },
+    {
+     "n": "BOOT",
+     "x": 0.736,
+     "y": 0.25,
+     "lab": "ELRS RX BOOT"
+    }
+   ],
+   "unterseite": {
+    "buchsen": []
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 1,
+     "pads": {},
+     "text": "ELRS-Empfänger ist eingebaut (UART1, CRSF, Telemetrie einschalten). Externe Empfänger nur bei Bedarf über die UART-Pads."
+    },
+    "kamera": {
+     "pads": {
+      "Video": "Video_in",
+      "Plus": "5V_V",
+      "Masse": "GND_V"
+     }
+    },
+    "vtx_analog": {
+     "pads": {
+      "Video": "Video_out",
+      "Plus": "5V_V",
+      "Masse": "GND_V"
+     },
+     "text": "OpenVTX ist eingebaut; Video_out nur für einen externen VTX."
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "unsicher": "Vorlage ist ein beschriftetes Platinenfoto, 45 Grad gedreht (Pfeil zeigt zur oberen Ecke) – Koordinaten in dieser Rautenlage, Rahmen = umschließendes Quadrat aus den Lochmitten geschätzt (±0,02). Die vier kleinen Pads links (TX2, RX2, RX1, +5V): Schilder zeigen je zwei Pads auf einer Linie; Zuordnung innen/außen geschätzt (äußeres Pad = näheres Schild). Motoren über Stecker auf der Unterseite (M1–M4), keine Motor-Lötpads im Plan. Position der Antenne grob."
+  },
+  {
+   "id": "mamba-f722-mk4-mini",
+   "name": "Diatone Mamba F722 MK4 Mini (20x20)",
+   "match": "mamba.*(f722|f7).*mini|mk4.*f722.*mini|mamba mk4 f722 mini",
+   "quelle": "https://cdn.shopifycdn.net/s/files/1/0027/2708/4144/files/MK4F722MINI_42688P_-01_54975f8a-8706-489b-906e-b7cc78f0db20.jpg",
+   "h": 1.0,
+   "farbe": "#46473f",
+   "loecher": [
+    [
+     0.154,
+     0.152
+    ],
+    [
+     0.846,
+     0.152
+    ],
+    [
+     0.154,
+     0.848
+    ],
+    [
+     0.846,
+     0.848
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.835,
+     "y": 0.454,
+     "w": 0.196,
+     "h": 0.248
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.515,
+     "y": 0.584
+    },
+    {
+     "typ": "knopf",
+     "x": 0.049,
+     "y": 0.642,
+     "lab": "BOOT"
+    }
+   ],
+   "pads": [
+    {
+     "n": "VCC",
+     "x": 0.208,
+     "y": 0.035,
+     "g": "strom",
+     "id": "VCC_O"
+    },
+    {
+     "n": "5V",
+     "x": 0.293,
+     "y": 0.035,
+     "g": "strom",
+     "id": "5V_O"
+    },
+    {
+     "n": "GND",
+     "x": 0.376,
+     "y": 0.035,
+     "g": "gnd",
+     "id": "GND_O"
+    },
+    {
+     "n": "CAM",
+     "x": 0.459,
+     "y": 0.035,
+     "g": "video"
+    },
+    {
+     "n": "S5",
+     "x": 0.541,
+     "y": 0.035
+    },
+    {
+     "n": "S6",
+     "x": 0.624,
+     "y": 0.035
+    },
+    {
+     "n": "S7",
+     "x": 0.707,
+     "y": 0.035
+    },
+    {
+     "n": "S8",
+     "x": 0.794,
+     "y": 0.035
+    },
+    {
+     "n": "3.3V",
+     "x": 0.04,
+     "y": 0.217,
+     "g": "strom"
+    },
+    {
+     "n": "5V",
+     "x": 0.04,
+     "y": 0.314,
+     "g": "strom",
+     "id": "5V_L"
+    },
+    {
+     "n": "GND",
+     "x": 0.04,
+     "y": 0.407,
+     "g": "gnd",
+     "id": "GND_L"
+    },
+    {
+     "n": "RX1",
+     "x": 0.04,
+     "y": 0.501,
+     "uart": 1
+    },
+    {
+     "n": "TX1",
+     "x": 0.04,
+     "y": 0.593,
+     "uart": 1
+    },
+    {
+     "n": "TX5",
+     "x": 0.04,
+     "y": 0.688,
+     "uart": 5
+    },
+    {
+     "n": "RX5",
+     "x": 0.04,
+     "y": 0.783,
+     "uart": 5
+    },
+    {
+     "n": "5V",
+     "x": 0.137,
+     "y": 0.284,
+     "g": "strom",
+     "id": "5V_I"
+    },
+    {
+     "n": "GND",
+     "x": 0.137,
+     "y": 0.371,
+     "g": "gnd",
+     "id": "GND_I"
+    },
+    {
+     "n": "TX2",
+     "x": 0.137,
+     "y": 0.456,
+     "uart": 2
+    },
+    {
+     "n": "RX2",
+     "x": 0.137,
+     "y": 0.544,
+     "uart": 2
+    },
+    {
+     "n": "SCL",
+     "x": 0.137,
+     "y": 0.629
+    },
+    {
+     "n": "SDA",
+     "x": 0.137,
+     "y": 0.716
+    },
+    {
+     "n": "5V",
+     "x": 0.965,
+     "y": 0.22,
+     "g": "strom",
+     "id": "5V_R"
+    },
+    {
+     "n": "GND",
+     "x": 0.965,
+     "y": 0.298,
+     "g": "gnd",
+     "id": "GND_R"
+    },
+    {
+     "n": "LED",
+     "x": 0.965,
+     "y": 0.374
+    },
+    {
+     "n": "BZ+",
+     "x": 0.868,
+     "y": 0.298,
+     "lab": "BUZ+"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.868,
+     "y": 0.374,
+     "lab": "BUZ-"
+    },
+    {
+     "n": "9V/VCC",
+     "x": 0.208,
+     "y": 0.965,
+     "g": "strom",
+     "id": "9V_VTX",
+     "lab": "VCC/9V"
+    },
+    {
+     "n": "GND",
+     "x": 0.293,
+     "y": 0.965,
+     "g": "gnd",
+     "id": "GND_U1"
+    },
+    {
+     "n": "TX3",
+     "x": 0.376,
+     "y": 0.965,
+     "uart": 3
+    },
+    {
+     "n": "VTX",
+     "x": 0.459,
+     "y": 0.965,
+     "g": "video"
+    },
+    {
+     "n": "5V",
+     "x": 0.541,
+     "y": 0.965,
+     "g": "strom",
+     "id": "5V_U"
+    },
+    {
+     "n": "GND",
+     "x": 0.624,
+     "y": 0.965,
+     "g": "gnd",
+     "id": "GND_U2"
+    },
+    {
+     "n": "TX4",
+     "x": 0.707,
+     "y": 0.965,
+     "uart": 4
+    },
+    {
+     "n": "RX4",
+     "x": 0.794,
+     "y": 0.965,
+     "uart": 4
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "DJI",
+      "lab": "DJI-Buchse (SH 1,0, 6-polig)",
+      "x": 0.42,
+      "y": 0.9,
+      "w": 0.3,
+      "h": 0.19,
+      "pins": [
+       "9V/VCC",
+       "GND",
+       "TX3",
+       "RX3",
+       "GND",
+       "SBUS (RX1)"
+      ]
+     },
+     {
+      "n": "ESC",
+      "lab": "ESC-Buchse (8-polig)",
+      "x": 0.5,
+      "y": 0.096,
+      "w": 0.385,
+      "h": 0.19,
+      "pins": [
+       "CURR",
+       "RX6",
+       "S4",
+       "S3",
+       "S2",
+       "S1",
+       "VCC",
+       "GND"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 1,
+     "pads": {
+      "TX": "RX1",
+      "RX": "TX1",
+      "5V": "5V_L",
+      "GND": "GND_L"
+     },
+     "text": "TBS Crossfire Nano im Diatone-Plan: CH1 an RX1, CH2 an TX1. SBUS-Empfänger: SBUS an RX1, S.Port an RX5/TX5 (F.Port auf UART5)."
+    },
+    "gps": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "5V_I",
+      "GND": "GND_I"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_O",
+      "Masse": "GND_O"
+     }
+    },
+    "vtx_analog": {
+     "uart": 3,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "5V_U",
+      "Masse": "GND_U1",
+      "SmartAudio": "TX3"
+     }
+    },
+    "digital": {
+     "uart": 3,
+     "buchse": "DJI",
+     "pads": {
+      "Plus": "9V_VTX",
+      "Masse": "GND_U1",
+      "RX": "TX3"
+     },
+     "text": "DJI O3: Kabel in die DJI-Buchse auf der Unterseite. Lötjumper: VCC für 3–4S, 9V für 6S. VCC/9V über USER1 schaltbar. Ohne DJI-Fernsteuerung SBUS (RX1) abtrennen."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_R",
+      "GND": "GND_R",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "esc": {
+    "name": "Diatone Mamba F40_128K Mini ESC",
+    "h": 0.963,
+    "farbe": "#1d1d1d",
+    "loecher": [
+     [
+      0.851,
+      0.104
+     ],
+     [
+      0.851,
+      0.803
+     ],
+     [
+      0.152,
+      0.104
+     ],
+     [
+      0.152,
+      0.803
+     ]
+    ],
+    "teile": [
+     {
+      "typ": "stecker",
+      "x": 0.315,
+      "y": -0.03,
+      "w": 0.37,
+      "h": 0.05,
+      "lab": "8-polig zum FC",
+      "pins": [
+       "CURR",
+       "TELE",
+       "S4",
+       "S3",
+       "S2",
+       "S1",
+       "VCC",
+       "GND"
+      ]
+     },
+     {
+      "typ": "kondensator",
+      "x": 0.5,
+      "y": 1.0,
+      "lab": "35 V 470 µF an BAT+/BAT−"
+     }
+    ],
+    "pads": [
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.149,
+      "id": "M2_1",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.27,
+      "id": "M2_2",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.393,
+      "id": "M2_3",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.517,
+      "id": "M1_1",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.638,
+      "id": "M1_2",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.761,
+      "id": "M1_3",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.149,
+      "id": "M4_1",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.27,
+      "id": "M4_2",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.393,
+      "id": "M4_3",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.517,
+      "id": "M3_1",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.638,
+      "id": "M3_2",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.761,
+      "id": "M3_3",
+      "g": "motor"
+     },
+     {
+      "n": "BAT+",
+      "x": 0.388,
+      "y": 0.919,
+      "g": "strom",
+      "lab": "+"
+     },
+     {
+      "n": "BAT-",
+      "x": 0.615,
+      "y": 0.919,
+      "g": "gnd",
+      "lab": "−"
+     }
+    ],
+    "unsicher": "Im Herstellerplan ist der ESC um 90 Grad gedreht gezeichnet (Stecker links). Hier im Uhrzeigersinn gedreht, damit Motor 1 hinten rechts liegt (Betaflight-Standard)."
+   },
+   "unsicher": "Pads per Farberkennung vermessen (±0,005). Gleiche Platinenform wie die Mamba F405 MK4 Mini; Lage der Unterseiten-Buchsen und der BOOT-Taste aus der dortigen Rückansicht übernommen (Plan zeigt dasselbe Bild). Linke äußere Reihe laut Plan: 3.3V, 5V, GND, RX1, TX1, TX5, RX5."
+  },
+  {
+   "id": "speedybee-f405-mini",
+   "name": "SpeedyBee F405 Mini (20x20)",
+   "match": "speedy ?bee.*f405.*mini|f405 mini.*speedy ?bee",
+   "quelle": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_SpeedyBee_F405_Mini_BLS_35A/f405-mini-Specification-2.jpg",
+   "h": 1.012,
+   "farbe": "#1c1c1c",
+   "loecher": [
+    [
+     0.152,
+     0.161
+    ],
+    [
+     0.817,
+     0.158
+    ],
+    [
+     0.154,
+     0.809
+    ],
+    [
+     0.819,
+     0.807
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.747,
+     "y": 0.305,
+     "w": 0.259,
+     "h": 0.286
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.942,
+     "y": 0.743
+    }
+   ],
+   "pads": [
+    {
+     "n": "5V",
+     "x": 0.245,
+     "y": 0.047,
+     "g": "strom",
+     "id": "5V_CAM"
+    },
+    {
+     "n": "GND",
+     "x": 0.305,
+     "y": 0.047,
+     "g": "gnd",
+     "id": "GND_CAM",
+     "lab": "G"
+    },
+    {
+     "n": "CAM",
+     "x": 0.366,
+     "y": 0.047,
+     "g": "video"
+    },
+    {
+     "n": "CC",
+     "x": 0.426,
+     "y": 0.047
+    },
+    {
+     "n": "3V3",
+     "x": 0.486,
+     "y": 0.047,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.547,
+     "y": 0.047,
+     "g": "gnd",
+     "id": "GND_RX",
+     "lab": "G"
+    },
+    {
+     "n": "4V5",
+     "x": 0.607,
+     "y": 0.047,
+     "g": "strom",
+     "id": "4V5_RX"
+    },
+    {
+     "n": "RX2",
+     "x": 0.667,
+     "y": 0.047,
+     "uart": 2,
+     "lab": "R2"
+    },
+    {
+     "n": "TX2",
+     "x": 0.728,
+     "y": 0.047,
+     "uart": 2,
+     "lab": "T2"
+    },
+    {
+     "n": "TX3",
+     "x": 0.364,
+     "y": 0.121,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "RX3",
+     "x": 0.424,
+     "y": 0.121,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "BZ+",
+     "x": 0.484,
+     "y": 0.121
+    },
+    {
+     "n": "BZ-",
+     "x": 0.545,
+     "y": 0.121
+    },
+    {
+     "n": "SBUS",
+     "x": 0.605,
+     "y": 0.121,
+     "id": "SBUS_O",
+     "lab": "SBUS(R2)"
+    },
+    {
+     "n": "SDA",
+     "x": 0.28,
+     "y": 0.874,
+     "lab": "DA"
+    },
+    {
+     "n": "SCL",
+     "x": 0.339,
+     "y": 0.874,
+     "lab": "CL"
+    },
+    {
+     "n": "TX6",
+     "x": 0.397,
+     "y": 0.874,
+     "uart": 6,
+     "lab": "T6"
+    },
+    {
+     "n": "5V",
+     "x": 0.455,
+     "y": 0.874,
+     "g": "strom",
+     "id": "5V_U1"
+    },
+    {
+     "n": "VTX",
+     "x": 0.514,
+     "y": 0.874,
+     "g": "video"
+    },
+    {
+     "n": "5V",
+     "x": 0.572,
+     "y": 0.874,
+     "g": "strom",
+     "id": "5V_LED"
+    },
+    {
+     "n": "GND",
+     "x": 0.63,
+     "y": 0.874,
+     "g": "gnd",
+     "id": "GND_LED",
+     "lab": "G"
+    },
+    {
+     "n": "LED",
+     "x": 0.689,
+     "y": 0.874
+    },
+    {
+     "n": "4V5",
+     "x": 0.222,
+     "y": 0.961,
+     "g": "strom",
+     "id": "4V5_GPS"
+    },
+    {
+     "n": "GND",
+     "x": 0.28,
+     "y": 0.961,
+     "g": "gnd",
+     "id": "GND_GPS",
+     "lab": "G"
+    },
+    {
+     "n": "RX6",
+     "x": 0.339,
+     "y": 0.961,
+     "uart": 6,
+     "lab": "R6"
+    },
+    {
+     "n": "BAT",
+     "x": 0.397,
+     "y": 0.961,
+     "g": "strom"
+    },
+    {
+     "n": "9V",
+     "x": 0.455,
+     "y": 0.961,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.514,
+     "y": 0.961,
+     "g": "gnd",
+     "id": "GND_VTX",
+     "lab": "G"
+    },
+    {
+     "n": "TX1",
+     "x": 0.572,
+     "y": 0.961,
+     "uart": 1,
+     "lab": "T1"
+    },
+    {
+     "n": "RX1",
+     "x": 0.63,
+     "y": 0.961,
+     "uart": 1,
+     "lab": "R1"
+    },
+    {
+     "n": "GND",
+     "x": 0.689,
+     "y": 0.961,
+     "g": "gnd",
+     "id": "GND_DJI",
+     "lab": "G"
+    },
+    {
+     "n": "SBUS",
+     "x": 0.747,
+     "y": 0.961,
+     "id": "SBUS_U",
+     "lab": "SBUS(R2)"
+    }
+   ],
+   "unterseite": {
+    "buchsen": []
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "4V5_RX",
+      "GND": "GND_RX"
+     },
+     "text": "ELRS im SpeedyBee-Plan: TX an R2, RX an T2, 5V an 4V5, G oben. Crossfire Nano: CH1 an R2, CH2 an T2. SBUS-Empfänger: SBUS an SBUS(R2)."
+    },
+    "gps": {
+     "uart": 6,
+     "pads": {
+      "TX": "RX6",
+      "RX": "TX6",
+      "5V": "4V5_GPS",
+      "GND": "GND_GPS",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_CAM",
+      "Masse": "GND_CAM",
+      "OSD-Menü": "CC"
+     }
+    },
+    "vtx_analog": {
+     "uart": 1,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "9V",
+      "Masse": "GND_VTX",
+      "SmartAudio": "TX1"
+     },
+     "text": "Im Plan: Video an VTX, IRC an T1, Strom 9V (bei 5-V-VTX das 5V daneben)."
+    },
+    "digital": {
+     "uart": 1,
+     "pads": {
+      "Plus": "9V",
+      "Masse": "GND_DJI",
+      "TX": "RX1",
+      "RX": "TX1",
+      "SBUS": "SBUS_U"
+     },
+     "text": "DJI O3/Vista/Air Unit: mitgeliefertes 6-poliges Kabel (Stecker) oder an 9V, G, T1, R1, G, SBUS löten. Bei ELRS-/SBUS-Empfänger die SBUS-Leitung im DJI-Kabel abtrennen."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_LED",
+      "GND": "GND_LED",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "unsicher": "Pads aus dem Wiring-Diagram vermessen; einige Pads sind von Kabeln verdeckt, ihre Lage ist aus dem gleichmäßigen Raster ergänzt (±0,01). Lage der DJI-/ESC-Buchsen im Plan nicht gezeigt. BOOT-Taste im Plan nicht beschriftet."
+  },
+  {
+   "id": "speedybee-f405-v3",
+   "name": "SpeedyBee F405 V3 (30x30)",
+   "match": "speedy ?bee.*f405.*v3|f405 v3.*speedy ?bee|sb.?f405.?v3",
+   "quelle": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_SpeedyBee_F405_V3_Stack/f405-V3-specification-6.jpg",
+   "quelle_belegung": "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_SpeedyBee_F405_V3_Stack/f405-V3-specification-2.jpg",
+   "h": 1.068,
+   "farbe": "#242424",
+   "loecher": [
+    [
+     0.114,
+     0.111
+    ],
+    [
+     0.895,
+     0.116
+    ],
+    [
+     0.113,
+     0.889
+    ],
+    [
+     0.893,
+     0.884
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.784,
+     "y": 0.302,
+     "w": 0.214,
+     "h": 0.272
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.792,
+     "y": 0.764
+    },
+    {
+     "typ": "knopf",
+     "x": 0.043,
+     "y": 0.764,
+     "lab": "BOOT"
+    }
+   ],
+   "pads": [
+    {
+     "n": "5V",
+     "x": 0.261,
+     "y": 0.105,
+     "g": "strom",
+     "id": "5V_O"
+    },
+    {
+     "n": "GND",
+     "x": 0.313,
+     "y": 0.105,
+     "g": "gnd",
+     "id": "GND_O",
+     "lab": "G"
+    },
+    {
+     "n": "CAM",
+     "x": 0.366,
+     "y": 0.105,
+     "g": "video"
+    },
+    {
+     "n": "CC",
+     "x": 0.418,
+     "y": 0.105
+    },
+    {
+     "n": "RS",
+     "x": 0.473,
+     "y": 0.105
+    },
+    {
+     "n": "3V3",
+     "x": 0.525,
+     "y": 0.105,
+     "g": "strom",
+     "lab": "3V3"
+    },
+    {
+     "n": "GND",
+     "x": 0.578,
+     "y": 0.105,
+     "g": "gnd",
+     "id": "GND_RX",
+     "lab": "G"
+    },
+    {
+     "n": "4V5",
+     "x": 0.63,
+     "y": 0.105,
+     "g": "strom",
+     "id": "4V5_RX"
+    },
+    {
+     "n": "RX2",
+     "x": 0.683,
+     "y": 0.105,
+     "uart": 2,
+     "lab": "R2"
+    },
+    {
+     "n": "TX2",
+     "x": 0.737,
+     "y": 0.105,
+     "uart": 2,
+     "lab": "T2"
+    },
+    {
+     "n": "RX3",
+     "x": 0.261,
+     "y": 0.199,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "TX3",
+     "x": 0.313,
+     "y": 0.199,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "GND",
+     "x": 0.366,
+     "y": 0.199,
+     "g": "gnd",
+     "id": "GND_M",
+     "lab": "G"
+    },
+    {
+     "n": "M5",
+     "x": 0.42,
+     "y": 0.199
+    },
+    {
+     "n": "M6",
+     "x": 0.473,
+     "y": 0.199
+    },
+    {
+     "n": "M7",
+     "x": 0.525,
+     "y": 0.199
+    },
+    {
+     "n": "M8",
+     "x": 0.58,
+     "y": 0.199
+    },
+    {
+     "n": "TEL",
+     "x": 0.632,
+     "y": 0.199
+    },
+    {
+     "n": "S9",
+     "x": 0.683,
+     "y": 0.199
+    },
+    {
+     "n": "SBUS",
+     "x": 0.735,
+     "y": 0.199,
+     "id": "SBUS_O",
+     "lab": "SBUS"
+    },
+    {
+     "n": "SDA",
+     "x": 0.233,
+     "y": 0.934
+    },
+    {
+     "n": "SCL",
+     "x": 0.285,
+     "y": 0.934
+    },
+    {
+     "n": "5V",
+     "x": 0.34,
+     "y": 0.934,
+     "g": "strom",
+     "id": "5V_LED"
+    },
+    {
+     "n": "GND",
+     "x": 0.392,
+     "y": 0.934,
+     "g": "gnd",
+     "id": "GND_LED",
+     "lab": "G"
+    },
+    {
+     "n": "LED",
+     "x": 0.447,
+     "y": 0.934
+    },
+    {
+     "n": "5V",
+     "x": 0.499,
+     "y": 0.934,
+     "g": "strom",
+     "id": "5V_VTX"
+    },
+    {
+     "n": "BAT",
+     "x": 0.552,
+     "y": 0.934,
+     "g": "strom",
+     "id": "BAT_1"
+    },
+    {
+     "n": "GND",
+     "x": 0.606,
+     "y": 0.934,
+     "g": "gnd",
+     "id": "GND_U1",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.659,
+     "y": 0.934,
+     "g": "strom",
+     "id": "5V_U1"
+    },
+    {
+     "n": "BZ+",
+     "x": 0.713,
+     "y": 0.934
+    },
+    {
+     "n": "BZ-",
+     "x": 0.767,
+     "y": 0.934
+    },
+    {
+     "n": "4V5",
+     "x": 0.257,
+     "y": 1.03,
+     "g": "strom",
+     "id": "4V5_GPS"
+    },
+    {
+     "n": "GND",
+     "x": 0.311,
+     "y": 1.03,
+     "g": "gnd",
+     "id": "GND_GPS",
+     "lab": "G"
+    },
+    {
+     "n": "TX6",
+     "x": 0.364,
+     "y": 1.03,
+     "uart": 6,
+     "lab": "T6"
+    },
+    {
+     "n": "RX6",
+     "x": 0.418,
+     "y": 1.03,
+     "uart": 6,
+     "lab": "R6"
+    },
+    {
+     "n": "9V",
+     "x": 0.473,
+     "y": 1.03,
+     "g": "strom"
+    },
+    {
+     "n": "GND",
+     "x": 0.527,
+     "y": 1.03,
+     "g": "gnd",
+     "id": "GND_VTX",
+     "lab": "G"
+    },
+    {
+     "n": "VTX",
+     "x": 0.58,
+     "y": 1.03,
+     "g": "video"
+    },
+    {
+     "n": "TX1",
+     "x": 0.634,
+     "y": 1.03,
+     "uart": 1,
+     "lab": "T1"
+    },
+    {
+     "n": "RX1",
+     "x": 0.689,
+     "y": 1.03,
+     "uart": 1,
+     "lab": "R1"
+    },
+    {
+     "n": "BAT",
+     "x": 0.741,
+     "y": 1.03,
+     "g": "strom",
+     "id": "BAT_2"
+    },
+    {
+     "n": "GND",
+     "x": 0.017,
+     "y": 0.12,
+     "g": "gnd",
+     "id": "GND_D4",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.043,
+     "y": 0.047,
+     "g": "strom",
+     "id": "5V_D4"
+    },
+    {
+     "n": "D4",
+     "x": 0.116,
+     "y": 0.019
+    },
+    {
+     "n": "GND",
+     "x": 0.886,
+     "y": 0.019,
+     "g": "gnd",
+     "id": "GND_D2",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.959,
+     "y": 0.045,
+     "g": "strom",
+     "id": "5V_D2"
+    },
+    {
+     "n": "D2",
+     "x": 0.987,
+     "y": 0.118
+    },
+    {
+     "n": "GND",
+     "x": 0.12,
+     "y": 0.981,
+     "g": "gnd",
+     "id": "GND_D3",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.047,
+     "y": 0.957,
+     "g": "strom",
+     "id": "5V_D3"
+    },
+    {
+     "n": "D3",
+     "x": 0.019,
+     "y": 0.882
+    },
+    {
+     "n": "GND",
+     "x": 0.979,
+     "y": 0.882,
+     "g": "gnd",
+     "id": "GND_D1",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.951,
+     "y": 0.955,
+     "g": "strom",
+     "id": "5V_D1"
+    },
+    {
+     "n": "D1",
+     "x": 0.878,
+     "y": 0.981
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "DJI",
+      "lab": "DJI-Buchse (6-polig)",
+      "x": 0.5,
+      "y": 0.97,
+      "w": 0.21,
+      "h": 0.14,
+      "pins": [
+       "9V",
+       "G",
+       "T1",
+       "R1",
+       "G",
+       "SBUS (R2)"
+      ]
+     },
+     {
+      "n": "ESC",
+      "lab": "ESC-Buchse (8-polig)",
+      "x": 0.5,
+      "y": 0.17,
+      "w": 0.31,
+      "h": 0.17,
+      "pins": [
+       "G",
+       "V",
+       "1",
+       "2",
+       "3",
+       "4",
+       "C",
+       "T"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "4V5_RX",
+      "GND": "GND_RX"
+     },
+     "text": "Wie beim F405 V4: ELRS TX an R2, RX an T2, 5V an 4V5. SBUS an das Pad SBUS (intern UART2)."
+    },
+    "gps": {
+     "uart": 6,
+     "pads": {
+      "TX": "RX6",
+      "RX": "TX6",
+      "5V": "4V5_GPS",
+      "GND": "GND_GPS",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_O",
+      "Masse": "GND_O",
+      "OSD-Menü": "CC"
+     }
+    },
+    "vtx_analog": {
+     "uart": 1,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "9V",
+      "Masse": "GND_VTX",
+      "SmartAudio": "TX1"
+     }
+    },
+    "digital": {
+     "uart": 1,
+     "buchse": "DJI",
+     "pads": {
+      "Plus": "9V",
+      "Masse": "GND_VTX",
+      "TX": "RX1",
+      "RX": "TX1"
+     },
+     "text": "DJI O3/Vista/Air Unit über das 6-polige Kabel in der Buchse auf der Unterseite; SBUS liegt dort auf UART2. Bei ELRS-Empfänger SBUS-Draht im DJI-Kabel abtrennen."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_LED",
+      "GND": "GND_LED",
+      "DIN": "LED"
+     },
+     "text": "Zusätzlich vier Eck-LED-Anschlüsse D1–D4 mit 5V und G."
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    },
+    "servo": {
+     "pads": {
+      "Signal": "S9"
+     }
+    }
+   },
+   "esc": {
+    "name": "SpeedyBee BLS 50A 4-in-1 ESC (F405 V3 Stack)",
+    "h": 1.044,
+    "farbe": "#1d1d1d",
+    "loecher": [
+     [
+      0.139,
+      0.113
+     ],
+     [
+      0.848,
+      0.113
+     ],
+     [
+      0.139,
+      0.817
+     ],
+     [
+      0.848,
+      0.817
+     ]
+    ],
+    "teile": [],
+    "pads": [
+     {
+      "n": "M4",
+      "x": 0.044,
+      "y": 0.2,
+      "id": "M4_1",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.044,
+      "y": 0.304,
+      "id": "M4_2",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.044,
+      "y": 0.407,
+      "id": "M4_3",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.044,
+      "y": 0.524,
+      "id": "M3_1",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.044,
+      "y": 0.628,
+      "id": "M3_2",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.044,
+      "y": 0.731,
+      "id": "M3_3",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.95,
+      "y": 0.198,
+      "id": "M2_1",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.95,
+      "y": 0.302,
+      "id": "M2_2",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.95,
+      "y": 0.406,
+      "id": "M2_3",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.95,
+      "y": 0.528,
+      "id": "M1_1",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.95,
+      "y": 0.631,
+      "id": "M1_2",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.95,
+      "y": 0.735,
+      "id": "M1_3",
+      "g": "motor"
+     },
+     {
+      "n": "BAT-",
+      "x": 0.381,
+      "y": 0.981,
+      "g": "gnd",
+      "lab": "−"
+     },
+     {
+      "n": "BAT+",
+      "x": 0.611,
+      "y": 0.981,
+      "g": "strom",
+      "lab": "+"
+     }
+    ],
+    "unterseite": {
+     "buchsen": [
+      {
+       "n": "FC",
+       "lab": "8-polige Buchse zum FC",
+       "x": 0.5,
+       "y": 0.06,
+       "w": 0.3,
+       "h": 0.07,
+       "pins": [
+        "−",
+        "+",
+        "1",
+        "2",
+        "3",
+        "4",
+        "C",
+        "N"
+       ]
+      }
+     ]
+    },
+    "unsicher": "Je drei Motorpads im Plan zu einem Feld verschmolzen, gleichmäßig geteilt (±0,01)."
+   },
+   "unsicher": "Pads per Farberkennung aus der Layout-Grafik (±0,005). Untere Kante unter farbigen Markierungsfeldern, h geschätzt. Obere Eck-Pads per Drehsymmetrie aus den gemessenen unteren ergänzt. Rollen aus dem V3-Wiring-Diagram nur grob geprüft (gleiche Logik wie V4). Lage und Belegung der Unterseiten-Buchsen nicht aus dem V3-Plan vermessen, sondern wie beim baugleichen V4 angenommen – vor Verwendung prüfen."
+  },
+  {
+   "id": "foxeer-f722-mini-v4",
+   "name": "Foxeer F722 Mini V4 (20x20)",
+   "match": "foxeer.*f722.*mini|f722 mini.*foxeer|foxeer mini f722",
+   "quelle": "https://inew.foxeer.com/upload/image/20250516/20250516020249_47610.jpg",
+   "h": 1.0,
+   "farbe": "#1c1c1c",
+   "loecher": [
+    [
+     0.114,
+     0.879
+    ],
+    [
+     0.121,
+     0.114
+    ],
+    [
+     0.886,
+     0.879
+    ],
+    [
+     0.886,
+     0.114
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": -0.003,
+     "y": 0.287,
+     "w": 0.192,
+     "h": 0.267
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.697,
+     "y": 0.42
+    },
+    {
+     "typ": "knopf",
+     "x": 0.124,
+     "y": 0.678,
+     "lab": "BOOT"
+    },
+    {
+     "typ": "buchse",
+     "n": "ESC",
+     "lab": "ESC-Buchse (8-polig)",
+     "pins": [
+      "GND",
+      "VCC",
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "Curr",
+      "RX4"
+     ],
+     "x": 0.306,
+     "y": -0.003,
+     "w": 0.358,
+     "h": 0.179
+    }
+   ],
+   "pads": [
+    {
+     "n": "5V",
+     "x": 0.287,
+     "y": 0.954,
+     "g": "strom",
+     "id": "5V_CAM"
+    },
+    {
+     "n": "GND",
+     "x": 0.358,
+     "y": 0.954,
+     "g": "gnd",
+     "id": "GND_CAM"
+    },
+    {
+     "n": "CAM",
+     "x": 0.43,
+     "y": 0.954,
+     "g": "video"
+    },
+    {
+     "n": "5V",
+     "x": 0.502,
+     "y": 0.954,
+     "g": "strom",
+     "id": "5V_VTX"
+    },
+    {
+     "n": "GND",
+     "x": 0.573,
+     "y": 0.954,
+     "g": "gnd",
+     "id": "GND_VTX"
+    },
+    {
+     "n": "VTX",
+     "x": 0.645,
+     "y": 0.954,
+     "g": "video"
+    },
+    {
+     "n": "TX5",
+     "x": 0.72,
+     "y": 0.954,
+     "uart": 5
+    },
+    {
+     "n": "RX5",
+     "x": 0.961,
+     "y": 0.713,
+     "uart": 5
+    },
+    {
+     "n": "CC",
+     "x": 0.961,
+     "y": 0.642
+    },
+    {
+     "n": "RSSI",
+     "x": 0.961,
+     "y": 0.57
+    },
+    {
+     "n": "5V",
+     "x": 0.961,
+     "y": 0.498,
+     "g": "strom",
+     "id": "5V_RX"
+    },
+    {
+     "n": "GND",
+     "x": 0.961,
+     "y": 0.423,
+     "g": "gnd",
+     "id": "GND_RX"
+    },
+    {
+     "n": "RX1",
+     "x": 0.961,
+     "y": 0.352,
+     "uart": 1,
+     "lab": "RC"
+    },
+    {
+     "n": "TX1",
+     "x": 0.961,
+     "y": 0.28,
+     "uart": 1
+    },
+    {
+     "n": "LED",
+     "x": 0.052,
+     "y": 0.7,
+     "unten": true
+    },
+    {
+     "n": "5V",
+     "x": 0.052,
+     "y": 0.629,
+     "g": "strom",
+     "id": "5V_U",
+     "unten": true
+    },
+    {
+     "n": "GND",
+     "x": 0.052,
+     "y": 0.56,
+     "g": "gnd",
+     "id": "GND_U1",
+     "unten": true
+    },
+    {
+     "n": "TX2",
+     "x": 0.052,
+     "y": 0.492,
+     "uart": 2,
+     "unten": true
+    },
+    {
+     "n": "RX2",
+     "x": 0.052,
+     "y": 0.42,
+     "uart": 2,
+     "unten": true
+    },
+    {
+     "n": "BZ+",
+     "x": 0.052,
+     "y": 0.352,
+     "lab": "B+",
+     "unten": true
+    },
+    {
+     "n": "GND",
+     "x": 0.052,
+     "y": 0.283,
+     "g": "gnd",
+     "id": "GND_U2",
+     "unten": true
+    },
+    {
+     "n": "BZ-",
+     "x": 0.147,
+     "y": 0.349,
+     "lab": "B-",
+     "unten": true
+    },
+    {
+     "n": "SCL",
+     "x": 0.147,
+     "y": 0.28,
+     "unten": true
+    },
+    {
+     "n": "SDA",
+     "x": 0.208,
+     "y": 0.28,
+     "unten": true
+    },
+    {
+     "n": "3V3",
+     "x": 0.889,
+     "y": 0.713,
+     "g": "strom",
+     "lab": "3.3V",
+     "unten": true
+    }
+   ],
+   "unterseite": {
+    "buchsen": []
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 1,
+     "pads": {
+      "TX": "RX1",
+      "RX": "TX1",
+      "5V": "5V_RX",
+      "GND": "GND_RX"
+     },
+     "text": "Im Foxeer-Plan: Empfänger-TX an das Pad RC (= RX1), RX an TX1, 5V und GND daneben."
+    },
+    "gps": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "5V_U",
+      "GND": "GND_U1",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     },
+     "text": "GPS-Pads auf der Unterseite."
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_CAM",
+      "Masse": "GND_CAM",
+      "OSD-Menü": "CC"
+     }
+    },
+    "vtx_analog": {
+     "uart": 5,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "5V_VTX",
+      "Masse": "GND_VTX",
+      "SmartAudio": "TX5"
+     },
+     "text": "Im Plan Foxeer Reaper Nano: Video an VTX, SmartAudio an TX5. Der Reaper wird dort mit Akkuspannung versorgt – Stromversorgung im Plan nicht eindeutig, 5V nur bei 5-V-VTX."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_U",
+      "GND": "GND_U1",
+      "DIN": "LED"
+     },
+     "text": "LED-Pads auf der Unterseite."
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     },
+     "text": "Buzzer-Pads auf der Unterseite."
+    }
+   },
+   "unsicher": "Im Plan zeigt der Pfeil nach rechts; Koordinaten um 90 Grad gegen den Uhrzeigersinn gedreht, damit der Pfeil nach oben zeigt. Pads der Unterseite (unten: true) aus der Rückansicht übertragen; die Rückansicht ist im Plan senkrecht gespiegelt (ESC-Pins 1–8 rechts, 8 oben). Aus Produktfoto-Rendering per Farberkennung (±0,01). Das Pad VTX ist im Plan von einem Kabel verdeckt und aus dem Raster ergänzt. Kein ESC-Plan mit Motorpads."
+  },
+  {
+   "id": "kakute-h7-mini",
+   "name": "Holybro Kakute H7 Mini (20x20)",
+   "match": "kakute.*h7.*mini",
+   "quelle": "https://docs.holybro.com/autopilot/kakute-h7-v1-v2-mini/kakute-h7-mini/pinout (Bild: Holybro_KakuteH7Mini_PCB_Single_line.jpg)",
+   "quelle_belegung": "https://cdn.shopify.com/s/files/1/0604/5905/7341/files/KAKUTE_H7_MINI_V1.5_wiringdiagram.jpg",
+   "h": 1.032,
+   "farbe": "#141414",
+   "loecher": [
+    [
+     0.167,
+     0.167
+    ],
+    [
+     0.832,
+     0.167
+    ],
+    [
+     0.167,
+     0.832
+    ],
+    [
+     0.832,
+     0.832
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.788,
+     "y": 0.385,
+     "w": 0.268,
+     "h": 0.324
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.645,
+     "y": 0.428
+    },
+    {
+     "typ": "buchse",
+     "n": "ESC",
+     "lab": "ESC-Buchse (JST-SH 8-polig)",
+     "pins": [
+      "B+",
+      "R7",
+      "GND",
+      "CUR",
+      "M1",
+      "M2",
+      "M3",
+      "M4"
+     ],
+     "x": 0.397,
+     "y": 0.012,
+     "w": 0.319,
+     "h": 0.178
+    },
+    {
+     "typ": "buchse",
+     "n": "DJI",
+     "lab": "DJI-/HD-Buchse (JST-SH 6-polig)",
+     "pins": [
+      "VTX+",
+      "GND",
+      "T1",
+      "R1",
+      "GND",
+      "R6"
+     ],
+     "x": 0.391,
+     "y": 0.839,
+     "w": 0.252,
+     "h": 0.186
+    }
+   ],
+   "pads": [
+    {
+     "n": "5V",
+     "x": 0.07,
+     "y": 0.034,
+     "g": "strom",
+     "id": "5V_CAM"
+    },
+    {
+     "n": "GND",
+     "x": 0.134,
+     "y": 0.034,
+     "g": "gnd",
+     "id": "GND_CAM",
+     "lab": "G"
+    },
+    {
+     "n": "Vi",
+     "x": 0.201,
+     "y": 0.034,
+     "g": "video"
+    },
+    {
+     "n": "CAM",
+     "x": 0.267,
+     "y": 0.034,
+     "g": "video"
+    },
+    {
+     "n": "GND",
+     "x": 0.799,
+     "y": 0.034,
+     "g": "gnd",
+     "id": "GND_LED",
+     "lab": "G"
+    },
+    {
+     "n": "LED",
+     "x": 0.864,
+     "y": 0.034,
+     "lab": "Led"
+    },
+    {
+     "n": "5V",
+     "x": 0.93,
+     "y": 0.034,
+     "g": "strom",
+     "id": "5V_LED"
+    },
+    {
+     "n": "BZ+",
+     "x": 0.964,
+     "y": 0.1,
+     "lab": "Buz+"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.964,
+     "y": 0.167,
+     "lab": "Buz−"
+    },
+    {
+     "n": "M8",
+     "x": 0.034,
+     "y": 0.1
+    },
+    {
+     "n": "M7",
+     "x": 0.034,
+     "y": 0.167
+    },
+    {
+     "n": "TX4",
+     "x": 0.034,
+     "y": 0.233,
+     "uart": 4,
+     "lab": "T4"
+    },
+    {
+     "n": "RX4",
+     "x": 0.034,
+     "y": 0.3,
+     "uart": 4,
+     "lab": "R4"
+    },
+    {
+     "n": "GND",
+     "x": 0.034,
+     "y": 0.366,
+     "g": "gnd",
+     "id": "GND_L1",
+     "lab": "G"
+    },
+    {
+     "n": "5V",
+     "x": 0.034,
+     "y": 0.433,
+     "g": "strom",
+     "id": "5V_L"
+    },
+    {
+     "n": "RSSI",
+     "x": 0.034,
+     "y": 0.499,
+     "lab": "Rsl"
+    },
+    {
+     "n": "TX3",
+     "x": 0.034,
+     "y": 0.566,
+     "uart": 3,
+     "lab": "T3"
+    },
+    {
+     "n": "RX3",
+     "x": 0.034,
+     "y": 0.632,
+     "uart": 3,
+     "lab": "R3"
+    },
+    {
+     "n": "GND",
+     "x": 0.034,
+     "y": 0.699,
+     "g": "gnd",
+     "id": "GND_L2",
+     "lab": "G"
+    },
+    {
+     "n": "SDA",
+     "x": 0.034,
+     "y": 0.765,
+     "lab": "Sda"
+    },
+    {
+     "n": "SCL",
+     "x": 0.034,
+     "y": 0.832,
+     "lab": "Scl"
+    },
+    {
+     "n": "RX2",
+     "x": 0.034,
+     "y": 0.898,
+     "uart": 2,
+     "lab": "R2"
+    },
+    {
+     "n": "M6",
+     "x": 0.964,
+     "y": 0.765
+    },
+    {
+     "n": "M5",
+     "x": 0.964,
+     "y": 0.832
+    },
+    {
+     "n": "TX6",
+     "x": 0.964,
+     "y": 0.898,
+     "uart": 6,
+     "lab": "T6"
+    },
+    {
+     "n": "TX2",
+     "x": 0.07,
+     "y": 0.998,
+     "uart": 2,
+     "lab": "T2"
+    },
+    {
+     "n": "V0",
+     "x": 0.134,
+     "y": 0.998,
+     "g": "video",
+     "lab": "V0"
+    },
+    {
+     "n": "GND",
+     "x": 0.201,
+     "y": 0.998,
+     "g": "gnd",
+     "id": "GND_VTX",
+     "lab": "G"
+    },
+    {
+     "n": "VTX+",
+     "x": 0.267,
+     "y": 0.998,
+     "g": "strom",
+     "lab": "Vtx+"
+    },
+    {
+     "n": "GND",
+     "x": 0.731,
+     "y": 0.998,
+     "g": "gnd",
+     "id": "GND_RX",
+     "lab": "G"
+    },
+    {
+     "n": "RX6",
+     "x": 0.799,
+     "y": 0.998,
+     "uart": 6,
+     "lab": "R6"
+    },
+    {
+     "n": "5V",
+     "x": 0.866,
+     "y": 0.998,
+     "g": "strom",
+     "id": "5V_RX"
+    },
+    {
+     "n": "3V3",
+     "x": 0.93,
+     "y": 0.998,
+     "g": "strom",
+     "lab": "3V"
+    }
+   ],
+   "unterseite": {
+    "buchsen": []
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 6,
+     "pads": {
+      "TX": "RX6",
+      "RX": "TX6",
+      "5V": "5V_RX",
+      "GND": "GND_RX"
+     },
+     "text": "Holybro-Standard: Empfänger/SBUS auf UART6 (R6 unten rechts, T6 rechts)."
+    },
+    "gps": {
+     "uart": 3,
+     "pads": {
+      "TX": "RX3",
+      "RX": "TX3",
+      "5V": "5V_L",
+      "GND": "GND_L2",
+      "SDA": "SDA",
+      "SCL": "SCL"
+     },
+     "text": "Holybro-Standard: UART3 für GPS."
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_CAM",
+      "Masse": "GND_CAM"
+     }
+    },
+    "vtx_analog": {
+     "uart": 2,
+     "pads": {
+      "Video": "V0",
+      "Plus": "VTX+",
+      "Masse": "GND_VTX",
+      "SmartAudio": "TX2"
+     },
+     "text": "VTX+ führt Akkuspannung und ist per Schalter (USER) abschaltbar. UART2 laut Holybro 'Spare/VTX'."
+    },
+    "digital": {
+     "uart": 1,
+     "buchse": "DJI",
+     "pads": {},
+     "text": "DJI/HD-System über die 6-polige JST-SH-Buchse unten (VTX+, GND, T1, R1, GND, R6). Ab 6S braucht die DJI Air Unit ein externes BEC."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_LED",
+      "GND": "GND_LED",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "unsicher": "Vermessen aus der Strichzeichnung der Holybro-Doku (±0,005). Ein Pad links (T4) ist in der Zeichnung durch ein Bauteil verdeckt und aus dem Raster ergänzt. Welches der beiden rechten oberen Pads Buz+ bzw. Buz− ist, ist aus der gedrehten Beschriftung nicht sicher abzulesen (oben = + angenommen). Rollen nach Holybros Standard-UART-Belegung, kein eigener Verdrahtungsplan für die Mini."
+  }
+ ]
+}

@@ -86,7 +86,7 @@
     if (!ad.day) {
       if (s < 60) return 'gerade eben';
       if (s < 3600) return `vor ${Math.floor(s / 60)} Min.`;
-      if (days <= 0 || s < 6 * 3600) return `vor ${Math.floor(s / 3600)} Std.`;
+      if (days <= 0 || s < 6 * 3600) return `vor ${Math.floor(s / 3600)} Stunden`;
     } else if (days <= 0) return 'heute';
     if (days === 1) return 'gestern';
     return d.toLocaleDateString('de-DE', d.getFullYear() === now.getFullYear() ? { day: '2-digit', month: '2-digit' } : { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -179,7 +179,7 @@
     let t; q.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { W.q = norm(q.value.trim()); renderWall({ flip: true }); }, 160); });
     // Selbst-Impuls: Beispielbegriffe tippen sich in den Platzhalter
     const EX = ['Tiny Whoop', 'Brille', 'Akkus 4S', 'ELRS-Empfänger', 'Lötstation', 'Funke', 'Propeller'];
-    if (RM) { q.placeholder = 'Suchen, z. B. Tiny Whoop'; return; }
+    if (RM) { q.placeholder = 'Suchen, zum Beispiel Tiny Whoop'; return; }
     let i = 0, c = 0, dir = 1, h;
     const type = () => {
       if (document.activeElement === q || q.value) { q.placeholder = 'Suchen …'; h = setTimeout(type, 1500); return; }
@@ -575,7 +575,7 @@
     const r = f.querySelector(`[name=Art][value="${F.art}"]`); if (r) r.checked = true;
     $('#mk-switch').classList.toggle('is-suche', s);
     $('#mk-price-l').innerHTML = (s ? 'Budget' : 'Preis') + ' <small>(freiwillig)</small>';
-    $('#mk-titel').placeholder = s ? 'z. B. Suche gebrauchte FPV-Brille' : 'z. B. 5-Zoll-Freestyle-Kopter, flugbereit';
+    $('#mk-titel').placeholder = s ? 'zum Beispiel Suche gebrauchte FPV-Brille' : 'zum Beispiel 5-Zoll-Freestyle-Kopter, flugbereit';
     $$('.mk-only-biete', f).forEach(c => { c.hidden = s; const i = $('input', c); if (s && i.checked) f.querySelector('[name=Preisart][value=Festpreis]').checked = true; });
     priceMode(); preview();
   }

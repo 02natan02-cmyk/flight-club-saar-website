@@ -52,16 +52,16 @@
     ['LOAD', 'Prozessor überlastet', 'Die Flugsteuerung ist zu stark ausgelastet.', ['PID-Loop-Frequenz im Configuration-Tab senken.', 'Nicht genutzte Funktionen abschalten.', 'In der CLI zeigt <code>status</code> die CPU-Last.'], 1],
     ['CALIB', 'Kalibrierung läuft', 'Die Sensoren werden gerade kalibriert. Das passiert nach dem Einstecken.', ['Kopter nach dem Einstecken ruhig stehen lassen und nicht bewegen.', 'Kurz warten, dann armen.']],
     ['CLI', 'CLI ist offen', 'Im Configurator ist die Kommandozeile (CLI) geöffnet. Solange sie offen ist, lässt Betaflight kein Armen zu.', ['CLI verlassen und den Configurator trennen.'], 1],
-    ['CMS', 'OSD-Menü offen', 'Das Einstellungsmenü im OSD (CMS) ist geöffnet.', ['Menü verlassen, im Menü „Exit“ bzw. „Save Exit“ wählen.']],
+    ['CMS', 'OSD-Menü offen', 'Das Einstellungsmenü im OSD (CMS) ist geöffnet.', ['Menü verlassen, im Menü „Exit“ beziehungsweise „Save Exit“ wählen.']],
     ['BST', 'BST', 'Steht für eine ältere Telemetrie-Verbindung (Black Sheep Telemetry). In heutigen Setups sehr selten.', ['Siehst du das, frag im Verein nach und schick die Ausgabe von <code>status</code> mit.']],
-    ['MSP', 'Configurator verbunden', 'Der Betaflight Configurator ist per USB verbunden (MSP-Verbindung). Dann lässt Betaflight kein Armen zu.', ['Configurator trennen bzw. USB abziehen.', 'Motoren am PC nur im Motors-Tab testen, ohne Propeller.'], 1],
+    ['MSP', 'Configurator verbunden', 'Der Betaflight Configurator ist per USB verbunden (MSP-Verbindung). Dann lässt Betaflight kein Armen zu.', ['Configurator trennen beziehungsweise USB abziehen.', 'Motoren am PC nur im Motors-Tab testen, ohne Propeller.'], 1],
     ['PARALYZE', 'Paralyze aktiviert', 'Der Modus „PARALYZE“ wurde ausgelöst. Er sperrt das Armen bis zum Neustart.', ['Schalter für PARALYZE ausschalten.', 'Akku abziehen und wieder anstecken.']],
     ['GPS', 'GPS-Rescue nicht bereit', 'GPS-Rescue ist eingerichtet, aber der GPS-Empfang reicht noch nicht.', ['Draußen mit freiem Himmel warten, bis genug Satelliten gefunden sind.', 'Mindestzahl an Satelliten und Arming-Einstellungen für GPS-Rescue prüfen.'], 1],
     ['RESCUE_SW', 'GPS-Rescue-Schalter an', 'Der Schalter für GPS-Rescue steht beim Armen auf „an“.', ['GPS-Rescue-Schalter ausschalten, dann armen.']],
-    ['DSHOT_TELEM', 'Keine Drehzahl-Daten vom ESC', 'Bidirektionales DShot ist eingeschaltet, aber mindestens ein Motor meldet keine Drehzahl zurück. In älteren Betaflight-Versionen hieß das Flag RPMFILTER.', ['Die ESC-Firmware muss bidirektionales DShot können (z. B. Bluejay, BLHeli_32, AM32).', '„Bidirectional DShot“ einschalten und ein DShot-Protokoll wählen.', 'Motorpolzahl prüfen (Magnete in der Glocke zählen, oft 14, bei kleinen Whoop-Motoren oft 12).', 'Im Motors-Tab sollten dann Drehzahl und Fehlerrate angezeigt werden.'], 0, ['RPMFILTER']],
+    ['DSHOT_TELEM', 'Keine Drehzahl-Daten vom ESC', 'Bidirektionales DShot ist eingeschaltet, aber mindestens ein Motor meldet keine Drehzahl zurück. In älteren Betaflight-Versionen hieß das Flag RPMFILTER.', ['Die ESC-Firmware muss bidirektionales DShot können (zum Beispiel Bluejay, BLHeli_32, AM32).', '„Bidirectional DShot“ einschalten und ein DShot-Protokoll wählen.', 'Motorpolzahl prüfen (Magnete in der Glocke zählen, oft 14, bei kleinen Whoop-Motoren oft 12).', 'Im Motors-Tab sollten dann Drehzahl und Fehlerrate angezeigt werden.'], 0, ['RPMFILTER']],
     ['REBOOT_REQD', 'Neustart nötig', 'Eine Einstellung wurde geändert, die erst nach einem Neustart wirkt.', ['Akku und USB abziehen, wieder anstecken.']],
     ['DSHOT_BBANG', 'DShot-Bitbang klappt nicht', 'DShot-Bitbang konnte nicht gestartet werden, meist wegen eines Timer-Konflikts.', ['In der CLI <code>get dshot_bitbang</code> prüfen. Standard ist AUTO.', 'Testweise <code>set dshot_bitbang = OFF</code> und <code>save</code>.', 'Bleibt es, frag im Verein mit genauer Bezeichnung deiner Flugsteuerung.']],
-    ['NO_ACC_CAL', 'Beschleunigungssensor nicht kalibriert', 'Eine Funktion braucht den Beschleunigungssensor (z. B. Angle, Horizon oder GPS-Rescue), aber er ist nicht kalibriert.', ['Kopter auf eine ebene Fläche stellen.', 'Im Setup-Tab den Beschleunigungssensor kalibrieren.', 'Speichern und neu starten.']],
+    ['NO_ACC_CAL', 'Beschleunigungssensor nicht kalibriert', 'Eine Funktion braucht den Beschleunigungssensor (zum Beispiel Angle, Horizon oder GPS-Rescue), aber er ist nicht kalibriert.', ['Kopter auf eine ebene Fläche stellen.', 'Im Setup-Tab den Beschleunigungssensor kalibrieren.', 'Speichern und neu starten.']],
     ['MOTOR_PROTO', 'Kein Motorprotokoll', 'Es ist kein gültiges ESC-Protokoll eingestellt.', ['Im Motors-Tab das ESC-Protokoll wählen: DSHOT600 ist der Standard in Betaflight 2026.6 und läuft mit allen ESCs mit BLHeli_S, Bluejay, BLHeli_32 und AM32.', 'Speichern und neu starten.']],
     ['FLIP_SWITCH', 'Turtle-Schalter im Flug zurückgestellt', 'Du hast den Turtle-Schalter (FLIP OVER AFTER CRASH) umgelegt, während der Kopter noch scharf war. Betaflight hat die Motoren gestoppt und sperrt, bis du von Hand disarmst.', ['Arm-Schalter auf „aus“ stellen (disarmen).', 'Dann normal wieder armen.', 'Ablauf beim Umdrehen: Turtle-Schalter an, armen, umdrehen, disarmen, Turtle-Schalter aus, neu armen.']],
     ['ALT_HOLD_SW', 'Höhe-halten-Schalter an', 'Der Schalter für den Modus ALTHOLD (Höhe halten) steht beim Armen auf „an“.', ['ALTHOLD-Schalter ausschalten.', 'Dann armen und den Modus erst in der Luft einschalten.']],
@@ -90,7 +90,7 @@
       start: (q) => /\b(elrs|expresslrs|express)\b/.test(q) ? 'bind_elrs' : /\b(crossfire|tbs|crsf)\b/.test(q) ? '=bind_cf' : 'bind1',
       kw: 'bind:3 binden:3 bindet:3 binding:3 gebunden:2 koppeln:2 pairing:2 elrs:3 expresslrs:3 crossfire:3 crsf:2 tbs:2 empfaenger:2 receiver:2 rx:1.5 bindphrase:3 phrase:2 lua:1.5 funke:1 verbindet:2 verbinden:1.5 connect:1.5',
       i: 'Zuerst muss der Empfänger mit dem Sender verbunden sein, dann muss Betaflight ihn richtig auslesen.',
-      s: ['<b>ExpressLRS:</b> Sender-Modul und Empfänger brauchen dieselbe Hauptversion, z. B. beide 3.x.',
+      s: ['<b>ExpressLRS:</b> Sender-Modul und Empfänger brauchen dieselbe Hauptversion, zum Beispiel beide 3.x.',
         'Gleiche Bind-Phrase auf beiden (wird im ExpressLRS Configurator beim Flashen gesetzt). Ohne Bind-Phrase den Bind-Modus nutzen.',
         'Bind-Modus: Empfänger dreimal hintereinander ein- und ausstecken, bis die LED doppelt blinkt. Dann im ExpressLRS-Lua-Skript am Sender „Bind“ wählen.',
         'Regulatory Domain muss passen: Bei 2,4 GHz verbinden sich „LBT“ (EU) und „FCC/ISM“ nicht miteinander, bei 900 MHz ebenso 868 und 915 nicht.',
@@ -101,7 +101,7 @@
     { id: 'bind_elrs_slow', sub: 1, cat: 'Empfänger', t: 'ExpressLRS: LED blinkt langsam',
       i: 'Der Empfänger hat Strom und sucht den Sender, findet ihn aber nicht.',
       s: ['Ist das ExpressLRS-Modul in der Funke aktiv? In EdgeTX als internes oder externes Modul mit „CRSF“ einstellen.',
-        'Bind-Phrase auf Sender und Empfänger gleich?', 'Gleiche Hauptversion (z. B. beide 3.x)?', 'Gleiche Regulatory Domain (LBT oder FCC/ISM)?', 'Model Match testweise ausschalten.',
+        'Bind-Phrase auf Sender und Empfänger gleich?', 'Gleiche Hauptversion (zum Beispiel beide 3.x)?', 'Gleiche Regulatory Domain (LBT oder FCC/ISM)?', 'Model Match testweise ausschalten.',
         'Notfalls neu binden: Empfänger dreimal ein- und ausstecken, die LED blinkt doppelt, dann am Sender „Bind“.'],
       more: ['bind'] },
     { id: 'bind_elrs_mode', sub: 1, cat: 'Empfänger', t: 'ExpressLRS: LED blinkt doppelt',
@@ -128,7 +128,7 @@
       kw: 'bild:3 video:3 videobild:3 schnee:3 rauschen:3 snow:3 static:2 schwarz:2 black:2 screen:1 flackert:1.5 brille:1 goggles:1 empfang:1 videosignal:3 kamera:1.5 camera:1.5 cam:1 dji:1.5 o3:1.5 o4:1.5 walksnail:1.5 hdzero:1.5',
       i: 'Erst prüfen wir die einfachen Dinge, dann das Videosystem.',
       w: 'Einen Videosender nie ohne Antenne einschalten. Er kann dabei kaputtgehen.',
-      s: ['<b>Analog:</b> Band und Kanal an Brille und VTX gleich einstellen, z. B. R4. Viele Brillen haben einen Suchlauf.', 'Pit-Modus aus? Im Pit-Modus sendet der VTX kaum, das Bild kommt nur ganz nah oder gar nicht.', 'VTX-Tabelle in Betaflight geladen? Ohne passende Tabelle stimmen Kanäle und Leistung nicht.', 'Nur Schnee heißt: Brille und VTX finden sich nicht. Schwarz oder grau mit OSD-Schrift heißt: Die Kamera liefert kein Bild.', '<b>Digital:</b> Bei DJI und Walksnail müssen Brille und Air Unit gebunden sein, HDZero braucht nur denselben Kanal. Firmware beider Geräte aktualisieren: DJI mit DJI Assistant 2 oder der DJI-Fly-App, Walksnail auf beiden Seiten dieselbe Version.', 'Digitale Sender mit angestecktem Akku testen, nicht nur über USB.'],
+      s: ['<b>Analog:</b> Band und Kanal an Brille und VTX gleich einstellen, zum Beispiel R4. Viele Brillen haben einen Suchlauf.', 'Pit-Modus aus? Im Pit-Modus sendet der VTX kaum, das Bild kommt nur ganz nah oder gar nicht.', 'VTX-Tabelle in Betaflight geladen? Ohne passende Tabelle stimmen Kanäle und Leistung nicht.', 'Nur Schnee heißt: Brille und VTX finden sich nicht. Schwarz oder grau mit OSD-Schrift heißt: Die Kamera liefert kein Bild.', '<b>Digital:</b> Bei DJI und Walksnail müssen Brille und Air Unit gebunden sein, HDZero braucht nur denselben Kanal. Firmware beider Geräte aktualisieren: DJI mit DJI Assistant 2 oder der DJI-Fly-App, Walksnail auf beiden Seiten dieselbe Version.', 'Digitale Sender mit angestecktem Akku testen, nicht nur über USB.'],
       more: ['kompat', 'kanaele', 'vtx'] },
     { id: 'bild_schnee', sub: 1, cat: 'Videosystem', t: 'Nur Schnee oder Rauschen',
       i: 'Die Brille empfängt nichts Brauchbares. Brille und VTX finden sich nicht.',
@@ -137,7 +137,7 @@
       more: ['vtx', 'kanaele'] },
     { id: 'bild_kamera', sub: 1, cat: 'Videosystem', t: 'Schwarz oder grau, aber OSD-Schrift da',
       i: 'Das OSD kommt von der Flugsteuerung. Der Weg zum VTX funktioniert also, nur das Kamerabild fehlt.',
-      s: ['Kamerakabel prüfen: Video, Plus und Minus fest und richtig an CAM bzw. VIN der Flugsteuerung.', 'Bekommt die Kamera die richtige Spannung? Datenblatt der Kamera ansehen.', 'Die kleinen Stecker am Kamerakabel lockern sich gern, besonders nach Crashs.', 'Mit einer anderen Kamera gegenprüfen.'],
+      s: ['Kamerakabel prüfen: Video, Plus und Minus fest und richtig an CAM beziehungsweise VIN der Flugsteuerung.', 'Bekommt die Kamera die richtige Spannung? Datenblatt der Kamera ansehen.', 'Die kleinen Stecker am Kamerakabel lockern sich gern, besonders nach Crashs.', 'Mit einer anderen Kamera gegenprüfen.'],
       more: ['osd'] },
     { id: 'bild_stoer', sub: 1, cat: 'Videosystem', t: 'Bild flackert oder bricht ein',
       i: 'Störungen im analogen Bild haben meist mit Antenne, Strom oder Kanal zu tun.',
@@ -146,18 +146,18 @@
     { id: 'bild_digital', sub: 1, cat: 'Videosystem', t: 'Kein Bild bei DJI, Walksnail oder HDZero',
       i: 'Bei digitalen Systemen hängt fast alles an Bindung, Firmware und Strom.',
       w: 'Auch digitale Sender nie ohne Antenne einschalten.',
-      s: ['<b>DJI:</b> Akku an den Kopter. An der Brille die Power-Taste gedrückt halten, bis sie dauerhaft piept, dann an der Air Unit die Link-Taste drücken. Bei der Goggles 3 vorher im Menü die passende Air Unit wählen, z. B. „O3 Air Unit“.', '<b>Walksnail:</b> In der Brille „Bind“ starten und am VTX die Bind-Taste drücken. Brille und VTX müssen dieselbe Firmware haben.', '<b>HDZero:</b> Es wird nicht gebunden. Brille bzw. VRX und VTX auf denselben Kanal stellen.', 'Firmware aktualisieren: DJI-Brille und Air Unit mit DJI Assistant 2 bzw. der DJI-Fly-App, bei Walksnail Brille und VTX auf dieselbe Version. Welche Mindest-Firmware deine Kombination braucht, zeigt der Kompatibilitäts-Check.', 'Mit angestecktem Akku testen, nicht nur über USB.', 'Passt das System überhaupt? DJI, Walksnail und HDZero verstehen sich nicht untereinander.'],
+      s: ['<b>DJI:</b> Akku an den Kopter. An der Brille die Power-Taste gedrückt halten, bis sie dauerhaft piept, dann an der Air Unit die Link-Taste drücken. Bei der Goggles 3 vorher im Menü die passende Air Unit wählen, zum Beispiel „O3 Air Unit“.', '<b>Walksnail:</b> In der Brille „Bind“ starten und am VTX die Bind-Taste drücken. Brille und VTX müssen dieselbe Firmware haben.', '<b>HDZero:</b> Es wird nicht gebunden. Brille beziehungsweise VRX und VTX auf denselben Kanal stellen.', 'Firmware aktualisieren: DJI-Brille und Air Unit mit DJI Assistant 2 beziehungsweise der DJI-Fly-App, bei Walksnail Brille und VTX auf dieselbe Version. Welche Mindest-Firmware deine Kombination braucht, zeigt der Kompatibilitäts-Check.', 'Mit angestecktem Akku testen, nicht nur über USB.', 'Passt das System überhaupt? DJI, Walksnail und HDZero verstehen sich nicht untereinander.'],
       more: ['kompat', 'osd_digital'], acts: [['Kompatibilität prüfen', 'check']] },
 
     { id: 'osd', cat: 'Videosystem', t: 'Kein OSD',
       start: (q) => /\b(dji|walksnail|avatar|hdzero|digital|o3|o4|displayport|canvas)\b/.test(q) ? '=osd_digital' : /\b(smartaudio|smart|tramp)\b/.test(q) ? '=osd_direkt' : /\banalog\b/.test(q) ? 'osd_a' : 'osd1',
       kw: 'osd:4 einblendung:2 einblendungen:2 anzeige:1 overlay:2 displayport:3 canvas:3 schrift:1 font:1.5 werte:1 spannungsanzeige:3 dji:1.5 o3:1.5 o4:1.5 walksnail:1.5 hdzero:1.5',
       i: 'Wie das OSD ins Bild kommt, hängt vom Videosystem ab.',
-      s: ['<b>Analog:</b> Das Betaflight-OSD entsteht in der Flugsteuerung. Das Kamerabild muss deshalb durch die Flugsteuerung laufen: Kamera an CAM bzw. VIN, vom Pad VTX bzw. VOUT weiter zum VTX.', 'SmartAudio oder Tramp ist nur die Steuerleitung für Kanal und Leistung. Sie trägt kein Bild und kein OSD.', 'Im Configuration-Tab die Funktion OSD einschalten, im OSD-Tab Elemente einschalten und das Videoformat wählen.', 'Analoges OSD braucht einen OSD-Chip auf der Flugsteuerung (AT7456E oder MAX7456). Die meisten Flugsteuerungen mit CAM- und VTX-Pad haben ihn, z. B. die SpeedyBee F405 V4. Fehlt er, zeigt der OSD-Tab „Es wurde kein OSD-Chip erkannt“ oder „Dein FC reagiert nicht auf OSD-Kommandos“.', '<b>Digital:</b> Das OSD läuft über MSP DisplayPort. Mehr dazu unter „Kein OSD bei Digital“.'],
+      s: ['<b>Analog:</b> Das Betaflight-OSD entsteht in der Flugsteuerung. Das Kamerabild muss deshalb durch die Flugsteuerung laufen: Kamera an CAM beziehungsweise VIN, vom Pad VTX beziehungsweise VOUT weiter zum VTX.', 'SmartAudio oder Tramp ist nur die Steuerleitung für Kanal und Leistung. Sie trägt kein Bild und kein OSD.', 'Im Configuration-Tab die Funktion OSD einschalten, im OSD-Tab Elemente einschalten und das Videoformat wählen.', 'Analoges OSD braucht einen OSD-Chip auf der Flugsteuerung (AT7456E oder MAX7456). Die meisten Flugsteuerungen mit CAM- und VTX-Pad haben ihn, zum Beispiel die SpeedyBee F405 V4. Fehlt er, zeigt der OSD-Tab „Es wurde kein OSD-Chip erkannt“ oder „Dein FC reagiert nicht auf OSD-Kommandos“.', '<b>Digital:</b> Das OSD läuft über MSP DisplayPort. Mehr dazu unter „Kein OSD bei Digital“.'],
       more: ['osd_direkt', 'osd_digital', 'vtx'] },
     { id: 'osd_direkt', sub: 1, cat: 'Videosystem', t: 'Kamera hängt direkt am VTX',
       i: 'Diese Frage kam neulich in unserem Vereinschat: SmartAudio verkabelt, aber kein OSD. Eine häufige Ursache: Das Videosignal läuft an der Flugsteuerung vorbei. Dann kann sie nichts einblenden.',
-      s: ['Videokabel der Kamera an CAM bzw. VIN der Flugsteuerung.', 'Vom Pad VTX bzw. VOUT der Flugsteuerung ein Kabel zum Video-Eingang des VTX.', 'SmartAudio bleibt an seinem Pad. Es steuert nur Kanal und Leistung.', 'Masse (GND) gemeinsam für Kamera, Flugsteuerung und VTX.', 'Danach im Configuration-Tab OSD einschalten und im OSD-Tab Elemente aktivieren.'],
+      s: ['Videokabel der Kamera an CAM beziehungsweise VIN der Flugsteuerung.', 'Vom Pad VTX beziehungsweise VOUT der Flugsteuerung ein Kabel zum Video-Eingang des VTX.', 'SmartAudio bleibt an seinem Pad. Es steuert nur Kanal und Leistung.', 'Masse (GND) gemeinsam für Kamera, Flugsteuerung und VTX.', 'Danach im Configuration-Tab OSD einschalten und im OSD-Tab Elemente aktivieren.'],
       tip: 'Schneller Test ohne Lötkolben: Verschieb im OSD-Tab ein Element und speichere. Ändert sich im Bild nichts, läuft das Video nicht durch die Flugsteuerung.',
       more: ['osd_analog', 'vtx'] },
     { id: 'osd_analog', sub: 1, cat: 'Videosystem', t: 'Kamera läuft über die Flugsteuerung, trotzdem kein OSD',
@@ -172,7 +172,7 @@
     { id: 'vtx', cat: 'Videosystem', t: 'VTX lässt sich nicht steuern',
       kw: 'vtx:3 videosender:3 smartaudio:3 tramp:3 vtxtabelle:3 vtxtable:3 tabelle:2 table:1.5 leistung:1.5 power:1 pitmode:2.5 pit:2 steuern:2 umstellen:1.5 wechseln:1 kanalwechsel:2',
       i: 'Kanal oder Leistung lassen sich über OSD-Menü, Lua-Skript oder Betaflight nicht ändern?',
-      s: ['Steuerleitung: SmartAudio (z. B. TBS und viele andere) bzw. Tramp (z. B. ImmersionRC) an ein TX-Pad der Flugsteuerung.', 'Im Ports-Tab an genau diesem UART unter „Peripherals“ „VTX (TBS SmartAudio)“ bzw. „VTX (IRC Tramp)“ wählen. Speichern.', 'Im Video-Transmitter-Tab die VTX-Tabelle laden, die zu deinem VTX passt: Datei vom Hersteller oder passende Vorlage aus dem Presets-Tab.', 'Mit angestecktem Akku testen. Über USB allein bekommt der VTX meist keinen Strom.', 'Im Video-Transmitter-Tab muss „Device ready“ bzw. „Gerät bereit“ auf Ja stehen. Sonst Leitung, UART und Protokoll prüfen.', 'Manche Kombinationen brauchen ein bestimmtes Pad. Anleitungen von VTX und Flugsteuerung beachten.'],
+      s: ['Steuerleitung: SmartAudio (zum Beispiel TBS und viele andere) beziehungsweise Tramp (zum Beispiel ImmersionRC) an ein TX-Pad der Flugsteuerung.', 'Im Ports-Tab an genau diesem UART unter „Peripherals“ „VTX (TBS SmartAudio)“ beziehungsweise „VTX (IRC Tramp)“ wählen. Speichern.', 'Im Video-Transmitter-Tab die VTX-Tabelle laden, die zu deinem VTX passt: Datei vom Hersteller oder passende Vorlage aus dem Presets-Tab.', 'Mit angestecktem Akku testen. Über USB allein bekommt der VTX meist keinen Strom.', 'Im Video-Transmitter-Tab muss „Device ready“ beziehungsweise „Gerät bereit“ auf Ja stehen. Sonst Leitung, UART und Protokoll prüfen.', 'Manche Kombinationen brauchen ein bestimmtes Pad. Anleitungen von VTX und Flugsteuerung beachten.'],
       more: ['osd', 'kanaele'] },
 
     { id: 'motor', cat: 'Betaflight', t: 'Motoren drehen falsch herum oder Kopter flippt',
@@ -200,7 +200,7 @@
     { id: 'vib', cat: 'Betaflight', t: 'Vibrationen, Jello, heiße Motoren',
       kw: 'vibration:3 vibrationen:3 vibrations:3 vibriert:3 zittern:2 zittert:2 jello:3 wackelt:2 oszillation:3 oscillation:3 oszilliert:3 propwash:3 heiss:2.5 hot:2 warm:1 filter:2 rpm:2 rpmfilter:3 bidirektional:3 bidirectional:3 blackbox:2 pid:2 pids:2 tune:2 tuning:2 unruhig:2 brummen:2 schwingt:2',
       i: 'Erst die Mechanik, dann die Software. Viele Probleme verschwinden mit einem neuen Propeller.',
-      s: ['Propeller: kleinste Kerben oder Verformungen reichen. Im Zweifel tauschen.', 'Schrauben: Motoren, Rahmen und Stack fest. Motorschrauben nicht zu lang. Gummidämpfer am Stack nicht zu fest anziehen.', 'Lager und Wellen: Motor von Hand drehen, Glocke auf Spiel prüfen, Welle auf Verbiegung.', 'Jello im Video kommt oft von der Kamerahalterung: weich lagern, nichts darf schwingen. Kabel und Antennen dürfen nicht in die Propeller ragen.', 'RPM-Filter einschalten: braucht bidirektionales DShot, ESC-Firmware, die das kann (z. B. Bluejay, BLHeli_32, AM32), und die richtige Motorpolzahl.', 'Heiße Motoren nach kurzem Flug: Filter oder D-Werte passen nicht. Erst Mechanik prüfen, dann mit Blackbox-Log einstellen statt nach Gefühl.'],
+      s: ['Propeller: kleinste Kerben oder Verformungen reichen. Im Zweifel tauschen.', 'Schrauben: Motoren, Rahmen und Stack fest. Motorschrauben nicht zu lang. Gummidämpfer am Stack nicht zu fest anziehen.', 'Lager und Wellen: Motor von Hand drehen, Glocke auf Spiel prüfen, Welle auf Verbiegung.', 'Jello im Video kommt oft von der Kamerahalterung: weich lagern, nichts darf schwingen. Kabel und Antennen dürfen nicht in die Propeller ragen.', 'RPM-Filter einschalten: braucht bidirektionales DShot, ESC-Firmware, die das kann (zum Beispiel Bluejay, BLHeli_32, AM32), und die richtige Motorpolzahl.', 'Heiße Motoren nach kurzem Flug: Filter oder D-Werte passen nicht. Erst Mechanik prüfen, dann mit Blackbox-Log einstellen statt nach Gefühl.'],
       w: 'Nach Änderungen an Filtern nur kurz fliegen und die Motortemperatur prüfen. Sehr heiße Motoren nicht anfassen.',
       more: ['motor', 'flag_RPMFILTER'] },
 
@@ -235,10 +235,10 @@
       s: ['<b>Analog</b> ist offen: Jede analoge Brille empfängt jeden analogen 5,8-GHz-Sender.',
         '<b>DJI O4 Air Unit und O4 Pro:</b> Goggles 3 (ab Firmware v01.00.0700) und Goggles N3 (ab v01.00.0300) mit voller Leistung. Goggles 2 (ab v01.11.0000) und Integra (ab v01.07.0000) gehen auch, dann aber höchstens 40 MHz Bandbreite und mehr Latenz. Die FPV Goggles V2 geht nicht.',
         '<b>DJI O3 Air Unit:</b> Goggles 2, Integra, Goggles 3 (ab v01.00.0300) und FPV Goggles V2 (nur 810p). Die Goggles N3 geht nicht.',
-        '<b>Alte DJI Vista bzw. FPV Air Unit:</b> läuft mit der Goggles 2 (Vista-Firmware v01.01.00.00) und der FPV Goggles V2 (Vista-Firmware v01.00.06.08, die neuere Vista-Firmware geht an der V2 nicht mehr). Goggles 3 und N3 können keine Vista.',
+        '<b>Alte DJI Vista beziehungsweise FPV Air Unit:</b> läuft mit der Goggles 2 (Vista-Firmware v01.01.00.00) und der FPV Goggles V2 (Vista-Firmware v01.00.06.08, die neuere Vista-Firmware geht an der V2 nicht mehr). Goggles 3 und N3 können keine Vista.',
         '<b>Walksnail</b> Avatar läuft mit allen Walksnail-Brillen (Goggles X, Goggles L, erste Avatar HD Goggles) und dem Walksnail-VRX. Brille und VTX auf dieselbe Firmware bringen (Oktober 2026: 39.44.x).',
         '<b>HDZero</b> läuft mit HDZero Goggle, HDZero Goggle 2 und dem HDZero-VRX. Gebunden wird nicht, nur der Kanal muss gleich sein.',
-        '<b>Über Kreuz</b> geht nur per HDMI: Walksnail- oder HDZero-VRX an einer Brille mit HDMI-Eingang (z. B. HDZero-Brillen, Walksnail Goggles X, Skyzone SKY04X, Fatshark HDO2). DJI-Brillen haben keinen HDMI-Eingang, DJI-Bild gibt es nur in DJI-Brillen.'],
+        '<b>Über Kreuz</b> geht nur per HDMI: Walksnail- oder HDZero-VRX an einer Brille mit HDMI-Eingang (zum Beispiel HDZero-Brillen, Walksnail Goggles X, Skyzone SKY04X, Fatshark HDO2). DJI-Brillen haben keinen HDMI-Eingang, DJI-Bild gibt es nur in DJI-Brillen.'],
       more: ['faq_system'], acts: [['Kompatibilitäts-Check öffnen', 'check']] },
 
     { id: 'kanaele', cat: 'Videosystem', t: 'Analoge Kanäle auf 5,8 GHz', viz: 'band',
@@ -649,7 +649,7 @@
     input.addEventListener('focus', () => { if (!started) greet(true); });
     $('.th-restart').addEventListener('click', () => { log.innerHTML = ''; started = false; greeting = null; lastQ = ''; lastEntry = null; queue = Promise.resolve(); greet(false); input.focus({ preventScroll: true }); });
     // Platzhalter wechselt Beispiele, solange das Feld leer ist
-    const ex = ['z. B. Kopter armt nicht', 'z. B. kein osd', 'z. B. rxloss', 'z. B. elrs bindet nicht', 'z. B. Bild nur Schnee', 'z. B. Akku aufgebläht', 'z. B. welche Kanäle sind erlaubt'];
+    const ex = ['zum Beispiel Kopter armt nicht', 'zum Beispiel kein osd', 'zum Beispiel rxloss', 'zum Beispiel elrs bindet nicht', 'zum Beispiel Bild nur Schnee', 'zum Beispiel Akku aufgebläht', 'zum Beispiel welche Kanäle sind erlaubt'];
     let exI = 0;
     let docVis = false; new IntersectionObserver(es => { docVis = es.some(x => x.isIntersecting); }).observe(form);
     if (!RM) setInterval(() => { if (docVis && document.activeElement !== input && !input.value) { exI = (exI + 1) % ex.length; input.placeholder = ex[exI]; } }, 2600);
@@ -757,7 +757,7 @@
     wsx: ['ws', 'die Walksnail Goggles X'], wsl: ['ws', 'die Walksnail Goggles L'], wsg: ['ws', 'die erste Walksnail Avatar HD Goggles'], wsv: ['ws', 'der Walksnail Avatar VRX'], hz2: ['hz', 'die HDZero Goggle 2'], hzg: ['hz', 'die erste HDZero Goggle'], hzv: ['hz', 'der HDZero VRX'] };
   const Gr = (t) => t.charAt(0).toUpperCase() + t.slice(1), plain = (t) => t.replace(/^(die|der) (erste )?/, '');
   const TX = { an: ['analog', 'Analog-VTX'], o3: ['dji', 'DJI O3 Air Unit'], o4: ['dji', 'DJI O4 Air Unit'], o4p: ['dji', 'DJI O4 Air Unit Pro'], ws: ['ws', 'Walksnail Avatar VTX'], hz: ['hz', 'HDZero VTX'] };
-  const HDMI_BRILLEN = 'z. B. Skyzone SKY04X, Fatshark HDO2 oder Orqa FPV.One Pilot';
+  const HDMI_BRILLEN = 'zum Beispiel Skyzone SKY04X, Fatshark HDO2 oder Orqa FPV.One Pilot';
   // Ergebnis: [Farbe, großes Wort, Zusatzzeile, Begründung]
   const OK = (sub, t) => ['ok', 'Passt', sub, t], LIM = (t) => ['warn', 'Passt', 'mit Einschränkung', t], NO = (t) => ['no', 'Passt nicht', '', t];
   function verdict(rx, tx) {
@@ -766,13 +766,13 @@
     /* ---- Analoger Sender ---- */
     if (ts === 'analog') {
       if (rs === 'analog') return OK('', 'Analog ist offen: Jede analoge Brille empfängt jeden analogen 5,8-GHz-Sender. Band und Kanal an Brille und VTX gleich einstellen, dann ist das Bild da.');
-      if (rx === 'dv2') return LIM('Die FPV Goggles V2 hat einen AV-Eingang. Mit einem Analog-Adapter vorne an der Brille (z. B. BDI Digidapter) und einem Analog-Empfängermodul darin siehst du analoges Bild.');
+      if (rx === 'dv2') return LIM('Die FPV Goggles V2 hat einen AV-Eingang. Mit einem Analog-Adapter vorne an der Brille (zum Beispiel BDI Digidapter) und einem Analog-Empfängermodul darin siehst du analoges Bild.');
       if (rs === 'dji') return NO(`${RN} hat weder einen Analog-Empfänger noch einen AV-Eingang. Für analoge Sender brauchst du eine analoge Brille oder eine HDZero Goggle 2, die einen Analog-Empfänger eingebaut hat.`);
       if (rx === 'wsx') return LIM('Die Goggles X hat keinen eingebauten Analog-Empfänger, aber einen AV-Eingang. Steck dort einen externen 5,8-GHz-Analog-Empfänger mit AV-Ausgang an, dann siehst du analoges Bild.');
       if (rx === 'wsl') return NO('Die Goggles L hat keinen AV- und keinen HDMI-Eingang. Analog geht damit nicht. Wenn du Walksnail und analog willst: Goggles X mit externem Analog-Empfänger.');
       if (rx === 'wsg') return NO('Die erste Avatar HD Goggles hat nur einen HDMI-Ausgang, keinen AV-Eingang. Analog geht damit nicht. Für beides: Goggles X mit externem Analog-Empfänger.');
       if (rx === 'hz2') return OK('Analog eingebaut', 'Die HDZero Goggle 2 hat einen Analog-Empfänger eingebaut (er teilt sich die Antenne mit HDZero). Wer besseren Empfang will, steckt zusätzlich ein Analog-Modul in den seitlichen Modulschacht.');
-      if (rx === 'hzg') return LIM('Die erste HDZero Goggle braucht für analog das Erweiterungsmodul (Expansion Module) mit einem Analog-Empfängermodul darin, z. B. RapidFire oder TBS Fusion.');
+      if (rx === 'hzg') return LIM('Die erste HDZero Goggle braucht für analog das Erweiterungsmodul (Expansion Module) mit einem Analog-Empfängermodul darin, zum Beispiel RapidFire oder TBS Fusion.');
       return NO(`${RN} empfängt nur ${rs === 'ws' ? 'Walksnail' : 'HDZero'}. Für einen analogen Sender brauchst du einen analogen Empfänger.`);
     }
     /* ---- DJI ---- */
@@ -795,14 +795,14 @@
     /* ---- Walksnail ---- */
     if (ts === 'ws') {
       if (rs === 'ws') {
-        const fw = 'Brille bzw. VRX und VTX auf dieselbe aktuelle Firmware bringen (Oktober 2026: 39.44.x), dann binden.';
+        const fw = 'Brille beziehungsweise VRX und VTX auf dieselbe aktuelle Firmware bringen (Oktober 2026: 39.44.x), dann binden.';
         if (rx === 'wsv') return OK('', 'Der VRX empfängt Walksnail und gibt das Bild per HDMI an eine Brille mit HDMI-Eingang weiter. ' + fw);
         if (rx === 'wsx') return OK('', fw + ' Goggles X ab Baujahr 2025 nie unter 38.44.13 zurückspielen, sonst ist die Brille kaputt.');
         return OK('', fw);
       }
       if (rs === 'analog') return LIM(`Nur mit Walksnail Avatar VRX am HDMI-Eingang der Brille (${HDMI_BRILLEN}). Bei Fatshark und Skyzone höchstens 60 fps, Latenz rund 40 ms statt rund 32 ms in der Walksnail-Brille. Ohne HDMI-Eingang passt es nicht.`);
       if (rs === 'hz' && rx !== 'hzv') return LIM(`Nur mit Walksnail Avatar VRX am HDMI-Eingang der ${rn.replace(/^HDZero Goggle$/, 'ersten HDZero Goggle')}. Die HDZero-Brille zeigt dann bis 1080p mit 100 fps, die Latenz liegt bei rund 40 ms statt rund 32 ms in der Walksnail-Brille.`);
-      if (rs === 'dji') return NO(`${RN} hat keinen HDMI-Eingang und kann kein Walksnail empfangen. Für Walksnail brauchst du eine Walksnail-Brille oder den Walksnail-VRX an einer Brille mit HDMI-Eingang, z. B. einer HDZero-Brille.`);
+      if (rs === 'dji') return NO(`${RN} hat keinen HDMI-Eingang und kann kein Walksnail empfangen. Für Walksnail brauchst du eine Walksnail-Brille oder den Walksnail-VRX an einer Brille mit HDMI-Eingang, zum Beispiel einer HDZero-Brille.`);
       return NO('Der HDZero VRX empfängt nur HDZero. Für Walksnail brauchst du eine Walksnail-Brille oder den Walksnail-VRX.');
     }
     /* ---- HDZero ---- */

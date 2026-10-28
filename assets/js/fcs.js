@@ -18,7 +18,7 @@
   const MON = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
   FCS.fmtDate = (iso, lang) => { const d = new Date(iso + 'T12:00:00'); return lang ? `${['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()]}, ${d.getDate()}. ${MON[d.getMonth()]}` : `${WT[d.getDay()]} ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.`; };
   FCS.termine = () => (D.termine || []).map(t => {
-    const h = (D.hallen || {})[t.h] || {};
+    const h = (D.hallen || {})[t.h] || { name: 'Halle im Saarland', adresse: 'Ort nur für Mitglieder', geheim: true };
     const start = new Date(`${t.d}T${(D.zeit || {}).von || '18:00'}:00`);
     const end = new Date(`${t.d}T${(D.zeit || {}).bis || '21:00'}:00`);
     return Object.assign({}, t, { halle: h, start, end, vorbei: end < new Date() });
@@ -29,7 +29,7 @@
     const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Flight Club Saar//Hallenfliegen//DE', 'BEGIN:VEVENT',
       `UID:fcs-${t.d}@flightclub-saar.de`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(t.start)}`, `DTEND:${f(t.end)}`,
       `SUMMARY:Hallenfliegen Flight Club Saar`, `LOCATION:${(t.halle.name || '') + ', ' + (t.halle.adresse || '')}`,
-      'DESCRIPTION:Tiny Whoops in der Halle. Kommt einfach vorbei!', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      'DESCRIPTION:Tiny Whoops in der Halle mit dem Flight Club Saar.', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([body], { type: 'text/calendar' }));
     a.download = `Hallenfliegen_${t.d}.ics`; document.body.appendChild(a); a.click();
@@ -46,13 +46,100 @@
     tick(); return setInterval(tick, 1000);
   };
 
+  /* ---------- Mitglieder-Bereich (Natan 28.10.2026: Spots und Hallenfliegen nur für Mitglieder, genau wie Gyroflow).
+     Jedes Mitglied meldet sich mit seinem eigenen Mitgliedscode FCS-XXXX-XXXX an (dieselben Codes wie im Clip-Studio,
+     Make-Datenspeicher 231679). Make prüft den Code und gibt den Vereinsschlüssel zurück; damit entschlüsselt der Browser
+     Hallen, Halle je Termin und Spots aus assets/data/mitglieder.enc.json (PBKDF2 + AES-GCM, gleiches Verfahren wie
+     quellen/mitglieder_verschluesseln.py). Gemeldete Spots gehen verschlüsselt an den Server. */
+  const MKEY = 'fcs-mitglied', BKEY = 'fcs-bereich';
+  const M = FCS.member = { ok: false, key: null };
+  const mNorm = c => String(c || '').toUpperCase().replace(/[\s\-_.]/g, '');
+  const fcsCode = s => { const r = String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), c = r.startsWith('FCS') ? r.slice(3) : r; return c.length === 8 ? `FCS-${c.slice(0, 4)}-${c.slice(4)}` : String(s || '').trim().toUpperCase(); };
+  const lsJ = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+  const lsS = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); } catch (e) {} };
+  const u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
+  const b64 = a => { let s = ''; a.forEach(x => { s += String.fromCharCode(x); }); return btoa(s); };
+  async function mDerive(code) {
+    const te = new TextEncoder(), base = await crypto.subtle.importKey('raw', te.encode(mNorm(code)), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: te.encode('flight-club-saar|mitglieder|v1'), iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }
+  // Mitgliedscode bei Make prüfen: { ok, n, bis, k } oder { ok:false } oder { net:true }
+  async function mCheck(code) {
+    const api = ((D.api || {}).bereich || '').trim(); if (!api) return { ok: false, net: true };
+    try {
+      const u = new URL(api); u.searchParams.set('c', code);
+      const ac = 'AbortController' in window ? new AbortController() : null; const to = ac && setTimeout(() => ac.abort(), 8000);
+      const r = await fetch(u, { credentials: 'omit', cache: 'no-store', signal: ac && ac.signal }); clearTimeout(to);
+      const j = await r.json().catch(() => null);
+      return j && j.ok && j.k ? { ok: true, n: String(j.n || '').slice(0, 40), bis: +j.bis || null, k: String(j.k) } : { ok: false };
+    } catch (e) { return { ok: false, net: true }; }
+  }
+  M.isEnc = s => typeof s === 'string' && s.startsWith('enc1:');
+  M.dec = async (s, key = M.key) => { const raw = u8(String(s).slice(5)); return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.slice(0, 12) }, key, raw.slice(12))); };
+  M.enc = async (text) => { const iv = crypto.getRandomValues(new Uint8Array(12)); const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, M.key, new TextEncoder().encode(text))); const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12); return 'enc1:' + b64(out); };
+  async function mLoad(key) { const r = await fetch('assets/data/mitglieder.enc.json', { cache: 'no-cache' }); const j = await r.json(); return JSON.parse(await M.dec(j.data, key)); }
+  function mApply(sec) {
+    if (D.hallen) Object.assign(D.hallen, sec.hallen || {}); else D.hallen = sec.hallen || {};
+    (D.termine || []).forEach(t => { if (sec.termine && sec.termine[t.d]) t.h = sec.termine[t.d]; });
+    if (Array.isArray(D.spots)) D.spots.push(...(sec.spots || [])); else D.spots = sec.spots || [];
+  }
+  // Anmelden mit dem eigenen Mitgliedscode: gilt danach auch im Clip-Studio (Gyroflow, Premium)
+  M.unlock = async (input) => {
+    const c = fcsCode(input);
+    if (!/^FCS-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(c)) return 'form';
+    const r = await mCheck(c); if (!r.ok) return r.net ? 'net' : 'nein';
+    if (r.bis && r.bis < new Date().getFullYear()) return 'alt';
+    try { const key = await mDerive(r.k); await mLoad(key); } catch (e) { return 'nein'; }
+    lsS(BKEY, r.k); lsS(MKEY, { c, n: r.n, bis: r.bis });
+    return 'ok';
+  };
+  M.logout = () => { lsS(BKEY, null); lsS(MKEY, null); location.reload(); };
+  M.ready = (async () => {
+    if (!window.crypto || !crypto.subtle) return false;
+    const m = lsJ(MKEY); if (!m || !m.c || (m.bis && m.bis < new Date().getFullYear())) return false;
+    const tryKey = async k => { const key = await mDerive(k); const sec = await mLoad(key); M.key = key; mApply(sec); M.ok = true; M.name = m.n; document.documentElement.classList.add('is-member'); return true; };
+    const k = (() => { try { return localStorage.getItem(BKEY); } catch (e) { return null; } })();
+    if (k) { try { return await tryKey(k); } catch (e) {} }
+    // Im Clip-Studio angemeldet oder neuer Jahresschlüssel: Schlüssel einmal mit dem eigenen Code holen
+    const r = await mCheck(m.c);
+    if (r.ok) { try { await tryKey(r.k); lsS(BKEY, r.k); return true; } catch (e) {} }
+    else if (!r.net) lsS(MKEY, null);
+    return false;
+  })();
+  // Sperr-Kasten: <div data-mitglied-lock="Titel|Text"></div>
+  function locks() {
+    // Inhaltsverzeichnis nur mit den sichtbaren Abschnitten
+    $$(M.ok ? '.nur-gast[data-toc]' : '.nur-mitglied[data-toc]').forEach(el => el.removeAttribute('data-toc'));
+    const wa = ((D.kontakte || [])[0] || {}).wa;
+    $$('[data-mitglied-lock]').forEach((el, i) => {
+      const [t, x] = (el.dataset.mitgliedLock || '').split('|');
+      if (M.ok) { el.innerHTML = `<p class="ml-in hud"><span class="dot" aria-hidden="true"></span>${M.name ? `Hallo ${M.name.replace(/[<>&"]/g, '')}, ` : ''}Mitglieder-Bereich freigeschaltet <button type="button" class="ml-out">Abmelden</button></p>`; $('.ml-out', el).onclick = M.logout; return; }
+      el.innerHTML = `<div class="ml-box">
+        <svg class="ml-ic" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="21" width="28" height="21" rx="4"/><path d="M16 21v-6a8 8 0 0 1 16 0v6"/><circle cx="24" cy="31" r="3"/><path d="M24 34v3"/></svg>
+        <div class="ml-txt"><h3 class="h3">${t || 'Nur für Mitglieder'}</h3><p>${x || 'Mit deinem Mitgliedscode siehst du alles.'}</p></div>
+        <form class="ml-form" novalidate><label for="ml-c${i}">Dein Mitgliedscode</label><div class="ml-row"><input id="ml-c${i}" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="FCS-XXXX-XXXX" required><button class="btn amber solid" type="submit">Freischalten</button></div>
+        <p class="ml-err" role="alert" hidden></p></form>
+        <p class="ml-alt">Noch kein Mitglied? <a href="mitglied.html">Mitglied werden</a>${wa ? ` · Code vergessen? <a href="https://wa.me/${wa}?text=${encodeURIComponent('Hallo, ich bin Mitglied im Flight Club Saar und brauche meinen Mitgliedscode für die Website.')}" target="_blank" rel="noopener">Vorstand fragen</a>` : ''}</p>
+      </div>`;
+      const f = $('form', el), inp = $('input', f), err = $('.ml-err', f), btn = $('button', f);
+      f.addEventListener('submit', async e => {
+        e.preventDefault(); if (!inp.value.trim()) { inp.focus(); return; }
+        btn.disabled = true; const bt = btn.textContent; btn.textContent = 'Prüfe …'; err.hidden = true;
+        const res = await M.unlock(inp.value);
+        if (res === 'ok') { btn.textContent = 'Freigeschaltet'; location.reload(); return; }
+        err.textContent = { form: 'Dein Code hat die Form FCS-XXXX-XXXX.', net: 'Gerade keine Verbindung, versuch es gleich nochmal.', alt: 'Dieser Code ist abgelaufen. Den neuen Code bekommst du vom Vorstand.' }[res] || 'Dieser Code stimmt nicht. Achte auf die Schreibweise oder frag den Vorstand.';
+        btn.disabled = false; btn.textContent = bt; err.hidden = false; inp.select();
+      });
+    });
+  }
+
   /* ---------- Nach dem Laden ---------- */
   function init() {
     if (has('gsap')) {
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 
@@ -166,7 +253,11 @@
     r.innerHTML = `<svg class="cd-q" viewBox="-50 -50 100 100"><circle class="cd-ring" r="46"/><g class="cd-arms"><path d="M-24-24L24 24M24-24L-24 24"/></g><rect class="cd-body" x="-11" y="-11" width="22" height="22" rx="6" transform="rotate(45)"/>${[[-24,-24],[24,-24],[-24,24],[24,24]].map(([x,y],i)=>`<g transform="translate(${x} ${y})"><circle class="cd-pr" r="12"/><g class="cd-bl ${i%2?'ccw':'cw'}"><path d="M-11 0H11"/></g><circle class="cd-hub" r="3"/></g>`).join('')}</svg>`;
     document.body.appendChild(r);
     const L = document.createElement('div'); L.className = 'cd-lock'; L.setAttribute('aria-hidden', 'true'); L.innerHTML = '<i></i><i></i><i></i><i></i><span>LOCK</span>'; document.body.appendChild(L);
-    const dot = document.createElement('div'); dot.className = 'cdot'; dot.setAttribute('aria-hidden', 'true'); document.body.appendChild(dot);
+    // Genauer Zeiger = Fadenkreuz aus dem FPV-OSD mit künstlichem Horizont (Natan 28.10.: größer und passend zum Thema)
+    const dot = document.createElement('div'); dot.className = 'cdot'; dot.setAttribute('aria-hidden', 'true');
+    const arms = '<path d="M0-7V-16M0 7V16M-7 0H-16M7 0H16"/>';
+    dot.innerHTML = `<svg viewBox="-34 -34 68 68"><g class="cx-hz"><path class="o" d="M-30 0H-20V5M30 0H20V5"/><path d="M-30 0H-20V5M30 0H20V5"/></g><g class="cx-ar"><g class="o">${arms}</g><g>${arms}</g></g><circle class="cx-c" r="2.6"/></svg>`;
+    document.body.appendChild(dot);
     let x = innerWidth / 2, y = innerHeight / 2, tx = x, ty = y, vx = 0, vy = 0, flip = 0, lock = null;
     addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; r.classList.add('on'); dot.classList.add('on');
       const t = e.target.closest && e.target.closest('a,button,[role=button],label,select,summary,[data-hot],.rpin,.mcard');
@@ -175,14 +266,17 @@
     }, { passive: true });
     document.addEventListener('pointerleave', () => { r.classList.remove('on'); dot.classList.remove('on'); });
     addEventListener('pointerdown', () => { flip = 1; r.classList.add('boost'); setTimeout(() => r.classList.remove('boost'), 260); });
-    let ang = 0;
+    let ang = 0, px = x, hz = 0;
+    const hzEl = dot.querySelector('.cx-hz');
     const loop = () => {
       // Feder-Dämpfer: fliegt wie ein Kopter hinterher
-      const ax = (tx - x) * .09, ay = (ty - y) * .09; vx = (vx + ax) * .72; vy = (vy + ay) * .72; x += vx; y += vy;
+      const ax = (tx + 30 - x) * .09, ay = (ty + 30 - y) * .09; // fliegt als Begleiter schräg hinter dem Fadenkreuz vx = (vx + ax) * .72; vy = (vy + ay) * .72; x += vx; y += vy;
       if (flip > 0) { ang += 24; if (ang >= 360) { ang = 0; flip = 0; } }
       const bank = Math.max(-38, Math.min(38, vx * 2.2)), pitch = Math.max(-38, Math.min(38, -vy * 2.2));
       r.style.transform = `translate(${x}px,${y}px) perspective(300px) rotateX(${pitch}deg) rotateY(${bank}deg) rotate(${ang}deg)`;
       dot.style.transform = `translate(${tx}px,${ty}px)`;
+      hz += (Math.max(-32, Math.min(32, (tx - px) * 1.6)) - hz) * .18; px = tx; hzEl.style.transform = `rotate(${hz.toFixed(1)}deg)`;
+      dot.classList.toggle('lock', !!lock);
       if (lock) { const b = lock.getBoundingClientRect(); L.style.width = (b.width + 16) + 'px'; L.style.height = (b.height + 16) + 'px'; L.style.transform = `translate(${b.left - 8}px,${b.top - 8}px)`; }
       requestAnimationFrame(loop);
     };
@@ -247,7 +341,7 @@
     let j = {}; try { j = await res.json(); } catch (e) {}
     return { ok: res.ok && String(j.success) !== 'false', j };
   };
-  // Kurze Nachricht an den Vorstand ohne sichtbares Formular (z. B. „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
+  // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
   FCS.notify = async (subject, fields = {}) => {
     const mail = (D.verein || {}).formMail || 'info@falcon-eye.de';
     const body = Object.assign({ _subject: subject, _template: 'table', _captcha: 'false', Seite: location.href }, fields);
@@ -378,5 +472,6 @@
     });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  const start = () => M.ready.then(init, init);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();

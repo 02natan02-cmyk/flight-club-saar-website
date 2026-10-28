@@ -20,7 +20,7 @@
   <div class="osd o-tl"><span class="blink" style="color:var(--red)">●</span> REC · FLIGHT CLUB SAAR</div>
   <div class="osd o-tc"><span data-osd="timer">00:00</span></div>
   <div class="osd o-tr"><span data-osd="volt">16.8V</span> · <b data-osd="rssi">99</b> RSSI</div>
-  <div class="osd o-br">49.36°N 6.93°E · SAARLAND</div>
+  <div class="osd o-br">49.38°N 7.00°E · SAARLAND</div>
   <div class="horizon" aria-hidden="true"><i class="hz-line"></i><i class="hz-cross"></i></div>
   <div class="wrap hero-in">
     <p class="kicker">FPV-Verein im Saarland · seit 2022</p>
@@ -46,7 +46,7 @@
         <span class="go-m"><img src="media/halle/h2.webp" alt="" loading="lazy" width="800" height="450"><i class="go-gates" aria-hidden="true"><b></b><b></b><b></b></i></span>
         <span class="go-tag amber"><span class="dot"></span>Nächster Termin: <span data-next>Sa 14.11.</span></span>
         <b class="go-h">Mitfliegen in der Halle</b>
-        <span class="go-p">Tiny Whoops, Gates, Licht aus. Kommt einfach vorbei, Anfänger willkommen.</span>
+        <span class="go-p">Tiny Whoops, Gates, Licht aus. Anfänger willkommen, Ort für Mitglieder.</span>
         <span class="go-go">Termine &amp; Hallen <span class="arr">→</span></span>
       </a>
       <a class="go-t go-spots" href="spots.html" data-reveal>
@@ -98,8 +98,8 @@
         <div>
           <p class="kicker">Nächstes Hallenfliegen</p>
           <h2 class="h2" id="t-datum">Samstag, 14. November</h2>
-          <p class="lede" id="t-ort">Großwaldhalle Eiweiler · 18 bis 21 Uhr</p>
-          <p class="t-come">Kommt einfach vorbei!</p>
+          <p class="lede" id="t-ort">Halle im Saarland · 18 bis 21 Uhr</p>
+          <p class="t-come">Anfänger willkommen!</p>
           <div class="btns">
             <button class="btn solid" type="button" id="t-ics">In meinen Kalender</button>
             <a class="btn" id="t-route" href="#" target="_blank" rel="noopener">Route planen <span class="arr">↗</span></a>
@@ -257,7 +257,7 @@
   <div class="wrap zap-grid">
     <div class="sec-head">
       <h2 class="h2" data-split>Wähl deinen Kanal.</h2>
-      <p class="lede" data-reveal>Bei uns fliegen mehrere Piloten gleichzeitig, jeder auf seinem Kanal. Schalte durch die Raceband-Kanäle und schau, wer gerade fliegt: Stay Fly, GrobsFPV, OrcaFPV und Booyaka, echte Flüge aus dem Verein.</p>
+      <p class="lede" data-reveal>Bei uns fliegen mehrere Piloten gleichzeitig, jeder auf seinem Kanal. Schalte durch die Raceband-Kanäle und schau, wer gerade fliegt: Stay Fly, GrobsFPV, Orcinus und Booyaka, echte Flüge aus dem Verein.</p>
       <div class="knob-wrap" data-reveal>
         <div class="knob" id="knob" role="slider" tabindex="0" aria-label="Kanal" aria-valuemin="1" aria-valuemax="8" aria-valuenow="4"><i></i></div>
         <div class="chbtns" id="chbtns" role="group" aria-label="Kanäle R1 bis R8"></div>
@@ -322,6 +322,34 @@
     </div>
     <div class="net" id="net" role="group" aria-label="Gruppen der Community"></div>
   </div>
+</section>
+
+<!-- MAKE IT SAARBRÜCKEN: Messestand im E-Werk, drei Stationen als Videostapel, Interview mit Ton -->
+<section class="sec makeit" id="make-it" data-nav="Make It" aria-labelledby="mi-h">
+  <div class="wrap mi-grid">
+    <div class="mi-txt">
+      <h2 class="h2" id="mi-h" data-split>Make It Saarbrücken</h2>
+      <p class="lede" data-reveal>Seit 2024 findest du uns jedes Jahr auf der Make It, dem Maker Festival im E&#8209;Werk Saarbrücken. 2025 war unser Stand der beliebteste der ganzen Messe: In einem großen Drohnenkäfig sind Hunderte Besucher und viele Kinder mit FPV-Brille und Funke echte Drohnen geflogen. 2026 waren wir mit Dutzenden Drohnen und mehreren Simulatoren dabei.</p>
+      <div class="mi-st" role="tablist" aria-label="Stationen am Stand" data-reveal>
+        <button type="button" role="tab" class="on" aria-selected="true" aria-controls="mi-stage" data-mi="0"><b>Am Simulator</b><span>Erst am Bildschirm üben, ohne dass etwas kaputtgeht.</span><i class="mi-bar" aria-hidden="true"></i></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="mi-stage" data-mi="1"><b>Drohnen zum Anfassen</b><span>Vom Tiny Whoop bis zum Langstreckler, mitgebracht von unseren Mitgliedern.</span><i class="mi-bar" aria-hidden="true"></i></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="mi-stage" data-mi="2"><b>Unser Stand</b><span>Banner, Bildschirme und viele Fragen. Hier fängt für viele das Hobby an.</span><i class="mi-bar" aria-hidden="true"></i></button>
+      </div>
+      <div class="btns mi-btns" data-reveal>
+        <button class="btn amber solid" type="button" id="mi-iv-open">Interview vom Stand <span class="mute">2:46 · mit Ton · 10 MB</span></button>
+        <a class="btn ghost" href="simulator.html">Simulator ausprobieren <span class="arr">→</span></a>
+        <a class="btn ghost" href="bau.html">Eigene Drohne bauen <span class="arr">→</span></a>
+      </div>
+    </div>
+    <div class="mi-stage" id="mi-stage" role="tabpanel" aria-label="Videos vom Stand">
+      <figure class="mi-card" data-k="0"><video muted loop playsinline preload="none" poster="media/makeit/sim.webp" data-src="media/makeit/sim.mp4"></video></figure>
+      <figure class="mi-card" data-k="1"><video muted loop playsinline preload="none" poster="media/makeit/tisch.webp" data-src="media/makeit/tisch.mp4"></video></figure>
+      <figure class="mi-card" data-k="2"><video muted loop playsinline preload="none" poster="media/makeit/stand.webp" data-src="media/makeit/stand.mp4"></video></figure>
+      <div class="mi-osd hud" aria-hidden="true"><span><i class="rec"></i>REC</span><span>E-WERK · SAARBRÜCKEN</span><b id="mi-osd-t">AM SIMULATOR</b></div>
+      <p class="mi-hint hud" id="mi-hint"><span class="dot" aria-hidden="true"></span>Tipp eine Station an</p>
+    </div>
+  </div>
+  <dialog class="mi-iv" id="mi-iv" aria-label="Interview vom Stand auf der Make It"><button type="button" class="lb-x" id="mi-iv-x" aria-label="Schließen">×</button><video controls playsinline preload="none" poster="media/makeit/interview.webp" data-src="media/makeit/interview.mp4"></video></dialog>
 </section>
 
 <!-- 12 · CHRONIK zum Wischen -->
@@ -404,7 +432,7 @@
         <div class="mc-top"><img src="assets/img/logo-mark.svg" alt="" width="54" height="54"><span>Mitgliedskarte<br><b>2026</b></span></div>
         <div class="mc-name">Dein Name</div>
         <div class="mc-alias">Dein Pilotenname</div>
-        <div class="mc-bot"><span>Flight Club Saar e. V.</span><span>Nr. 0XX</span></div>
+        <div class="mc-bot"><span>Flight Club Saar e. V.</span><span>Mitglied 2026</span></div>
         <i class="mc-shine"></i>
       </div>
     </div>

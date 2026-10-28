@@ -86,11 +86,11 @@
     const n = FCS.next(), list = $('#t-list'); if (!list) return;
     const all = FCS.termine();
     $('#stat-hallen') && ($('#stat-hallen').dataset.count = all.length);
-    list.innerHTML = all.map(t => `<li class="${t.vorbei ? 'past' : ''}${n && t.d === n.d ? ' nx' : ''}"><span>${FCS.fmtDate(t.d)}</span><span class="mute">${t.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}</span></li>`).join('');
+    list.innerHTML = all.map(t => `<li class="${t.vorbei ? 'past' : ''}${n && t.d === n.d ? ' nx' : ''}"><span>${FCS.fmtDate(t.d)}</span><span class="mute">${t.halle.geheim ? 'Halle' : t.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}</span></li>`).join('');
     if (!n) { $('#t-datum').textContent = 'Neue Termine folgen'; $('#t-ort').textContent = 'Die nächste Saison kündigen wir in der Gruppe und hier an.'; $('#t-cd').hidden = true; return; }
     $('#t-datum').textContent = FCS.fmtDate(n.d, 1);
-    $('#t-ort').textContent = `${n.halle.name} · ${D.zeit.von.replace(':00', '')} bis ${D.zeit.bis.replace(':00', '')} Uhr`;
-    $('#t-route').href = FCS.route(n.halle.lat, n.halle.lng, n.halle.adresse);
+    $('#t-ort').textContent = `${n.halle.name} · ${D.zeit.von.replace(':00', '')} bis ${D.zeit.bis.replace(':00', '')} Uhr${n.halle.geheim ? ' · Ort für Mitglieder' : ''}`;
+    if (n.halle.geheim) { const r = $('#t-route'); r.removeAttribute('target'); r.href = 'hallenfliegen.html#termine'; r.innerHTML = 'Ort für Mitglieder <span class="arr">→</span>'; } else $('#t-route').href = FCS.route(n.halle.lat, n.halle.lng, n.halle.adresse);
     $('#t-ics').addEventListener('click', () => FCS.ics(n));
     FCS.countdown($('#t-cd'), n.start.getTime());
     if (window.gsap && window.ScrollTrigger && !RM) {
@@ -195,7 +195,7 @@
       ${pts.map((p, i) => { const q = pts[(i + 1) % N]; return `<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${q.x.toFixed(1)}" y2="${q.y.toFixed(1)}" style="opacity:.5"/>`; }).join('')}
       ${pts.map(p => `<circle class="pulse" r="3" cx="${cx}" cy="${cy}" data-tx="${p.x.toFixed(1)}" data-ty="${p.y.toFixed(1)}"/>`).join('')}
       <g><circle cx="${cx}" cy="${cy}" r="70" fill="#1F497D" stroke="#3fe0ff" stroke-width="2"/><image href="assets/img/logo-mark.svg" x="${cx - 46}" y="${cy - 46}" width="92" height="92"/></g>
-      ${pts.map(p => `<g class="node${p.i === 0 ? ' on' : ''}" tabindex="0" role="button" data-i="${p.i}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})"><circle class="n" r="${rad(p.g).toFixed(1)}"/>${p.g.m ? `<text class="cnt" text-anchor="middle" dy="6">${p.g.m}</text>` : `<text class="cnt" text-anchor="middle" dy="6">•</text>`}<text text-anchor="middle" dy="${(rad(p.g) + 18).toFixed(0)}">${p.g.n.replace('Flight Club Saar ', '').replace('Ankündigungen Verein', 'Ankündig. Verein')}</text></g>`).join('')}
+      ${pts.map(p => `<g class="node${p.i === 0 ? ' on' : ''}" tabindex="0" role="button" data-i="${p.i}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})"><circle class="n" r="${rad(p.g).toFixed(1)}"/>${p.g.m ? `<text class="cnt" text-anchor="middle" dy="6">${p.g.m}</text>` : `<text class="cnt" text-anchor="middle" dy="6">•</text>`}<text text-anchor="middle" dy="${(rad(p.g) + 18).toFixed(0)}">${p.g.n.replace('Flight Club Saar ', '').replace('Ankündigungen Verein', 'Verein intern')}</text></g>`).join('')}
     </svg>`;
     const info = $('#comm-info');
     const pick = i => { $$('.node', box).forEach(n => n.classList.toggle('on', +n.dataset.i === i)); const g = G[i]; info.innerHTML = `<b>${g.n}</b><span>${g.t}${g.m ? ` · ${g.m} Mitglieder` : ''}</span>`; };
@@ -807,4 +807,36 @@
     window.__ay = () => ({ form, pts: pts.length, SW, SH });
   }
   document.addEventListener('fcs:ready', () => setTimeout(ay, 60), { once: true });
+})();
+
+/* ===== Make It Saarbrücken: drei Stationen, Videostapel, läuft selbst durch bis zum ersten Tippen ===== */
+(function () {
+  'use strict';
+  const st = document.getElementById('mi-stage'); if (!st) return;
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tabs = [...document.querySelectorAll('[data-mi]')], cards = [...st.querySelectorAll('.mi-card')], list = tabs[0].parentElement;
+  const osd = document.getElementById('mi-osd-t'), hint = document.getElementById('mi-hint');
+  const T = 6000; list.style.setProperty('--mi-t', T / 1000 + 's');
+  let cur = 0, vis = false, auto = !RM, timer = 0;
+  const load = (v) => { if (v && !v.src && v.dataset.src) v.src = v.dataset.src; };
+  function show(i) {
+    cur = (i + cards.length) % cards.length;
+    cards.forEach((c, k) => { c.dataset.pos = (k - cur + cards.length) % cards.length; const v = c.querySelector('video'); if (k === cur && vis) { load(v); v.play().catch(() => {}); } else v.pause(); });
+    tabs.forEach((t, k) => { t.classList.toggle('on', k === cur); t.setAttribute('aria-selected', String(k === cur)); if (k === cur) { const b = t.querySelector('.mi-bar'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; } });
+    osd.textContent = tabs[cur].querySelector('b').textContent.toUpperCase();
+    clearTimeout(timer); if (auto && vis) timer = setTimeout(() => show(cur + 1), T);
+  }
+  const stop = () => { auto = false; clearTimeout(timer); list.classList.add('stop'); hint.hidden = true; };
+  tabs.forEach((t, k) => t.addEventListener('click', () => { stop(); show(k); }));
+  cards.forEach((c, k) => c.addEventListener('click', () => { stop(); show(k); }));
+  list.addEventListener('keydown', e => { if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return; e.preventDefault(); stop(); show(cur + (e.key === 'ArrowDown' ? 1 : -1)); tabs[cur].focus(); });
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis) show(cur); else { clearTimeout(timer); cards.forEach(c => c.querySelector('video').pause()); } }, { threshold: .35 }).observe(st);
+  show(0);
+  // Interview mit Ton im Dialog
+  const dlg = document.getElementById('mi-iv'), iv = dlg.querySelector('video');
+  document.getElementById('mi-iv-open').addEventListener('click', () => { stop(); load(iv); dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', ''); iv.play().catch(() => {}); });
+  const close = () => { iv.pause(); dlg.close ? dlg.close() : dlg.removeAttribute('open'); };
+  document.getElementById('mi-iv-x').addEventListener('click', close);
+  dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+  dlg.addEventListener('close', () => iv.pause());
 })();

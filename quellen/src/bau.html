@@ -1,0 +1,75 @@
+<!-- BAU DEINE DROHNE: Teile wählen, Prüfung, 3D-Zusammenbau, Lötplan, Abheben, Simulator (Logik: assets/js/bau.js, Daten: assets/data/teile.json) -->
+<section class="pagehead bk-head" aria-labelledby="bk-h1">
+  <div class="bk-head-mat" aria-hidden="true"></div>
+  <div class="wrap bk-head-in">
+    <p class="crumb"><a href="index.html">Start</a> / <a href="wissen.html">FPV lernen</a> / Bau deine Drohne</p>
+    <h1 class="h1" id="bk-h1">Bau deine Drohne</h1>
+    <p class="lede">Such dir echte Teile aus: Flugcontroller, Motoren, Videosystem, Empfänger. Die Werkbank prüft, ob alles zusammenpasst, baut deinen Kopter in 3D zusammen und zeigt dir jede Lötstelle. Danach hebst du ab und fliegst ihn im Vereins-Simulator.</p>
+    <div class="btns">
+      <a class="btn amber solid" href="#werkbank">Werkbank öffnen <span class="arr">↓</span></a>
+      <button class="btn" type="button" data-bk-preset="mamba-o4-crsf">Beispiel: Mamba, DJI O4, Crossfire</button>
+    </div>
+  </div>
+</section>
+
+<section class="bk" id="werkbank" data-toc="Werkbank" aria-labelledby="bk-h2">
+  <h2 class="sr" id="bk-h2">Werkbank</h2>
+  <div class="bk-app" data-bk-app>
+    <!-- Bühne: 3D-Zusammenbau, Lötplan oder Abheben -->
+    <div class="bk-stage" data-bk-stage>
+      <canvas class="bk-cv" aria-hidden="true"></canvas>
+      <svg class="bk-solder" data-bk-solder viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Lötplan" hidden></svg>
+      <div class="bk-osd" aria-hidden="true">
+        <span class="bk-osd-tl" data-bk-osd-name>DEIN KOPTER</span>
+        <span class="bk-osd-tr" data-bk-osd-w>0 g</span>
+        <span class="bk-osd-bl" data-bk-osd-mode>WERKBANK</span>
+      </div>
+      <div class="bk-views" role="group" aria-label="Ansicht">
+        <button type="button" class="on" data-bk-view="3d" aria-pressed="true">3D</button>
+        <button type="button" data-bk-view="loeten" aria-pressed="false">Lötplan</button>
+        <button type="button" data-bk-view="explode" aria-pressed="false">Zerlegen</button>
+      </div>
+      <p class="bk-hint" data-bk-hint aria-live="polite"><span class="dot" aria-hidden="true"></span><span data-bk-hint-t>Ziehen dreht die Drohne</span></p>
+      <div class="bk-fly" data-bk-flyhud hidden>
+        <p class="bk-fly-t" data-bk-fly-t>Abheben …</p>
+        <div class="btns"><a class="btn amber solid" href="simulator.html?bau=1#simulator" data-bk-sim>Im Simulator fliegen <span class="arr">→</span></a><button class="btn ghost" type="button" data-bk-land>Landen</button></div>
+      </div>
+      <p class="bk-nogl" data-bk-nogl hidden>Dein Gerät zeigt kein 3D. Auswahl, Prüfung und Lötplan funktionieren trotzdem.</p>
+    </div>
+
+    <!-- Bedienfeld -->
+    <div class="bk-panel" data-bk-panel>
+      <nav class="bk-steps" aria-label="Bauschritte" data-bk-steps></nav>
+      <div class="bk-body" data-bk-body aria-live="polite"></div>
+      <div class="bk-nav">
+        <button class="btn ghost" type="button" data-bk-prev>‹ Zurück</button>
+        <button class="btn solid" type="button" data-bk-next><span>Weiter</span> <span class="arr">→</span></button>
+      </div>
+    </div>
+
+    <!-- Datenleiste: Gewicht, Schub, Flugzeit, Prüfung -->
+    <div class="bk-bar" data-bk-bar>
+      <div class="bk-m"><span>Abfluggewicht</span><b data-bk-m="gewicht">–</b></div>
+      <div class="bk-m"><span>Schub zu Gewicht</span><b data-bk-m="twr">–</b></div>
+      <div class="bk-m"><span>Schwebegas</span><b data-bk-m="hover">–</b></div>
+      <div class="bk-m"><span>Flugzeit (Schätzung)</span><b data-bk-m="zeit">–</b></div>
+      <button class="bk-check" type="button" data-bk-check aria-expanded="false" aria-controls="bk-checks"><i data-bk-ampel></i><span data-bk-check-t>Noch keine Teile</span></button>
+      <button class="btn amber solid bk-go" type="button" data-bk-go disabled>Abheben</button>
+    </div>
+    <div class="bk-checks" id="bk-checks" data-bk-checks hidden></div>
+  </div>
+</section>
+
+<section class="sec bk-more" aria-labelledby="bk-more-h">
+  <div class="wrap">
+    <h2 class="h2" id="bk-more-h" data-split>Bevor du lötest</h2>
+    <div class="bk-tips">
+      <p><b>Akku ab, immer.</b> Gelötet wird nur ohne Akku. Den ersten Akku nach dem Bauen mit einem Smoke-Stopper oder einer Sicherung anstecken, ohne Propeller.</p>
+      <p><b>Kondensator nicht vergessen.</b> Ein Low-ESR-Kondensator direkt an den Akkupads des ESC schützt Flugcontroller und Videosystem vor Spannungsspitzen.</p>
+      <p><b>Kabel: TX an RX.</b> Der sendende Draht (TX) des Empfängers kommt an den empfangenden Pad (RX) des Flugcontrollers und umgekehrt. Die Werkbank zeigt dir das für jeden Anschluss.</p>
+      <p><b>Unsicher?</b> Bring deinen Bau zum <a href="hallenfliegen.html">Hallenabend</a> mit oder frag in der <a href="hilfe.html">Technik-Hilfe</a>. Einrichten in Betaflight erklärt <a href="werkstatt.html">Betaflight &amp; Löten</a>.</p>
+    </div>
+    <p class="mute small bk-src">Die Teiledaten stammen aus den Handbüchern und Produktseiten der Hersteller, Stand Oktober 2026. Die Lötpläne sind schematisch: Lage und Namen der Pads folgen dem Handbuch, maßgeblich ist immer die Beschriftung auf deiner Platine. Schub, Schwebegas und Flugzeit sind Schätzungen. <a href="#" data-bk-sources>Quellen anzeigen</a></p>
+    <div class="bk-srclist" data-bk-srclist hidden></div>
+  </div>
+</section>

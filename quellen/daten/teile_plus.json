@@ -1,0 +1,723 @@
+{
+ "stack": [
+  {
+   "id": "speedybee-f405-mini",
+   "name": "SpeedyBee F405 Mini Stack (BLS 35A, 20x20)",
+   "hersteller": "SpeedyBee",
+   "mcu": "STM32F405",
+   "gyro": "ICM42688P",
+   "groesse_mm": 20.0,
+   "gewicht_g": 16.8,
+   "gewicht_fc_g": 9.6,
+   "gewicht_esc_g": 7.2,
+   "eingang_s": [
+    3,
+    6
+   ],
+   "esc_dauerstrom_a": 35,
+   "esc_spitze_a": 45,
+   "esc_firmware": "BLHeli_S J-H-40 (8 Bit)",
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "DJI-Anschluss und analoger Videosender (SmartAudio/IRC über T1/R1) laut SpeedyBee-Plan"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "Empfänger (Betaflight-Standard); das SBUS-Pad hängt an R2"
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "Pads RX3/TX3 im Plan, frei für Zubehör"
+    },
+    {
+     "name": "UART6",
+     "frei": true,
+     "hinweis": "GPS laut Plan (Pads T6/R6 zusammen mit 4V5, SDA, SCL)"
+    },
+    {
+     "name": "UART4",
+     "frei": false,
+     "hinweis": "Bluetooth-Chip (Betaflight-Target: MSP-UART), keine Pads"
+    },
+    {
+     "name": "UART5",
+     "frei": false,
+     "hinweis": "im Plan kein Pad; im Betaflight-Target nur ein RX-Pin, Zweck nicht belegt"
+    }
+   ],
+   "bec": [
+    "5V 2A (4 Ausgänge, gesamt)",
+    "9V 3A (1 Ausgang)"
+   ],
+   "anschluesse": {
+    "dji_stecker": false,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART6",
+    "kamera_pad": true
+   },
+   "kondensator_dabei": true,
+   "blackbox": "8 MB Flash",
+   "betaflight_target": "SPEEDYBEEF405MINI",
+   "quelle": "https://www.getfpv.com/electronics/stacks/speedybee-f405-mini-stack-f405-v3-fc-35a-3-6s-blheli-s-4-in-1-esc-20x20.html",
+   "quellen": [
+    "https://www.getfpv.com/electronics/stacks/speedybee-f405-mini-stack-f405-v3-fc-35a-3-6s-blheli-s-4-in-1-esc-20x20.html",
+    "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_SpeedyBee_F405_Mini_BLS_35A/f405-mini-Specification-2.jpg",
+    "https://github.com/betaflight/config/tree/master/configs/SPBE/SPEEDYBEEF405MINI"
+   ],
+   "unsicher": "Gewicht = FC 9,6 g + ESC 7,2 g laut GetFPV, ohne Kabel. DJI: GetFPV schreibt \"Direct soldering\" (Pads), der SpeedyBee-Plan nennt zusätzlich ein mitgeliefertes 6-poliges Kabel; ein Steckplatz auf der Platine ist nicht belegt, daher false. Die Seite widerspricht sich bei den UARTs (Text 4, Datenblatt 6). Der Kondensator (35 V 470 uF) steht in der Lieferliste, die Zuordnung zu FC oder ESC nicht. Im Plan gibt es zusätzlich 4V5-Pads, deren Strom nicht angegeben ist. Rollen von UART4/UART5 aus dem Betaflight-Target abgeleitet, nicht vom Hersteller bestätigt."
+  },
+  {
+   "id": "speedybee-f405-v3",
+   "name": "SpeedyBee F405 V3 Stack (BLS 50A, 30x30)",
+   "hersteller": "SpeedyBee",
+   "mcu": "STM32F405",
+   "gyro": "BMI270",
+   "groesse_mm": 30.5,
+   "gewicht_g": 23.4,
+   "gewicht_fc_g": 9.6,
+   "gewicht_esc_g": 13.8,
+   "eingang_s": [
+    3,
+    6
+   ],
+   "esc_dauerstrom_a": 50,
+   "esc_spitze_a": 55,
+   "esc_firmware": "BLHeli_S JH50 (8 Bit)",
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "DJI-Stecker und analoger Videosender (MSP/SmartAudio), Pads T1/R1"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "Empfänger (Betaflight-Standard); das SBUS-Pad und der SBUS-Draht im DJI-Kabel hängen an UART2"
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "Pads RX3/TX3 im Plan, frei für Zubehör"
+    },
+    {
+     "name": "UART6",
+     "frei": true,
+     "hinweis": "GPS laut Plan (Pads T6/R6 zusammen mit 4V5, SDA, SCL)"
+    },
+    {
+     "name": "UART4",
+     "frei": false,
+     "hinweis": "Bluetooth-Chip (Betaflight-Target: MSP-UART), keine Pads"
+    },
+    {
+     "name": "UART5",
+     "frei": false,
+     "hinweis": "nach Betaflight-Target der ESC-Telemetrie-Eingang, kein freies Pad"
+    }
+   ],
+   "bec": [
+    "9V 2A",
+    "5V 2A",
+    "4,5V 1A",
+    "3,3V 0,5A"
+   ],
+   "anschluesse": {
+    "dji_stecker": true,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART6",
+    "kamera_pad": true
+   },
+   "kondensator_dabei": true,
+   "blackbox": "microSD-Slot",
+   "betaflight_target": "SPEEDYBEEF405V3",
+   "quelle": "https://www.getfpv.com/discontinued/speedybee-f405-stack-f405-v3-fc-50a-3-6s-blheli-s-4-in-1-esc-30x30.html",
+   "quellen": [
+    "https://www.getfpv.com/discontinued/speedybee-f405-stack-f405-v3-fc-50a-3-6s-blheli-s-4-in-1-esc-30x30.html",
+    "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_SpeedyBee_F405_V3_Stack/f405-V3-specification-6.jpg",
+    "https://github.com/betaflight/config/tree/master/configs/SPBE/SPEEDYBEEF405V3"
+   ],
+   "unsicher": "Gewicht = FC 9,6 g + ESC 13,8 g laut GetFPV, ohne Kabel; der Händlerlink steht unter \"discontinued\" (Platine gibt es weiter, aktueller ist V4/V5). GetFPV nennt UART4 als ESC-Telemetrie und \"4 UARTs\" im Fließtext (5 im Datenblatt); das Betaflight-Target führt UART4 als MSP/Bluetooth und UART5 als ESC-Sensor, hier das Target übernommen. Kondensator 35 V 1500 uF steht beim ESC. Spitzenstrom 55 A gilt laut Seite bei 5S für 5 s. Lage/Belegung der Unterseiten-Buchsen im V3-Plan nicht vermessen (siehe Plan-Hinweis)."
+  },
+  {
+   "id": "mamba-f722-mk4-mini",
+   "name": "Diatone Mamba F722 MK4 Mini Stack (F40 40A, 20x20)",
+   "hersteller": "Diatone",
+   "mcu": "STM32F722",
+   "gyro": "ICM42688P",
+   "groesse_mm": 20.0,
+   "gewicht_g": null,
+   "gewicht_fc_g": 6.0,
+   "gewicht_esc_g": null,
+   "eingang_s": [
+    3,
+    6
+   ],
+   "esc_dauerstrom_a": 40,
+   "esc_spitze_a": 45,
+   "esc_firmware": "BLHeli_32 (MAMBA F40_128K_MINI)",
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "Empfänger laut Diatone-Plan (Pads RX1/TX1)"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "GPS laut Plan (Pads RX2/TX2 mit SDA/SCL)"
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "DJI-Buchse und analoger Videosender (SmartAudio TX3)"
+    },
+    {
+     "name": "UART4",
+     "frei": true,
+     "hinweis": "Pads RX4/TX4, frei für Zubehör"
+    },
+    {
+     "name": "UART5",
+     "frei": true,
+     "hinweis": "Pads RX5/TX5; F.Port/S.Port laut Plan"
+    },
+    {
+     "name": "UART6",
+     "frei": false,
+     "hinweis": "Hersteller nennt 6 UARTs; im Plan kein Pad, Zweck nicht belegt"
+    }
+   ],
+   "bec": [
+    "3,3V 0,5A",
+    "5V 2,5A",
+    "9V 2A"
+   ],
+   "anschluesse": {
+    "dji_stecker": true,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART2",
+    "kamera_pad": true
+   },
+   "kondensator_dabei": true,
+   "blackbox": "16 MB Flash",
+   "betaflight_target": null,
+   "quelle": "https://www.getfpv.com/diatone-mamba-stack-mk4-f722-fc-40a-3-6s-blheli-32-128k-esc-mini-20x20.html",
+   "quellen": [
+    "https://www.getfpv.com/diatone-mamba-stack-mk4-f722-fc-40a-3-6s-blheli-32-128k-esc-mini-20x20.html",
+    "https://kiwiquads.co.nz/product/diatone-mamba-mk4-f722-mini-40a-6s-128k-32bit-stack",
+    "https://cdn.shopifycdn.net/s/files/1/0027/2708/4144/files/MK4F722MINI_42688P_-01_54975f8a-8706-489b-906e-b7cc78f0db20.jpg"
+   ],
+   "unsicher": "Gyro uneinheitlich: GetFPV \"Version A: ICM42688P\" (passt zum Plan-Bild), KiwiQuads \"BMI270\", die APP-Variante nennt MPU6000. Betaflight-Target nicht belegt: GetFPV schreibt \"MAMBA_F722_2022A\" (laut Betaflight-Config ohne ICM42688P-Unterstützung), passender wäre 2022B – deshalb null. Gewicht nur für die FC (6 g), ESC-Gewicht fehlt. Eingang: FC \"6S\", ESC 3-6S (KiwiQuads 2-6S). GetFPV-Liste nennt in \"Enthalten\" fälschlich F405/BLHeli_S. Spitzenstrom 45 A (Herstellerangabe \"10S\"). Kondensator 470 uF/35 V laut KiwiQuads. UART-Rollen nur aus dem Plan, nicht vom Hersteller bestätigt."
+  },
+  {
+   "id": "foxeer-f722-mini-v4",
+   "name": "Foxeer F722 Mini V4 Flugcontroller (nur FC, 20x20)",
+   "hersteller": "Foxeer",
+   "mcu": "STM32F722RET6",
+   "gyro": "ICM42688P",
+   "groesse_mm": 20.0,
+   "gewicht_g": 4.0,
+   "eingang_s": [
+    2,
+    6
+   ],
+   "esc_dauerstrom_a": null,
+   "esc_spitze_a": null,
+   "esc_firmware": null,
+   "nur_fc": true,
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "Empfänger laut Foxeer-Plan (Pad RC = RX1, TX1)"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "GPS-Pads auf der Unterseite (RX2/TX2 mit SDA/SCL)"
+    },
+    {
+     "name": "UART5",
+     "frei": true,
+     "hinweis": "Analoger Videosender, SmartAudio an TX5 laut Plan"
+    },
+    {
+     "name": "UART4",
+     "frei": false,
+     "hinweis": "nur RX4 für ESC-Telemetrie, kein freies Pad"
+    }
+   ],
+   "bec": [
+    "5V 2,5A"
+   ],
+   "anschluesse": {
+    "dji_stecker": null,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART2",
+    "kamera_pad": true
+   },
+   "blackbox": "16 MB Flash",
+   "betaflight_target": "FOXEERF722V4",
+   "quelle": "https://kiwiquads.co.nz/product/foxeer-f722-mini-v4-fc-icm42688/",
+   "quellen": [
+    "https://kiwiquads.co.nz/product/foxeer-f722-mini-v4-fc-icm42688/",
+    "https://rcdrone.top/bn/products/foxeer-f722-mini-v4-flight-controller-icm42688-stm32f722ret6-20x20mm-2-6s-lipo-5v-2-5a-bec-betaflight-osd",
+    "https://www.getfpv.com/foxeer-f722-v4-mini-flight-controller-20x20.html",
+    "https://inew.foxeer.com/upload/image/20250516/20250516020249_47610.jpg"
+   ],
+   "unsicher": "Wird ohne ESC verkauft: ESC-Werte null, ein 20x20-4-in-1-ESC ist separat nötig. Gyro: die ICM42688-Variante laut KiwiQuads/RCDrone; GetFPV führt die Platine mit MPU6000 (zweite Variante), die GetFPV-Seite nennt kein Gyro. BEC: 5V 2,5A laut KiwiQuads/RCDrone, GetFPV schreibt 5V/3A. Der Hersteller nennt 4 UARTs, welche, steht nur im Plan (UART1, 2, 5, 4 nur RX). DJI-Stecker nicht belegt, der Plan zeigt keine DJI-Rolle. GetFPV-Spezifikation enthält Platzhaltertexte (Seite unfertig). Betaflight-Target nur als \"FOXEERF722V4\" in Firmware-Zeile; Foxeer führt auch die 8S-Dual-BEC-Variante unter demselben Namen. Kondensator nicht belegt."
+  },
+  {
+   "id": "kakute-h7-mini",
+   "name": "Holybro Kakute H7 Mini Stack (Tekko32 F4 Mini 50A, AM32)",
+   "hersteller": "Holybro",
+   "mcu": "STM32H743",
+   "gyro": "ICM42688P",
+   "groesse_mm": 20.0,
+   "gewicht_g": 21.1,
+   "gewicht_fc_g": 5.5,
+   "gewicht_esc_g": 15.6,
+   "eingang_s": [
+    4,
+    6
+   ],
+   "esc_dauerstrom_a": 50,
+   "esc_spitze_a": 60,
+   "esc_firmware": "AM32",
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "DJI-/HD-Stecker (JST-SH 6-polig, T1/R1) laut Plan"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "Analoger Videosender (SmartAudio TX2), laut Holybro \"Spare/VTX\""
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "GPS laut Holybro-Standard (Pads RX3/TX3 mit SDA/SCL)"
+    },
+    {
+     "name": "UART4",
+     "frei": true,
+     "hinweis": "Pads RX4/TX4, frei für Zubehör"
+    },
+    {
+     "name": "UART6",
+     "frei": true,
+     "hinweis": "Empfänger/SBUS laut Holybro-Standard (Pads R6/T6)"
+    },
+    {
+     "name": "UART7",
+     "frei": false,
+     "hinweis": "nur RX-Pin (RX7) nach Betaflight-Target, kein freies Pad"
+    }
+   ],
+   "bec": [
+    "5V 2A"
+   ],
+   "anschluesse": {
+    "dji_stecker": true,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART3",
+    "kamera_pad": true
+   },
+   "kondensator_dabei": true,
+   "blackbox": "128 Mbit SPI-Flash (V1.5), kein microSD",
+   "betaflight_target": "KAKUTEH7MINI",
+   "quelle": "https://holybro.com/collections/fpv-stack/products/kakute-h7-mini-stacks",
+   "quellen": [
+    "https://holybro.com/collections/fpv-stack/products/kakute-h7-mini-stacks",
+    "https://openelab.io/products/holybro-kakute-h7-mini-v15",
+    "https://www.getfpv.com/holybro-mini-stack-kakute-h7-fc-tekko32-f4-45a-esc-20x20.html",
+    "https://docs.holybro.com/autopilot/kakute-h7-v1-v2-mini/kakute-h7-mini/pinout",
+    "https://github.com/betaflight/config/tree/master/configs/HBRO/KAKUTEH7MINI"
+   ],
+   "unsicher": "Gyro hängt von der Platinenversion ab: V1.5 ICM42688P (openelab), V1.3 BMI270 mit NAND-Flash (Holybro); welche Version im Stack liegt, ist nicht belegt. Stack: Holybro führt aktuell den Tekko32 F4 Mini 50A (AM32, 4-6S, 15,6 g, 50/60 A, Kondensator 1000 uF 35 V); GetFPV führt älter einen Tekko32 F4 45A (BLHeli_32), Werte hier vom Holybro-Stack. MCU STM32H743 aus openelab/Betaflight-Target. Eingang FC 2-6S, ESC 4-6S. Gewicht FC 5,5 g laut openelab. UART-Rollen nach Holybro-Standard, kein eigener Verdrahtungsplan für die Mini; welche der beiden rechten oberen Pads Buzzer+/- sind, ist unsicher."
+  },
+  {
+   "id": "tmotor-pacer-f7",
+   "name": "T-Motor Pacer F7 Flugcontroller (USB-C, nur FC, 30x30)",
+   "hersteller": "T-Motor",
+   "mcu": "STM32F722",
+   "gyro": "MPU6000",
+   "groesse_mm": 30.5,
+   "gewicht_g": null,
+   "eingang_s": [
+    3,
+    6
+   ],
+   "esc_dauerstrom_a": null,
+   "esc_spitze_a": null,
+   "esc_firmware": null,
+   "nur_fc": true,
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "Empfänger (TBS) unten rechts laut T-Motor-Plan, Pads TX1/RX1"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "GPS links mit Kompass an SDA/SCL (Pads TX2/RX2)"
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "Analoger Videosender (SmartAudio TX3) und DJI-Stecker (TX3/RX3; RX3 nur im Stecker)"
+    },
+    {
+     "name": "UART5",
+     "frei": true,
+     "hinweis": "Plan: FrSky F.Port/SBUS an TX5; RX5 liegt im DJI-Stecker"
+    },
+    {
+     "name": "UART6",
+     "frei": true,
+     "hinweis": "Pads TX6/RX6, frei für Zubehör"
+    },
+    {
+     "name": "UART4",
+     "frei": false,
+     "hinweis": "laut Hersteller 6 UARTs; im Plan kein Pad, Zweck nicht belegt"
+    }
+   ],
+   "bec": [
+    "5V 3A",
+    "10V nur über T-Motor-4-in-1-ESC mit 10-V-BEC (5 Pads)"
+   ],
+   "anschluesse": {
+    "dji_stecker": true,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART2",
+    "kamera_pad": true
+   },
+   "blackbox": "16 MB Flash",
+   "betaflight_target": "TMPACERF7",
+   "quelle": "https://www.getfpv.com/t-motor-pacer-f7-usb-c-flight-controller.html",
+   "quellen": [
+    "https://www.getfpv.com/t-motor-pacer-f7-usb-c-flight-controller.html",
+    "https://www.racedayquads.com/products/t-motor-pacer-f7-single-sided-30x30-flight-controller",
+    "https://www.unmannedtechshop.co.uk/de/products/t-motor-pacer-f7-flight-controller",
+    "https://github.com/betaflight/config/tree/master/configs/TMTR/TMPACERF7"
+   ],
+   "unsicher": "Wird ohne ESC verkauft (kompatibel mit T-Motor F45A 2.0, F55A Pro II, V45A, P50A, P60A): ESC-Werte null. MCU und Gyro nennen die Händlerseiten nicht für die Pacer; MCU STM32F722 und MPU6000 stammen aus dem Betaflight-Target TMPACERF7 (UnmannedTech nennt \"MPU6000/BMI270 je nach Verfügbarkeit\"). Gewicht für die Pacer nicht belegt (7,4 g gilt für die ältere T-Motor F7). Lochabstand 30,5 mm laut GetFPV; UnmannedTech schreibt 20x20 (Händlerfehler vermutet). UnmannedTech nennt 5V/2A bzw. 5V/3A, GetFPV 5V 3A. Plan nur als GIF; die einseitige Version kann abweichen."
+  },
+  {
+   "id": "aikon-f7-mini-v3",
+   "name": "Aikon F7 Mini V3 HD Flugcontroller (nur FC, 20x20)",
+   "hersteller": "Aikon",
+   "mcu": "STM32F722RET6",
+   "gyro": "BMI270",
+   "groesse_mm": 20.0,
+   "gewicht_g": 5.4,
+   "eingang_s": [
+    3,
+    6
+   ],
+   "esc_dauerstrom_a": null,
+   "esc_spitze_a": null,
+   "esc_firmware": null,
+   "nur_fc": true,
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "Empfänger laut Aikon-Plan (Pads RX1/TX1); R1 (SBUS) liegt zusätzlich im DJI-Stecker"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "GPS laut Plan (Pads RX2/TX2 mit SDA/SCL)"
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "Analoger Videosender (SmartAudio TX3) und DJI-Stecker (R3/T3)"
+    },
+    {
+     "name": "UART4",
+     "frei": true,
+     "hinweis": "Pads RX4/TX4, frei für Zubehör"
+    },
+    {
+     "name": "UART5",
+     "frei": true,
+     "hinweis": "Pads RX5/TX5, frei für Zubehör"
+    }
+   ],
+   "bec": [
+    "5V 2A",
+    "10V 1,5A (für DJI HD)"
+   ],
+   "anschluesse": {
+    "dji_stecker": true,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART2",
+    "kamera_pad": true
+   },
+   "blackbox": "16 MB Flash",
+   "betaflight_target": "AIKONF7",
+   "quelle": "https://pyrodrone.com/collections/aikon-products/products/aikon-f7-mini-hd-v3-1-2020-flight-controller-and-ak32pro-ii-4in1-50a-6s-blheli32-esc-stack-20x20mm-1",
+   "quellen": [
+    "https://pyrodrone.com/collections/aikon-products/products/aikon-f7-mini-hd-v3-1-2020-flight-controller-and-ak32pro-ii-4in1-50a-6s-blheli32-esc-stack-20x20mm-1",
+    "https://wrekd.com/products/aikon-f7-mini-v3-1-hd-20x20-flight-controller",
+    "https://www.unmannedtechshop.co.uk/product/aikon-f7-mini-hd-v3-20x20-flight-controller/",
+    "https://cdn.shopify.com/s/files/1/1285/4651/files/AIKON_20F7_20v3_20Mini_20Manual.jpg",
+    "https://github.com/betaflight/config/tree/master/configs/AIKO/AIKONF7"
+   ],
+   "unsicher": "Wird einzeln ohne ESC verkauft (es gibt Stacks mit dem AK32Pro II 50A, BLHeli_32, 50/65 A, 2-6S, 16 g): ESC-Werte null, weil kein ESC zur Platine gehört. Gewicht 5,4 g laut PyroDrone/UnmannedTech, WREKD schreibt 8 g. Eingang: Seiten nennen 2-6S bzw. \"12-50 V (3-6 Zellen)\", hier 3-6S. Die Seiten schreiben V3 und V3.1 durcheinander. Betaflight-Target AIKONF7 steht bei WREKD, bei PyroDrone nur \"AIKON F7\". Kondensator nicht belegt. DJI- und ESC-Stecker sitzen laut Plan auf der Oberseite."
+  },
+  {
+   "id": "speedybee-f7-mini",
+   "name": "SpeedyBee F7 Mini Stack (BLS 35A, 20x20)",
+   "hersteller": "SpeedyBee",
+   "mcu": "STM32F722",
+   "gyro": "MPU6000",
+   "groesse_mm": 20.0,
+   "gewicht_g": 12.7,
+   "gewicht_fc_g": 5.7,
+   "gewicht_esc_g": 7.0,
+   "eingang_s": [
+    3,
+    6
+   ],
+   "esc_dauerstrom_a": 35,
+   "esc_spitze_a": 45,
+   "esc_firmware": "BLHeli_S JH40 (8 Bit)",
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "Empfänger laut SpeedyBee-Plan (G, R1, T1, 5V)"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "DJI Air Unit an 9V, G, T2, R2 (Pads)"
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "Analoger Videosender (SmartAudio T3) bzw. Zubehör (Pads RX3/TX3)"
+    },
+    {
+     "name": "UART4",
+     "frei": false,
+     "hinweis": "nur RX4 für ESC-Telemetrie (R4), kein freies Pad"
+    }
+   ],
+   "bec": [
+    "9V 2A",
+    "5V 2A"
+   ],
+   "anschluesse": {
+    "dji_stecker": false,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": "UART3",
+    "kamera_pad": true
+   },
+   "blackbox": "8 MB Flash",
+   "betaflight_target": "SPEEDYBEEF7MINI",
+   "quelle": "https://www.getfpv.com/speedybee-f7-mini-35a-3-6s-8-bit-flight-controller-stack.html",
+   "quellen": [
+    "https://www.getfpv.com/speedybee-f7-mini-35a-3-6s-8-bit-flight-controller-stack.html",
+    "https://store-fhxxhuiq8q.mybigcommerce.com/product_images/img_speedybee_f7_mini_stack/F7-MINI-14.jpg",
+    "https://github.com/betaflight/config/tree/master/configs/SPBE/SPEEDYBEEF7MINI"
+   ],
+   "unsicher": "Gewicht = FC 5,7 g + ESC 7 g laut GetFPV, ohne Kabel. Bei dieser ersten Mini-Version ist ein MPU6000 verbaut (die V2 hat BMI270). DJI: Anschluss über Lötpads, kein Steckplatz belegt (false). GPS-Empfehlung UART3 nur sinngemäß: der Plan beschriftet die Gruppe nur als \"UART 3\", GPS ist nicht ausdrücklich gezeigt. Kondensator nicht belegt. Betaflight-Target im Betaflight-Config-Repo führt zusätzlich UART6; der Hersteller nennt nur 3 UARTs."
+  }
+ ],
+ "aio": [
+  {
+   "id": "happymodel-x12-elrs-pro",
+   "name": "HappyModel X12 ELRS Pro V1.1 (5-in-1 Whoop-AIO)",
+   "hersteller": "Happymodel",
+   "mcu": "STM32F411CEU6",
+   "gyro": "ICM42688P",
+   "groesse_mm": 25.5,
+   "gewicht_g": 5.1,
+   "eingang_s": [
+    1,
+    2
+   ],
+   "esc_dauerstrom_a": 12,
+   "esc_spitze_a": 15,
+   "esc_firmware": "Bluejay v0.19.2 (Werk, DShot300)",
+   "eingebauter_empfaenger": "ELRS 2.4 GHz (UART, CRSF)",
+   "eingebautes_vtx": "analog, OpenVTX 5,8 GHz, 40 Kanäle, PIT/25/100/400 mW",
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": null,
+     "hinweis": "Pads RX1/TX1; der Plan legt den eingebauten ELRS-Empfänger hierher"
+    },
+    {
+     "name": "UART2",
+     "frei": null,
+     "hinweis": "Pads TX2/RX2; das Betaflight-Target nutzt UART2 als Standard-Empfänger-UART. Laut Forum teilen sich Empfänger und OpenVTX dieselbe UART"
+    }
+   ],
+   "bec": [],
+   "anschluesse": {
+    "dji_stecker": false,
+    "leds_pad": null,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": null,
+    "kamera_pad": true
+   },
+   "betaflight_target": "CRAZYBEEF4DX",
+   "quelle": "https://www.unmannedtechshop.co.uk/products/happy-model-x12-elrs-pro-v1-1-5-in-1-aio-flight-controller-built-in-2-4g-elrs-v3-0-and-openvtx",
+   "quellen": [
+    "https://www.unmannedtechshop.co.uk/products/happy-model-x12-elrs-pro-v1-1-5-in-1-aio-flight-controller-built-in-2-4g-elrs-v3-0-and-openvtx",
+    "https://www.unmannedtechshop.co.uk/products/happymodel-x12-elrs-5in1-aio-flight-controller",
+    "https://intofpv.com/archive/index.php/thread-28487.html",
+    "https://www.happymodel.cn/wp-content/uploads/2023/11/11.jpg",
+    "https://github.com/betaflight/config/tree/master/configs/HAMO/CRAZYBEEF4DX"
+   ],
+   "unsicher": "Nur 1-2S (Whoop-AIO, 12 A pro Motor für 3 s Spitze). Welche UART den eingebauten ELRS-Empfänger trägt, ist widersprüchlich: der Plan sagt UART1, das Betaflight-Target setzt UART2 als Empfänger-UART, ein Forumsbeitrag sagt, Empfänger und VTX teilen sich eine UART; deshalb frei = null. Betaflight-Target: Produktseite nennt \"CRAZYBEEF4DX\" und im Datenblatt \"betaflight_4.4.0_STM32F411\"; die Non-Pro-Variante nennt CRAZYBEEF4SX1280 (SPI-ELRS). Gyro: die Pro nennt ICM42688P, die Vorgängerseite MPU6000/ICM20689/BMI270. BEC, Blackbox, LED-Pad nicht angegeben (Plan zeigt kein LED-Pad). Motoren über Stecker auf der Unterseite. UART-Pads: je ein Paar RX/TX pro UART im Plan."
+  },
+  {
+   "id": "betafpv-f405-20a-toothpick-v5",
+   "name": "BETAFPV F405 20A Toothpick AIO V5",
+   "hersteller": "BETAFPV",
+   "mcu": "STM32F405RGT6",
+   "gyro": "ICM42688P",
+   "groesse_mm": 25.5,
+   "gewicht_g": 8.35,
+   "eingang_s": [
+    2,
+    4
+   ],
+   "esc_dauerstrom_a": 20,
+   "esc_spitze_a": 25,
+   "esc_firmware": "Bluejay G_H_20_48 v0.16 (BLHeli_S optional)",
+   "uarts": [
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "Empfänger laut Hersteller (SBUS/CRSF/DSMX); die drei kleinen Pads im Plan sind unbeschriftet"
+    },
+    {
+     "name": "UART4",
+     "frei": true,
+     "hinweis": "HD-Digital-VTX über den 6-poligen Stecker (SBUS, GND, RX4, TX4, GND, BAT+)"
+    },
+    {
+     "name": "UART6",
+     "frei": true,
+     "hinweis": "Analoger Videosender (SmartAudio TX6)"
+    },
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "laut Hersteller \"spare\" (Pads RX1/TX1); der Plan zeigt hier den Empfänger"
+    }
+   ],
+   "bec": [
+    "5V 3A"
+   ],
+   "anschluesse": {
+    "dji_stecker": true,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": null,
+    "kamera_pad": null
+   },
+   "betaflight_target": "BETAFPVF405",
+   "quelle": "https://betafpv.com/collections/flight-controller-1/products/f405-4s-20a-toothpick-brushless-flight-controller-v5-blheli_s-icm42688",
+   "quellen": [
+    "https://betafpv.com/collections/flight-controller-1/products/f405-4s-20a-toothpick-brushless-flight-controller-v5-blheli_s-icm42688",
+    "https://cdn.shopify.com/s/files/1/1778/6615/files/f4b3da9554de4e60ffd11b8edcb16ff8_b9a8f16e-7203-4603-8ec3-5efd065f44d1.jpg",
+    "https://github.com/betaflight/config/tree/master/configs/BEFH/BETAFPVF405"
+   ],
+   "unsicher": "Empfänger-UART widersprüchlich: BETAFPV nennt UART3 für den Empfänger und UART1 als frei, der Lötplan führt RX1/TX1. Betaflight-Target nur aus dem Firmware-Dateinamen \"betaflight_4.3.1_BETAFPVF405\". Der 6-polige Stecker ist laut Hersteller für einen digitalen VTX (nicht ausdrücklich DJI). Blackbox, LED-/Buzzer-Pad und Kamera-Pad stehen nicht im Datenblatt (LED und Buzzer aus dem Plan; die Kamera läuft laut Plan über die Analog-VTX-Platine, daher kamera_pad null). Eingang 2-4S (ESC). Ausgang BEC 5V 3A; Größe der Platine über die Lochmitten hinaus nicht angegeben."
+  },
+  {
+   "id": "jhemcu-ghf722aio-icm",
+   "name": "JHEMCU GHF722AIO-ICM",
+   "hersteller": "JHEMCU",
+   "mcu": "STM32F722",
+   "gyro": "ICM42688P",
+   "groesse_mm": 25.5,
+   "gewicht_g": 7.3,
+   "eingang_s": [
+    2,
+    6
+   ],
+   "esc_dauerstrom_a": 40,
+   "esc_spitze_a": 45,
+   "esc_firmware": "Bluejay G_H_30_48 v0.16 (48/96 kHz)",
+   "eingebauter_empfaenger": null,
+   "eingebautes_vtx": null,
+   "uarts": [
+    {
+     "name": "UART1",
+     "frei": true,
+     "hinweis": "Pads RX1/TX1 im Plan, frei für Zubehör"
+    },
+    {
+     "name": "UART2",
+     "frei": true,
+     "hinweis": "Empfänger laut JHEMCU-Plan; bei SBUS/IBUS/DSM UART2 als Serial RX einschalten"
+    },
+    {
+     "name": "UART3",
+     "frei": true,
+     "hinweis": "Analoger Videosender (TX3/RX3) im Pad-Feld oben links"
+    },
+    {
+     "name": "UART4",
+     "frei": true,
+     "hinweis": "Pads RX4/TX4, frei für Zubehör"
+    },
+    {
+     "name": "UART5",
+     "frei": true,
+     "hinweis": "Pads RX5/TX5 rechts, frei für Zubehör"
+    },
+    {
+     "name": "UART6",
+     "frei": true,
+     "hinweis": "Digital-HD-VTX (RX6/TX6 neben SBUS und VBAT+)"
+    }
+   ],
+   "bec": [
+    "5V 2,5A"
+   ],
+   "anschluesse": {
+    "dji_stecker": false,
+    "leds_pad": true,
+    "buzzer_pad": true,
+    "gps_uart_empfehlung": null,
+    "kamera_pad": true
+   },
+   "kondensator_dabei": true,
+   "blackbox": "8 MB Flash",
+   "betaflight_target": "JHEF7DUAL",
+   "quelle": "https://rcdrone.top/de/products/jhemcu-ghf722aio-icm-flight-controller",
+   "quellen": [
+    "https://rcdrone.top/de/products/jhemcu-ghf722aio-icm-flight-controller",
+    "https://rcdrone.top/products/jhemcu-ghf722aio-icm-flight-controller",
+    "https://www.jhemcu.com/pic/other/2023-07-16-23-33-190.jpg"
+   ],
+   "unsicher": "Einzige Händlerquelle für die ICM-Variante ist RCDrone (Produkt dort ausverkauft); die HD-Variante GHF722AIO-HD hat andere Werte (16 MB, 5V+10V BEC, 7,8 g) und wurde nicht verwendet. Lochabstand \"25,5-26,5 mm\" (Platine 33x33 mm); 25,5 genommen. Betaflight-Target \"JHEF7DUAL\" nur aus der Firmware-Zeile (4.3.0 JHEF7DUAL.HEX). Die ESC-Werte (40 A, max 45 A) sind nicht als Dauer/Spitze getrennt benannt. Beilage: TVS-Board (bei 6S nötig) und Kondensator 470 uF 35 V. Plan: HD-VTX nur über Pads (kein Stecker); UART3/Kamera/Empfänger-Pads im Plan ohne eindeutige Einzelzuordnung."
+  }
+ ]
+}

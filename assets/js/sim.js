@@ -123,6 +123,17 @@ const CRAFTS = {
   five: { osd: '5 ZOLL', kat: '5zoll', short: '5 Zoll', tw: 9, kLin: .12, kQuad: .035, tauR: .018, alpha: 380, tauUp: .02, tauDn: .032, vp: 50, ge: .1, wash: 20,
     r: .11, rest: .3, mu: .3, crash: 12, tip: .4, roll: 2, cells: 6, idle: .05, climb: 5, demoV: 10.5, chase: [1.9, .62], camFwd: .07, shadow: .55, ghostS: .75 }
 };
+/* Eigenbau aus „Bau deine Drohne“ (bau.html): simulator.html?bau=1 übernimmt Schub zu Gewicht und Klasse.
+   Der Eigenbau ersetzt für diese Sitzung den Grund-Kopter (Whoop oder 5 Zoll); Zeiten zählen nicht für die Bestenliste. */
+const BAU = (() => { if (!/[?&]bau\b/.test(location.search)) return null; try { const o = JSON.parse(localStorage.getItem('fcs-bau-sim') || 'null'); return o && Number(o.tw) > 0 ? o : null; } catch (e) { return null; } })();
+if (BAU) {
+  const base = BAU.klasse === 'whoop' ? 'whoop' : 'five', C = CRAFTS[base];
+  C.tw = clamp(Number(BAU.tw), 1.4, 16); C.osd = 'EIGENBAU'; C.short = 'Eigenbau'; C.eigen = true;
+  if (BAU.zellen) C.cells = BAU.zellen;
+  if (BAU.klasse === 'cine') { C.kLin *= 1.7; C.kQuad *= 1.4; C.alpha *= .75; C.crash = 9; C.demoV = 7; }
+  if (BAU.klasse === 'seven') { C.kLin *= .85; C.alpha *= .7; C.tauUp *= 1.6; C.tauDn *= 1.6; C.demoV = 12; }
+  S.craft = base;
+}
 const CR = () => CRAFTS[S.craft];
 const thrustK = (m) => .4 * m + .6 * m * m;
 const invThrust = (x) => (-.4 + Math.sqrt(.16 + 2.4 * clamp(x, 0, 1))) / 1.2;
@@ -1038,7 +1049,7 @@ function init() {
     const realMs = performance.now() - R.real0, simMs = (simT - R.t0) * 1000;
     const kat = CR().kat, key = catKey(), prev = raceBest[key];
     const res = { total, best: bestLap, laps: R.laps.slice(), craft: S.craft, kat, mode: S.mode, input: inputName(), realOk: realMs <= simMs * 1.25 + 1500, d: new Date().toISOString(), prev: prev ? prev.ms : 0, ghost: '' };
-    res.plaus = total >= MIN_TOTAL[kat] && total <= MAX_TOTAL;
+    res.plaus = total >= MIN_TOTAL[kat] && total <= MAX_TOTAL && !CR().eigen;
     if (R.rec && R.rec.pos.length >= 6) run('Geist speichern', () => { res.ghost = ghostEncode(R.rec, total, S.craft); });
     res.pb = res.realOk && res.plaus && (!prev || total < prev.ms);
     if (res.pb) {
@@ -1079,6 +1090,7 @@ function init() {
     const res = R.res, box = $('[data-rr-up]', rres);
     const say = (h) => { box.innerHTML = `<p class="sim-up-note">${h}</p>`; };
     if (!res.realOk) return say('Dein Gerät kam beim Rechnen nicht hinterher oder der Simulator war kurz im Hintergrund. Darum zählt diese Zeit nicht für die Bestenliste.');
+    if (CR().eigen) return say('Mit deinem Eigenbau aus der Werkbank zählt die Zeit nicht für die Bestenliste. Für die Wertung den Vereins-Kopter wählen.');
     if (!res.plaus) return say('Diese Zeit ist unrealistisch schnell und wird nicht gewertet.');
     const pilot = getPilot();
     if (!res.pb) return say(res.prev ? 'Schlag deine Bestzeit, dann kannst du die neue Zeit eintragen.' : '');
@@ -1456,7 +1468,7 @@ function init() {
   function setMode(m) { if (raceLocked()) { lockMsg(); syncUI(); return; } S.mode = m; saveSettings(); applyMode(); flashMsg(m === 'acro' ? 'ACRO' : 'ANGLE', m === 'acro' ? 'warn' : 'good', 1); }
   function toggleMode() { setMode(S.mode === 'acro' ? 'angle' : 'acro'); }
   function toggleView() { S.view = S.view === 'fpv' ? 'chase' : 'fpv'; saveSettings(); applyView(); }
-  function toggleCraft() { if (raceLocked()) { lockMsg(); return; } S.craft = S.craft === 'whoop' ? 'five' : 'whoop'; saveSettings(); applyCraft(); }
+  function toggleCraft() { if (raceLocked()) { lockMsg(); return; } if (CR().eigen) { location.href = 'simulator.html'; return; } S.craft = S.craft === 'whoop' ? 'five' : 'whoop'; saveSettings(); applyCraft(); }
 
   function takeover(quiet) {
     if (!gl) return;
@@ -1464,6 +1476,7 @@ function init() {
     stage.classList.remove('is-demo'); stage.classList.add('is-live');
     cta.hidden = true;
     resetQuad(); simT = 0; race.laps = 0; race.last = 0;
+    if (CR().eigen) setTimeout(() => flashMsg('EIGENBAU · SCHUB ' + CR().tw.toFixed(1).replace('.', ',') + ' : 1', 'good', 3), 1600);
     if (IN.src === 'touch' || (COARSE && !FINE)) setTouch(true);
     if (!quiet && !R.on) showHelp();
   }
@@ -1814,7 +1827,7 @@ function init() {
     hn.innerHTML = helperOn() ? 'Schwebe-Hilfe ist an: Gas-Mitte hält die Höhe. Ohne Hilfe bräuchte dieser Kopter ungefähr <b>' + Math.round(hoverStick() * 100) + ' %</b> Gas zum Schweben.' : 'Schwebegas mit diesem Kopter: ungefähr <b>' + Math.round(hoverStick() * 100) + ' %</b>';
     $('[data-angle-box]', panel).hidden = S.mode !== 'angle';
     $('[data-mode-note]', panel).textContent = S.mode === 'angle' ? 'Angle: Der Stick gibt den Winkel vor, beim Loslassen richtet sich der Kopter gerade aus.' : 'Acro: Der Stick gibt die Drehrate vor. Der Kopter bleibt in jeder Lage, bis du gegensteuerst.';
-    $('[data-craft-note]', panel).textContent = S.craft === 'whoop' ? 'Tiny Whoop: leicht, mit Schutzringen, Schub etwa das 3,4-Fache seines Gewichts. Verzeiht Wandkontakte.' : '5 Zoll: Schub etwa das 9-Fache des Gewichts, sehr schnell, harte Treffer sind ein Crash.';
+    $('[data-craft-note]', panel).textContent = CR().eigen ? `Dein Eigenbau aus der Werkbank (${BAU.name || 'Bau deine Drohne'}): Schub etwa das ${String(CR().tw.toFixed(1)).replace('.', ',')}-Fache des Gewichts${BAU.gewicht ? ', ' + BAU.gewicht + ' g' : ''}. Zurück zum Vereins-Kopter über „Kopter“.` : S.craft === 'whoop' ? 'Tiny Whoop: leicht, mit Schutzringen, Schub etwa das 3,4-Fache seines Gewichts. Verzeiht Wandkontakte.' : '5 Zoll: Schub etwa das 9-Fache des Gewichts, sehr schnell, harte Treffer sind ein Crash.';
     maxRates();
   }
   panel.addEventListener('input', e => {
@@ -1857,7 +1870,7 @@ function init() {
     drawScore(); renderBest(); lbFollow(); if (R.on && R.phase === 'card') updateCard();
   }
   function applyCraft() {
-    syncUI(); $('[data-craft-t]', stage).textContent = S.craft === 'whoop' ? 'Whoop' : '5 Zoll';
+    syncUI(); $('[data-craft-t]', stage).textContent = CR().short;
     if (quadW) { quadW.visible = S.craft === 'whoop'; quadF.visible = S.craft === 'five'; }
     if (live) resetQuad();
     drawScore(); renderBest(); lbFollow(); if (R.on && R.phase === 'card') updateCard();

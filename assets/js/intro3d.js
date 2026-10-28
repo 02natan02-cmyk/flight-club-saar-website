@@ -73,7 +73,7 @@ function makeTrack(keys) {
 }
 
 /* C2-stetiger kubischer Spline durch Zeit-Stützpunkte (glatte Beschleunigung → ruhige Lage).
-   Anfang natürlich, Ende mit vorgegebener Geschwindigkeit endV (z. B. 0 = Stillstand). */
+   Anfang natürlich, Ende mit vorgegebener Geschwindigkeit endV (zum Beispiel 0 = Stillstand). */
 function makeSpline(keys, endV) {
   const n = keys.length, dim = keys[0].v.length, t = keys.map(k => k.t), M = [];
   for (let j = 0; j < dim; j++) {
@@ -865,7 +865,7 @@ async function buildScene(T, C) {
   function layout() {
     const W = stage.clientWidth || innerWidth, H = stage.clientHeight || innerHeight;
     const portrait = H >= W * 1.05;
-    // Logo: hochkant ca. 70 % der Breite, quer ca. die Hälfte der Höhe
+    // Logo: hochkant etwa 70 % der Breite, quer etwa die Hälfte der Höhe
     let d = portrait ? Math.min(W * 0.70, H * 0.47) : Math.min(W * 0.6, H * 0.5);
     // Titel einpassen (gemessen in der echten Schrift)
     const t1 = C.titleEl, t2 = C.subEl;

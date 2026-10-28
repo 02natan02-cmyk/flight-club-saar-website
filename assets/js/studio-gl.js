@@ -36,7 +36,7 @@ export const TRANS = {
   glitch:  { n: 'Glitch', d: .3 }
 };
 /* Übergänge ohne WebGL, mit 2D-Zeichnen (Export-Ersatz und Echtzeit-Weg). A/B: Quelle, ra/rb: [sx, sy, sw, sh] oder null,
-   tr: {type, p, seed}, base: Canvas-Filter des Looks ('none' oder z. B. 'contrast(1.1)') */
+   tr: {type, p, seed}, base: Canvas-Filter des Looks ('none' oder zum Beispiel 'contrast(1.1)') */
 export function tr2d(ctx, A, ra, B, rb, tr, W, H, base) {
   const d = (S, r, x, y, w, h) => { if (r) ctx.drawImage(S, r[0], r[1], r[2], r[3], x, y, w, h); else ctx.drawImage(S, x, y, w, h); };
   const f0 = base && base !== 'none' ? base : '', setF = extra => { if ('filter' in ctx) ctx.filter = (f0 + ' ' + (extra || '')).trim() || 'none'; };
@@ -212,7 +212,7 @@ export function compositor(canvas) {
     get lost() { return lost || gl.isContextLost(); },
     size(w, h) { w = Math.max(2, Math.round(w)); h = Math.max(2, Math.round(h)); if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; } gl.viewport(0, 0, w, h); },
     hasLut: () => !!lut,
-    /* .cube-Datei (3D-LUT) laden, z. B. die offizielle DJI-LUT. Nur WebGL 2. */
+    /* .cube-Datei (3D-LUT) laden, zum Beispiel die offizielle DJI-LUT. Nur WebGL 2. */
     lut(text) {
       if (!v2) return false;
       const lines = String(text).split(/\r?\n/); let n = 0; const vals = [];

@@ -16,7 +16,7 @@
   const media = () => load('studio-media.js'), glm = () => load('studio-gl.js'), cloud = () => load('studio-cloud.js');
 
   /* ===== Sticker: neue einfach als Zeile ergänzen =====
-     k = Schlüssel, n = Name, src = Datei, w = Startbreite (Anteil der Bildbreite), top = steht oben groß, typ 'osd' = Live-OSD, opt = Datei evtl. später */
+     k = Schlüssel, n = Name, src = Datei, w = Startbreite (Anteil der Bildbreite), top = steht oben groß, typ 'osd' = Live-OSD, opt = Datei eventuell später */
   const STICKER = [
     { k: 'logo', n: 'Vereinslogo', src: 'assets/img/sticker/vereinslogo.svg', w: .28, top: 1 },
     { k: 'ayedo', n: 'Ayedo-Logo', src: 'assets/img/partner/ayedo-logo.webp', w: .3, top: 1, opt: 1 },
@@ -212,7 +212,7 @@
     if (S.clips[S.sel] === c) { stageMsg(); strip(); seekView(); if (!c.demo && P.visible) play(); }
     if (c.file) selftest(c);
   }
-  /* Klare Meldung, wenn der Browser die Videospur nicht abspielt (z. B. HEVC 10 Bit in Chrome ohne passenden Grafikchip) */
+  /* Klare Meldung, wenn der Browser die Videospur nicht abspielt (zum Beispiel HEVC 10 Bit in Chrome ohne passenden Grafikchip) */
   function fmtLine(info) {
     if (!info || !info.ok) return '';
     const parts = [];
@@ -680,7 +680,7 @@
     if (c.glProbed || c.glBad || glOff || !GLM || !v || v.readyState < 2 || v.seeking || v.currentTime < .3) return;
     const k = k24(); k.fillStyle = '#000'; k.fillRect(0, 0, 24, 24);
     try { k.drawImage(v, 0, 0, 24, 24); } catch (e) { return; }
-    if (!nb(lum24(k))) return; // Video zeigt gerade selbst kein Bild (z. B. schwarzer Anfang): später noch einmal
+    if (!nb(lum24(k))) return; // Video zeigt gerade selbst kein Bild (zum Beispiel schwarzer Anfang): später noch einmal
     c.glProbed = true;
     if (!GLP) { const pc = document.createElement('canvas'); pc.width = 96; pc.height = 54; GLP = GLM.compositor(pc); if (!GLP.ok) { GLP = null; glOff = true; return; } }
     const T = window.FCS_STUDIO_TEST || {};
@@ -1553,7 +1553,7 @@
     const prog = $('#prog'), fillEl = $('#bat-fill'), pt = $('#prog-t'), eta = $('#prog-eta'), goBox = $('#st-go');
     prog.hidden = false; $('#res').hidden = true; if (goBox) goBox.hidden = true;
     const t0 = performance.now();
-    const set = (p, label) => { p = clamp(p, 0, 1); fillEl.style.transform = `scaleX(${p})`; pt.textContent = `${label || 'Wird gerechnet'} … ${Math.round(p * 100)} %`; const el = (performance.now() - t0) / 1000; eta.textContent = p > .03 ? 'noch ca. ' + tS(el / p - el) : ''; };
+    const set = (p, label) => { p = clamp(p, 0, 1); fillEl.style.transform = `scaleX(${p})`; pt.textContent = `${label || 'Wird gerechnet'} … ${Math.round(p * 100)} %`; const el = (performance.now() - t0) / 1000; eta.textContent = p > .03 ? 'noch etwa ' + tS(el / p - el) : ''; };
     set(0, 'Wird vorbereitet');
     if (!inView(prog)) go(prog, -200);
     const ctl = expCtl = new AbortController();
@@ -1677,8 +1677,8 @@
       return false;
     }
   }
-  // Handy-HDR-Videos (z. B. Samsung „HDR10+“) geben manche Browser nicht zum Rechnen frei: konkreter Tipp
-  function hdrTip(c) { const i = c && c.info; return i && (i.hdr || i.bits > 8) ? ' Tipp: Dein Clip ist HDR bzw. 10 Bit. Am Samsung in der Kamera unter Einstellungen › Erweiterte Videooptionen „HDR10+-Video“ ausschalten, dann klappt es künftig direkt am Handy.' : ''; }
+  // Handy-HDR-Videos (zum Beispiel Samsung „HDR10+“) geben manche Browser nicht zum Rechnen frei: konkreter Tipp
+  function hdrTip(c) { const i = c && c.info; return i && (i.hdr || i.bits > 8) ? ' Tipp: Dein Clip ist HDR beziehungsweise 10 Bit. Am Samsung in der Kamera unter Einstellungen › Erweiterte Videooptionen „HDR10+-Video“ ausschalten, dann klappt es künftig direkt am Handy.' : ''; }
   function flatErr(c, stage, L) { const e = new Error('flach'); e.clip = c; e.stage = stage; e.L = L; return e; }
   function failMsg(t) {
     const why = $('#st-why'); if (!why) return; why.classList.add('bad');
@@ -1835,7 +1835,7 @@
       const btn = k => q(`[data-u="${k}"]`);
       const show = (...ks) => ['pause', 'go', 'again', 'stop'].forEach(k => { btn(k).hidden = !ks.includes(k); });
       up.on = (ev, d) => {
-        if (ev === 'progress') { const p = d.total ? d.sent / d.total : 0; bar.firstChild.style.transform = `scaleX(${p})`; bar.setAttribute('aria-valuenow', Math.round(p * 100)); mb.textContent = `${MB(d.sent)} von ${MB(d.total)}`; eta.textContent = d.bps > 1000 ? `${MB(d.bps)}/s · noch ca. ${tS((d.total - d.sent) / d.bps)}` : ''; }
+        if (ev === 'progress') { const p = d.total ? d.sent / d.total : 0; bar.firstChild.style.transform = `scaleX(${p})`; bar.setAttribute('aria-valuenow', Math.round(p * 100)); mb.textContent = `${MB(d.sent)} von ${MB(d.total)}`; eta.textContent = d.bps > 1000 ? `${MB(d.bps)}/s · noch etwa ${tS((d.total - d.sent) / d.bps)}` : ''; }
         else if (ev === 'retry') { st.textContent = `Verbindung hakt, Versuch ${d.n} von 5 …`; }
         else if (ev === 'phase') {
           er.hidden = true;
@@ -2222,7 +2222,7 @@
       g.luma(); g.size(w0, h0);
     } catch (e) {}
   }
-  /* Schutz vor Auslesen (z. B. Samsung Internet „Smart Anti-Tracking“, Fingerprinting-Schutz): ein bekanntes Muster zeichnen und
+  /* Schutz vor Auslesen (zum Beispiel Samsung Internet „Smart Anti-Tracking“, Fingerprinting-Schutz): ein bekanntes Muster zeichnen und
      zurücklesen (2D und WebGL). Stimmt es nicht, sagen alle Pixel-Prüfungen nichts aus: dann keine Leer-Prüfungen, kein WebGL,
      Looks per CSS und Export in Echtzeit über MediaRecorder. */
   function readLockTest() {
@@ -2248,7 +2248,7 @@
     const why = $('#st-why'); if (!why || !S.locked) return;
     const bn = isSamsung() ? 'Samsung Internet' : 'Dein Browser';
     why.classList.remove('bad'); why.classList.add('lock');
-    why.innerHTML = `${esc(bn)} schützt Bilder vor dem Auslesen. Das Studio nimmt dein Video deshalb in Echtzeit auf (dauert so lange wie das Video). Wird es leer, öffne die Seite in Chrome oder schalte in ${isSamsung() ? 'Samsung Internet unter Einstellungen › Datenschutz „Smart Anti-Tracking“ bzw. den Fingerprinting-Schutz' : 'den Einstellungen den Fingerprinting-Schutz'} für diese Seite aus.${/Android/i.test(navigator.userAgent) ? ` <a class="btn ghost" id="st-chrome" href="${esc(chromeIntent())}">In Chrome öffnen</a>` : ''}`;
+    why.innerHTML = `${esc(bn)} schützt Bilder vor dem Auslesen. Das Studio nimmt dein Video deshalb in Echtzeit auf (dauert so lange wie das Video). Wird es leer, öffne die Seite in Chrome oder schalte in ${isSamsung() ? 'Samsung Internet unter Einstellungen › Datenschutz „Smart Anti-Tracking“ beziehungsweise den Fingerprinting-Schutz' : 'den Einstellungen den Fingerprinting-Schutz'} für diese Seite aus.${/Android/i.test(navigator.userAgent) ? ` <a class="btn ghost" id="st-chrome" href="${esc(chromeIntent())}">In Chrome öffnen</a>` : ''}`;
   }
   function studio() {
     stage = $('#st-stage'); wrap = $('#st-wrap'); layer = $('#st-layer'); vids = $('#st-vids'); ovc = $('#st-cv'); glc = $('#st-gl');
@@ -2273,7 +2273,7 @@
     setStep(1, true); goState(); steps(); sumLine(); pendingUploads(); syncUp();
     // Diagnose für Tests auf echten Geräten: in der Konsole  await FCS.studioStatus()  aufrufen
     if (window.FCS) FCS.studioStatus = async () => {
-      const WEG = { draw: 'WebCodecs direkt (Grafikchip)', cpu: 'WebCodecs über den Arbeitsspeicher (sicherer Weg)', copy: 'WebCodecs über RGBA-Kopie in sRGB (sicherer Weg)', raw: 'WebCodecs-Rohdaten, eigene Umrechnung inkl. HDR → SDR (sicherster Weg)', sw: 'WebCodecs mit Software-Dekoder (sicherer Weg)', element: 'Echtzeit über das Video-Element' };
+      const WEG = { draw: 'WebCodecs direkt (Grafikchip)', cpu: 'WebCodecs über den Arbeitsspeicher (sicherer Weg)', copy: 'WebCodecs über RGBA-Kopie in sRGB (sicherer Weg)', raw: 'WebCodecs-Rohdaten, eigene Umrechnung inklusive HDR → SDR (sicherster Weg)', sw: 'WebCodecs mit Software-Dekoder (sicherer Weg)', element: 'Echtzeit über das Video-Element' };
       const mx = a => a ? a.map(l => l ? `${Math.round(l.max)}${nb(l) ? '' : (l.max >= 8 ? ' einfarbig' : ' schwarz')}` : '-').join(' / ') : 'nicht getestet';
       const clips = S.clips.map((c, i) => ({ nr: i + 1, datei: c.name, format: c.info && c.info.ok ? fmtLine(c.info) : (c.info && c.info.err) || 'Beispielclip', zustand: { ok: 'spielt', nicht: 'Browser spielt die Videospur nicht', nurExport: 'nur Export (Standbild-Vorschau)', laden: 'lädt' }[c.state] || c.state,
         selbsttest_hellste_pixel: `Element ${mx(c.elSamples)} · Grafikchip ${mx(c.lum.draw)} · Arbeitsspeicher ${mx(c.lum.cpu)} · Kopie ${mx(c.lum.copy)} · Rohdaten ${mx(c.lum.raw)} · Software ${mx(c.lum.sw)}`, bild: c.ref === true ? 'Bild vorhanden' : c.ref === false ? 'nur leere Fläche, Export gesperrt' : 'noch offen',
@@ -2298,7 +2298,7 @@
   function leaveUI() {
     const b = $('#st-leave-b');
     if (b) b.addEventListener('click', () => { S.left = true; pause(); workMode(); const r = $('#ratgeber'); if (r) requestAnimationFrame(() => go(r)); });
-    // Ein Link in den ausgeblendeten Ratgeber (z. B. „Musik“, „Posten“) beendet den Arbeitsmodus zuerst
+    // Ein Link in den ausgeblendeten Ratgeber (zum Beispiel „Musik“, „Posten“) beendet den Arbeitsmodus zuerst
     document.addEventListener('click', e => {
       const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a || !document.body.classList.contains('st-work')) return;
       let t = null; try { t = $(a.getAttribute('href')); } catch (er) {}

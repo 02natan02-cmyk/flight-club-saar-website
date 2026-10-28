@@ -48,7 +48,7 @@ export async function probe(file) {
   return o;
 }
 
-/* ---------- Bild zeichnen: mehrere Wege, weil manche Handys (z. B. Samsung mit HEVC oder HDR) auf dem
+/* ---------- Bild zeichnen: mehrere Wege, weil manche Handys (zum Beispiel Samsung mit HEVC oder HDR) auf dem
    Grafikchip-Canvas eine leere Fläche statt des Bildes liefern.
    'draw' = direkt auf den Grafikchip-Canvas · 'cpu' = auf einen Canvas im Arbeitsspeicher
    'copy' = über eine RGBA-Kopie in sRGB (rechnet HDR und 10 Bit auf normales SDR um) · 'sw' = Software-Dekoder ---------- */
@@ -177,7 +177,7 @@ export async function thumbs(file, times, w, h, mode, onThumb) {
 const audioCache = new Map();
 export async function hasAudio(file) { try { return !!(await inp(file).getPrimaryAudioTrack()); } catch (e) { return false; } }
 /* Ton eines Zeitbereichs als AudioBuffer. Weg 1: WebCodecs-AudioDecoder. Weg 2: Tonspur ohne Neukodieren
-   in eine kleine Datei umpacken und vom Browser dekodieren lassen (z. B. ältere Safari-Versionen). */
+   in eine kleine Datei umpacken und vom Browser dekodieren lassen (zum Beispiel ältere Safari-Versionen). */
 export async function clipAudio(file, a, b) {
   const i = inp(file); let t = null;
   try { t = await i.getPrimaryAudioTrack(); } catch (e) {}
@@ -304,7 +304,7 @@ function blobTarget() {
 
 /* ---------- Export ----------
    job: { W, H, fps, frames, vc, ac, fmt ('mp4'|'mov'), bitrate,
-          segs: [{ file, mode, f0, f1, times: Float64Array (Quellzeit je Ausgabebild, inkl. Nachlauf für den Übergang), crop }],
+          segs: [{ file, mode, f0, f1, times: Float64Array (Quellzeit je Ausgabebild, inklusive Nachlauf für den Übergang), crop }],
           cuts: [{ f, d, type }] (Übergang beim Bild f zur Szene i, d Bilder lang),
           look: {id, k}, fadeFrames, gl (Compositor auf einem Canvas W×H) | null, cssLook(id,k) für den 2D-Ersatz,
           overlay(ctx, t), audio: AudioBuffer | null, signal: AbortSignal }
