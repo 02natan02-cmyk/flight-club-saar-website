@@ -1,0 +1,501 @@
+{
+ "schema_version": 1,
+ "hinweis": "Lage der Lötpads, nachgezeichnet aus den offiziellen Anschlussplänen der Hersteller. Koordinaten relativ zur Platinenbreite (0 = linke bzw. obere Kante, 1 = rechte Kante). Ansicht von oben, Pfeil (Flugrichtung) zeigt nach oben. Buchsen der Unterseite in Draufsicht-Koordinaten (gespiegelt), Pin-Reihenfolge wie im Herstellerplan.",
+ "platinen": [
+  {
+   "id": "mamba-f405-mk4-mini",
+   "name": "Diatone Mamba F405 MK4 Mini (20x20)",
+   "match": "mamba.*f405.*(mk4|mini)|mk4.*f405.*mamba|mamba f405 ?mini",
+   "quelle": "https://cdn.shopifycdn.net/s/files/1/0027/2708/4144/files/MK4F405MINI_42688P_-01_21580dd8-0527-45c0-8365-09ccc439fb83.jpg",
+   "h": 1.0,
+   "farbe": "#46473f",
+   "loecher": [
+    [
+     0.111,
+     0.111
+    ],
+    [
+     0.889,
+     0.111
+    ],
+    [
+     0.111,
+     0.889
+    ],
+    [
+     0.889,
+     0.889
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.827,
+     "y": 0.413,
+     "w": 0.204,
+     "h": 0.328
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.525,
+     "y": 0.579
+    },
+    {
+     "typ": "knopf",
+     "x": 0.049,
+     "y": 0.642,
+     "lab": "BOOT"
+    }
+   ],
+   "pads": [
+    {
+     "n": "VCC",
+     "x": 0.272,
+     "y": 0.038,
+     "g": "strom",
+     "id": "VCC_O"
+    },
+    {
+     "n": "5V",
+     "x": 0.359,
+     "y": 0.038,
+     "g": "strom",
+     "id": "5V_O"
+    },
+    {
+     "n": "GND",
+     "x": 0.442,
+     "y": 0.038,
+     "g": "gnd",
+     "id": "GND_O"
+    },
+    {
+     "n": "CAM",
+     "x": 0.525,
+     "y": 0.038,
+     "g": "video"
+    },
+    {
+     "n": "S5",
+     "x": 0.608,
+     "y": 0.038
+    },
+    {
+     "n": "S6",
+     "x": 0.69,
+     "y": 0.038
+    },
+    {
+     "n": "3.3V",
+     "x": 0.045,
+     "y": 0.267,
+     "g": "strom"
+    },
+    {
+     "n": "5V",
+     "x": 0.045,
+     "y": 0.364,
+     "g": "strom",
+     "id": "5V_L"
+    },
+    {
+     "n": "GND",
+     "x": 0.045,
+     "y": 0.456,
+     "g": "gnd",
+     "id": "GND_L"
+    },
+    {
+     "n": "RX1",
+     "x": 0.045,
+     "y": 0.551,
+     "uart": 1
+    },
+    {
+     "n": "TX1",
+     "x": 0.045,
+     "y": 0.643,
+     "uart": 1
+    },
+    {
+     "n": "TX5",
+     "x": 0.045,
+     "y": 0.738,
+     "uart": 5,
+     "lab": "S/F.PORT"
+    },
+    {
+     "n": "5V",
+     "x": 0.137,
+     "y": 0.284,
+     "g": "strom",
+     "id": "5V_I"
+    },
+    {
+     "n": "GND",
+     "x": 0.137,
+     "y": 0.371,
+     "g": "gnd",
+     "id": "GND_I"
+    },
+    {
+     "n": "TX2",
+     "x": 0.137,
+     "y": 0.456,
+     "uart": 2
+    },
+    {
+     "n": "RX2",
+     "x": 0.137,
+     "y": 0.544,
+     "uart": 2
+    },
+    {
+     "n": "SCL",
+     "x": 0.137,
+     "y": 0.629
+    },
+    {
+     "n": "SDA",
+     "x": 0.137,
+     "y": 0.716
+    },
+    {
+     "n": "5V",
+     "x": 0.965,
+     "y": 0.222,
+     "g": "strom",
+     "id": "5V_R"
+    },
+    {
+     "n": "GND",
+     "x": 0.965,
+     "y": 0.298,
+     "g": "gnd",
+     "id": "GND_R"
+    },
+    {
+     "n": "LED",
+     "x": 0.965,
+     "y": 0.374
+    },
+    {
+     "n": "BZ+",
+     "x": 0.868,
+     "y": 0.298,
+     "lab": "BUZ+"
+    },
+    {
+     "n": "BZ-",
+     "x": 0.868,
+     "y": 0.374,
+     "lab": "BUZ-"
+    },
+    {
+     "n": "9V/VCC",
+     "x": 0.208,
+     "y": 0.966,
+     "g": "strom",
+     "id": "9V_VTX",
+     "lab": "VCC/9V"
+    },
+    {
+     "n": "GND",
+     "x": 0.293,
+     "y": 0.966,
+     "g": "gnd",
+     "id": "GND_U1"
+    },
+    {
+     "n": "TX3",
+     "x": 0.376,
+     "y": 0.966,
+     "uart": 3
+    },
+    {
+     "n": "VTX",
+     "x": 0.459,
+     "y": 0.966,
+     "g": "video"
+    },
+    {
+     "n": "5V",
+     "x": 0.541,
+     "y": 0.966,
+     "g": "strom",
+     "id": "5V_U"
+    },
+    {
+     "n": "GND",
+     "x": 0.624,
+     "y": 0.966,
+     "g": "gnd",
+     "id": "GND_U2"
+    },
+    {
+     "n": "TX4",
+     "x": 0.707,
+     "y": 0.966,
+     "uart": 4
+    },
+    {
+     "n": "RX4",
+     "x": 0.794,
+     "y": 0.966,
+     "uart": 4
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "DJI",
+      "lab": "DJI-Buchse (SH 1,0, 6-polig)",
+      "x": 0.42,
+      "y": 0.9,
+      "w": 0.3,
+      "h": 0.19,
+      "pins": [
+       "9V/VCC",
+       "GND",
+       "TX3",
+       "RX3",
+       "GND",
+       "SBUS (RX1)"
+      ]
+     },
+     {
+      "n": "ESC",
+      "lab": "ESC-Buchse (8-polig)",
+      "x": 0.5,
+      "y": 0.096,
+      "w": 0.385,
+      "h": 0.19,
+      "pins": [
+       "CURR",
+       "RX6",
+       "S4",
+       "S3",
+       "S2",
+       "S1",
+       "VCC",
+       "GND"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 1,
+     "pads": {
+      "TX": "RX1",
+      "RX": "TX1",
+      "5V": "5V_L",
+      "GND": "GND_L"
+     },
+     "text": "TBS Crossfire Nano im Diatone-Plan: CH1 an RX1, CH2 an TX1, 5V und GND links. SBUS-Empfänger: SBUS an RX1, S.Port an S/F.PORT (UART5) – SBUS und F.Port nicht gleichzeitig."
+    },
+    "gps": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "5V_I",
+      "GND": "GND_I"
+     }
+    },
+    "kamera": {
+     "pads": {
+      "Video": "CAM",
+      "Plus": "5V_O",
+      "Masse": "GND_O"
+     },
+     "text": "Im Plan geht das Plus der Kamera (5–36 V) an das 5V-Pad oben."
+    },
+    "vtx_analog": {
+     "uart": 3,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "5V_U",
+      "Masse": "GND_U1",
+      "SmartAudio": "TX3"
+     },
+     "text": "Im Plan TX500/Ultra Tiny: VIDEO-IN an VTX, DATA (IRC) an TX3, 5V-IN an 5V unten."
+    },
+    "digital": {
+     "uart": 3,
+     "buchse": "DJI",
+     "pads": {
+      "Plus": "9V_VTX",
+      "Masse": "GND_U1",
+      "RX": "TX3"
+     },
+     "text": "DJI O3: Kabel in die DJI-Buchse auf der Unterseite. Spannung am Lötjumper neben der Buchse wählen: VCC für 3–4S, 9V für 6S. Der VCC/9V-Ausgang ist über USER1 (PINIO) schaltbar. Ohne DJI-Fernsteuerung die SBUS-Leitung (RX1) abtrennen. RX3 gibt es nur an der Buchse, nicht als Lötpad."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_R",
+      "GND": "GND_R",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "BZ+",
+      "Minus": "BZ-"
+     }
+    }
+   },
+   "esc": {
+    "name": "Diatone Mamba F30 Mini / F40 BLS Mini ESC",
+    "h": 0.963,
+    "farbe": "#1d1d1d",
+    "loecher": [
+     [
+      0.851,
+      0.107
+     ],
+     [
+      0.851,
+      0.806
+     ],
+     [
+      0.152,
+      0.107
+     ],
+     [
+      0.152,
+      0.806
+     ]
+    ],
+    "teile": [
+     {
+      "typ": "stecker",
+      "x": 0.315,
+      "y": -0.03,
+      "w": 0.37,
+      "h": 0.05,
+      "lab": "8-polig zum FC",
+      "pins": [
+       "CURR",
+       "TELE",
+       "S4",
+       "S3",
+       "S2",
+       "S1",
+       "VCC",
+       "GND"
+      ]
+     },
+     {
+      "typ": "kondensator",
+      "x": 0.5,
+      "y": 1.0,
+      "lab": "35 V 470 µF an BAT+/BAT−"
+     }
+    ],
+    "pads": [
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.152,
+      "id": "M2_1",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.272,
+      "id": "M2_2",
+      "g": "motor"
+     },
+     {
+      "n": "M2",
+      "x": 0.966,
+      "y": 0.396,
+      "id": "M2_3",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.517,
+      "id": "M1_1",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.64,
+      "id": "M1_2",
+      "g": "motor"
+     },
+     {
+      "n": "M1",
+      "x": 0.966,
+      "y": 0.761,
+      "id": "M1_3",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.152,
+      "id": "M4_1",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.272,
+      "id": "M4_2",
+      "g": "motor"
+     },
+     {
+      "n": "M4",
+      "x": 0.034,
+      "y": 0.396,
+      "id": "M4_3",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.517,
+      "id": "M3_1",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.64,
+      "id": "M3_2",
+      "g": "motor"
+     },
+     {
+      "n": "M3",
+      "x": 0.034,
+      "y": 0.761,
+      "id": "M3_3",
+      "g": "motor"
+     },
+     {
+      "n": "BAT+",
+      "x": 0.385,
+      "y": 0.919,
+      "g": "strom",
+      "lab": "+"
+     },
+     {
+      "n": "BAT-",
+      "x": 0.612,
+      "y": 0.919,
+      "g": "gnd",
+      "lab": "−"
+     }
+    ],
+    "unsicher": "Im Herstellerplan ist der ESC um 90 Grad gedreht gezeichnet (Stecker links). Hier im Uhrzeigersinn gedreht, damit Motor 1 hinten rechts, 2 vorne rechts, 3 hinten links, 4 vorne links liegt (Betaflight-Standard) – passt zur Motorgrafik im Plan. Akkupads ragen über den Rand, daher h > Platinenkörper."
+   },
+   "unsicher": "Pads per Farberkennung aus dem Plan vermessen (±0,005). USB-Umriss inklusive Statusanzeige-Kasten aus dem Plan, Lage der BOOT-Taste aus der Unterseitenansicht gespiegelt. Pad S/F.PORT laut Spezifikation UART5 (F.Port) – als TX5 eingetragen, Beschriftung im Plan nur S/F.PORT."
+  }
+ ]
+}

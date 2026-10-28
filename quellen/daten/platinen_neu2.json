@@ -1,0 +1,430 @@
+{
+ "platinen": [
+  {
+   "id": "matek-f722-se",
+   "name": "Matek F722-SE",
+   "match": "matek.*f722[- ]?se\\b|f722[- ]?se.*matek",
+   "quelle": "https://www.mateksys.com/wp-content/uploads/2018/11/F722SE-1_layout.jpg",
+   "h": 0.804,
+   "farbe": "#16181d",
+   "loecher": [
+    [
+     0.061,
+     0.061
+    ],
+    [
+     0.739,
+     0.061
+    ],
+    [
+     0.061,
+     0.743
+    ],
+    [
+     0.739,
+     0.743
+    ]
+   ],
+   "teile": [
+    {
+     "typ": "usb",
+     "x": 0.0,
+     "y": 0.373,
+     "w": 0.089,
+     "h": 0.174
+    },
+    {
+     "typ": "knopf",
+     "x": 0.024,
+     "y": 0.311,
+     "lab": "DFU"
+    },
+    {
+     "typ": "pfeil",
+     "x": 0.634,
+     "y": 0.227
+    },
+    {
+     "typ": "chip",
+     "x": 0.333,
+     "y": 0.303,
+     "w": 0.196,
+     "h": 0.202,
+     "lab": "STM32F722"
+    }
+   ],
+   "pads": [
+    {
+     "n": "5V",
+     "x": 0.259,
+     "y": 0.032,
+     "g": "strom",
+     "id": "5V_O"
+    },
+    {
+     "n": "G",
+     "x": 0.315,
+     "y": 0.032,
+     "g": "gnd",
+     "id": "G_O"
+    },
+    {
+     "n": "C1",
+     "x": 0.372,
+     "y": 0.033,
+     "g": "video",
+     "lab": "C1 (Kamera 1)"
+    },
+    {
+     "n": "C2",
+     "x": 0.427,
+     "y": 0.033,
+     "g": "video",
+     "lab": "C2 (Kamera 2)"
+    },
+    {
+     "n": "RX4",
+     "x": 0.485,
+     "y": 0.033,
+     "uart": 4
+    },
+    {
+     "n": "TX4",
+     "x": 0.542,
+     "y": 0.033,
+     "uart": 4
+    },
+    {
+     "n": "Vbat",
+     "x": 0.259,
+     "y": 0.092,
+     "g": "strom"
+    },
+    {
+     "n": "Gnd",
+     "x": 0.315,
+     "y": 0.092,
+     "g": "gnd",
+     "id": "G_VTX"
+    },
+    {
+     "n": "VTX",
+     "x": 0.371,
+     "y": 0.092,
+     "g": "video"
+    },
+    {
+     "n": "G",
+     "x": 0.429,
+     "y": 0.092,
+     "g": "gnd",
+     "id": "G_O2"
+    },
+    {
+     "n": "RX3",
+     "x": 0.484,
+     "y": 0.092,
+     "uart": 3
+    },
+    {
+     "n": "TX3",
+     "x": 0.541,
+     "y": 0.092,
+     "uart": 3
+    },
+    {
+     "n": "S4",
+     "x": 0.174,
+     "y": 0.136
+    },
+    {
+     "n": "RX6",
+     "x": 0.131,
+     "y": 0.176,
+     "uart": 6,
+     "id": "RX6_OL"
+    },
+    {
+     "n": "RX6",
+     "x": 0.628,
+     "y": 0.133,
+     "uart": 6,
+     "id": "RX6_OR"
+    },
+    {
+     "n": "S2",
+     "x": 0.669,
+     "y": 0.176
+    },
+    {
+     "n": "S3",
+     "x": 0.131,
+     "y": 0.64
+    },
+    {
+     "n": "RX6",
+     "x": 0.181,
+     "y": 0.661,
+     "uart": 6,
+     "id": "RX6_UL"
+    },
+    {
+     "n": "RX6",
+     "x": 0.669,
+     "y": 0.629,
+     "uart": 6,
+     "id": "RX6_UR"
+    },
+    {
+     "n": "S1",
+     "x": 0.627,
+     "y": 0.671
+    },
+    {
+     "n": "Curr",
+     "x": 0.694,
+     "y": 0.277
+    },
+    {
+     "n": "TX6",
+     "x": 0.242,
+     "y": 0.515,
+     "uart": 6
+    },
+    {
+     "n": "3V3",
+     "x": 0.591,
+     "y": 0.612,
+     "g": "strom"
+    },
+    {
+     "n": "S5",
+     "x": 0.259,
+     "y": 0.591
+    },
+    {
+     "n": "S6",
+     "x": 0.315,
+     "y": 0.591
+    },
+    {
+     "n": "S7",
+     "x": 0.259,
+     "y": 0.653
+    },
+    {
+     "n": "S8",
+     "x": 0.315,
+     "y": 0.653
+    },
+    {
+     "n": "RX1",
+     "x": 0.372,
+     "y": 0.653,
+     "uart": 1
+    },
+    {
+     "n": "TX1",
+     "x": 0.429,
+     "y": 0.653,
+     "uart": 1
+    },
+    {
+     "n": "CL",
+     "x": 0.485,
+     "y": 0.653,
+     "lab": "SCL"
+    },
+    {
+     "n": "DA",
+     "x": 0.541,
+     "y": 0.653,
+     "lab": "SDA"
+    },
+    {
+     "n": "G",
+     "x": 0.26,
+     "y": 0.714,
+     "g": "gnd",
+     "id": "G_U1"
+    },
+    {
+     "n": "5V",
+     "x": 0.315,
+     "y": 0.714,
+     "g": "strom",
+     "id": "5V_U1"
+    },
+    {
+     "n": "LED",
+     "x": 0.372,
+     "y": 0.714
+    },
+    {
+     "n": "TX2",
+     "x": 0.429,
+     "y": 0.714,
+     "uart": 2
+    },
+    {
+     "n": "4V5",
+     "x": 0.485,
+     "y": 0.714,
+     "g": "strom",
+     "id": "4V5_U1"
+    },
+    {
+     "n": "G",
+     "x": 0.541,
+     "y": 0.714,
+     "g": "gnd",
+     "id": "G_U2"
+    },
+    {
+     "n": "G",
+     "x": 0.259,
+     "y": 0.773,
+     "g": "gnd",
+     "id": "G_U3"
+    },
+    {
+     "n": "5V",
+     "x": 0.315,
+     "y": 0.773,
+     "g": "strom",
+     "id": "5V_U2"
+    },
+    {
+     "n": "Bz-",
+     "x": 0.372,
+     "y": 0.773,
+     "lab": "BZ-"
+    },
+    {
+     "n": "RX2",
+     "x": 0.429,
+     "y": 0.773,
+     "uart": 2
+    },
+    {
+     "n": "4V5",
+     "x": 0.485,
+     "y": 0.773,
+     "g": "strom",
+     "id": "4V5_U2"
+    },
+    {
+     "n": "G",
+     "x": 0.542,
+     "y": 0.773,
+     "g": "gnd",
+     "id": "G_U4"
+    },
+    {
+     "n": "BAT+",
+     "x": 0.951,
+     "y": 0.509,
+     "g": "strom",
+     "lab": "+ LiPo 2–8S"
+    },
+    {
+     "n": "BAT-",
+     "x": 0.951,
+     "y": 0.297,
+     "g": "gnd",
+     "lab": "− LiPo"
+    }
+   ],
+   "unterseite": {
+    "buchsen": [
+     {
+      "n": "ESC",
+      "lab": "4in1-ESC-Lötpads (Unterseite, G/S1–S4)",
+      "x": 0.468,
+      "y": 0.34,
+      "w": 0.033,
+      "h": 0.234,
+      "pins": [
+       "S4",
+       "S3",
+       "S2",
+       "S1",
+       "G"
+      ]
+     },
+     {
+      "n": "RSSI_PA4",
+      "lab": "RSSI und PA4 (Unterseite)",
+      "x": 0.538,
+      "y": 0.252,
+      "w": 0.144,
+      "h": 0.425,
+      "pins": [
+       "PA4",
+       "RSSI"
+      ]
+     }
+    ]
+   },
+   "rollen": {
+    "empfaenger": {
+     "uart": 2,
+     "pads": {
+      "TX": "RX2",
+      "RX": "TX2",
+      "5V": "4V5_U2",
+      "GND": "G_U4"
+     },
+     "text": "Empfänger an UART2 (RX2 ist bei Matek der Standard für Serial RX), Plus an 4V5, so zeigt es der Matek-Anschlussplan"
+    },
+    "gps": {
+     "uart": 1,
+     "pads": {
+      "TX": "RX1",
+      "RX": "TX1",
+      "5V": "4V5_U1",
+      "GND": "G_U2",
+      "SDA": "DA",
+      "SCL": "CL"
+     },
+     "text": "GPS (M8Q-5883) an UART1, Kompass an DA/CL"
+    },
+    "kamera": {
+     "pads": {
+      "Video": "C1",
+      "Plus": "5V_O",
+      "Masse": "G_O"
+     },
+     "text": "Kamera 1 an C1, eine zweite Kamera an C2 (Umschalten über PINIO2)"
+    },
+    "vtx_analog": {
+     "uart": 3,
+     "pads": {
+      "Video": "VTX",
+      "Plus": "Vbat",
+      "Masse": "G_VTX",
+      "SmartAudio": "TX3"
+     },
+     "text": "VTX an Vbat (gefiltert, max. 1 A), Tramp/SmartAudio an TX3"
+    },
+    "digital": {
+     "unsicher": "Der Matek-Anschlussplan der F722-SE zeigt keinen Digital-VTX und die Platine hat keine DJI-Buchse; Belegung nicht vom Hersteller vorgegeben."
+    },
+    "led": {
+     "pads": {
+      "5V": "5V_U1",
+      "GND": "G_U1",
+      "DIN": "LED"
+     }
+    },
+    "buzzer": {
+     "pads": {
+      "Plus": "5V_U2",
+      "Minus": "Bz-"
+     }
+    }
+   },
+   "unsicher": "Breite 1 = ganze Platine einschließlich der Akku-Lötfahnen rechts (ca. 46 mm), quadratischer Teil 36 mm. Pads der Unterseite (4in1-ESC, RSSI, PA4) gespiegelt auf die Draufsicht umgerechnet."
+  }
+ ]
+}
