@@ -28,7 +28,7 @@ FCS.data = {
   hallen: {},
   termine: [],
   zeit: { von: '18:00', bis: '21:00' },
-  hallenBeitrag: 'bisher 10 € pro Abend',
+  hallenBeitrag: 'ein kleiner Beitrag pro Abend, Infos in der WhatsApp-Gruppe',
   // Crew 2026: Mitglieder mit Beitrag 2026 (Stand Kassenbuch 21.10.2026) + Vorstand.
   // Datenschutz: ok:1 = Einwilligung liegt vor (stand schon auf der alten Vereinsseite, Natan 24.10.2026). Ohne ok erscheint nur die Anzahl.
   // Jugendliche nur mit Pilotennamen.

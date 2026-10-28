@@ -136,7 +136,7 @@
         <div class="ml-txt"><h3 class="h3">${t || 'Nur für Mitglieder'}</h3><p>${x || 'Mit deinem Mitgliedscode siehst du alles.'}</p></div>
         <form class="ml-form" novalidate><label for="ml-c${i}">Dein Mitgliedscode</label><div class="ml-row"><input id="ml-c${i}" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code vom Vorstand" required><button class="btn amber solid" type="submit">Freischalten</button></div>
         <p class="ml-err" role="alert" hidden></p></form>
-        <p class="ml-alt">Noch kein Mitglied? <a href="mitglied.html">Mitglied werden</a>${wa ? ` · Code vergessen? <a href="https://wa.me/${wa}?text=${encodeURIComponent('Hallo, ich bin Mitglied im Flight Club Saar und brauche meinen Mitgliedscode für die Website.')}" target="_blank" rel="noopener">Vorstand fragen</a>` : ''}</p>
+        <p class="ml-alt">Noch kein Mitglied? <a href="mitglied.html">Mitglied werden</a> · <button type="button" class="linkbtn" data-kontakt>Erstmal Kontakt aufnehmen</button>${wa ? ` · Code vergessen? <a href="https://wa.me/${wa}?text=${encodeURIComponent('Hallo, ich bin Mitglied im Flight Club Saar und brauche meinen Mitgliedscode für die Website.')}" target="_blank" rel="noopener">Vorstand fragen</a>` : ''}</p>
       </div>`;
       const f = $('form', el), inp = $('input', f), err = $('.ml-err', f), btn = $('button', f);
       f.addEventListener('submit', async e => {
@@ -156,7 +156,7 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    film(); loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    film(); kontaktUI(); loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 
@@ -194,6 +194,42 @@
     // stummer Vorgeschmack im Hintergrund, bis jemand auf Play drückt
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
     setTimeout(() => box.querySelector('.film-play').focus({ preventScroll: true }), 60);
+  }
+
+
+  /* ---------- Kontakt: „Erstmal Kontakt aufnehmen“ gleichwertig neben „Mitglied werden“ (Natan 28.10. 23:32) ---------- */
+  function kontaktUI() {
+    const K = (D.kontakte || []).filter(k => k.wa);
+    const dlg = document.createElement('dialog'); dlg.className = 'ml-dlg kt-dlg'; dlg.setAttribute('aria-labelledby', 'kt-h');
+    const wa = (k) => `https://wa.me/${k.wa}?text=${encodeURIComponent('Hallo ' + k.name + ', ich habe eine Frage zum Flight Club Saar: ')}`;
+    dlg.innerHTML = `<button class="ml-x" type="button" aria-label="Schließen">×</button>
+      <div class="kt-box">
+        <p class="hud kt-kick">Unverbindlich und kostenlos</p>
+        <h3 class="h3" id="kt-h">Erstmal Kontakt aufnehmen</h3>
+        <p class="kt-p">Frag uns einfach: Hallenfliegen, deine erste Drohne, Technik oder wie der Verein tickt. Mitglied werden kannst du später immer noch.</p>
+        ${K.length ? `<div class="kt-wa">${K.map(k => `<a class="btn" href="${wa(k)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 9.5c.4 2 2 3.6 4.4 4.6l1.2-1.1 1.9.8-.4 1.6c-3.6.3-7.3-3.2-7.6-6.6L10 8.5l.9 1.8z"/></svg>WhatsApp an ${k.name} <small>${k.rolle || ''}</small></a>`).join('')}</div><p class="kt-or"><span>oder schreib uns hier</span></p>` : ''}
+        <form class="kt-form" data-fcs-form novalidate>
+          <input type="hidden" name="_subject" value="Kontaktanfrage über die Website (Flight Club Saar)">
+          <input type="hidden" name="Formular" value="Kontakt aufnehmen">
+          <input type="hidden" name="Seite" value="${location.pathname.split('/').pop() || 'index.html'}">
+          <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-label="Bitte leer lassen">
+          <div class="kt-chips" role="group" aria-label="Worum geht es?">${['Allgemeine Frage', 'In die WhatsApp-Gruppe', 'Hallenfliegen', 'Erste Drohne', 'Mitgliedschaft', 'Technik'].map((x, i) => `<label class="kt-chip"><input type="radio" name="Thema" value="${x}" ${i ? '' : 'checked'}><span>${x}</span></label>`).join('')}</div>
+          <div class="field"><label for="kt-n">Dein Name</label><input id="kt-n" name="Name" autocomplete="name" required><span class="err">Bitte gib deinen Namen an.</span></div>
+          <div class="field"><label for="kt-k">Wie erreichen wir dich? <small>E-Mail oder Handynummer</small></label><input id="kt-k" name="Kontakt" autocomplete="email" required><span class="err">Wir brauchen eine E-Mail-Adresse oder Handynummer für die Antwort.</span></div>
+          <div class="field"><label for="kt-m">Deine Nachricht</label><textarea id="kt-m" name="Nachricht" rows="4" required placeholder="Zum Beispiel: Ich würde gern mal beim Hallenfliegen zuschauen."></textarea><span class="err">Schreib uns kurz, worum es geht.</span></div>
+          <label class="check"><input type="checkbox" name="Datenschutz" value="ja" required><span>Ihr dürft meine Angaben nutzen, um mir zu antworten (<a href="datenschutz.html">Datenschutz</a>).</span></label>
+          <div class="btns"><button class="btn amber solid" type="submit">Nachricht senden <span class="arr">→</span></button></div>
+          <div class="form-ok" hidden><b>Danke!</b> Deine Nachricht ist beim Vorstand angekommen. Wir melden uns bei dir.</div>
+          <div class="form-bad" hidden>Das hat nicht geklappt. Bitte versuch es noch einmal oder schreib uns per WhatsApp.</div>
+        </form>
+        <p class="kt-alt">Lieber gleich dabei sein? <a href="mitglied.html">Mitglied werden</a></p>
+      </div>`;
+    document.body.appendChild(dlg);
+    const open = () => { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); setTimeout(() => { const i = $('#kt-n', dlg); if (i) i.focus(); }, 60); };
+    document.addEventListener('click', e => { const b = e.target.closest('[data-kontakt]'); if (!b) return; e.preventDefault(); const md = b.closest('dialog'); if (md && md !== dlg && md.close) md.close(); const mn = $('.menu.open, .menu[data-open]'); if (mn) { const bg = $('.burger'); if (bg && bg.getAttribute('aria-expanded') === 'true') bg.click(); } open(); });
+    $('.ml-x', dlg).addEventListener('click', () => dlg.close ? dlg.close() : dlg.removeAttribute('open'));
+    dlg.addEventListener('click', e => { if (e.target === dlg && dlg.close) dlg.close(); });
+    if (/[#&]kontakt\b/.test(location.hash)) setTimeout(open, 400);
   }
 
   /* Natives Scrollen (ruckelt nicht). Sprungmarken gleiten mit Abstand zur Leiste oben. */
@@ -305,6 +341,9 @@
     document.documentElement.classList.add('dronecur');
     const r = document.createElement('div'); r.className = 'cdrone'; r.setAttribute('aria-hidden', 'true');
     r.innerHTML = `<svg class="cd-q" viewBox="-50 -50 100 100"><circle class="cd-ring" r="46"/><g class="cd-arms"><path d="M-24-24L24 24M24-24L-24 24"/></g><rect class="cd-body" x="-11" y="-11" width="22" height="22" rx="6" transform="rotate(45)"/>${[[-24,-24],[24,-24],[-24,24],[24,24]].map(([x,y],i)=>`<g transform="translate(${x} ${y})"><circle class="cd-pr" r="12"/><g class="cd-bl ${i%2?'ccw':'cw'}"><path d="M-11 0H11"/></g><circle class="cd-hub" r="3"/></g>`).join('')}</svg>`;
+    // In Werkbank, Simulator und Clip-Studio stört die Begleit-Drohne (Natan 28.10.): dort nur das Fadenkreuz
+    // Natan 28.10. 23:35: die Begleit-Drohne nervt, nur noch das Fadenkreuz
+    r.classList.add('off');
     document.body.appendChild(r);
     const L = document.createElement('div'); L.className = 'cd-lock'; L.setAttribute('aria-hidden', 'true'); L.innerHTML = '<i></i><i></i><i></i><i></i><span>LOCK</span>'; document.body.appendChild(L);
     // Genauer Zeiger = Fadenkreuz aus dem FPV-OSD mit künstlichem Horizont (Natan 28.10.: größer und passend zum Thema)
@@ -324,13 +363,16 @@
     const hzEl = dot.querySelector('.cx-hz');
     const loop = () => {
       // Feder-Dämpfer: fliegt wie ein Kopter hinterher
-      const ax = (tx + 30 - x) * .09, ay = (ty + 30 - y) * .09; // fliegt als Begleiter schräg hinter dem Fadenkreuz vx = (vx + ax) * .72; vy = (vy + ay) * .72; x += vx; y += vy;
+      // fliegt als Begleiter schräg hinter dem Fadenkreuz
+      const ax = (tx + 30 - x) * .09, ay = (ty + 30 - y) * .09; vx = (vx + ax) * .72; vy = (vy + ay) * .72; x += vx; y += vy;
       if (flip > 0) { ang += 24; if (ang >= 360) { ang = 0; flip = 0; } }
       const bank = Math.max(-38, Math.min(38, vx * 2.2)), pitch = Math.max(-38, Math.min(38, -vy * 2.2));
       r.style.transform = `translate(${x}px,${y}px) perspective(300px) rotateX(${pitch}deg) rotateY(${bank}deg) rotate(${ang}deg)`;
       dot.style.transform = `translate(${tx}px,${ty}px)`;
       hz += (Math.max(-32, Math.min(32, (tx - px) * 1.6)) - hz) * .18; px = tx; hzEl.style.transform = `rotate(${hz.toFixed(1)}deg)`;
       dot.classList.toggle('lock', !!lock);
+      // Ziel weg (z. B. neu gezeichnet): Rahmen nicht in die Ecke fliegen lassen
+      if (lock && !lock.isConnected) { lock = null; L.classList.remove('on'); r.classList.remove('lock'); }
       if (lock) { const b = lock.getBoundingClientRect(); L.style.width = (b.width + 16) + 'px'; L.style.height = (b.height + 16) + 'px'; L.style.transform = `translate(${b.left - 8}px,${b.top - 8}px)`; }
       requestAnimationFrame(loop);
     };

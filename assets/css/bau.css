@@ -311,3 +311,131 @@
   .bk-steps button{padding:0 9px 0 5px;gap:5px;font-size:11px}
   .bk-nav .btn{padding-inline:14px;font-size:12px;letter-spacing:.06em;white-space:nowrap}
 }
+
+/* ===== Geführter Bau (Natan 28.10. 23:29): Schritte, Listen, Lötplan ohne Wackeln ===== */
+.bk-steps button{flex-direction:row;align-items:center}
+.bk-steps button span{display:grid;gap:3px;text-align:left}
+.bk-steps button small{font:500 10.5px/1 var(--body);letter-spacing:0;text-transform:none;color:var(--mute);max-width:13ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-steps button:disabled{opacity:.38;cursor:not-allowed}
+.bk-steps .done:not(.now) b{font-size:12px}
+.bk-sh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px}
+.bk-kicker{margin:0;font:600 11.5px/1 var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--sig)}
+.bk-reset{background:none;border:1px solid var(--line-hi);border-radius:999px;color:var(--mute);font:600 11.5px/1 var(--hud);letter-spacing:.08em;padding:8px 12px;cursor:pointer}
+.bk-reset:hover{color:var(--osd);border-color:var(--sig)}
+.bk-info{display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;padding:10px 12px;border-radius:12px;border:1px solid rgba(63,224,255,.3);background:rgba(63,224,255,.06);font-size:14px;line-height:1.45}
+.bk-info i{flex:none;width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--sig)}
+.bk-sub{margin:14px 0 8px;color:var(--mute);font-size:14px}
+.bk-auto{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin:0 0 12px;padding:12px 14px;border-radius:12px;border:1px dashed rgba(62,224,138,.55);background:rgba(62,224,138,.06);color:var(--osd);cursor:pointer;text-align:left;font:600 13px/1.2 var(--hud);letter-spacing:.06em}
+.bk-auto b{font:600 14px/1.2 var(--body);letter-spacing:0;color:#9ff0c4;text-align:right}
+.bk-auto:hover{border-style:solid;background:rgba(62,224,138,.12)}
+.bk-find{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44%);gap:8px;margin:0 0 10px}
+.bk-find input,.bk-find select{width:100%;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line-hi);background:rgba(3,8,18,.7);color:var(--osd);font:400 15px var(--body)}
+.bk-find select{appearance:auto}
+.bk-list{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:6px}
+.bk-row[hidden]{display:none}
+.bk-row{border-radius:12px;border:1px solid var(--line);background:rgba(4,12,28,.45);transition:border-color .2s,background .2s}
+.bk-row:hover{border-color:var(--line-hi)}
+.bk-row.on{border-color:var(--sig);background:rgba(63,224,255,.09);box-shadow:inset 0 0 0 1px rgba(63,224,255,.35)}
+.bk-row.f-warn:not(.on){border-color:rgba(255,176,32,.35)}
+.bk-row-b{display:grid;grid-template-columns:20px 34px minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:10px 12px;border:0;background:none;color:var(--osd);text-align:left;cursor:pointer;font:inherit}
+.bk-row-b:focus-visible{outline:2px solid var(--amber);outline-offset:-2px;border-radius:12px}
+.bk-radio,.bk-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-hi);display:grid;place-items:center}
+.bk-check{border-radius:5px}
+.bk-row.on .bk-radio,.bk-row.on .bk-check{border-color:var(--sig);background:var(--sig);box-shadow:inset 0 0 0 3px var(--night)}
+.bk-row.on .bk-check{box-shadow:none;background:var(--sig) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3 3 7-7' fill='none' stroke='%23040912' stroke-width='2.4'/%3E%3C/svg%3E") center/12px no-repeat}
+.bk-row-t{display:grid;gap:3px;min-width:0}
+.bk-row-t b{font:600 15px/1.25 var(--body)}
+.bk-row-t small{color:var(--mute);font-size:12.5px;line-height:1.35}
+.bk-row-t .bk-why{font-size:12.5px;color:#ffd08a}
+.bk-tags{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.bk-tag{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font:600 10.5px/1 var(--hud);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;border:1px solid var(--line-hi);color:var(--mute)}
+.bk-tag.rec{border-color:rgba(62,224,138,.6);color:#9ff0c4;background:rgba(62,224,138,.08)}
+.bk-tag.warn{border-color:rgba(255,176,32,.6);color:#ffd08a}
+.bk-tag.plan{border-color:rgba(63,224,255,.55);color:var(--sig)}
+.bk-tag.dim{opacity:.7}
+.bk-h4 .bk-tag{vertical-align:middle;margin-left:6px}
+.bk-kvrow{display:grid;gap:6px;padding:0 12px 12px 76px}
+.bk-kvrow>span:first-child{font:600 11px/1 var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.bk-nolist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.bk-nolist li{display:grid;gap:2px;padding:8px 10px;border-radius:10px;background:rgba(255,75,92,.06);border:1px solid rgba(255,75,92,.22);font-size:13px}
+.bk-nolist span{color:var(--mute)}
+.bk-sum{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:4px}
+.bk-sum li{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.bk-sum span{color:var(--mute);font:600 11px/1.2 var(--hud);letter-spacing:.08em;text-transform:uppercase}
+.bk-solcard{padding:14px;border-radius:14px;border:1px solid rgba(63,224,255,.4);background:linear-gradient(180deg,rgba(63,224,255,.08),rgba(63,224,255,.02));margin:0 0 10px}
+.bk-solcard .bk-kicker{margin-bottom:8px}
+.bk-soltext{font-size:15.5px;line-height:1.55}
+.bk-soltext code{font:600 13px var(--hud);padding:1px 6px;border-radius:5px;background:rgba(255,255,255,.08)}
+.bk-solnav{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;margin:0 0 12px}
+.bk-solnav .btn{min-height:44px}
+.bk-solnav .btn:disabled{opacity:.4;cursor:not-allowed}
+.bk-dots{display:flex;justify-content:center;flex-wrap:wrap;gap:5px}
+.bk-dots i{width:8px;height:8px;border-radius:50%;background:var(--line-hi)}
+.bk-dots i.done{background:rgba(62,224,138,.7)}
+.bk-dots i.on{background:var(--sig);box-shadow:0 0 0 3px rgba(63,224,255,.25)}
+.bk-nav .btn.ready:not(:disabled){animation:bkReady 1.6s ease-out 1}
+.bk-nav .btn:disabled{opacity:.5;cursor:not-allowed}
+@keyframes bkReady{0%{box-shadow:0 0 0 0 rgba(63,224,255,.6)}100%{box-shadow:0 0 0 14px rgba(63,224,255,0)}}
+/* Lötplan: kein Kippen, kein Hin-und-her-Drehen mehr */
+.bk-solder,.bk-solder.tilt{animation:none;transform:none}
+.bk-solder.fade{animation:plFade .35s ease-out}
+@keyframes plFade{from{opacity:.25}to{opacity:1}}
+.pl-board.flip{animation:none}
+.bk-vlabel{position:absolute;left:12px;top:12px;z-index:3;display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:calc(100% - 24px);margin:0;padding:8px 12px;border-radius:12px;background:rgba(4,9,18,.82);border:1px solid var(--line-hi);color:var(--osd);font-size:13.5px;pointer-events:none}
+.bk-vlabel[hidden]{display:none}
+.bk-vlabel small{width:100%;color:var(--mute);font:600 10.5px/1 var(--hud);letter-spacing:.1em;text-transform:uppercase}
+.bk-stk{display:grid;gap:3px;width:26px}
+.bk-stk i{display:block;height:6px;border-radius:2px;background:rgba(255,255,255,.18)}
+.bk-stk.top i:first-child,.bk-stk.bottom i:last-child,.bk-stk.aio i{background:var(--sig)}
+.bk-stk.aio i:last-child{display:none}
+.pl-iron{animation:plIron 2.4s .6s both cubic-bezier(.3,.7,.2,1)}
+@keyframes plIron{0%{transform:translate(130px,-130px);opacity:0}20%{opacity:1}42%{transform:translate(0,0)}72%{transform:translate(0,0);opacity:1}100%{transform:translate(90px,-90px);opacity:0}}
+.pl-iron-tip{stroke:#b9c0ca;stroke-width:5;stroke-linecap:round;fill:none}
+.pl-iron-col{stroke:#6f7682;stroke-width:9;stroke-linecap:round;fill:none}
+.pl-iron-grip{stroke:#f07c12;stroke-width:16;stroke-linecap:round;fill:none}
+.pl-spark{fill:#ffcf5a;opacity:0;animation:plSpark 2.4s .6s both}
+@keyframes plSpark{0%,40%{opacity:0;r:2}46%{opacity:.95;r:15}72%{opacity:.4;r:9}100%{opacity:0;r:3}}
+.pl-blob.fresh{animation-delay:1.7s}
+@media (prefers-reduced-motion:reduce){.pl-iron,.pl-spark{animation:none;display:none}}
+@media (max-width:620px){
+  .bk-row-b{grid-template-columns:18px 28px minmax(0,1fr);gap:8px;padding:10px}
+  .bk-tags{grid-column:2/-1;flex-direction:row;flex-wrap:wrap;align-items:center}
+  .bk-kvrow{padding:0 10px 10px 10px}
+  .bk-find{grid-template-columns:minmax(0,1fr)}
+  .bk-solnav{grid-template-columns:1fr 1fr}
+  .bk-dots{grid-column:1/-1;order:-1}
+  .bk-sum li{grid-template-columns:90px minmax(0,1fr) auto}
+  .bk-vlabel{font-size:12.5px;padding:6px 10px}
+}
+
+/* Kein verstecktes Scrollen mehr im Bedienfeld (Natan 28.10. 23:42: „man sieht nicht, dass man runterscrollen kann“):
+   Das Feld wächst mit, die Seite scrollt; Schrittleiste oben und Zurück/Weiter unten bleiben immer sichtbar. */
+.bk-panel{height:auto;min-height:0;overflow:visible}
+.bk-body{overflow:visible;padding-bottom:16px}
+.bk-steps{flex-wrap:wrap;overflow:visible;gap:5px;padding:10px;position:sticky;top:72px;z-index:4;background:#0c1d39;border-radius:var(--r) var(--r) 0 0}
+.bk-steps button{min-height:34px;padding:0 10px 0 5px;gap:6px;border-color:var(--line)}
+.bk-steps button:not(:disabled):hover{border-color:var(--sig);color:var(--osd)}
+.bk-nav{position:sticky;bottom:0;z-index:4;background:linear-gradient(180deg,rgba(7,18,37,.92),#071225 40%);border-radius:0 0 var(--r) var(--r);box-shadow:0 -14px 22px -10px rgba(2,6,14,.9);backdrop-filter:blur(6px)}
+.bk-nav .btn{min-height:50px}
+.bk-nav [data-bk-next]{flex:1;justify-content:center;font-size:14px}
+@media (min-width:1101px){
+  .bk-app{align-items:start}
+  .bk-stagecol{position:sticky;top:84px;align-self:start}
+  .bk-stage{height:min(calc(100svh - 250px),700px)}
+}
+@media (max-width:1100px){
+  .bk-steps{top:62px}
+  .bk-nav{bottom:76px}
+}
+@media (max-width:560px){
+  .bk-steps button span small{display:none}
+  .bk-steps button{min-height:32px;padding:0 8px 0 4px;font-size:10.5px}
+  .bk-steps b{width:22px;height:22px}
+  .bk-nav{bottom:70px}
+}
+.bk-vlabel{top:auto;bottom:12px}
+.bk-solnav{grid-template-columns:1fr 1fr}
+.bk-solnav .bk-dots{grid-column:1/-1;order:-1;justify-content:flex-start;margin:0 0 2px}
+.bk-solnav .btn{justify-content:center}
+.bk-nav [data-bk-next]{font-size:13px;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:1100px){.bk-steps{position:static;border-radius:var(--r) var(--r) 0 0}}

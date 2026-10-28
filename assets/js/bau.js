@@ -48,6 +48,8 @@ const KL = (id) => KLASSEN.find(k => k.id === id) || KLASSEN[2];
 const klasseOfProp = (zoll) => { const z = num(zoll); if (!z) return null; return z <= 2 ? 'whoop' : z < 4 ? 'cine' : z < 6 ? 'five' : 'seven'; };
 const klasseOfStator = (s) => !s ? null : s.w <= 12 ? 'whoop' : s.w <= 19 ? 'cine' : s.w <= 25 ? 'five' : 'seven';
 const klasseOfFrame = (f) => {
+  const kk = String(f.klasse || '').toLowerCase();
+  if (/^whoop|tiny/.test(kk)) return 'whoop'; if (/cine/.test(kk)) return 'cine'; if (/^7|long ?range/.test(kk)) return 'seven'; if (/^5|freestyle|racing/.test(kk)) return 'five';
   const t = String((f.klasse || '') + ' ' + (f.name || '')).toLowerCase(); const mp = num(f.max_prop_zoll);
   if (/whoop|65|75 ?mm/.test(t) && !/cine/.test(t)) return 'whoop';
   if (/cine|3 ?zoll|3"|3inch|3-inch/.test(t)) return 'cine';
@@ -63,7 +65,7 @@ const boardSize = (b) => num(b && (b.groesse_mm || b.lochabstand_mm)) || 30.5;
    Zustand
    ===================================================================== */
 const B = { klasse: 'five', rahmen: null, board: null, esc: null, motor: null, kv: null, prop: null, akku: null, video: null, rx: null, gps: null, led: null, buzzer: null, kondensator: null, kamera: null };
-const STEPS = [{ id: 'start', t: 'Fragen' }, { id: 'set', t: 'Dein Set' }, { id: 'loeten', t: 'Löten' }, { id: 'fly', t: 'Abheben' }];
+const STEPS = [{ id: 'klasse', t: 'Klasse' }, { id: 'akku', t: 'Akku' }, { id: 'rahmen', t: 'Rahmen' }, { id: 'board', t: 'Flugcontroller' }, { id: 'motor', t: 'Motoren' }, { id: 'prop', t: 'Propeller' }, { id: 'video', t: 'Video' }, { id: 'rx', t: 'Empfänger' }, { id: 'extras', t: 'Extras' }, { id: 'loeten', t: 'Löten' }, { id: 'fly', t: 'Abheben' }];
 const SI = (id) => STEPS.findIndex(s => s.id === id);
 let step = 0, view = '3d';
 
@@ -159,7 +161,7 @@ function checksRaw(st) {
   if (f) {
     const fk = klasseOfFrame(f);
     if (fk !== st.klasse) add('warn', `${esc(f.name)} ist ein ${KL(fk).name}-Rahmen`, `Du baust gerade ${K.name}. Klasse oder Rahmen anpassen.`);
-    if (b) { const want = num(f.stack_lochabstand), have = boardSize(b); if (want && have && Math.abs(want - have) > .6) add('bad', `Flugcontroller passt nicht in den Rahmen`, `Der Rahmen hat Befestigungslöcher für ${de(want, 1)} × ${de(want, 1)} mm, ${esc(b.name)} braucht ${de(have, 1)} × ${de(have, 1)} mm. Wähle einen Flugcontroller mit ${de(want, 1)} mm oder einen anderen Rahmen.`); }
+    if (b) { const H = holesOf(f), want = H.length ? H[0] : null, have = boardSize(b); if (H.length && have && !H.some(h => Math.abs(h - have) <= .6)) add('bad', `Flugcontroller passt nicht in den Rahmen`, `Der Rahmen hat Befestigungslöcher für ${de(want, 1)} × ${de(want, 1)} mm, ${esc(b.name)} braucht ${de(have, 1)} × ${de(have, 1)} mm. Wähle einen Flugcontroller mit ${de(want, 1)} mm oder einen anderen Rahmen.`); }
     if (pr) { const mp = num(f.max_prop_zoll), d = num(pr.durchmesser_zoll); if (mp && d && d > mp + .05) add('bad', `Propeller zu groß für den Rahmen`, `Höchstens ${de(mp, 1)} Zoll, gewählt ${de(d, 1)} Zoll. Die Propeller schlagen aneinander.`); }
   }
   if (pr && m) { const pk = klasseOfProp(pr.durchmesser_zoll), mk = klasseOfStator(statorOf(m)); if (pk && mk && pk !== mk) add('warn', 'Motor und Propeller passen nicht zusammen', `${esc(m.name)} ist für ${KL(mk).name} gebaut, der Propeller für ${KL(pk).name}.`); }
@@ -388,7 +390,7 @@ const nameOf = (p) => p ? (p.name || p.id) : '';
 const cleanName = (p) => nameOf(p).replace(/\s*\((?:\d|5 Zoll|7 Zoll|Cinewhoop)[^)]*\)\s*$/, '');
 
 /* ---------- Automatisch zusammenstellen ---------- */
-const state = { solderSeen: false, flown: false, solderStep: 0, edit: null, notes: [], f: {}, flash: '', w: { video: '', funk: '' } };
+const state = { solderSeen: false, flown: false, solderStep: 0, edit: null, notes: [], f: {}, q: {}, her: {}, flash: '', exOk: false, klOk: false, w: { video: '', funk: '' } };
 function bestOf(slot, list, pref = () => 0) {
   let best = null, bs = Infinity;
   list.forEach((p, i) => { const st = stWith(slot, p); const s = score(st) - pref(p, i); if (s < bs) { bs = s; best = { p, st }; } });
@@ -427,48 +429,14 @@ function autoBuild() {
   state.flown = false; state.solderSeen = false; state.solderStep = 0;
 }
 
-/* ---------- Oberfläche ---------- */
+/* ---------- Oberfläche: geführter Bau, ein Schritt nach dem anderen ----------
+   Natan 28.10. 23:29: „ganz einfach aussuchen, welcher Akku, welcher Frame … mehrere Frames, mehrere Flight Controller …
+   auf einmal werden Sachen ausgewählt, schon voreingestellt, die man gar nicht hat“.
+   Regeln: nichts ist vorausgewählt; jeder Schritt zeigt nur, was zu den bisherigen Entscheidungen passt; wer vorne etwas
+   ändert, verliert nur die Teile, die nicht mehr passen, und liest warum; „Für mich aussuchen“ nur auf Knopfdruck. */
 let ui = {};
-function stepDone(id) {
-  switch (id) {
-    case 'start': return !!(B.rahmen || B.motor);
-    case 'set': return ['rahmen', 'board', 'motor', 'prop', 'akku'].every(k => B[k]);
-    case 'loeten': return state.solderSeen;
-    case 'fly': return state.flown;
-  }
-  return false;
-}
-function renderSteps() {
-  ui.steps.innerHTML = STEPS.map((s, i) => `<button type="button" class="${i === step ? 'now' : ''} ${stepDone(s.id) ? 'done' : ''}" data-i="${i}" ${i === step ? 'aria-current="step"' : ''}><b>${i + 1}</b><span>${s.t}</span></button>`).join('');
-  const sid = STEPS[step].id;
-  ui.prev.hidden = step === 0 && !state.edit;
-  ui.prev.innerHTML = state.edit ? '‹ Zurück zum Set' : '‹ Zurück';
-  ui.next.hidden = !!state.edit || step === STEPS.length - 1 || (sid === 'start' && !B.rahmen);
-  const nx = STEPS[step + 1]; if (nx) ui.next.querySelector('span').textContent = 'Weiter: ' + nx.t;
-}
-const fitLab = (lvl) => lvl === 'ok' ? 'Passt' : lvl === 'warn' ? 'Mit Hinweis' : 'Passt nicht';
-function rowHTML(slot, p, j, rec) {
-  const on = B[slot === 'esc' ? 'esc' : slot] === p.id;
-  let kvRow = '';
-  if (slot === 'motor') {
-    const ks = kvList(p), best = bestKv(p, wantCells());
-    const c = wantCells(), [lo, hi] = KL(B.klasse).rpmV;
-    const kvLab = k => { if (k === best) return 'passt'; const rpm = k * c * 3.7; return rpm > hi * 1.12 ? 'zu heiß' : rpm > hi ? 'sehr spritzig' : rpm < lo * .85 ? 'zu träge' : 'geht auch'; };
-    if (ks.length > 1) kvRow = `<span class="bk-kvs" role="group" aria-label="KV-Variante für ${c}S">${ks.slice().sort((a, b) => a - b).map(k => { const l = kvLab(k); return `<button type="button" class="chip-b ${on && B.kv === k ? 'on' : ''} ${k === best ? 'rec' : ''} ${/heiß|träge/.test(l) ? 'dim' : ''}" data-pick-kv="${esc(p.id)}|${k}" aria-pressed="${on && B.kv === k}">${de(k)} KV · ${l}</button>`; }).join('')}</span>`;
-  }
-  const why = j.lvl !== 'ok' ? `<span class="bk-why">${esc(j.t)}${j.d ? ': ' + esc(String(j.d).replace(/<[^>]+>/g, '')) : ''}</span>` : (j.t ? `<span class="bk-why ok">${esc(j.t)}</span>` : '');
-  return `<div class="bk-opt ${on ? 'on' : ''} f-${j.lvl}" role="listitem">
-    <button type="button" class="bk-opt-b" data-pick="${esc(p.id)}" data-slot="${slot}" aria-pressed="${on}">
-      <span class="bk-opt-ic" aria-hidden="true">${icon(slot, p)}</span>
-      <span class="bk-opt-t"><b>${esc(cleanName(p))}</b><small>${esc(p.hersteller || '')}${p.hersteller ? ' · ' : ''}${esc(specLine(slot, p))}</small>${why}</span>
-      <span class="bk-fit">${on ? '<i class="sel"></i>Gewählt' : rec ? '<i></i>Empfohlen' : `<i></i>${fitLab(j.lvl)}`}</span>
-    </button>${kvRow}
-  </div>`;
-}
-function chips(name, items, cur, label) {
-  return `<div class="bk-filter"><span>${label}</span><div class="bk-chips" role="group" aria-label="${esc(label)}">${items.map(([v, t, rec]) => `<button type="button" class="chip-b ${String(cur) === String(v) ? 'on' : ''} ${rec ? 'rec' : ''}" data-f="${name}" data-v="${esc(v)}" aria-pressed="${String(cur) === String(v)}">${t}</button>`).join('')}</div></div>`;
-}
 const INTRO = {
+  klasse: '',
   rahmen: 'Der Rahmen gibt vor, wie groß die Propeller sein dürfen und wo der Flugcontroller sitzt. Leichter fliegt länger, schwerer hält mehr aus.',
   akku: '<b>S</b> ist die Zahl der Zellen: Mehr Zellen heißt mehr Spannung und mehr Kraft. <b>mAh</b> ist der Energievorrat: mehr mAh fliegt länger, wiegt aber mehr.',
   motor: '<b>Erst den Akku wählen, dann den Motor.</b> Die Zahl wie 2207 ist die Größe. <b>KV</b> sagt, wie schnell der Motor pro Volt dreht: Mit mehr Zellen nimmt man weniger KV. Die passende KV-Variante ist markiert und wird automatisch gewählt.',
@@ -477,73 +445,7 @@ const INTRO = {
   video: '<b>Digital</b> (DJI, Walksnail, HDZero) gibt ein scharfes HD-Bild. <b>Analog</b> ist günstig und hat kaum Verzögerung. Wichtig ist, dass es zu deiner Brille passt.',
   rx: 'Der Empfänger hört auf deine Funke. Er muss dieselbe Funktechnik sprechen wie deine Funke.'
 };
-function filterFor(slot) {
-  const f = state.f, K = KL(B.klasse);
-  if (slot === 'akku' || slot === 'motor') {
-    const cs = [...new Set(arr('akku').filter(inClass.akku).map(a => num(a.zellen)).filter(Boolean))].sort((a, b) => a - b);
-    const cur = wantCells(), rec = KDEF[B.klasse].c;
-    return chips('cells', cs.map(c => [c, `${c}S${c === rec ? ' · empfohlen' : ''}`, c === rec]), cur, slot === 'motor' ? 'Zellenzahl deines Akkus (S)' : 'Zellenzahl (S)');
-  }
-  if (slot === 'board') return chips('art', [['', 'Alle'], ['stack', 'Stack'], ['aio', 'Eine Platine (AIO)']], f.art || '', 'Bauart');
-  if (slot === 'video') return chips('vfam', [['', 'Alle'], ...VFAM.map(v => [v.id, v.t])], f.vfam || '', 'Deine Brille');
-  if (slot === 'rx') return chips('rfam', [['', 'Alle'], ...RFAM.map(r => [r.id, r.t])], f.rfam || '', 'Deine Funke');
-  return '';
-}
-function applyFilter(slot, L) {
-  const f = state.f;
-  if (slot === 'akku') { const c = wantCells(); return L.filter(a => num(a.zellen) === c); }
-  if (slot === 'board' && f.art) return L.filter(x => f.art === 'aio' ? isAio(x) : !isAio(x));
-  if (slot === 'video' && f.vfam) { const v = VFAM.find(x => x.id === f.vfam); return L.filter(x => v.typ ? x.typ === v.typ : v.re.test(x.name)); }
-  if (slot === 'rx' && f.rfam) { const r = RFAM.find(x => x.id === f.rfam); return L.filter(x => r.re.test((x.protokoll || '') + ' ' + x.name)); }
-  return L;
-}
-function editHTML(slot) {
-  const S = SLOT(slot);
-  let h = `<button type="button" class="bk-back" data-back>‹ Zurück zum Set</button><h3 class="bk-h">${S.t} <small class="bk-kl-tag">für ${KL(B.klasse).name}</small></h3>${state.flash ? `<p class="bk-flash" role="status">${esc(state.flash)}</p>` : ''}<p class="bk-p">${INTRO[slot] || ''}</p>`;
-  if (slot === 'extras') return h + extrasHTML();
-  h += filterFor(slot);
-  const all = listOf(slot).filter(p => p && p.id);
-  const mine = applyFilter(slot, all.filter(p => inClass[slot](p)));
-  const J = mine.map(p => ({ p, j: judge(slot, p), s: score(stWith(slot, p)) }));
-  const rank = { ok: 0, warn: 1, bad: 2 };
-  J.sort((a, b) => rank[a.j.lvl] - rank[b.j.lvl] || a.s - b.s);
-  const good = J.filter(x => x.j.lvl !== 'bad'), bad = J.filter(x => x.j.lvl === 'bad');
-  const rec = good.length && good[0].j.lvl === 'ok' ? good[0].p.id : null;
-  if (slot === 'rx' && P(B.board) && P(B.board).eingebauter_empfaenger) h += `<div class="bk-opts" role="list"><div class="bk-opt ${B.rx === '__builtin' ? 'on' : ''} f-ok" role="listitem"><button type="button" class="bk-opt-b" data-builtin aria-pressed="${B.rx === '__builtin'}"><span class="bk-opt-ic" aria-hidden="true">${icon('rx', {})}</span><span class="bk-opt-t"><b>Eingebauter Empfänger</b><small>${esc(P(B.board).eingebauter_empfaenger)} auf ${esc(cleanName(P(B.board)))}, nichts zu löten</small></span><span class="bk-fit"><i></i>${B.rx === '__builtin' ? 'Gewählt' : 'Empfohlen'}</span></button></div></div>`;
-  const TOP = 4, top = good.slice(0, TOP), more = good.slice(TOP);
-  h += good.length ? `<div class="bk-opts" role="list">${top.map(x => rowHTML(slot, x.p, x.j, x.p.id === rec)).join('')}</div>${more.length ? `<details class="bk-moreopts"><summary>Weitere passende Teile (${more.length})</summary><div class="bk-opts" role="list">${more.map(x => rowHTML(slot, x.p, x.j, false)).join('')}</div></details>` : ''}` : `<p class="bk-empty">Mit dieser Auswahl passt hier nichts. Ändere oben die Auswahl oder schau unten bei den anderen Teilen.</p>`;
-  if (bad.length) h += `<details class="bk-moreopts"><summary>Passt nicht zu deinem Set (${bad.length})</summary><div class="bk-opts" role="list">${bad.map(x => rowHTML(slot, x.p, x.j, false)).join('')}</div></details>`;
-  if (slot === 'board' && P(B.board) && !isAio(P(B.board)) && !P(B.board).esc && !num(P(B.board).esc_dauerstrom_a) && arr('esc').length) h += `<h4 class="bk-h4">Motorregler (ESC) dazu</h4><div class="bk-opts" role="list">${arr('esc').map(p => rowHTML('esc', p, judge('esc', p), false)).join('')}</div>`;
-  return h;
-}
 const EXG = [['kondensator', 'Kondensator', 'schützt vor Spannungsspitzen, ab 4S Pflicht'], ['buzzer', 'Buzzer', 'piept, wenn die Drohne im Gras liegt'], ['gps', 'GPS', 'bringt die Drohne bei Signalverlust zurück'], ['led', 'LEDs', 'Licht, gut für die Halle und abends'], ['kamera', 'Analoge Kamera', 'nur bei analogem Video']];
-function extrasHTML() {
-  const ex = arr('extra'); let h = '';
-  for (const [k, t, sub] of EXG) {
-    if (k === 'kamera' && (!P(B.video) || P(B.video).typ === 'digital')) continue;
-    if (B.klasse === 'whoop' && (k === 'gps' || k === 'buzzer' || k === 'kondensator')) continue;
-    if (B.klasse === 'cine' && k === 'gps') continue;
-    const L = ex.filter(p => p.typ === k || (k === 'led' && /led/i.test(p.typ || '')));
-    if (!L.length) continue;
-    h += `<h4 class="bk-h4">${t} <small>${sub}</small></h4><div class="bk-opts" role="list">${L.map(p => { const on = B[k] === p.id; return `<div class="bk-opt ${on ? 'on' : ''} f-ok" role="listitem"><button type="button" class="bk-opt-b" data-extra="${k}" data-id="${esc(p.id)}" aria-pressed="${on}"><span class="bk-opt-ic" aria-hidden="true">${icon(k, p)}</span><span class="bk-opt-t"><b>${esc(cleanName(p))}</b><small>${specLine('extra', p)}</small></span><span class="bk-fit"><i></i>${on ? 'Eingebaut' : 'Hinzufügen'}</span></button></div>`; }).join('')}</div>`;
-  }
-  return h;
-}
-function whyLine(slot) {
-  const p = P(B[slot]), c = cells(), K = KL(B.klasse);
-  if (slot === 'rx' && B.rx === '__builtin') return 'Steckt schon auf dem Flugcontroller, nichts zu löten';
-  if (!p) return '';
-  switch (slot) {
-    case 'rahmen': return `Für ${K.name}${num(p.max_prop_zoll) ? `, Propeller bis ${de(num(p.max_prop_zoll), 1)} Zoll passen hinein` : ''}, wiegt ${de(num(p.gewicht_g))} g`;
-    case 'akku': return `${p.zellen} Zellen (${p.zellen}S), ${de(num(p.mah))} mAh Energie, wiegt ${de(num(p.gewicht_g))} g`;
-    case 'motor': return `${B.kv ? de(B.kv) + ' KV, die richtige Drehzahl für deinen ' + (c || '') + 'S-Akku' : 'Passend zur Klasse'}, ${de(num(p.gewicht_g), 1)} g je Motor`;
-    case 'prop': return `${de(num(p.durchmesser_zoll), 1)} Zoll, passt in deinen Rahmen und zu den Motoren`;
-    case 'board': { const [, hi] = range(p.eingang_s); const fr = uartsOf(p).filter(x => x.frei).length; return `${isAio(p) ? 'Flugcontroller und Motorregler auf einer Platine' : 'Flugcontroller oben, Motorregler darunter'}. Verträgt bis ${hi || '?'}S${fr ? `, Platz für Empfänger, Video${B.gps ? ' und GPS' : ''}` : ''}`; }
-    case 'video': return p.typ === 'digital' ? 'Scharfes HD-Bild, passt zu deiner digitalen Brille' : 'Analoges Bild, kaum Verzögerung, günstig';
-    case 'rx': { const f = RFAM.find(x => x.re.test((p.protokoll || '') + ' ' + p.name)); return `Spricht ${f ? f.t : p.protokoll || 'dieselbe Funktechnik'} wie deine Funke, wiegt ${de(num(p.gewicht_g), 1)} g`; }
-  }
-  return '';
-}
 function slotOf(c) {
   const t = c.t + ' ' + c.d, v = P(B.video), r = P(B.rx);
   if (/Flugcontroller passt nicht in den Rahmen/.test(c.t)) return 'board';
@@ -556,82 +458,216 @@ function slotOf(c) {
   if (/ESC|Platine|UART|Anschlüsse|Herstellerplan|verträgt/.test(c.t)) return 'board';
   return null;
 }
-function setHTML() {
-  const K = KL(B.klasse), L = checks(), bad = L.filter(c => c.lvl === 'bad'), warn = L.filter(c => c.lvl === 'warn');
-  const fb = bad[0] && slotOf(bad[0]);
-  const verdict = bad.length ? `<div class="bk-verdict f-bad"><i></i><span><b>${esc(bad[0].t)}</b> ${bad[0].d}</span>${fb ? `<button type="button" class="bk-fix" data-edit="${fb}">Beheben: ${SLOT(fb).tt} wählen</button>` : ''}</div>` : warn.length ? `<p class="bk-verdict f-warn"><i></i>Alles passt zusammen, ${warn.length} Hinweis${warn.length > 1 ? 'e' : ''} unten.</p>` : `<p class="bk-verdict f-ok"><i></i>Alles passt zusammen.</p>`;
-  let h = `<h3 class="bk-h">Dein Set: ${K.name}</h3>${verdict}`;
-  if (state.flash) h += `<p class="bk-flash" role="status">${esc(state.flash)}</p>`;
-  if (state.notes.length) h += `<ul class="bk-notes">${state.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`;
-  h += `<ol class="bk-set">${SLOTS.map(s => {
-    let name = '', why = '';
-    if (s.id === 'extras') { const on = EXG.filter(([k]) => B[k]).map(([k, t]) => t); name = on.length ? on.join(', ') : 'Keine'; why = 'Kondensator, Buzzer, GPS, LEDs'; }
-    else if (s.id === 'rx' && B.rx === '__builtin') { name = 'Eingebauter Empfänger'; why = whyLine('rx'); }
-    else { const p = P(B[s.id]); name = p ? cleanName(p) : ''; why = whyLine(s.id); }
-    const pr = s.id === 'board' && P(B.esc) && !isAio(P(B.board)) ? ` + ${esc(cleanName(P(B.esc)))}` : '';
-    const issue = L.find(c => c.lvl !== 'ok' && slotOf(c) === s.id);
-    return `<li class="${issue ? 'f-' + issue.lvl : ''}"><button type="button" class="bk-set-b" data-edit="${s.id}"><span class="bk-opt-ic" aria-hidden="true">${icon(s.id === 'extras' ? 'kondensator' : s.id, P(B[s.id]) || {})}</span><span class="bk-set-t"><small>${s.t}</small><b>${name ? esc(name) + pr : '<span class="mute">Noch nicht gewählt</span>'}</b>${why ? `<span>${esc(why)}</span>` : ''}${issue ? `<em class="bk-why">${esc(issue.t)}</em>` : ''}</span><span class="bk-set-go">${name ? 'Tauschen' : 'Wählen'}<span aria-hidden="true"> ›</span></span></button></li>`;
-  }).join('')}</ol>`;
-  const hints = [...bad, ...warn];
-  if (hints.length) h += `<h4 class="bk-h4">Hinweise</h4><ul class="bk-cl">${hints.map(c => { const sl = slotOf(c); return `<li class="f-${c.lvl}"><b>${c.t}</b><span>${c.d}</span>${sl ? `<button type="button" class="bk-fix" data-edit="${sl}">${c.lvl === 'bad' ? 'Beheben' : 'Ansehen'}: ${SLOT(sl).tt}</button>` : ''}</li>`; }).join('')}</ul>`;
-  h += `<div class="bk-share"><button class="btn ghost" type="button" data-bk-share>Bau als Link teilen</button><button class="btn ghost" type="button" data-bk-restart>Fragen neu beantworten</button></div>`;
+const PARTSTEPS = ['akku', 'rahmen', 'board', 'motor', 'prop', 'video', 'rx'];
+const short = (p) => cleanName(p).replace(/\s*\(.*$/, '').split(' ').slice(0, 3).join(' ');
+const anyChosen = () => KEYS.some(k => k !== 'klasse' && k !== 'kv' && B[k]);
+const holesOf = (f) => { const L = Array.isArray(f && f.stack_lochabstaende) ? f.stack_lochabstaende.map(num).filter(Boolean) : []; const s = num(f && f.stack_lochabstand); if (s && !L.some(x => Math.abs(x - s) < .1)) L.push(s); return L; };
+const fitsFrame = (b, f = P(B.rahmen)) => { if (!f || !b) return true; const H = holesOf(f); return !H.length || H.some(h => Math.abs(h - boardSize(b)) <= .6); };
+const fitsCells = (b, c = cells()) => { if (!c || !b) return true; const [lo, hi] = range(b.eingang_s); return !lo || (c >= lo && c <= hi); };
+const hasPlan = (b) => !!(layoutFor(b) && layoutFor(b).rollen);
+const exRec = (k) => { const c = cells() || 0; return (k === 'kondensator' && c >= 4) || (k === 'buzzer' && B.klasse !== 'whoop') || (k === 'gps' && B.klasse === 'seven'); };
+
+function stepDone(id) {
+  if (id === 'klasse') return !!state.klOk;
+  if (id === 'video') { const v = P(B.video); return !!v && (v.typ === 'digital' || !!B.kamera); }
+  if (PARTSTEPS.includes(id)) return !!B[id];
+  if (id === 'extras') return !!state.exOk;
+  if (id === 'loeten') return !!state.solderSeen;
+  if (id === 'fly') return !!state.flown;
+  return false;
+}
+const reach = (i) => STEPS.slice(0, i).every(s => stepDone(s.id));
+function firstOpen() { const i = STEPS.findIndex(s => !stepDone(s.id)); return i < 0 ? STEPS.length - 1 : i; }
+function stepLabel(id) {
+  if (id === 'klasse') return state.klOk ? KL(B.klasse).name.replace(/^(Freestyle|Long Range|Tiny) /, '') : '';
+  if (id === 'akku') { const a = P(B.akku); return a ? `${a.zellen}S · ${de(num(a.mah))} mAh` : ''; }
+  if (id === 'rx' && B.rx === '__builtin') return 'eingebaut';
+  if (PARTSTEPS.includes(id)) { const p = P(B[id]); return p ? short(p) : ''; }
+  if (id === 'extras') { const n = EXG.filter(([k]) => k !== 'kamera' && B[k]).length; return state.exOk ? (n ? n + ' gewählt' : 'keine') : ''; }
+  return '';
+}
+function renderSteps() {
+  ui.steps.innerHTML = STEPS.map((s, i) => { const ok = reach(i) || i === step, done = stepDone(s.id), lab = stepLabel(s.id);
+    return `<button type="button" class="${i === step ? 'now' : ''} ${done ? 'done' : ''}" data-i="${i}" ${ok ? '' : 'disabled'} ${i === step ? 'aria-current="step"' : ''} title="${esc(s.t + (lab ? ': ' + lab : ''))}"><b>${done && i !== step ? '✓' : i + 1}</b><span>${s.t}${lab ? `<small>${esc(lab)}</small>` : ''}</span></button>`; }).join('');
+  const sid = STEPS[step].id, nx = STEPS[step + 1];
+  ui.prev.hidden = step === 0;
+  ui.next.hidden = !nx;
+  if (nx) {
+    const done = stepDone(sid) || sid === 'extras';
+    ui.next.disabled = !done;
+    const need = { klasse: 'Erst eine Klasse wählen', akku: 'Erst einen Akku wählen', rahmen: 'Erst einen Rahmen wählen', board: 'Erst einen Flugcontroller wählen', motor: 'Erst Motoren wählen', prop: 'Erst Propeller wählen', video: P(B.video) ? 'Erst eine Kamera wählen' : 'Erst ein Videosystem wählen', rx: 'Erst einen Empfänger wählen' };
+    ui.next.querySelector('span').textContent = !done ? (need[sid] || 'Weiter') : sid === 'extras' && !EXG.some(([k]) => k !== 'kamera' && B[k]) ? 'Ohne Extras weiter' : 'Weiter: ' + nx.t;
+    ui.next.classList.toggle('ready', done);
+  }
+}
+
+/* Kandidaten je Schritt: nur, was zu Klasse, Akku, Rahmen und Flugcontroller passt */
+function candidates(slot) {
+  const f = P(B.rahmen), c = cells();
+  let L = listOf(slot).filter(p => p && p.id && inClass[slot](p));
+  if (slot === 'akku' && state.f.cells) L = L.filter(a => num(a.zellen) === +state.f.cells);
+  if (slot === 'board') { L = L.filter(b => fitsFrame(b) && fitsCells(b)); if (state.f.art) L = L.filter(x => state.f.art === 'aio' ? isAio(x) : !isAio(x)); }
+  if (slot === 'prop' && f && num(f.max_prop_zoll)) L = L.filter(p => num(p.durchmesser_zoll) <= num(f.max_prop_zoll) + .05);
+  if (slot === 'video' && state.f.vfam) { const v = VFAM.find(x => x.id === state.f.vfam); if (v) L = L.filter(x => v.typ ? x.typ === v.typ : v.re.test(x.name)); }
+  if (slot === 'rx' && state.f.rfam) { const r = RFAM.find(x => x.id === state.f.rfam); if (r) L = L.filter(x => r.re.test((x.protokoll || '') + ' ' + x.name)); }
+  return L;
+}
+/* Ausgeschlossen, mit Grund (für den Klappkasten „Passt nicht“) */
+function excluded(slot) {
+  const f = P(B.rahmen), c = cells(), out = [];
+  listOf(slot).filter(p => p && p.id && inClass[slot](p)).forEach(p => {
+    if (slot === 'board') { if (!fitsFrame(p)) out.push({ p, why: `braucht ${de(boardSize(p), 1)} mm Lochabstand, dein Rahmen hat ${holesOf(f).map(h => de(h, 1)).join(' oder ')} mm` }); else if (!fitsCells(p)) { const [lo, hi] = range(p.eingang_s); out.push({ p, why: `verträgt nur ${lo}S bis ${hi}S, dein Akku hat ${c}S` }); } }
+    if (slot === 'prop' && f && num(f.max_prop_zoll) && num(p.durchmesser_zoll) > num(f.max_prop_zoll) + .05) out.push({ p, why: `${de(num(p.durchmesser_zoll), 1)} Zoll, dein Rahmen nimmt höchstens ${de(num(f.max_prop_zoll), 1)} Zoll` });
+  });
+  return out;
+}
+function ranked(slot) {
+  const rank = { ok: 0, warn: 1, bad: 2 };
+  const J = candidates(slot).map(p => ({ p, j: judge(slot, p), s: score(stWith(slot, p)) + (slot === 'board' && !hasPlan(p) ? 15 : 0) }));
+  J.sort((a, b) => rank[a.j.lvl] - rank[b.j.lvl] || a.s - b.s);
+  const good = J.filter(x => x.j.lvl !== 'bad'), bad = J.filter(x => x.j.lvl === 'bad');
+  const rec = good.find(x => x.j.lvl === 'ok') || null;
+  return { good, bad, rec };
+}
+
+function rowHTML2(slot, p, j, rec) {
+  const on = B[slot] === p.id;
+  const tags = [];
+  if (rec) tags.push('<span class="bk-tag rec">Empfohlen</span>');
+  if (j.lvl === 'warn') tags.push('<span class="bk-tag warn">Hinweis</span>');
+  if (slot === 'board') tags.push(hasPlan(p) ? '<span class="bk-tag plan">Genauer Lötplan</span>' : '<span class="bk-tag dim">Lötplan allgemein</span>');
+  const why = j.lvl !== 'ok' ? `<span class="bk-why">${esc(j.t)}${j.d ? ': ' + esc(String(j.d).replace(/<[^>]+>/g, '')) : ''}</span>` : '';
+  let kv = '';
+  if (slot === 'motor' && on) {
+    const ks = kvList(p), best = bestKv(p, wantCells()), c = wantCells(), [lo, hi] = KL(B.klasse).rpmV;
+    const lab = k => { if (k === best) return 'passt'; const rpm = k * c * 3.7; return rpm > hi * 1.12 ? 'zu heiß' : rpm > hi ? 'sehr spritzig' : rpm < lo * .85 ? 'zu träge' : 'geht auch'; };
+    if (ks.length > 1) kv = `<div class="bk-kvrow"><span>KV-Variante für deinen ${c}S-Akku</span><span class="bk-kvs" role="group" aria-label="KV-Variante">${ks.slice().sort((a, b) => a - b).map(k => { const l = lab(k); return `<button type="button" class="chip-b ${B.kv === k ? 'on' : ''} ${k === best ? 'rec' : ''} ${/heiß|träge/.test(l) ? 'dim' : ''}" data-pick-kv="${esc(p.id)}|${k}" aria-pressed="${B.kv === k}">${de(k)} KV · ${l}</button>`; }).join('')}</span></div>`;
+  }
+  return `<li class="bk-row ${on ? 'on' : ''} f-${j.lvl}" data-her="${esc(p.hersteller || 'Andere')}" data-s="${esc((nameOf(p) + ' ' + (p.hersteller || '')).toLowerCase())}">
+    <button type="button" class="bk-row-b" data-pick="${esc(p.id)}" data-slot="${slot}" role="radio" aria-checked="${on}">
+      <span class="bk-radio" aria-hidden="true"></span><span class="bk-opt-ic" aria-hidden="true">${icon(slot, p)}</span>
+      <span class="bk-row-t"><b>${esc(cleanName(p))}</b><small>${esc(p.hersteller || '')}${p.hersteller ? ' · ' : ''}${esc(specLine(slot, p))}</small>${why}</span>
+      <span class="bk-tags">${tags.join('')}</span>
+    </button>${kv}</li>`;
+}
+function chipRow(name, items, cur, label) {
+  return `<div class="bk-filter"><span>${label}</span><div class="bk-chips" role="group" aria-label="${esc(label)}">${items.map(([v, t, rec]) => `<button type="button" class="chip-b ${String(cur || '') === String(v) ? 'on' : ''} ${rec ? 'rec' : ''}" data-f="${name}" data-v="${esc(v)}" aria-pressed="${String(cur || '') === String(v)}">${t}</button>`).join('')}</div></div>`;
+}
+function decisionHTML(slot) {
+  const f = state.f;
+  if (slot === 'akku') {
+    const cs = [...new Set(arr('akku').filter(inClass.akku).map(a => num(a.zellen)).filter(Boolean))].sort((a, b) => a - b), rec = KDEF[B.klasse].c;
+    if (cs.length < 2) return '';
+    return chipRow('cells', [['', 'Alle'], ...cs.map(c => [c, `${c}S${c === rec ? ' · empfohlen' : ''}`, c === rec])], f.cells, 'Wie viele Zellen (S)?');
+  }
+  if (slot === 'board') return chipRow('art', [['', 'Alle'], ['stack', 'Stack (zwei Platinen)'], ['aio', 'Alles auf einer Platine']], f.art, 'Bauart');
+  if (slot === 'video') return chipRow('vfam', [['', 'Alle'], ...VFAM.map(v => [v.id, v.t])], f.vfam, 'Welche Brille hast du?');
+  if (slot === 'rx') return chipRow('rfam', [['', 'Alle'], ...RFAM.map(r => [r.id, r.t])], f.rfam, 'Welche Funke hast du?');
+  if (slot === 'motor') { const c = cells(); return c ? `<p class="bk-info"><i aria-hidden="true"></i>Dein Akku hat <b>${c}S</b>. Die passende KV-Variante wird beim Wählen gesetzt, du kannst sie danach ändern.</p>` : ''; }
+  if (slot === 'prop') { const fr = P(B.rahmen); return fr && num(fr.max_prop_zoll) ? `<p class="bk-info"><i aria-hidden="true"></i>Dein Rahmen nimmt Propeller bis <b>${de(num(fr.max_prop_zoll), 1)} Zoll</b>.</p>` : ''; }
+  if (slot === 'rahmen') return '';
+  return '';
+}
+function toolsHTML(slot, list) {
+  const her = [...new Set(list.map(x => x.p.hersteller || 'Andere'))].sort((a, b) => a.localeCompare(b, 'de'));
+  const q = (state.q && state.q[slot]) || '', h = (state.her && state.her[slot]) || '';
+  return `<div class="bk-find"><label class="sr" for="bk-q-${slot}">Suchen</label><input id="bk-q-${slot}" type="search" data-bk-search="${slot}" value="${esc(q)}" placeholder="Suchen, z. B. ${esc(her[0] || 'Hersteller')}" autocomplete="off">
+    <label class="sr" for="bk-h-${slot}">Hersteller</label><select id="bk-h-${slot}" data-bk-her="${slot}"><option value="">Alle Hersteller (${list.length})</option>${her.map(x => `<option ${x === h ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>`;
+}
+function partHTML(slot) {
+  const S = SLOT(slot), K = KL(B.klasse);
+  let h = `<h3 class="bk-h">${S.t} <small class="bk-kl-tag">${K.name}</small></h3><p class="bk-p">${INTRO[slot] || ''}</p>`;
+  h += decisionHTML(slot);
+  const { good, bad, rec } = ranked(slot);
+  if (slot === 'rx' && P(B.board) && P(B.board).eingebauter_empfaenger) h += `<ul class="bk-list" role="radiogroup" aria-label="Eingebauter Empfänger"><li class="bk-row ${B.rx === '__builtin' ? 'on' : ''} f-ok"><button type="button" class="bk-row-b" data-builtin role="radio" aria-checked="${B.rx === '__builtin'}"><span class="bk-radio" aria-hidden="true"></span><span class="bk-opt-ic" aria-hidden="true">${icon('rx', {})}</span><span class="bk-row-t"><b>Eingebauter Empfänger</b><small>${esc(P(B.board).eingebauter_empfaenger)} steckt schon auf ${esc(cleanName(P(B.board)))}, nichts zu löten</small></span><span class="bk-tags"><span class="bk-tag rec">Empfohlen</span></span></button></li></ul><p class="bk-sub">Oder ein eigener Empfänger:</p>`;
+  if (rec && !B[slot] && !(slot === 'rx' && B.rx === '__builtin')) h += `<button type="button" class="bk-auto" data-bk-auto="${slot}"><span>Für mich aussuchen</span><b>${esc(short(rec.p))}</b></button>`;
+  if (good.length > 6) h += toolsHTML(slot, good);
+  h += good.length ? `<ul class="bk-list" role="radiogroup" aria-label="${esc(S.t)}" data-bk-list>${good.map(x => rowHTML2(slot, x.p, x.j, rec && x.p.id === rec.p.id)).join('')}</ul><p class="bk-empty" data-bk-none hidden>Keine Treffer. Suche leeren oder anderen Hersteller wählen.</p>` : `<p class="bk-empty">Mit deiner Auswahl passt hier nichts. Ändere oben die Auswahl oder geh einen Schritt zurück.</p>`;
+  const ex = excluded(slot).concat(bad.map(x => ({ p: x.p, why: x.j.t + (x.j.d ? ': ' + String(x.j.d).replace(/<[^>]+>/g, '') : '') })));
+  if (ex.length) h += `<details class="bk-moreopts"><summary>Passt nicht zu deinem Bau (${ex.length})</summary><ul class="bk-nolist">${ex.map(x => `<li><b>${esc(cleanName(x.p))}</b><span>${esc(x.why)}</span></li>`).join('')}</ul></details>`;
+  if (slot === 'board' && P(B.board) && !isAio(P(B.board)) && !P(B.board).esc && !num(P(B.board).esc_dauerstrom_a) && arr('esc').length) h += `<h4 class="bk-h4">Motorregler (ESC) dazu</h4><ul class="bk-list" role="radiogroup">${arr('esc').map(p => rowHTML2('esc', p, judge('esc', p), false)).join('')}</ul>`;
+  if (slot === 'video' && P(B.video) && P(B.video).typ !== 'digital') { const cams = arr('extra').filter(x => x.typ === 'kamera'); if (cams.length) h += `<h4 class="bk-h4">Dazu eine Kamera <small>analoges Video braucht eine eigene Kamera</small></h4><ul class="bk-list" role="radiogroup">${cams.map(p => rowHTML2('kamera', p, { lvl: 'ok' }, false)).join('')}</ul>`; }
   return h;
 }
-function startHTML() {
-  const w = state.w;
-  const opt = (name, cur, items) => `<div class="bk-qs">${items.map(x => `<button type="button" class="bk-q ${cur === x.id ? 'on' : ''}" data-q="${name}" data-v="${x.id}" aria-pressed="${cur === x.id}"><b>${x.t}</b><small>${x.sub}</small></button>`).join('')}</div>`;
-  return `<h3 class="bk-h">Drei Fragen, dann steht dein Set</h3><p class="bk-p">Du brauchst kein Vorwissen. Die Werkbank sucht passende Teile aus, erklärt jedes und zeigt dir danach jede Lötstelle. Tauschen kannst du später alles.</p>
-    <h4 class="bk-h4"><b class="bk-qn">1</b>Was willst du fliegen?</h4>
-    <div class="bk-klassen">${KLASSEN.map(k => `<button type="button" class="bk-kl ${B.klasse === k.id && state.klOk ? 'on' : ''}" data-klasse="${k.id}" aria-pressed="${B.klasse === k.id && !!state.klOk}"><svg viewBox="0 0 120 80" aria-hidden="true">${klasseSVG(k.id)}</svg><b>${k.name}</b><small>${k.sub}</small></button>`).join('')}</div>
-    <h4 class="bk-h4"><b class="bk-qn">2</b>Welche Brille hast du oder willst du?</h4>
-    ${opt('video', w.video, [...VFAM, { id: '', t: 'Weiß ich noch nicht', sub: 'die Werkbank empfiehlt eine' }])}
-    <h4 class="bk-h4"><b class="bk-qn">3</b>Welche Funke hast du?</h4>
-    ${opt('funk', w.funk, [...RFAM.filter(r => r.id !== 'andere'), { id: '', t: 'Weiß ich noch nicht', sub: 'dann ExpressLRS, das passt zu den meisten' }])}
-    <div class="btns bk-startgo"><button class="btn amber solid" type="button" data-auto ${state.klOk ? '' : 'disabled'}>${state.klOk ? 'Passendes Set zusammenstellen' : 'Erst Frage 1 beantworten'} <span class="arr">→</span></button></div>`;
+function klasseHTML() {
+  return `<h3 class="bk-h">Was willst du bauen?</h3><p class="bk-p">Danach führt dich die Werkbank Schritt für Schritt: Akku, Rahmen, Flugcontroller, Motoren und so weiter. Du siehst immer nur Teile, die zu deinen bisherigen Entscheidungen passen. Nichts ist vorausgewählt.</p>
+    <div class="bk-klassen" role="radiogroup" aria-label="Klasse">${KLASSEN.map(k => { const on = B.klasse === k.id && state.klOk; return `<button type="button" class="bk-kl ${on ? 'on' : ''}" data-klasse="${k.id}" role="radio" aria-checked="${on}"><svg viewBox="0 0 120 80" aria-hidden="true">${klasseSVG(k.id)}</svg><b>${k.name}</b><small>${k.sub}</small></button>`; }).join('')}</div>`;
+}
+function extrasStepHTML() {
+  const ex = arr('extra'); let h = `<h3 class="bk-h">Extras</h3><p class="bk-p">Alles freiwillig, nichts ist vorausgewählt. „Empfohlen“ heißt: Für deinen Bau sinnvoll. Ein zweiter Klick nimmt ein Teil wieder raus.</p>`;
+  for (const [k, t, sub] of EXG) {
+    if (k === 'kamera') continue;
+    if (B.klasse === 'whoop' && (k === 'gps' || k === 'buzzer' || k === 'kondensator')) continue;
+    if (B.klasse === 'cine' && k === 'gps') continue;
+    const L = ex.filter(p => p.typ === k || (k === 'led' && /led/i.test(p.typ || ''))); if (!L.length) continue;
+    h += `<h4 class="bk-h4">${t} ${exRec(k) ? '<span class="bk-tag rec">Empfohlen</span>' : ''} <small>${sub}</small></h4><ul class="bk-list">${L.map(p => { const on = B[k] === p.id; return `<li class="bk-row ${on ? 'on' : ''} f-ok"><button type="button" class="bk-row-b" data-extra="${k}" data-id="${esc(p.id)}" role="checkbox" aria-checked="${on}"><span class="bk-check" aria-hidden="true"></span><span class="bk-opt-ic" aria-hidden="true">${icon(k, p)}</span><span class="bk-row-t"><b>${esc(cleanName(p))}</b><small>${esc(specLine('extra', p))}</small></span><span class="bk-tags">${on ? '<span class="bk-tag plan">Eingebaut</span>' : ''}</span></button></li>`; }).join('')}</ul>`;
+  }
+  return h;
+}
+function solderHTML() {
+  const b = P(B.board);
+  if (!b) return `<h3 class="bk-h">Löten</h3><p class="bk-empty">Erst einen Flugcontroller wählen.</p>`;
+  const plan = wiring(), steps = solderSteps(plan), i = clamp(state.solderStep, 0, steps.length - 1), s = steps[i];
+  return `<h3 class="bk-h">Löten</h3><p class="bk-p">Ein Arbeitsschritt nach dem anderen. Im Plan siehst du genau, welcher Draht an welches Pad kommt. Der Plan ist zum Anschauen, anklicken musst du dort nichts.</p>
+    <div class="bk-solcard" aria-live="polite"><p class="bk-kicker">Lötschritt ${i + 1} von ${steps.length}</p><div class="bk-soltext">${s.html}</div></div>
+    <div class="bk-solnav"><button class="btn ghost" type="button" data-sol-go="-1" ${i === 0 ? 'disabled' : ''}>‹ Zurück</button><span class="bk-dots" aria-hidden="true">${steps.map((_, k) => `<i class="${k === i ? 'on' : k < i ? 'done' : ''}"></i>`).join('')}</span><button class="btn" type="button" data-sol-go="1" ${i === steps.length - 1 ? 'disabled' : ''}>Nächster Lötschritt ›</button></div>
+    <details class="bk-moreopts"><summary>Alle ${steps.length} Lötschritte als Liste</summary><ol class="bk-sol">${steps.map((x, k) => `<li><button type="button" class="${k === i ? 'on' : ''}" data-sol="${k}" aria-pressed="${k === i}"><b>${k + 1}</b><span>${x.html}</span></button></li>`).join('')}</ol></details>
+    ${plan.uarts.length ? `<h4 class="bk-h4">Danach in Betaflight unter „Anschlüsse“</h4><p class="bk-uarts">${plan.uarts.map(u => `<span><b>${esc(u.uart)}</b> ${esc(u.wer)}</span>`).join('')}</p><p class="mute small">Empfänger als „Serial RX“, Videosystem als „VTX (MSP + DisplayPort)“, GPS als „GPS“. Schritt für Schritt erklärt es <a href="werkstatt.html">Betaflight &amp; Löten</a>.</p>` : ''}`;
+}
+function flyHTML() {
+  const L = checks(), bad = L.filter(c => c.lvl === 'bad'), need = ['rahmen', 'board', 'motor', 'prop', 'akku'].filter(k => !B[k]);
+  let h = `<h3 class="bk-h">Abheben</h3>`;
+  if (need.length) h += `<p class="bk-empty">Es fehlen noch: ${need.map(k => SLOT(k).t).join(', ')}.</p>`;
+  else if (bad.length) h += `<p class="bk-empty">Erst die roten Punkte beheben, sonst hebt hier nichts ab:</p><ul class="bk-cl">${bad.map(c => { const sl = slotOf(c); return `<li class="f-bad"><b>${c.t}</b><span>${c.d}</span>${sl ? `<button type="button" class="bk-fix" data-edit="${sl}">Beheben: ${SLOT(sl).tt}</button>` : ''}</li>`; }).join('')}</ul>`;
+  else h += `<p class="bk-p">Alles verbunden. Propeller drauf, Akku dran, und los. Danach fliegst du genau diesen Kopter im Vereins-Simulator durch unsere Turnhalle.</p><div class="btns"><button class="btn amber solid" type="button" data-bk-go2>Abheben</button><a class="btn" href="simulator.html?bau=1#simulator" data-bk-sim2>Im Simulator fliegen <span class="arr">→</span></a></div>`;
+  h += `<h4 class="bk-h4">Dein Bau</h4><ul class="bk-sum">${PARTSTEPS.map(k => `<li><span>${SLOT(k).t}</span><b>${k === 'rx' && B.rx === '__builtin' ? 'Eingebaut' : P(B[k]) ? esc(cleanName(P(B[k]))) + (k === 'motor' && B.kv ? ` · ${de(B.kv)} KV` : '') : '–'}</b><button type="button" class="linkbtn" data-edit="${k}">ändern</button></li>`).join('')}</ul>`;
+  h += `<div class="bk-share"><button class="btn ghost" type="button" data-bk-share>Bau als Link teilen</button></div>`;
+  return h;
 }
 function renderBody() {
-  const s = STEPS[step];
-  let h = '';
-  if (state.edit) h = editHTML(state.edit);
-  else if (s.id === 'start') h = startHTML();
-  else if (s.id === 'set') h = setHTML();
-  else if (s.id === 'loeten') {
-    const plan = wiring();
-    if (!P(B.board)) h = `<h3 class="bk-h">Lötplan</h3><p class="bk-empty">Stell zuerst dein Set zusammen, dann zeigt dir die Werkbank jede Lötstelle.</p>`;
-    else {
-      const steps = solderSteps(plan);
-      h = `<h3 class="bk-h">Lötplan</h3><p class="bk-p">Für ${esc(cleanName(P(B.board)))}. Tipp einen Schritt an, dann leuchtet die Lötstelle oben im Plan. Die Reihenfolge ist so gewählt, dass nichts im Weg ist.</p>
-      <ol class="bk-sol">${steps.map((x, i) => `<li><button type="button" class="${i === state.solderStep ? 'on' : ''}" data-sol="${i}" aria-pressed="${i === state.solderStep}"><b>${i + 1}</b><span>${x.html}</span></button></li>`).join('')}</ol>
-      ${plan.uarts.length ? `<h4 class="bk-h4">Danach in Betaflight unter „Anschlüsse“</h4><p class="bk-uarts">${plan.uarts.map(u => `<span><b>${esc(u.uart)}</b> ${esc(u.wer)}</span>`).join('')}</p><p class="mute small">Empfänger als „Serial RX“, Videosystem als „VTX (MSP + DisplayPort)“, GPS als „GPS“. Schritt für Schritt erklärt es <a href="werkstatt.html">Betaflight &amp; Löten</a>.</p>` : ''}`;
-    }
-  } else if (s.id === 'fly') {
-    const L = checks(), bad = L.filter(c => c.lvl === 'bad'), need = ['rahmen', 'board', 'motor', 'prop', 'akku'].filter(k => !B[k]);
-    h = `<h3 class="bk-h">Abheben</h3>`;
-    if (need.length) h += `<p class="bk-empty">Es fehlen noch: ${need.map(k => SLOT(k).t).join(', ')}.</p>`;
-    else if (bad.length) h += `<p class="bk-empty">Erst die roten Punkte beheben, sonst hebt hier nichts ab:</p><ul class="bk-cl">${bad.map(c => { const sl = slotOf(c); return `<li class="f-bad"><b>${c.t}</b><span>${c.d}</span>${sl ? `<button type="button" class="bk-fix" data-edit="${sl}">Beheben: ${SLOT(sl).tt}</button>` : ''}</li>`; }).join('')}</ul>`;
-    else h += `<p class="bk-p">Alles verbunden. Propeller drauf, Akku dran, und los. Danach fliegst du genau diesen Kopter im Vereins-Simulator durch unsere Turnhalle.</p><div class="btns"><button class="btn amber solid" type="button" data-bk-go2>Abheben</button><a class="btn" href="simulator.html?bau=1#simulator" data-bk-sim2>Im Simulator fliegen <span class="arr">→</span></a></div>`;
-    h += `<div class="bk-share"><button class="btn ghost" type="button" data-bk-share>Bau als Link teilen</button><button class="btn ghost" type="button" data-bk-restart>Neu anfangen</button></div>`;
-  }
+  const sid = STEPS[step].id;
+  let h = `<div class="bk-sh"><p class="bk-kicker">Schritt ${step + 1} von ${STEPS.length}</p>${anyChosen() || state.klOk ? '<button type="button" class="bk-reset" data-bk-restart>Neu anfangen</button>' : ''}</div>`;
+  if (state.flash) h += `<p class="bk-flash" role="status">${esc(state.flash)}</p>`;
+  if (sid === 'klasse') h += klasseHTML();
+  else if (PARTSTEPS.includes(sid)) h += partHTML(sid);
+  else if (sid === 'extras') h += extrasStepHTML();
+  else if (sid === 'loeten') h += solderHTML();
+  else h += flyHTML();
   ui.body.innerHTML = h;
-  state.flash = '';
+  applyFind(sid);
+}
+/* Suchen und Hersteller: nur ausblenden, nichts neu zeichnen (kein Springen) */
+function applyFind(slot) {
+  const list = ui.body.querySelector('[data-bk-list]'); if (!list) return;
+  const q = ((state.q && state.q[slot]) || '').trim().toLowerCase(), h = (state.her && state.her[slot]) || '';
+  let n = 0; list.querySelectorAll('.bk-row').forEach(li => { const ok = (!q || li.dataset.s.includes(q)) && (!h || li.dataset.her === h); li.hidden = !ok; if (ok) n++; });
+  const none = ui.body.querySelector('[data-bk-none]'); if (none) none.hidden = n > 0;
 }
 function renderBar() {
   const m = metrics(), L = checks();
   ui.m.gewicht.textContent = m.gewicht ? de(Math.round(m.gewicht)) + ' g' : '–';
   ui.m.twr.textContent = m.twr ? de(m.twr, 1) + ' : 1' : '–';
   ui.m.hover.textContent = m.hover ? de(Math.round(m.hover * 100)) + ' %' : '–';
-  ui.m.zeit.textContent = m.zeit ? de(Math.max(1, Math.round(m.zeit * .85))) + '–' + de(Math.round(m.zeit * 1.15)) + ' min' : '–';
+  { const lo = Math.max(1, Math.round(m.zeit * .85)), hi = Math.round(m.zeit * 1.15); ui.m.zeit.textContent = m.zeit ? (lo >= hi ? 'etwa ' + de(hi) : de(lo) + '–' + de(hi)) + ' min' : '–'; }
   const bad = L.filter(c => c.lvl === 'bad').length, warn = L.filter(c => c.lvl === 'warn').length;
-  const any = Object.keys(B).some(k => k !== 'klasse' && B[k]);
+  const any = anyChosen();
   ui.ampel.className = !any ? '' : bad ? 'bad' : warn ? 'warn' : 'ok';
   ui.checkT.textContent = !any ? 'Noch keine Teile' : bad ? `${bad} passt nicht` : warn ? `${warn} Hinweis${warn > 1 ? 'e' : ''}` : 'Alles passt';
   ui.checks.innerHTML = L.length ? `<ul class="bk-cl">${L.map(c => { const sl = c.lvl !== 'ok' && slotOf(c); return `<li class="f-${c.lvl}"><b>${c.t}</b><span>${c.d}</span>${sl ? `<button type="button" class="bk-fix" data-edit="${sl}">${c.lvl === 'bad' ? 'Beheben' : 'Ansehen'}: ${SLOT(sl).tt}</button>` : ''}</li>`; }).join('')}</ul>` : '<p class="mute">Noch nichts zu prüfen.</p>';
   const ready = ['rahmen', 'board', 'motor', 'prop', 'akku'].every(k => B[k]) && !bad;
   ui.go.disabled = !ready; ui.go.textContent = ready ? 'Abheben' : bad ? 'Erst Fehler beheben' : 'Abheben';
   ui.osdW.textContent = m.gewicht ? de(Math.round(m.gewicht)) + ' g' : '0 g';
-  ui.osdName.textContent = KL(B.klasse).name + (P(B.board) ? ' · ' + cleanName(P(B.board)) : '');
+  ui.osdName.textContent = (state.klOk ? KL(B.klasse).name : 'Dein Kopter') + (P(B.board) ? ' · ' + cleanName(P(B.board)) : '');
 }
 function render() { ui.app.classList.toggle('is-empty', !B.rahmen); renderSteps(); renderBody(); renderBar(); save(); if (view === 'loeten') drawSolder(); }
+/* neu zeichnen, ohne dass die Liste springt */
+function renderKeep() {
+  const st = ui.body.scrollTop, ae = D.activeElement, sel = ae && ae.id && ui.body.contains(ae) ? '#' + ae.id : null, cp = ae && 'selectionStart' in ae ? ae.selectionStart : null;
+  const pk = ae && ae.closest && ae.closest('[data-pick],[data-extra],[data-pick-kv]'); const pkSel = pk ? (pk.dataset.pickKv ? `[data-pick-kv="${pk.dataset.pickKv}"]` : pk.dataset.pick ? `[data-pick="${pk.dataset.pick}"]` : `[data-id="${pk.dataset.id}"]`) : null;
+  render(); ui.body.scrollTop = st;
+  const el = sel ? ui.body.querySelector(sel) : pkSel ? ui.body.querySelector(pkSel) : null;
+  if (el) { el.focus({ preventScroll: true }); if (cp != null && el.setSelectionRange) try { el.setSelectionRange(cp, cp); } catch (e) {} }
+}
 
 /* kleine Symbole, eigene SVG-Zeichnungen, eine Strichstärke */
 function icon(k, p) {
@@ -696,6 +732,8 @@ function padLayout(b) {
 }
 function drawEsc(mk, b, act) {
   const aio = isAio(b), S = 440, x0 = 500 - S / 2, y0 = 450 - S / 2, on = new Set(act.pads);
+  vlabel(aio ? 'die Platine (alles auf einer), Akku- und Motorpads' : 'den Motorregler (ESC), die untere Platine im Stapel', aio ? 'aio' : 'bottom');
+  ui.solder.classList.remove('fade'); void ui.solder.getBoundingClientRect(); if (!RM) ui.solder.classList.add('fade');
   mk('rect', { x: x0, y: y0, width: S, height: S, rx: 26, class: 'sv-esc' });
   for (let i = 0; i < 4; i++) mk('rect', { x: x0 + 120 + i * 52, y: y0 + 170, width: 36, height: 36, rx: 3, class: 'sv-mcu' });
   mk('text', { x: 500, y: y0 + 240, 'text-anchor': 'middle', class: 'sv-t sm dim' }).textContent = aio ? nameOf(b) + ' (alles auf einer Platine)' : '4in1-ESC, unten im Stack';
@@ -712,6 +750,7 @@ function drawEsc(mk, b, act) {
     mk('rect', { x: 455, y: y0 + S + 110, width: 90, height: 50, rx: 6, class: 'sv-big on' }); mk('text', { x: 500, y: y0 + S + 142, 'text-anchor': 'middle', class: 'sv-t sm' }).textContent = 'XT60';
     if (B.kondensator) { mk('rect', { x: 620, y: y0 + S - 20, width: 120, height: 44, rx: 22, class: 'sv-box' }); mk('text', { x: 680, y: y0 + S + 8, 'text-anchor': 'middle', class: 'sv-t sm' }).textContent = 'Kondensator'; mk('path', { d: `M620 ${y0 + S} C 600 ${y0 + S}, 580 ${y0 + S - 30}, 565 ${y0 + S - 40}`, class: 'sv-w w-g on' }); }
   }
+  if (bp) iron(mk, 435, y0 + S - 47); else if (on.has('M1')) iron(mk, x0 + 40, y0 + 40);
   if (!aio) { const c = on.has('ESC'); mk('rect', { x: 440, y: y0 + 60, width: 120, height: 34, rx: 4, class: 'sv-conn' + (c ? ' on' : '') }); mk('text', { x: 500, y: y0 + 126, 'text-anchor': 'middle', class: 'sv-t pad' + (c ? ' on' : '') }).textContent = '8-polig zum Flugcontroller'; if (c) mk('path', { d: `M500 ${y0 + 60} C 500 ${y0 - 20}, 500 ${y0 - 30}, 500 ${y0 - 60}`, class: 'sv-w w-plug on' }); }
   state.solderSeen = true;
 }
@@ -743,7 +782,8 @@ function drawPlan(svg, mk, b, plan, steps, act) {
   const flip = (act.ids || []).some(x => under.has(String(x)));
   const raute = L.form === 'raute';
   const pcb = (attrs) => raute ? mk('path', { d: `M${x0 + BS / 2} ${y0} L${x0 + BS} ${y0 + BH / 2} L${x0 + BS / 2} ${y0 + BH} L${x0} ${y0 + BH / 2}Z`, 'stroke-linejoin': 'round', ...attrs }, g) : mk('rect', { x: x0, y: y0, width: BS, height: BH, rx: 34, ...attrs }, g);
-  svg.classList.remove('tilt'); void svg.getBoundingClientRect(); if (!RM) svg.classList.add('tilt');
+  svg.classList.remove('fade'); void svg.getBoundingClientRect(); if (!RM) svg.classList.add('fade');
+  vlabel(isAio(b) ? `die Platine (alles auf einer), ${flip ? 'Unterseite' : 'Oberseite'}` : `den Flugcontroller${flip ? ', Unterseite' : ''}`, isAio(b) ? 'aio' : 'top');
   const defs = mk('defs', {});
   defs.innerHTML = PLDEFS(L.farbe || '#14161b');
   // Platine
@@ -832,6 +872,7 @@ function drawPlan(svg, mk, b, plan, steps, act) {
       });
     });
   }
+  { const ap = [...actIds].map(id => pos[id]).find(q => q && !q.ghost); if (ap && cur !== last) iron(mk, ap.x, ap.y); }
   state.solderSeen = true;
   // Am Handy die Platine größer zeigen, damit die Pad-Namen lesbar sind (Anfänger-Test 28.10.)
   if (zoomOn()) { const m = 150; svg.setAttribute('viewBox', `${x0 - m} ${y0 - m} ${BS + 2 * m} ${BH + 2 * m}`); }
@@ -850,18 +891,33 @@ function compArt(mk, g, t, cx, cy, sd) {
   else if (t === 'Buzzer') { mk('circle', { cx, cy, r: 38, class: 'pl-bz' }, g); mk('circle', { cx, cy, r: 6, class: 'pl-hole' }, g); label('Buzzer', -50); }
   else { box(130, 70, 'pl-pcb2'); label(t, 5); }
 }
+/* Lötkolben fährt an das Pad, setzt den Punkt und fährt weg (nur Anschauen, keine Bedienung) */
+function iron(mk, x, y) {
+  if (RM) return;
+  const w = mk('g', { transform: `translate(${x.toFixed(1)} ${y.toFixed(1)})`, class: 'pl-ironw', 'aria-hidden': 'true' });
+  mk('circle', { r: 4, class: 'pl-spark' }, w);
+  const g = mk('g', { class: 'pl-iron' }, w);
+  mk('path', { d: 'M2 -2 L44 -44', class: 'pl-iron-tip' }, g);
+  mk('path', { d: 'M44 -44 L64 -64', class: 'pl-iron-col' }, g);
+  mk('path', { d: 'M64 -64 L150 -150', class: 'pl-iron-grip' }, g);
+}
+function vlabel(txt, layer) {
+  if (!ui.vlabel) return;
+  ui.vlabel.innerHTML = `<span class="bk-stk ${layer}" aria-hidden="true"><i></i><i></i></span><span>Du siehst: <b>${esc(txt)}</b></span><small>Nur zum Anschauen · Schritte ${innerWidth > 1100 ? 'rechts' : 'darunter'}</small>`;
+}
 let solderSvg = null;
 function drawSolder() {
   const svg = ui.solder; const b = P(B.board);
   svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 1000 1000');
   if (ui.zoom) { ui.zoom.textContent = zoomOn() ? 'Ganzer Plan' : 'Lötstellen groß'; ui.zoom.setAttribute('aria-pressed', zoomOn()); }
   const mk = (t, a, p) => { const n = D.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); (p || svg).appendChild(n); return n; };
-  if (!b) { mk('text', { x: 500, y: 500, 'text-anchor': 'middle', class: 'sv-t big' }).textContent = 'Wähl zuerst einen Flugcontroller'; return; }
+  if (!b) { vlabel('noch keinen Flugcontroller', ''); mk('text', { x: 500, y: 500, 'text-anchor': 'middle', class: 'sv-t big' }).textContent = 'Wähl zuerst einen Flugcontroller'; return; }
   const plan = wiring(), steps = solderSteps(plan), act = steps[state.solderStep] || {};
   const actPads = new Set((act.pads || []).map(String));
   if ((act.pads || []).some(x => /^(BAT|M\d|ESC)/.test(x))) { drawEsc(mk, b, act); return; }
   if (plan.layout) { drawPlan(svg, mk, b, plan, steps, act); return; }
   // Platine
+  vlabel('den Flugcontroller (allgemeines Schema)', 'top');
   const S = 420, x0 = 500 - S / 2, y0 = 470 - S / 2;
   mk('rect', { x: x0, y: y0, width: S, height: S, rx: 26, class: 'sv-pcb' });
   for (let i = 0; i < 14; i++) mk('path', { d: `M${x0 + 70} ${y0 + 70 + i * 21}h${120 + (i % 4) * 30}l18 14h${80}`, class: 'sv-trace' });
@@ -1224,7 +1280,7 @@ function frame3d(dt) {
   // LEDs
   if (G3.leds.length) G3.leds.forEach(l => l.m.color.setHSL(((G3.t * .25 + l.k * .05) % 1), .9, .55));
   // Nahaufnahme der Platine beim Schritt Flugcontroller: obere Teile ausblenden, Kamera fährt von oben heran
-  const fT = view === '3d' && !G3.fly && state.edit === 'board' && B.board ? 1 : 0; G3.fk = (G3.fk || 0) + (fT - (G3.fk || 0)) * clamp(dt * (RM ? 20 : 2.4));
+  const fT = view === '3d' && !G3.fly && STEPS[step].id === 'board' && B.board ? 1 : 0; G3.fk = (G3.fk || 0) + (fT - (G3.fk || 0)) * clamp(dt * (RM ? 20 : 2.4));
   const hideTop = G3.fk > .25; ['akku', 'video', 'prop', 'gps', 'rx', 'buzzer', 'kondensator'].forEach(k => { if (G3.parts[k]) G3.parts[k].obj.visible = !hideTop; });
   if (G3.parts.rahmen && G3.parts.rahmen.obj.userData.top) G3.parts.rahmen.obj.userData.top.visible = !hideTop;
   // Kamera
@@ -1238,9 +1294,9 @@ function frame3d(dt) {
    Speichern, Teilen, Beispiele
    ===================================================================== */
 const KEYS = ['klasse', 'rahmen', 'board', 'esc', 'motor', 'kv', 'prop', 'akku', 'video', 'rx', 'gps', 'led', 'buzzer', 'kondensator', 'kamera'];
-function save() { store.set('fcs-bau', KEYS.reduce((o, k) => (o[k] = B[k], o), {})); store.set('fcs-bau-w', { w: state.w, kl: !!state.klOk }); }
+function save() { store.set('fcs-bau2', KEYS.reduce((o, k) => (o[k] = B[k], o), {})); store.set('fcs-bau2-w', { kl: !!state.klOk, ex: !!state.exOk }); }
 function load(obj) { if (!obj) return; KEYS.forEach(k => { if (k in obj) B[k] = (k === 'klasse' || k === 'kv' || obj[k] === '__builtin' || P(obj[k])) ? obj[k] : null; }); if (!KLASSEN.some(k => k.id === B.klasse)) B.klasse = 'five'; }
-function loadW() { const o = store.get('fcs-bau-w', null); if (o && o.w) state.w = Object.assign({ video: '', funk: '' }, o.w); state.klOk = !!(o && o.kl) || !!B.rahmen; }
+function loadW() { const o = store.get('fcs-bau2-w', null); state.klOk = !!(o && o.kl) || !!B.akku || !!B.rahmen; state.exOk = !!(o && o.ex); }
 function shareLink() { const o = KEYS.reduce((a, k) => (B[k] && (a[k] = B[k]), a), {}); return location.href.split('#')[0] + '#bau=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(o))))); }
 function fromHash() { const m = location.hash.match(/bau=([^&]+)/); if (!m) return null; try { return JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch (e) { return null; } }
 function findBy(kat, re, pref) { const L = (kat === 'board' ? boards() : arr(kat)).filter(p => re.test(p.name || '')); if (!L.length) return null; if (pref) { const x = L.find(pref); if (x) return x.id; } return L[0].id; }
@@ -1256,7 +1312,7 @@ function preset(name) {
     B.video = findBy('video', /o4 air unit(?!.*pro)/i) || findBy('video', /o4/i);
     B.rx = findBy('empfaenger', /crossfire nano/i) || findBy('empfaenger', /crossfire/i);
     B.kondensator = findBy('extra', /.*/, x => x.typ === 'kondensator' && /50/.test(x.name)) || findBy('extra', /kondens|capacitor|µF/i); B.buzzer = findBy('extra', /.*/, x => x.typ === 'buzzer') || findBy('extra', /buzzer/i);
-    state.w = { video: 'dji', funk: 'crsf' }; state.klOk = true; state.notes = []; state.edit = null;
+    state.klOk = true; state.exOk = true; state.notes = []; state.edit = null;
   }
 }
 
@@ -1273,11 +1329,11 @@ function toSim() {
    Start
    ===================================================================== */
 function bindUI(app) {
-  ui = { app, steps: $('[data-bk-steps]', app), body: $('[data-bk-body]', app), prev: $('[data-bk-prev]', app), next: $('[data-bk-next]', app), go: $('[data-bk-go]', app), checkB: $('[data-bk-check]', app), checks: $('[data-bk-checks]', app), ampel: $('[data-bk-ampel]', app), checkT: $('[data-bk-check-t]', app), solder: $('[data-bk-solder]', app), stage: $('[data-bk-stage]', app), osdW: $('[data-bk-osd-w]', app), osdName: $('[data-bk-osd-name]', app), hint: $('[data-bk-hint-t]', app), hintBox: $('[data-bk-hint]', app), zoom: $('[data-bk-zoom]', app), flyhud: $('[data-bk-flyhud]', app), flyT: $('[data-bk-fly-t]', app), m: {} };
+  ui = { app, steps: $('[data-bk-steps]', app), body: $('[data-bk-body]', app), prev: $('[data-bk-prev]', app), next: $('[data-bk-next]', app), go: $('[data-bk-go]', app), checkB: $('[data-bk-check]', app), checks: $('[data-bk-checks]', app), ampel: $('[data-bk-ampel]', app), checkT: $('[data-bk-check-t]', app), solder: $('[data-bk-solder]', app), stage: $('[data-bk-stage]', app), osdW: $('[data-bk-osd-w]', app), osdName: $('[data-bk-osd-name]', app), hint: $('[data-bk-hint-t]', app), hintBox: $('[data-bk-hint]', app), zoom: $('[data-bk-zoom]', app), flyhud: $('[data-bk-flyhud]', app), flyT: $('[data-bk-fly-t]', app), vlabel: $('[data-bk-vlabel]', app), m: {} };
   $$('[data-bk-m]', app).forEach(n => { ui.m[n.dataset.bkM] = n; });
-  ui.steps.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) go(+b.dataset.i); });
-  ui.prev.addEventListener('click', () => { if (state.edit) { state.edit = null; render(); scrollPanel(); } else go(step - 1); });
-  ui.next.addEventListener('click', () => go(step + 1));
+  ui.steps.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b && !b.disabled) go(+b.dataset.i); });
+  ui.prev.addEventListener('click', () => go(step - 1));
+  ui.next.addEventListener('click', () => { if (ui.next.disabled) return; if (STEPS[step].id === 'extras') state.exOk = true; go(step + 1); });
   ui.checkB.addEventListener('click', () => { const open = ui.checks.hidden; ui.checks.hidden = !open; ui.checkB.setAttribute('aria-expanded', open); if (open) requestAnimationFrame(() => { const r = ui.checks.getBoundingClientRect(); if (r.bottom > innerHeight || r.top < 0) ui.checks.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'nearest' }); }); });
   ui.go.addEventListener('click', liftoff);
   $('[data-bk-land]', app).addEventListener('click', land);
@@ -1286,69 +1342,79 @@ function bindUI(app) {
   if (ui.zoom) ui.zoom.addEventListener('click', () => { state.zoom = !zoomOn(); drawSolder(); });
   const onAct = e => {
     const t = e.target;
-    const kl = t.closest('[data-klasse]'); if (kl) { B.klasse = kl.dataset.klasse; state.klOk = true; render(); return; }
-    const q = t.closest('[data-q]'); if (q) { state.w[q.dataset.q] = q.dataset.v; render(); return; }
-    if (t.closest('[data-auto]')) { autoBuild(); build3d(true); state.flash = 'Fertig: Dieses Set passt zusammen. Tipp auf ein Teil, um es zu tauschen.'; go(SI('set')); return; }
-    if (t.closest('[data-back]')) { state.edit = null; render(); scrollPanel(); return; }
-    const ed = t.closest('[data-edit]'); if (ed) { openEdit(ed.dataset.edit); return; }
-    const pkv = t.closest('[data-pick-kv]'); if (pkv) { const [id, kv] = pkv.dataset.pickKv.split('|'); pick('motor', id, +kv); return; }
-    const pk = t.closest('[data-pick]'); if (pk) { pick(pk.dataset.slot, pk.dataset.pick); return; }
-    const fl = t.closest('[data-f]'); if (fl) { const k = fl.dataset.f, v = fl.dataset.v; if (k === 'cells') setCells(+v); else state.f[k] = v; renderBody(); return; }
-    if (t.closest('[data-builtin]')) { B.rx = '__builtin'; doneEdit('Eingebauter Empfänger gewählt.'); return; }
-    const ex = t.closest('[data-extra]'); if (ex) { const k = ex.dataset.extra; B[k] = B[k] === ex.dataset.id ? null : ex.dataset.id; render(); build3d(); return; }
-    const so = t.closest('[data-sol]'); if (so) { state.solderStep = +so.dataset.sol; state.solderTouched = true; stopSolderAuto(); setView('loeten'); render(); if (innerWidth < 1100) { const r0 = ui.stage.getBoundingClientRect(); if (r0.bottom < 80 || r0.top > innerHeight * .5) { if (W.FCS && FCS.scrollTo) FCS.scrollTo(ui.stage, -80); } } return; }
+    const kl = t.closest('[data-klasse]'); if (kl) { setKlasse(kl.dataset.klasse); return; }
+    const au = t.closest('[data-bk-auto]'); if (au) { autoPick(au.dataset.bkAuto); return; }
+    const pkv = t.closest('[data-pick-kv]'); if (pkv) { const [id, kv] = pkv.dataset.pickKv.split('|'); B.kv = +kv; state.flown = false; build3d(); renderKeep(); return; }
+    const pk = t.closest('[data-pick]'); if (pk) { pickPart(pk.dataset.slot, pk.dataset.pick); return; }
+    const fl = t.closest('[data-f]'); if (fl) { state.f[fl.dataset.f] = fl.dataset.v; renderKeep(); return; }
+    if (t.closest('[data-builtin]')) { B.rx = '__builtin'; state.flash = ''; build3d(); renderKeep(); return; }
+    const ex = t.closest('[data-extra]'); if (ex) { const k = ex.dataset.extra; B[k] = B[k] === ex.dataset.id ? null : ex.dataset.id; state.solderSeen = false; build3d(); renderKeep(); return; }
+    const sg = t.closest('[data-sol-go]'); if (sg) { solderTo(state.solderStep + +sg.dataset.solGo); return; }
+    const so = t.closest('[data-sol]'); if (so) { solderTo(+so.dataset.sol); return; }
+    const ed = t.closest('[data-edit]'); if (ed) { const i = SI(ed.dataset.edit); if (i >= 0) go(i, true); return; }
     if (t.closest('[data-bk-go2]')) { liftoff(); return; }
     if (t.closest('[data-bk-sim2]')) { toSim(); return; }
     if (t.closest('[data-bk-share]')) { const l = shareLink(); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(() => { t.textContent = 'Link kopiert'; }).catch(() => { prompt('Link zu deinem Bau:', l); }); return; }
-    if (t.closest('[data-bk-restart]')) { state.edit = null; state.flown = false; land(); go(0); return; }
+    if (t.closest('[data-bk-restart]')) { resetAll(); go(0); return; }
   };
   ui.body.addEventListener('click', onAct);
   ui.checks.addEventListener('click', onAct);
-  // Vorschau beim Überfahren: Teil kurz in 3D zeigen
-  // Beispiel aus dem Seitenkopf
-  $$('[data-bk-preset]').forEach(b => b.addEventListener('click', () => { preset(b.dataset.bkPreset); state.flown = false; build3d(true); state.flash = 'Beispiel geladen: Mamba-Stack, DJI O4 und Crossfire.'; go(SI('set')); const w = $('#werkbank'); if (w && W.FCS && FCS.scrollTo) FCS.scrollTo(w, -70); else if (w) w.scrollIntoView({ behavior: RM ? 'auto' : 'smooth' }); }));
+  ui.body.addEventListener('input', e => { const s = e.target.closest('[data-bk-search]'); if (s) { (state.q = state.q || {})[s.dataset.bkSearch] = s.value; applyFind(s.dataset.bkSearch); } });
+  ui.body.addEventListener('change', e => { const s = e.target.closest('[data-bk-her]'); if (s) { (state.her = state.her || {})[s.dataset.bkHer] = s.value; applyFind(s.dataset.bkHer); } });
+  $$('[data-bk-preset]').forEach(b => b.addEventListener('click', () => { preset(b.dataset.bkPreset); state.flown = false; build3d(true); state.flash = 'Beispiel geladen: Mamba-Stack, DJI O4 und Crossfire. Über die Schritte oben kannst du jedes Teil tauschen.'; go(SI('loeten'), true); const w = $('#werkbank'); if (w && W.FCS && FCS.scrollTo) FCS.scrollTo(w, -70); else if (w) w.scrollIntoView({ behavior: RM ? 'auto' : 'smooth' }); }));
   const src = $('[data-bk-sources]'); if (src) src.addEventListener('click', (e) => { e.preventDefault(); const l = $('[data-bk-srclist]'); l.hidden = !l.hidden; if (!l.innerHTML) l.innerHTML = '<ul>' + Object.values(byId).filter(p => p.quelle).map(p => `<li>${esc(nameOf(p))}: <a href="${esc(p.quelle)}" target="_blank" rel="noopener">${esc(String(p.quelle).replace(/^https?:\/\//, '').slice(0, 60))}</a></li>`).join('') + '</ul>'; });
 }
-function pick(kind, id, kv) {
+function resetAll() { KEYS.forEach(k => { if (k !== 'klasse') B[k] = null; }); state.klOk = false; state.exOk = false; state.flown = false; state.solderSeen = false; state.solderStep = 0; state.f = {}; state.q = {}; state.her = {}; state.flash = ''; land(); build3d(true); }
+function setKlasse(k) {
+  if (state.klOk && k !== B.klasse && anyChosen()) { KEYS.forEach(x => { if (x !== 'klasse') B[x] = null; }); state.exOk = false; state.flash = `Neue Klasse ${KL(k).name}: die bisherigen Teile passen nicht mehr und sind entfernt.`; }
+  else state.flash = '';
+  B.klasse = k; state.klOk = true; state.f = {}; state.flown = false; state.solderSeen = false;
+  build3d(true); renderKeep();
+}
+function autoPick(slot) { const { rec } = ranked(slot); if (!rec) return; pickPart(slot, rec.p.id, null, `Ausgesucht: ${cleanName(rec.p)}. Passt zu deinem Bau. Du kannst es jederzeit ändern.`); }
+function pickPart(slot, id, kv, msg) {
   const p = P(id); if (!p) return;
-  B[kind] = id;
-  if (kind === 'motor') B.kv = kv || bestKv(p, wantCells());
-  if (kind === 'akku' && P(B.motor)) B.kv = bestKv(P(B.motor), num(p.zellen));
-  if (kind === 'board' && isAio(p)) B.esc = null;
-  if (kind === 'board' && p.eingebauter_empfaenger && !B.rx) B.rx = '__builtin';
-  if (kind === 'board' && !p.eingebauter_empfaenger && B.rx === '__builtin') B.rx = null;
-  if (kind === 'video' && p.typ === 'digital') B.kamera = null;
-  state.flown = false; state.solderStep = 0;
-  build3d();
-  if (kind === 'motor' && kv) { render(); return; } // KV-Wechsel: in der Liste bleiben
-  doneEdit(`${SLOT(kind) ? SLOT(kind).tt : 'Teil'} getauscht: ${cleanName(p)}${kind === 'motor' && B.kv ? ' mit ' + de(B.kv) + ' KV' : ''}.`);
+  B[slot] = id;
+  if (slot === 'motor') B.kv = kv || bestKv(p, wantCells());
+  if (slot === 'board') { if (isAio(p)) B.esc = null; if (B.rx === '__builtin' && !p.eingebauter_empfaenger) B.rx = null; }
+  if (slot === 'video' && p.typ === 'digital') B.kamera = null;
+  state.flown = false; state.solderStep = 0; state.solderSeen = false;
+  const notes = invalidate(slot);
+  state.flash = [msg, ...notes].filter(Boolean).join(' ');
+  build3d(); renderKeep();
 }
-function setCells(c) {
-  // Zellenzahl oben gewählt: passenden Akku dieser Zellenzahl nehmen, KV der Motoren mitziehen
-  const L = arr('akku').filter(a => num(a.zellen) === c); if (!L.length) return;
-  const def = KDEF[B.klasse], cur = P(B.akku), want = cur ? num(cur.mah) : def.mah;
-  const pickA = L.filter(inClass.akku).concat(L).sort((a, b) => Math.abs(num(a.mah) - want) - Math.abs(num(b.mah) - want))[0];
-  const oldKv = B.kv; B.akku = pickA.id; if (P(B.motor)) B.kv = bestKv(P(B.motor), c);
-  state.flash = `Akku auf ${c}S gewechselt: ${cleanName(pickA)}.${P(B.motor) && oldKv !== B.kv ? ` Motor-KV von ${de(oldKv)} auf ${de(B.kv)} angepasst.` : ''}`;
-  state.flown = false; build3d(); renderBar(); renderSteps(); save();
+/* Spätere Teile prüfen, wenn sich vorne etwas ändert: nur entfernen, was nicht mehr passt, und sagen warum */
+function invalidate(from) {
+  const out = [], c = cells(), f = P(B.rahmen), b = P(B.board);
+  if (from === 'akku' && P(B.motor)) { const old = B.kv; B.kv = bestKv(P(B.motor), c); if (old && old !== B.kv) out.push(`Motor-KV an deinen ${c}S-Akku angepasst: ${de(B.kv)} KV.`); }
+  if (b && (!fitsFrame(b) || !fitsCells(b))) { out.push(`Flugcontroller entfernt: ${!fitsFrame(b) ? `${de(boardSize(b), 1)} mm passen nicht in den Rahmen` : `verträgt keinen ${c}S-Akku`}.`); B.board = null; B.esc = null; if (B.rx === '__builtin') B.rx = null; }
+  const pr = P(B.prop); if (pr && f && num(f.max_prop_zoll) && num(pr.durchmesser_zoll) > num(f.max_prop_zoll) + .05) { out.push(`Propeller entfernt: ${de(num(pr.durchmesser_zoll), 1)} Zoll sind zu groß für den Rahmen.`); B.prop = null; }
+  if (B.rx === '__builtin' && !(P(B.board) && P(B.board).eingebauter_empfaenger)) { B.rx = null; out.push('Empfänger entfernt: Er war auf dem alten Flugcontroller eingebaut.'); }
+  if (B.kamera && P(B.video) && P(B.video).typ === 'digital') B.kamera = null;
+  return out;
 }
-function openEdit(slot) { if (!SLOT(slot)) return; state.edit = slot; if (STEPS[step].id !== 'set') { step = SI('set'); if (view === 'loeten') setView('3d'); } render(); scrollPanel(); }
-function doneEdit(msg) { state.edit = null; state.flash = msg || ''; if (STEPS[step].id !== 'set') step = SI('set'); render(); scrollPanel(); }
-function scrollPanel() { const pan = ui.app.querySelector('.bk-panel'); if (!pan) return; const rr = pan.getBoundingClientRect(); if (rr.top < 60 || rr.top > innerHeight * .6) { if (W.FCS && FCS.scrollTo) FCS.scrollTo(pan, -70); else pan.scrollIntoView({ block: 'start' }); } ui.body.scrollTop = 0; }
+function solderTo(i) {
+  const n = solderSteps(wiring()).length; state.solderStep = clamp(i, 0, n - 1); state.solderSeen = true;
+  if (view !== 'loeten') setView('loeten'); else drawSolder();
+  renderKeep();
+  if (innerWidth < 1100 && ui.stage) { const r0 = ui.stage.getBoundingClientRect(); if (r0.bottom < 80 || r0.top > innerHeight * .5) { if (W.FCS && FCS.scrollTo) FCS.scrollTo(ui.stage, -80); } }
+}
+function scrollPanel() { const pan = ui.app.querySelector('.bk-panel'); if (!pan) return; const rr = pan.getBoundingClientRect(); if (rr.top < 40 || rr.top > innerHeight * .5) { if (W.FCS && FCS.scrollTo) FCS.scrollTo(pan, -80); else pan.scrollIntoView({ block: 'start' }); } }
 const avg = (a) => (a[0] + a[1]) / 2;
-let solderTimer = 0;
-function startSolderAuto() { stopSolderAuto(); if (RM) return; solderTimer = setInterval(() => { if (view !== 'loeten') return stopSolderAuto(); const n = solderSteps(wiring()).length; state.solderStep = (state.solderStep + 1) % n; renderBody(); drawSolder(); }, 3800); }
-function stopSolderAuto() { clearInterval(solderTimer); solderTimer = 0; }
+function stopSolderAuto() {}
 function setView(v) {
   view = v; ui.solder.toggleAttribute('hidden', v !== 'loeten'); ui.app.classList.toggle('is-solder', v === 'loeten');
+  if (ui.vlabel) ui.vlabel.hidden = v !== 'loeten';
   $$('[data-bk-view]', ui.app).forEach(b => { const on = b.dataset.bkView === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
-  if (v === 'loeten') { drawSolder(); if (!solderTimer && !state.solderTouched) startSolderAuto(); } else stopSolderAuto();
-  hint(v === 'loeten' ? 'Der Plan zeigt Schritt für Schritt jede Lötstelle' : v === 'explode' ? 'Alle Teile auseinandergezogen' : 'Ziehen dreht die Drohne');
+  if (v === 'loeten') drawSolder();
+  hint(v === 'loeten' ? 'Lötplan: zum Anschauen, Schritte rechts' : v === 'explode' ? 'Alle Teile auseinandergezogen' : 'Ziehen dreht die Drohne');
 }
-function go(i) {
-  step = clamp(i, 0, STEPS.length - 1); state.edit = null;
+function go(i, force) {
+  i = clamp(i, 0, STEPS.length - 1);
+  if (!force && !reach(i) && i > step) return;
+  step = i; state.flash = force ? state.flash : '';
   const id = STEPS[step].id;
-  if (id === 'loeten') setView('loeten'); else if (view === 'loeten') setView('3d');
+  if (id === 'loeten') { state.solderSeen = true; setView('loeten'); } else if (view === 'loeten') setView('3d');
   render(); scrollPanel();
 }
 function liftoff() {
@@ -1384,12 +1450,13 @@ async function main() {
     try { PL = ((await (await fetch(new URL('assets/data/platinen.json?v=' + q, D.baseURI))).json()).platinen) || []; } catch (e) { PL = []; }
     index();
   } catch (e) { console.warn('Bau deine Drohne: Teileliste', e); ui.body.innerHTML = '<p class="bk-empty">Die Teileliste konnte nicht geladen werden. Bitte Seite neu laden.</p>'; return; }
-  load(fromHash() || store.get('fcs-bau', null)); loadW();
+  const fh = fromHash(); load(fh || store.get('fcs-bau2', null)); loadW(); if (fh) { state.klOk = true; state.exOk = true; }
   const cv = $('.bk-cv', app);
   if (!init3d(cv)) { $('[data-bk-nogl]', app).hidden = false; cv.hidden = true; } else { drag3d(cv); layout3d(); build3d(true); }
-  render();
-  // Mit gespeichertem Bau direkt zum Set, sonst zu den drei Fragen
-  step = B.rahmen ? SI('set') : 0; if (view === 'loeten') setView('3d'); render(); hint('Ziehen dreht die Drohne');
+  // Gespeicherter Bau: beim ersten offenen Schritt weitermachen, sonst bei Schritt 1
+  step = Math.min(firstOpen(), SI('loeten')); if (anyChosen()) state.flash = 'Dein letzter Bau ist wieder da. „Neu anfangen“ steht oben rechts.';
+  if (STEPS[step].id === 'loeten') { state.solderSeen = true; setView('loeten'); }
+  render(); hint('Ziehen dreht die Drohne');
   // Schleife nur, solange sichtbar
   let raf = 0, last = performance.now(), vis = true;
   const loop = (now) => { raf = 0; const dt = Math.min(.05, (now - last) / 1000); last = now; frame3d(dt); if (vis && !D.hidden) raf = requestAnimationFrame(loop); };
@@ -1398,6 +1465,6 @@ async function main() {
   D.addEventListener('visibilitychange', kick);
   addEventListener('resize', () => { layout3d(); kick(); });
   kick();
-  W.__fcsBau = { B, checks, wiring, metrics, preset, go, pick, DB: () => DB };
+  W.__fcsBau = { B, checks, wiring, metrics, preset, go, pick: pickPart, state, DB: () => DB };
 }
 main();

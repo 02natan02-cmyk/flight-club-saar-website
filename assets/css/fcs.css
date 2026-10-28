@@ -212,8 +212,7 @@ body.nav-hidden .draftbar.mini{opacity:0;transform:translateY(12px);pointer-even
 @media (max-width:420px){.draftbar{font-size:10px;letter-spacing:.08em}}
 
 /* ---------- Mauszeiger = Vereinslogo als Mini-Quad (nur Maus) ---------- */
-html.dronecur,html.dronecur *{cursor:none!important}
-html.dronecur input,html.dronecur textarea,html.dronecur [contenteditable]{cursor:text!important}
+/* normaler Mauszeiger bleibt sichtbar (Rückmeldung Mitglied 28.10.), das Fadenkreuz läuft nur als Ring mit */
 .cdrone{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:400;opacity:0;transition:opacity .3s}
 .cdrone.on{opacity:1}.cdrone.hide{opacity:0}
 .cd-q{position:absolute;left:-21px;top:-21px;width:42px;height:42px;max-width:none;opacity:.85;overflow:visible;filter:drop-shadow(0 0 6px rgba(63,224,255,.7));transition:transform .35s var(--ease)}
@@ -359,3 +358,45 @@ html.is-member .nav-cta{display:none}
 .film-skip,.film-snd{border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.45);color:#fff;border-radius:999px;padding:12px 18px;font:600 12px var(--hud);letter-spacing:.18em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
 .film-skip:hover,.film-snd:hover,.film-skip:focus-visible,.film-snd:focus-visible{background:#fff;color:#000}
 @media (max-width:560px){.film-start{padding-bottom:110px}.film-sub{font-size:15px}}
+
+.cdrone.off{display:none!important}
+
+/* Kontakt aufnehmen */
+.nav-kontakt{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 14px 0 12px;border-radius:999px;border:1px solid var(--line-hi);background:rgba(4,9,18,.55);color:var(--osd);font:600 13px/1 var(--hud);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;flex:none}
+.nav-kontakt svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-kontakt:hover{border-color:var(--sig);color:#fff}
+.nav-kontakt:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (max-width:1480px){.nav-kontakt .nk-t{display:none}.nav-kontakt{width:46px;padding:0;justify-content:center}}
+@media (max-width:620px){.nav-kontakt{display:none}}
+.foot-btn,.linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.foot-btn:hover,.linkbtn:hover{color:var(--sig)}
+.menu-k{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+.mg-erst{margin:14px 0 0;color:var(--mute)}
+.mg-erst .linkbtn{color:var(--osd);font-weight:600}
+.kt-dlg{max-width:min(560px,calc(100vw - 24px))}
+.kt-box{display:grid;gap:12px;padding:6px 4px}
+.kt-kick{margin:0;color:var(--green);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.kt-box .h3{margin:0}
+.kt-p{margin:0;color:var(--mute);line-height:1.5}
+.kt-wa{display:flex;flex-wrap:wrap;gap:8px}
+.kt-wa .btn{flex:1 1 200px;justify-content:center;gap:8px}
+.kt-wa svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+.kt-wa small{opacity:.7;font-size:11px;letter-spacing:.04em;text-transform:none}
+.kt-or{display:flex;align-items:center;gap:10px;margin:2px 0;color:var(--mute);font:600 12px var(--hud);letter-spacing:.1em;text-transform:uppercase}
+.kt-or::before,.kt-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.kt-form{display:grid;gap:12px}
+.kt-chips{display:flex;flex-wrap:wrap;gap:6px}
+.kt-chip input{position:absolute;opacity:0;pointer-events:none}
+.kt-chip span{display:inline-flex;align-items:center;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--line-hi);font:600 13px/1 var(--hud);cursor:pointer}
+.kt-chip input:checked+span{background:var(--sig);border-color:var(--sig);color:var(--night)}
+.kt-chip input:focus-visible+span{outline:2px solid var(--amber);outline-offset:2px}
+.kt-form textarea{width:100%;resize:vertical}
+.kt-form.sent>:not(.form-ok){display:none}
+.kt-alt{margin:0;color:var(--mute);font-size:14px}
+
+.cdot svg{transform:scale(.8)}
+.cdot.on{opacity:.7}
+.cdot .cx-c{display:none}
+.kt-box{background:linear-gradient(180deg,#0e2142,#071225);border:1px solid var(--line-hi);border-radius:var(--r);padding:24px 22px 20px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.kt-dlg .ml-x{z-index:2}
+@media (max-width:560px){.kt-box{padding:20px 16px 16px}}
