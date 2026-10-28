@@ -30,7 +30,7 @@ urls = ''.join(f'  <url><loc>{dom}/{"" if p == "index.html" else p}</loc></url>\
 (R / 'llms.txt').write_text(f"""# Flight Club Saar e. V.
 > FPV-Drohnenverein im Saarland, gegründet am 10.12.2022 in Dillingen, eingetragen im Vereinsregister Saarlouis (VR 1665).
 
-- Im Winter Hallenfliegen mit Tiny Whoops in Hallen im Saarland (Ort für Mitglieder), Anfänger sind willkommen: {dom}/hallenfliegen.html
+- Im Winter Hallenfliegen mit Tiny Whoops in Hallen im Saarland (Termine und Ort für Mitglieder), Anfänger sind willkommen: {dom}/hallenfliegen.html
 - Spot-Karte für Mitglieder mit Regeln und Route: {dom}/spots.html
 - FPV lernen, Betaflight einrichten, Fehler finden: {dom}/wissen.html, {dom}/werkstatt.html, {dom}/hilfe.html
 - FPV-Simulator im Browser: {dom}/simulator.html

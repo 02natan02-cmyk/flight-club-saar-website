@@ -23,16 +23,10 @@ FCS.data = {
     { k: 'tiktok', name: 'TikTok', h: '@flightclubsaar', u: 'https://www.tiktok.com/@flightclubsaar' },
     { k: 'youtube', name: 'YouTube', h: '@flightclubsaar', u: 'https://www.youtube.com/@flightclubsaar' }
   ],
-  // Hallenfliegen Wintersaison 2026 (Ankündigung Sebastian Wiederhold, 14.10.2026)
-  // Hallen, Halle je Termin und Spots stehen nur verschlüsselt in assets/data/mitglieder.enc.json (eigener Mitgliedscode wie bei Gyroflow, Natan 28.10.2026)
+  // Hallenfliegen: Hallen, Termine (Datum, Halle) und Spots stehen nur verschlüsselt in assets/data/mitglieder.enc.json
+  // (eigener Mitgliedscode wie bei Gyroflow; Natan 28.10.2026: Spots, Hallen und Termine nur für Mitglieder)
   hallen: {},
-  termine: [
-    { d: '2026-10-17', img: 'media/chronik/2026-10-17.webp' },
-    { d: '2026-11-14' },
-    { d: '2026-12-05' },
-    { d: '2026-12-12' },
-    { d: '2026-12-19' }
-  ],
+  termine: [],
   zeit: { von: '18:00', bis: '21:00' },
   hallenBeitrag: 'bisher 10 € pro Abend',
   // Crew 2026: Mitglieder mit Beitrag 2026 (Stand Kassenbuch 21.10.2026) + Vorstand.

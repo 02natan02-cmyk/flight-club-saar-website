@@ -964,7 +964,7 @@
     [spot, c].forEach(i => i.addEventListener('input', cap)); [q, m, g].forEach(i => i.addEventListener('change', cap));
     $('#fm-cg-copy').addEventListener('click', () => copy(text, $('#fm-cg-ok')));
     cap();
-    const ex = ['Abendflug am Turm', 'Cinewhoop durch die alte Halle', 'Goldene Stunde über dem Saartal', 'Hallenfliegen in Eiweiler']; let i = 0;
+    const ex = ['Abendflug am Turm', 'Cinewhoop durch die alte Halle', 'Goldene Stunde über dem Saartal', 'Hallenfliegen im Winter']; let i = 0;
     auto(cgRoot, () => { i = (i + 1) % ex.length; spot.value = ex[i]; q.selectedIndex = [0, 1, 0, 2][i]; cap(); }, 3400, addHint(cgRoot, 'Felder ausfüllen'));
   }
 

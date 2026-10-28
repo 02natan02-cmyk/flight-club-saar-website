@@ -629,3 +629,9 @@
   .mi-txt{display:contents}
   .mi-txt .h2{order:1}.mi-txt .lede{order:2}.mi-stage{order:3;margin:26px auto 52px}.mi-st{order:4;margin-top:0}.mi-btns{order:5}
 }
+/* Gäste: Termine nur für Mitglieder */
+.t-gast .cd b{color:var(--amber);animation:tGastBlink 1.4s steps(2) infinite}
+.t-gast .cd div:nth-child(2) b{animation-delay:.35s}.t-gast .cd div:nth-child(3) b{animation-delay:.7s}.t-gast .cd div:nth-child(4) b{animation-delay:1.05s}
+@keyframes tGastBlink{50%{opacity:.35}}
+.t-list li.lock{filter:blur(2.5px);opacity:.7}
+@media (prefers-reduced-motion:reduce){.t-gast .cd b{animation:none}}

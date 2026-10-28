@@ -80,7 +80,8 @@
   async function mLoad(key) { const r = await fetch('assets/data/mitglieder.enc.json', { cache: 'no-cache' }); const j = await r.json(); return JSON.parse(await M.dec(j.data, key)); }
   function mApply(sec) {
     if (D.hallen) Object.assign(D.hallen, sec.hallen || {}); else D.hallen = sec.hallen || {};
-    (D.termine || []).forEach(t => { if (sec.termine && sec.termine[t.d]) t.h = sec.termine[t.d]; });
+    if (Array.isArray(sec.termine)) D.termine = sec.termine.map(t => Object.assign({}, t)).sort((a, b) => a.d < b.d ? -1 : 1);
+    else if (sec.termine) D.termine = Object.keys(sec.termine).sort().map(d => ({ d, h: sec.termine[d] }));
     if (Array.isArray(D.spots)) D.spots.push(...(sec.spots || [])); else D.spots = sec.spots || [];
   }
   // Anmelden mit dem eigenen Mitgliedscode: gilt danach auch im Clip-Studio (Gyroflow, Premium)
@@ -145,7 +146,8 @@
 
   /* Natives Scrollen (ruckelt nicht). Sprungmarken gleiten mit Abstand zur Leiste oben. */
   FCS.scrollTo = (target, off = -84) => {
-    const el = typeof target === 'string' ? $(target) : target; if (!el && typeof target !== 'number') return;
+    let el = typeof target === 'string' ? $(target) : target; if (!el && typeof target !== 'number') return;
+    if (el && el.nodeType === 1 && !M.ok && el.closest('.nur-mitglied')) el = (el.id && $('#' + el.id + '-gast')) || $('[data-mitglied-lock]') || el;
     const y = typeof target === 'number' ? target : el.getBoundingClientRect().top + scrollY + off - (document.body.classList.contains('has-toc') ? 52 : 0);
     window.scrollTo({ top: Math.max(0, y), behavior: RM ? 'auto' : 'smooth' });
   };
@@ -467,6 +469,7 @@
   function year() { $$('[data-year]').forEach(e => e.textContent = new Date().getFullYear()); }
   function nextBadge() {
     const n = FCS.next(); $$('[data-next]').forEach(el => {
+      if (!M.ok) { el.textContent = el.dataset.next === 'kurz' ? '' : 'für Mitglieder'; return; }
       if (!n) { el.textContent = 'Neue Termine folgen'; return; }
       el.textContent = el.dataset.next === 'kurz' ? FCS.fmtDate(n.d) : `${FCS.fmtDate(n.d)} · ${n.halle.name.replace('Großwaldhalle ', '').replace('Glück-Auf-Halle ', '')}`;
     });
