@@ -100,3 +100,13 @@ main [hidden]{display:none!important}
 .mg-wa:empty{display:none}
 .mg-wa .btn{justify-content:space-between;text-transform:none;letter-spacing:.04em;font-size:13px}
 .mg-wa .btn small{font:500 12px var(--hud);letter-spacing:.06em;opacity:.7}
+
+/* So läuft es ab (28.10.) */
+.mg-flow{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;counter-reset:f}
+.mg-flow li{position:relative;display:grid;gap:4px;padding:16px 16px 18px;border-radius:18px;border:1px solid var(--line);background:rgba(4,12,28,.45)}
+.mg-flow li:not(:last-child)::after{content:"";position:absolute;top:34px;right:-12px;width:12px;height:2px;background:var(--sig)}
+.mg-flow b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--sig);color:var(--sig);font:700 14px/1 var(--hud);margin-bottom:6px}
+.mg-flow strong{font-size:17px}
+.mg-flow span{color:var(--mute);font-size:14.5px;line-height:1.45}
+@media (max-width:860px){.mg-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.mg-flow li::after{display:none}}
+@media (max-width:420px){.mg-flow{grid-template-columns:minmax(0,1fr)}}

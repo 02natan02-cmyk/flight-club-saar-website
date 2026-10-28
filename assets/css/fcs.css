@@ -68,7 +68,7 @@ h1,h2,h3{hyphens:auto;overflow-wrap:break-word}
 .brand small{display:block;font-weight:500;color:var(--mute);letter-spacing:.24em;font-size:10px}
 .nav-links{display:flex;gap:4px}
 .nav-links a{padding:9px 13px;border-radius:999px;text-decoration:none;font:600 12.5px/1 var(--hud);letter-spacing:.14em;text-transform:uppercase;color:#cfe0f5;transition:background .25s,color .25s}
-.nav-links a:hover,.nav-links a[aria-current=page]{background:rgba(63,224,255,.12);color:#fff}
+.nav-links a:hover,.nav-links a[aria-current=page],.nav-links a[aria-current=true]{background:rgba(63,224,255,.12);color:#fff}
 .nav-cta{padding:11px 16px}
 .burger{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 16px 0 12px;border-radius:999px;border:1px solid var(--line-hi);background:rgba(4,9,18,.55);cursor:pointer;position:relative;font:600 12px/1 var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--osd);transition:border-color .25s,background .25s}
 .burger:hover{border-color:var(--sig);background:rgba(63,224,255,.1)}
@@ -92,7 +92,10 @@ h1,h2,h3{hyphens:auto;overflow-wrap:break-word}
 .menu .menu-foot a{color:var(--mute)}
 @media (max-width:900px){.mg-t{grid-auto-flow:row;grid-template-columns:minmax(0,1fr)}.mt{padding:12px 14px}.mt b{font-size:23px}}
 @media (max-width:1180px){.nav-links{display:none}}
-@media (max-width:620px){.nav-cta{display:none}.bg-t{display:none}.burger{width:46px;padding:0;justify-content:center}}
+@media (max-width:620px){.nav-cta{flex:none;padding:9px 12px;font-size:12px;letter-spacing:.06em;white-space:nowrap}.burger{height:42px;padding:0 12px 0 10px;gap:8px}}
+@media (max-width:480px){.brand{min-width:0;gap:8px}.brand img{width:38px}.brand span{font-size:11px;letter-spacing:.12em;white-space:nowrap}.brand small{font-size:9px;letter-spacing:.16em}}
+@media (max-width:400px){.bg-t{display:none}.burger{width:42px;padding:0;justify-content:center}.nav-cta{padding:8px 10px;font-size:11.5px;letter-spacing:.04em}}
+@media (max-width:340px){.brand span{display:none}}
 
 /* ---------- OSD-Rahmen (Ecken) ---------- */
 .osd-frame{position:absolute;inset:clamp(14px,3vw,34px);pointer-events:none;z-index:3}

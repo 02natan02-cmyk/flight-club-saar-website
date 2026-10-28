@@ -16,15 +16,16 @@ PAGES = [
   ('werkstatt.html', 'Betaflight & Löten · Flight Club Saar e. V.', 'Betaflight einfach erklärt: Version, Flashen, die wichtigsten Einstellungen, dazu Löten Schritt für Schritt. Mit Animationen und Videos.', 'werkstatt', ['werkstatt']),
   ('hilfe.html', 'Technik-Hilfe · Flight Club Saar e. V.', 'Der FPV-Doktor hilft bei Betaflight, VTX, ELRS, Kanälen und Kompatibilität. Plus Forum-Fragen an den Verein.', 'hilfe', ['hilfe']),
   ('mitglied.html', 'Mitglied werden · Flight Club Saar e. V.', 'Online-Mitgliedsantrag mit SEPA-Lastschrift: 30 € im Jahr, 20 € unter 18, einmalig 20 € Aufnahme. Plus deine Mitgliedskarte zum Mitnehmen.', 'mitglied', ['mitglied']),
-  ('filmen.html', 'Clip-Studio & FPV filmen · Flight Club Saar e. V.', 'Clip-Studio: Video hochladen, Vereinslogo drauf, runterladen oder einsenden. Dazu der Film-Ratgeber für FPV: Kameras, ND-Filter, Schnitt, Musik.', 'filmen', ['studio', 'filmen']),
+  ('studio.html', 'Clip-Studio · Flight Club Saar e. V.', 'Das Clip-Studio des Vereins: Video schneiden, Musik im Takt, Looks, Vereinslogo und dein Tag. Für Mitglieder stabilisieren wir dein FPV-Video mit Gyroflow.', 'studio', ['studio']),
+  ('filmen.html', 'FPV filmen · Flight Club Saar e. V.', 'Der Film-Ratgeber für FPV: Kameras, ND-Filter, Einstellungen, Schnitt und Musik. Plus Gyroflow für Mitglieder und das Clip-Studio des Vereins.', 'filmen', ['filmen']),
   ('simulator.html', 'FPV-Simulator · Flight Club Saar e. V.', 'FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.', 'sim', ['three', 'sim']),
   ('crew.html', 'Crew · Flight Club Saar e. V.', 'Die Piloten des Flight Club Saar, dein Profil mit Social-Links und die Pinnwand der Crew.', 'crew', ['crew']),
   ('markt.html', 'Biete/Suche · Flight Club Saar e. V.', 'Die Biete/Suche-Wand des Vereins: Kopter, Brillen und Teile von Pilot zu Pilot. Kostenlos einstellen und mit Löschcode selbst wieder löschen.', 'markt', ['markt']),
   ('impressum.html', 'Impressum · Flight Club Saar e. V.', 'Impressum des Flight Club Saar e. V.', '', ['recht']),
   ('datenschutz.html', 'Datenschutz · Flight Club Saar e. V.', 'Datenschutzerklärung des Flight Club Saar e. V.', '', ['recht']),
 ]
-NAV = [('hallenfliegen.html', 'halle', 'Hallenfliegen'), ('spots.html', 'spots', 'Spots'), ('wissen.html', 'wissen', 'FPV-Wissen'),
-       ('hilfe.html', 'hilfe', 'Technik-Hilfe'), ('filmen.html', 'filmen', 'Clip-Studio'), ('crew.html', 'crew', 'Crew')]
+NAV = [('hallenfliegen.html', 'halle', 'Hallenfliegen'), ('spots.html', 'spots', 'Spots'), ('simulator.html', 'sim', 'Simulator'),
+       ('wissen.html', 'wissen', 'FPV lernen'), ('studio.html', 'studio', 'Clip-Studio'), ('crew.html', 'crew', 'Crew')]
 # Übersicht im Menü: Gruppen mit Kacheln (Symbol, Name, ein Satz)
 MI = {
  'halle': '<path d="M3 20V10l9-6 9 6v10"/><path d="M8 20v-6h8v6"/><circle cx="12" cy="9.5" r="1.4"/>',
@@ -37,18 +38,22 @@ MI = {
  'markt': '<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9c0 1.6 1.3 2.6 3 2.6S9 10.6 9 9c0 1.6 1.3 2.6 3 2.6S15 10.6 15 9c0 1.6 1.3 2.6 3 2.6S21 10.6 21 9"/>',
  'start': '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M7.5 12h9"/>',
  'werkstatt': '<path d="M4 20l7-7"/><path d="M13.5 6.5l4 4-6 6-4-4z"/><path d="M17.5 2.5l4 4-2 2-4-4z"/><circle cx="6" cy="18" r="1"/>',
+ 'studio': '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9h19M7 5l2 4M12 5l2 4M17 5l2 4"/><path d="M10 12.2v4.6l4-2.3z"/>',
+ 'termin': '<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 14h3M8 17h6"/>',
  'sim': '<rect x="3" y="9" width="18" height="11" rx="3"/><circle cx="8.5" cy="14.5" r="2.2"/><circle cx="15.5" cy="14.5" r="2.2"/><path d="M6.5 9V4M17.5 9V4"/>',
 }
 MENU = [
  ('Fliegen', [('hallenfliegen.html', 'halle', 'Hallenfliegen', 'Tiny Whoops im Winter. Nächster Termin: <span data-next>bald</span>'),
+              ('termin.html', 'termin', 'Hallenabend-Planer', 'Dabei sein, Kanal und Gruppe für den Abend'),
               ('spots.html', 'spots', 'Spot-Karte', 'Wo wir draußen fliegen, mit Route, Regeln und Bewertungen'),
               ('simulator.html', 'sim', 'FPV-Simulator', 'Mit Funke, Controller oder Handy im Browser fliegen')]),
- ('Lernen & Filmen', [('wissen.html', 'wissen', 'FPV-Wissen', 'Drohne in 3D, Schaltplan, Kanäle, erster Flug'),
-              ('werkstatt.html', 'werkstatt', 'Betaflight & Löten', 'Version, Einstellungen, Löten. Animiert erklärt'),
+ ('Lernen', [('wissen.html', 'wissen', 'FPV lernen', 'Neu dabei? Drohne in 3D, Schaltplan, dein erster Flug'),
+              ('werkstatt.html', 'werkstatt', 'Betaflight & Löten', 'Einrichten und Löten, Schritt für Schritt'),
               ('hilfe.html', 'hilfe', 'Technik-Hilfe', 'Kopter armt nicht? Der FPV-Doktor hilft'),
-              ('filmen.html', 'filmen', 'Clip-Studio & Filmen', 'Video hochladen, Logo drauf, runterladen. Plus Film-Ratgeber')]),
- ('Verein', [('mitglied.html', 'mitglied', 'Mitglied werden', 'Antrag online in wenigen Minuten'),
-              ('crew.html', 'crew', 'Crew', 'Unsere Piloten, dein Profil, die Pinnwand'),
+              ('filmen.html', 'filmen', 'FPV filmen', 'Kameras, Einstellungen, Schnitt. Gyroflow für Mitglieder')]),
+ ('Verein', [('mitglied.html', 'mitglied', 'Mitglied werden', 'Kosten, Vorteile und Antrag in wenigen Minuten'),
+              ('studio.html', 'studio', 'Clip-Studio', 'Video schneiden, Logo drauf, Gyroflow für Mitglieder'),
+              ('crew.html', 'crew', 'Crew & Pinnwand', 'Unsere Piloten, dein Profil, die Pinnwand'),
               ('markt.html', 'markt', 'Biete/Suche', 'Kopter, Brillen und Teile von Pilot zu Pilot')]),
 ]
 ICONS = {
@@ -75,7 +80,7 @@ def head(file, title, desc):
 <head>
 <meta charset="utf-8">
 <script data-fe="bald">try{{if(/(^|[.])falcon-eye[.]de$/.test(new URL(document.referrer).hostname)&&Date.now()<Date.parse("2026-10-29T08:00:00+01:00"))location.replace(new URL("bald/",document.baseURI).href)}}catch(e){{}}</script>
-<script data-fe="intro">try{{var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="back_forward")sessionStorage.removeItem("fcs-intro")}}catch(e){{}}</script>
+<script data-fe="intro">try{{if(Date.now()-(+localStorage.getItem("fcs-intro")||0)<2592e5&&!/[?&]intro/.test(location.search))document.documentElement.classList.add("no-intro")}}catch(e){{}}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
@@ -93,7 +98,8 @@ def head(file, title, desc):
 ''' + (LDJSON if file == 'index.html' else '')
 
 def nav(key):
-    links = ''.join(f'<a href="{h}"{" aria-current=page" if k == key else ""}>{t}</a>' for h, k, t in NAV)
+    top = {'termin': 'halle', 'werkstatt': 'wissen', 'hilfe': 'wissen', 'filmen': 'wissen', 'markt': 'crew'}.get(key, key)
+    links = ''.join(f'<a href="{h}"{" aria-current=page" if k == key else (" aria-current=true" if k == top else "")}>{t}</a>' for h, k, t in NAV)
     groups = ''
     for g, items in MENU:
         tiles = ''.join(f'<a class="mt{" on" if k == key else ""}" href="{h}"><svg viewBox="0 0 24 24" aria-hidden="true">{MI[k]}</svg><b>{t}</b><span>{d}</span></a>' for h, k, t, d in items)
@@ -102,8 +108,8 @@ def nav(key):
 <header class="nav">
   <a class="brand" href="index.html"><span class="sr">Startseite: </span><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Flight Club<small>Saar e. V.</small></span></a>
   <nav class="nav-links" aria-label="Hauptmenü">{links}</nav>
-  <a class="btn solid nav-cta" href="mitglied.html">Mitglied werden</a>
-  <button class="burger" type="button" aria-expanded="false" aria-controls="menu"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Übersicht</span></button>
+  <a class="btn solid nav-cta" href="mitglied.html"{' aria-current=page' if key == 'mitglied' else ''}>Mitglied werden</a>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen"><span class="bg-ic"><i></i><i></i><i></i></span><span class="bg-t">Menü</span></button>
 </header>
 <div class="menu" id="menu" aria-label="Übersicht aller Seiten"><div class="menu-in wrap">{groups}<p class="menu-foot">Brille an, Welt aus! · Flight Club Saar e. V. · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p></div></div>
 '''
@@ -119,7 +125,7 @@ def foot():
       <div><img src="assets/img/logo.svg" alt="Flight Club Saar" width="170" height="114" style="width:170px;height:auto;margin-bottom:18px"><p class="mute" style="max-width:36ch">Der FPV-Verein im Saarland. Gegründet 2022. Build · Fly · Crash · Repair · Repeat.</p><div class="social">{soc}</div></div>
       <div><p class="foot-h">Fliegen</p><ul><li><a href="hallenfliegen.html">Hallenfliegen</a></li><li><a href="spots.html">Spot-Karte</a></li><li><a href="spots.html#einsenden">Spot einsenden</a></li><li><a href="markt.html">Biete/Suche</a></li></ul></div>
       <div><p class="foot-h">Lernen</p><ul><li><a href="wissen.html">FPV-Wissen</a></li><li><a href="wissen.html#schaltplan">Schaltplan</a></li><li><a href="werkstatt.html">Betaflight &amp; Löten</a></li><li><a href="hilfe.html">FPV-Doktor</a></li><li><a href="hilfe.html#frage">Frage stellen</a></li><li><a href="simulator.html">FPV-Simulator</a></li><li><a href="filmen.html#ratgeber">Film-Ratgeber</a></li></ul></div>
-      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="filmen.html#studio">Clip-Studio</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
+      <div><p class="foot-h">Verein</p><ul><li><a href="mitglied.html">Mitglied werden</a></li><li><a href="crew.html">Crew-Bereich</a></li><li><a href="studio.html">Clip-Studio</a></li><li><a href="termin.html">Hallenabend-Planer</a></li><li><a href="mailto:info@flightclub-saar.de">info@flightclub-saar.de</a></li><li><a href="docs/Satzung_Flight_Club_Saar.pdf" target="_blank" rel="noopener">Satzung (PDF)</a></li><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div>
     </div>
     <div class="foot-big" aria-hidden="true">Brille an</div>
     <div class="foot-bar"><span>© <span data-year>2026</span> Flight Club Saar e. V. · Vereinsregister Saarlouis VR 1665</span><span>Filme: Mitglieder des Vereins · Website: <a href="https://falcon-eye.de/" target="_blank" rel="noopener">Falcon Eye</a></span></div>

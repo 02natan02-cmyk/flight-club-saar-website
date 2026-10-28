@@ -589,3 +589,12 @@ input[type=range].ws-rg,.ws-r-sl input,.ws-trange{-webkit-appearance:none;appear
 @media (prefers-reduced-motion:reduce){
   .ws-ha-smoke,.ws-hint.on,.ws-osdv-world{animation:none}
 }
+
+/* Einstiege und Lernansicht */
+.ws-start-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.ws-start-card{display:flex;flex-direction:column;gap:8px;min-width:0;text-decoration:none;color:inherit}
+.ws-start-card h3{margin:0}
+.ws-start-card p{margin:0;flex:1}
+.ws-start-card .btn{align-self:flex-start}
+.ws-learn{margin:0;padding:10px 16px;font-size:14px;color:#ffe2a8;background:rgba(255,176,32,.08);border-bottom:1px solid rgba(255,176,32,.35);overflow-wrap:anywhere}
+@media(max-width:640px){.ws-start-grid{grid-template-columns:minmax(0,1fr)}.ws-start-card .btn{align-self:stretch;justify-content:center}}

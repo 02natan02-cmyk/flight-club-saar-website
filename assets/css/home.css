@@ -1,6 +1,7 @@
 /* Startseite Flight Club Saar */
 
 /* ---------- Intro „Brille an“ ---------- */
+.no-intro .intro{display:none}
 .intro{position:fixed;inset:0;z-index:300;display:grid;place-items:center;pointer-events:auto}
 .intro-noise{position:absolute;inset:0;width:100%;height:100%;opacity:.0;background:#02050b}
 .intro-lens{position:absolute;inset:0;width:100%;height:100%}
@@ -292,6 +293,7 @@
 .go-t:hover .go-go .arr{transform:translateX(5px)}
 .go-tag{justify-self:start;display:inline-flex;align-items:center;gap:7px;margin:0 4px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,176,32,.55);font:600 11px/1 var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--amber);background:rgba(255,176,32,.08)}
 .go-halle{grid-column:span 2;grid-row:span 2}
+.go-studio,.go-sim,.go-spiel{grid-column:span 2}
 .go-halle .go-m{aspect-ratio:16/9}
 .go-halle .go-h{font-size:clamp(34px,3.6vw,54px)}
 .go-halle .go-p{font-size:16px;max-width:46ch}
@@ -330,8 +332,8 @@
 .go-faces span{margin-left:8px;font:600 12px var(--hud);color:var(--sig)}
 .go-ic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgba(63,224,255,.1);margin:0 4px 8px}
 .go-ic svg{width:26px;height:26px;fill:none;stroke:var(--sig);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-@media (max-width:1100px){.go-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.go-halle{grid-column:span 3;grid-row:auto}.go-halle .go-m{aspect-ratio:21/9}}
-@media (max-width:760px){.go-head{grid-template-columns:minmax(0,1fr)}.go-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.go-halle{grid-column:span 2}.go-halle .go-m{aspect-ratio:16/9}
+@media (max-width:1100px){.go-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.go-studio,.go-sim,.go-spiel{grid-column:auto}.go-halle{grid-column:span 3;grid-row:auto}.go-halle .go-m{aspect-ratio:21/9}}
+@media (max-width:760px){.go-head{grid-template-columns:minmax(0,1fr)}.go-spiel{grid-column:span 2}.go-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.go-halle{grid-column:span 2}.go-halle .go-m{aspect-ratio:16/9}
   .go-t{padding:8px 8px 12px;border-radius:16px}.go-h{font-size:22px}.go-p{font-size:13.5px}.go-go{font-size:10.5px;letter-spacing:.1em}.go-m{border-radius:11px;margin-bottom:4px}
   .go-halle .go-h{font-size:32px}.go-term{font-size:10px;padding:8px}}
 

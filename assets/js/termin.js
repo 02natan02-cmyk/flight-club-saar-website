@@ -446,7 +446,7 @@
     $('#tp-route').href = FCS.route(t.halle.lat, t.halle.lng, t.halle.adresse);
     $('#tp-route').setAttribute('aria-label', `Route zur ${t.halle.name} (öffnet Google Maps)`);
     const nReg = regsOf(t.d).length;
-    setNum('#tp-st-n', T.st === 'load' ? null : T.st === 'err' || T.st === 'off' ? '–' : nReg);
+    setNum('#tp-st-n', T.st === 'load' ? null : T.st === 'err' || T.st === 'off' || !Number.isFinite(nReg) ? '–' : nReg);
     setNum('#tp-st-k', pl ? Math.max(1, Math.min(kEff(pl), kMax(pl) || kEff(pl))) : 4);
     setNum('#tp-st-h', pl ? C.heatCount(pl.s) : 0);
     $('#tp-osd-k').textContent = pl && pl.s.all ? 'R1 bis R8' : 'R3 bis R6';

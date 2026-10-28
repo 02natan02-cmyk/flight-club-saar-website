@@ -1892,6 +1892,8 @@ function init() {
 
   /* Rate-Kurven */
   const curve = $('[data-curve]', panel); let curveKey = '';
+  // eingeklappte Einstellungen (28.10.): Kurve beim Aufklappen neu zeichnen
+  panel.addEventListener('toggle', () => setTimeout(() => drawCurve(true), 30), true);
   function drawCurve(force) {
     if (!curve || curTab() !== 1) return;
     const key = [S.rateType, JSON.stringify(S.rateType === 'actual' ? S.ratesA : S.rates), IN.roll.toFixed(2), IN.pitch.toFixed(2), IN.yaw.toFixed(2), curve.clientWidth].join();

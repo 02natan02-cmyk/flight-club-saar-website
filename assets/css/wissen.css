@@ -378,3 +378,12 @@ body:not(.nav-hidden) .wi-drone.is-3d.scrub.stuck .wi-stage-head,body:not(.nav-h
   .wi-hint.on{animation:none}
   .sp-w.on .sp-flow{animation:none;opacity:.6}
 }
+
+/* Neu bei FPV? */
+.wi-neu-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.wi-neu-step{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wi-neu-step h3{margin:0}
+.wi-neu-step p{margin:0;flex:1}
+.wi-neu-step .btns{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:900px){.wi-neu-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.wi-neu-list{grid-template-columns:minmax(0,1fr)}.wi-neu-step .btn{width:100%;justify-content:center}}
