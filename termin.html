@@ -2,7 +2,7 @@
 <html lang="de" class="no-js">
 <head>
 <meta charset="utf-8">
-<script data-fe="bald">try{if(/(^|[.])falcon-eye[.]de$/.test(new URL(document.referrer).hostname)&&Date.now()<Date.parse("2026-10-29T08:00:00+01:00"))location.replace(new URL("bald/",document.baseURI).href)}catch(e){}</script>
+<script data-fe="bald">try{if(new URLSearchParams(location.search).has("vorschau"))localStorage.setItem("fcs-vorschau","1");if(Date.now()<Date.parse("2026-10-29T08:00:00+01:00")&&!localStorage.getItem("fcs-vorschau"))location.replace(new URL("bald/",document.baseURI).href)}catch(e){}</script>
 <script data-fe="intro">try{if(Date.now()-(+localStorage.getItem("fcs-intro")||0)<2592e5&&!/[?&]intro/.test(location.search))document.documentElement.classList.add("no-intro")}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Hallenabend planen · Flight Club Saar e. V.</title>

@@ -99,7 +99,7 @@ html,body{height:100%}body{margin:0;background:#040912;color:#eaf4ff;overflow-x:
   function set(k,val){var e=els[k];if(e.textContent!==val){e.textContent=val;e.classList.remove('tick');void e.offsetWidth;e.classList.add('tick')}}
   function tick(){
     var left=START-Date.now();
-    if(left<=0){b.classList.add('b-live');document.getElementById('b-when').textContent='Wir sind online!';return}
+    if(left<=0){b.classList.add('b-live');document.getElementById('b-when').textContent='Wir sind online!';setTimeout(function(){location.replace('../')},1800);return}
     var s=Math.floor(left/1000);
     set('d',pad(Math.floor(s/86400)));set('h',pad(Math.floor(s%86400/3600)));set('m',pad(Math.floor(s%3600/60)));set('s',pad(s%60));
     document.getElementById('b-bar').style.width=Math.min(100,Math.max(2,(Date.now()-FROM)/(START-FROM)*100))+'%';
