@@ -623,3 +623,4 @@
 @media (max-width:860px){.mi-grid{grid-template-columns:minmax(0,1fr)}.mi-stage{max-width:340px;margin-bottom:40px}.mi-card[data-pos="1"]{transform:translate3d(16%,3%,-200px) rotateY(-18deg)}.mi-card[data-pos="2"]{transform:translate3d(-16%,3%,-200px) rotateY(18deg)}}
 @media (prefers-reduced-motion:reduce){.mi-card{transition:none}.mi-st button.on .mi-bar{animation:none}}
 .mi-hint[hidden]{display:none}
+.makeit{overflow-x:clip}
