@@ -1,3 +1,4 @@
-# Entwurf für den Vorstand: noch nicht indexieren. Beim Livegang ersetzen (Sitemap, KI-Crawler erlauben).
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://flightclub-saar.de/sitemap.xml

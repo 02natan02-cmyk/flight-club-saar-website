@@ -4,7 +4,7 @@ Aufruf: python3 quellen/build.py  → schreibt die Seiten in den Repo-Stamm"""
 import os, re, json, hashlib, pathlib
 ROOT = pathlib.Path(__file__).parent
 SRC, OUT = ROOT / 'src', ROOT.parent  # Quellen in quellen/, fertige Seite im Repo-Stamm (GitHub Pages)
-BASE_URL = os.environ.get('FCS_BASE', 'https://02natan02-cmyk.github.io/flight-club-saar-website/')
+BASE_URL = os.environ.get('FCS_BASE', 'https://flightclub-saar.de/')
 
 PAGES = [
   # datei, titel, beschreibung, menü-schlüssel, zusätzliche skripte
@@ -87,7 +87,6 @@ def head(file, title, desc):
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#040912">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website"><meta property="og:locale" content="de_DE"><meta property="og:site_name" content="Flight Club Saar e. V.">

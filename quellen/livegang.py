@@ -39,6 +39,13 @@ urls = ''.join(f'  <url><loc>{dom}/{"" if p == "index.html" else p}</loc></url>\
 - Kontakt: info@flightclub-saar.de, Impressum: {dom}/impressum.html
 """, encoding='utf-8')
 
+# Adresse: canonical, og:image und Vorschaubilder auf die echte Domain (GitHub Pages liest die Datei CNAME)
+src = src.replace("os.environ.get('FCS_BASE', 'https://02natan02-cmyk.github.io/flight-club-saar-website/')", f"os.environ.get('FCS_BASE', '{dom}/')")
+host = re.sub(r'^https?://', '', dom)
+(R / 'CNAME').write_text(host + '\n', encoding='utf-8')
+for f in ('bald/index.html', 'hofstetter/index.html'):
+    q = R / f
+    if q.exists(): q.write_text(q.read_text(encoding='utf-8').replace('https://02natan02-cmyk.github.io/flight-club-saar-website/', dom + '/'), encoding='utf-8')
 src = src.replace('<meta name="robots" content="noindex,nofollow">\n', '').replace('<meta name="robots" content="noindex,nofollow">', '')
 (R / 'quellen/build.py').write_text(src, encoding='utf-8')
 

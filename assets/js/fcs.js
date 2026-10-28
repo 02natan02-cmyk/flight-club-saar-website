@@ -139,7 +139,7 @@
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); draftbar(); magnets(); forms(); year(); nextBadge();
+    locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 

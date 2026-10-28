@@ -1,0 +1,10 @@
+# Flight Club Saar e. V.
+> FPV-Drohnenverein im Saarland, gegründet am 10.12.2022 in Dillingen, eingetragen im Vereinsregister Saarlouis (VR 1665).
+
+- Im Winter Hallenfliegen mit Tiny Whoops in Hallen im Saarland (Ort für Mitglieder), Anfänger sind willkommen: https://flightclub-saar.de/hallenfliegen.html
+- Spot-Karte für Mitglieder mit Regeln und Route: https://flightclub-saar.de/spots.html
+- FPV lernen, Betaflight einrichten, Fehler finden: https://flightclub-saar.de/wissen.html, https://flightclub-saar.de/werkstatt.html, https://flightclub-saar.de/hilfe.html
+- FPV-Simulator im Browser: https://flightclub-saar.de/simulator.html
+- Clip-Studio und Gyroflow-Stabilisierung für Mitglieder: https://flightclub-saar.de/studio.html
+- Mitglied werden (Jahresbeitrag 30 €, unter 18 Jahren 20 €, Aufnahme einmalig 20 €): https://flightclub-saar.de/mitglied.html
+- Kontakt: info@flightclub-saar.de, Impressum: https://flightclub-saar.de/impressum.html
