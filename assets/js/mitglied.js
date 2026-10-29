@@ -95,7 +95,7 @@
     const rows = []; const seen = {};
     for (const [k, v] of fd.entries()) { if (skip.includes(k) || v instanceof Blob || !String(v).trim()) continue; if (/Unterschrift/.test(k)) continue; if (k === 'IBAN') { const q = String(v).replace(/\s/g, ''); rows.push([k, q.slice(0, 4) + ' •••• •••• ' + q.slice(-4)]); continue; } if (seen[k]) { seen[k][1] += ', ' + v; continue; } const r = [k, String(v)]; seen[k] = r; rows.push(r); }
     const fmtD = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v) ? v.split('-').reverse().join('.') : v;
-    $('#review').innerHTML = rows.filter(r => !/einverstanden|anerkannt|Risiko|richtig|Datenschutz/.test(r[0])).map(([k, v]) => `<div><span>${esc(k)}</span><b>${esc(fmtD(v))}</b></div>`).join('') +
+    $('#review').innerHTML = rows.filter(r => !/einverstanden|anerkannt|Risiko|richtig|Datenschutz/.test(r[0])).map(([k, v]) => `<div><span>${esc(k === 'email' ? 'E-Mail' : k)}</span><b>${esc(fmtD(v))}</b></div>`).join('') +
       '<p class="rv-edit">Etwas falsch? Tipp oben auf einen Schritt, um ihn zu ändern.</p>';
   }
 
@@ -196,7 +196,10 @@
       if (step < N) { e.stopImmediatePropagation(); e.preventDefault(); go(step + 1); return; }
       if (!check($('.step[data-step="5"]'))) { e.stopImmediatePropagation(); e.preventDefault(); }
     }, true);
-    f._extra = () => (sigDirty ? { Unterschrift: sigBlob() } : {});
+    // FormSubmit hängt bei Formularen über JavaScript keine Dateien an. Die Unterschrift geht deshalb als kleines Bild in Textform mit (29.10. getestet)
+    const sigData = () => { const w = 360, h = Math.round(360 * cv.height / cv.width) || 120, o = document.createElement('canvas'); o.width = w; o.height = h; const c = o.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, w, h); c.drawImage(cv, 0, 0, w, h); return o.toDataURL('image/jpeg', .6); };
+    const jetzt = () => new Date().toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+    f._extra = () => (sigDirty ? { Unterschrift: 'Auf der Website mit Finger oder Maus unterschrieben am ' + jetzt(), 'Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)': sigData() } : {});
     // Sicherheitsnetz: Nimmt der Mailweg den Unterschrift-Anhang nicht an, geht der Antrag ohne Bild raus
     // und der Vorstand liest in der Mail, dass die Unterschrift nachgeholt werden muss
     const send0 = FCS.send;
@@ -208,7 +211,7 @@
     f.addEventListener('fcs:sent', () => {
       const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), alias = $('#a-alias').value.trim();
       $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias);
-      FCS.scrollTo('#antrag');
+      FCS.scrollTo('#welcome', -90);
     });
   }
   document.addEventListener('fcs:ready', init, { once: true });
