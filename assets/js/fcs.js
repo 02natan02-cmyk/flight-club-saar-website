@@ -444,7 +444,7 @@
     let j = {}; try { j = await res.json(); } catch (e) {}
     const ok = res.ok && String(j.success) !== 'false';
     // Eingangsbestätigung schickt info@flightclub-saar.de selbst (Make-Szenario „FCS Formular-Bestätigung“, IONOS-Postfach), FormSubmit liefert sie nicht zuverlässig
-    if (ok && ANTWORT[art] && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) { try { fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60) }) }).catch(() => {}); } catch (e) {} }
+    if (ok && ANTWORT[art] && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) { try { fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60), nr: /^\d{3,}$/.test(String(fd.get('Mitgliedsnummer') || '')) ? String(fd.get('Mitgliedsnummer')) : '', mandat: String(fd.get('Mandatsreferenz') || '').slice(0, 20) }) }).catch(() => {}); } catch (e) {} }
     return { ok, j };
   };
   // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)

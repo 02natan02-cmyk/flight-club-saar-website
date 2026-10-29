@@ -204,8 +204,36 @@
     f._extra = () => (sigDirty ? { ...mandat(), Unterschrift: 'Auf der Website mit Finger oder Maus unterschrieben am ' + jetzt(), 'Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)': sigData() } : mandat());
     // Sicherheitsnetz: Nimmt der Mailweg den Unterschrift-Anhang nicht an, geht der Antrag ohne Bild raus
     // und der Vorstand liest in der Mail, dass die Unterschrift nachgeholt werden muss
+    // Fortlaufende Mitgliedsnummer (Natan 29.10.): vergibt Make-Szenario 8247590 aus dem Zähler im Datenspeicher 231679 (Schlüssel mnr_zaehler).
+    // Die Nummer wird einmal je Antrag geholt und gemerkt, damit ein zweiter Sendeversuch keine neue Nummer verbraucht.
+    let NR = null;
+    const nummer = async () => {
+      if (NR) return NR;
+      const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), email = $('#a-mail').value.trim();
+      try {
+        const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 9000);
+        const res = await fetch('https://hook.eu1.make.com/y0gnyfjkjx18fylupyyxdnphy24kk2d8', { method: 'POST', body: new URLSearchParams({ name, email }), signal: ctl.signal, credentials: 'omit' });
+        clearTimeout(t);
+        const j = await res.json();
+        if (j && j.ok && /^\d{3,}$/.test(j.nr)) NR = j;
+      } catch (e) {}
+      return NR;
+    };
     const send0 = FCS.send;
     FCS.send = async (form, extra = {}) => {
+      if (form === f) {
+        const n = await nummer(), name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), sepaOn = $$('input[name=Zahlungsart]')[0].checked;
+        const subj = f.querySelector('[name=_subject]');
+        const mk = 'SEPA-Lastschriftmandat (Wortlaut, mit Unterschrift erteilt)';
+        if (n) {
+          subj.value = `Mitgliedsantrag ${n.nr} – ${name} (Flight Club Saar)`;
+          extra = { Mitgliedsnummer: n.nr, ...(sepaOn ? { Mandatsreferenz: n.mandat } : {}), ...extra };
+          if (extra[mk]) extra[mk] = extra[mk].replace('Mandatsreferenz: wird beim Absenden fortlaufend vergeben', 'Mandatsreferenz: ' + n.mandat);
+        } else {
+          subj.value = `Mitgliedsantrag – ${name} – Nummer bitte vergeben (Flight Club Saar)`;
+          extra = { Mitgliedsnummer: 'Konnte nicht automatisch vergeben werden. Bitte die nächste freie Nummer vergeben (Make-Datenspeicher „FCS Clip-Studio“, Schlüssel mnr_zaehler).', ...extra };
+        }
+      }
       let r = await send0(form, extra).catch(() => ({ ok: false }));
       if (!r.ok && form === f && extra.Unterschrift) try { const ohne = { ...extra }; delete ohne['Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)']; ohne.Unterschrift = 'Das Bild der Unterschrift konnte nicht angehängt werden, bitte beim Vorstand persönlich nachholen'; r = await send0(form, ohne); } catch (e) { r = { ok: false }; }
       return r;
@@ -213,6 +241,8 @@
     f.addEventListener('fcs:sent', () => {
       const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), alias = $('#a-alias').value.trim();
       $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias);
+      const wl = $('#welcome .lede');
+      if (wl) wl.textContent = NR ? `Deine Mitgliedsnummer ist ${NR.nr}${$$('input[name=Zahlungsart]')[0].checked ? `, deine Mandatsreferenz ${NR.mandat}` : ''}. Der Vorstand prüft deinen Antrag und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.` : 'Der Vorstand prüft deinen Antrag, vergibt deine Mitgliedsnummer und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.';
       FCS.scrollTo('#welcome', -90);
     });
   }
