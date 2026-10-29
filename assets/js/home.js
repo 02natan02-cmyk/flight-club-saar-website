@@ -255,7 +255,7 @@
     addEventListener('scroll', upd, { passive: true }); upd();
   }
 
-  function go() { let heroOn = false; FCS._heroGo = () => { if (heroOn) return; heroOn = true; hero(); }; intro().then(() => { FCS._heroGo(); if (window.ScrollTrigger) ScrollTrigger.refresh(); }); termin(); motto(); crew(); reels(); net(); joinCard(); faces(); secnav(); }
+  function go() { let heroOn = false; FCS._heroGo = () => { if (heroOn) return; heroOn = true; hero(); }; intro().then(() => { document.dispatchEvent(new CustomEvent('fcs:intro-done')); FCS._heroGo(); if (window.ScrollTrigger) ScrollTrigger.refresh(); }); termin(); motto(); crew(); reels(); net(); joinCard(); faces(); secnav(); }
   document.addEventListener('fcs:ready', go, { once: true });
 })();
 

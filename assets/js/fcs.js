@@ -164,6 +164,15 @@
   /* ---------- Eröffnungsfilm: beim ersten Besuch bis Mitte November, danach über ?film ---------- */
   function film() {
     const H = document.documentElement; if (!H.classList.contains('film-on')) return;
+    // Erst das 3D-Intro (Drohne wird zum Logo), danach der Film (Natan 29.10.: „Man sieht nicht das schöne animierte Intro … Dann sollte entweder die Seite aufgehen oder das Video starten“)
+    const intro = document.getElementById('intro');
+    if (intro && !H.classList.contains('no-intro') && !intro.classList.contains('gone') && !film.wait) {
+      film.wait = true; let go = false;
+      const start = () => { if (go) return; go = true; film(); };
+      document.addEventListener('fcs:intro-done', start, { once: true });
+      setTimeout(start, 25000);
+      return;
+    }
     const V = 'assets/film/';
     const box = document.createElement('div');
     box.className = 'film'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Eröffnungsfilm des Flight Club Saar');
