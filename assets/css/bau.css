@@ -469,3 +469,9 @@
 .bk-stage > .bk-vlabel{top:64px;bottom:auto;left:10px;right:auto;max-width:min(62%,420px);padding:6px 10px;font-size:12.5px}
 @media (max-width:1100px){.bk-stage > .bk-vlabel{top:62px;bottom:auto;left:10px;right:auto}}
 @media (max-width:560px){.bk-stage > .bk-vlabel{top:56px;max-width:calc(100% - 20px)}}
+
+/* Bühne bleibt beim Scrollen stehen, aber nur neben dem Bedienfeld: Datenleiste und Prüfliste liegen nie mehr unter der Bühne (Natan 29.10. 08:32) */
+.bk-app{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:none}
+.bk-main{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:14px;align-items:start;min-width:0}
+@media (max-width:1100px){.bk-main{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:1101px){.bk-bar,.bk-checks{position:relative;z-index:2}}
