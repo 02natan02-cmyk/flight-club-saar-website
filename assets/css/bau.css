@@ -339,8 +339,8 @@
 .bk-row.f-warn:not(.on){border-color:rgba(255,176,32,.35)}
 .bk-row-b{display:grid;grid-template-columns:20px 34px minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:10px 12px;border:0;background:none;color:var(--osd);text-align:left;cursor:pointer;font:inherit}
 .bk-row-b:focus-visible{outline:2px solid var(--amber);outline-offset:-2px;border-radius:12px}
-.bk-radio,.bk-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-hi);display:grid;place-items:center}
-.bk-check{border-radius:5px}
+.bk-radio,.bk-row .bk-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-hi);display:grid;place-items:center}
+.bk-row .bk-check{border-radius:5px}
 .bk-row.on .bk-radio,.bk-row.on .bk-check{border-color:var(--sig);background:var(--sig);box-shadow:inset 0 0 0 3px var(--night)}
 .bk-row.on .bk-check{box-shadow:none;background:var(--sig) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3 3 7-7' fill='none' stroke='%23040912' stroke-width='2.4'/%3E%3C/svg%3E") center/12px no-repeat}
 .bk-row-t{display:grid;gap:3px;min-width:0}
@@ -475,3 +475,7 @@
 .bk-main{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:14px;align-items:start;min-width:0}
 @media (max-width:1100px){.bk-main{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:1101px){.bk-bar,.bk-checks{position:relative;z-index:2}}
+
+/* Natan 29.10.: „mach den Button nächster Schritt in gelb“ */
+.bk-nav [data-bk-next].btn.solid{background:var(--amber);border-color:var(--amber);color:#1a1000;box-shadow:0 0 18px rgba(255,176,32,.35)}
+.bk-nav [data-bk-next].btn.solid:hover{filter:brightness(1.08)}
