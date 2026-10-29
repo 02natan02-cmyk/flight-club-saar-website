@@ -258,7 +258,7 @@
       const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), alias = $('#a-alias').value.trim();
       $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias, NR && NR.nr);
       const wl = $('#welcome .lede');
-      if (wl) wl.textContent = NR && NR.bekannt ? `Du bist bei uns schon mit der Mitgliedsnummer ${NR.nr} eingetragen, die bleibt deine. Der Vorstand gleicht deinen Antrag ab und meldet sich bei dir. Hier ist deine Mitgliedskarte.` : NR ? `Deine Mitgliedsnummer ist ${NR.nr}${$$('input[name=Zahlungsart]')[0].checked ? `, deine Mandatsreferenz ${NR.mandat}` : ''}. Der Vorstand prüft deinen Antrag und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.` : 'Der Vorstand prüft deinen Antrag, vergibt deine Mitgliedsnummer und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.';
+      if (wl) wl.textContent = NR && NR.bekannt ? `Du bist bei uns schon mit der Mitgliedsnummer ${NR.nr} eingetragen, die bleibt deine. Der Vorstand gleicht deinen Antrag ab und meldet sich bei dir. Hier ist deine Mitgliedskarte.` : NR ? `Deine vorläufige Mitgliedsnummer ist ${NR.nr}${$$('input[name=Zahlungsart]')[0].checked ? `, deine Mandatsreferenz ${NR.mandat}` : ''}. Fest wird sie, sobald dein Beitrag da ist: Dann bekommst du eine Mail mit der Bestätigung und deinem Mitgliedscode. Hier ist schon mal die Vorschau deiner Mitgliedskarte.` : 'Der Vorstand prüft deinen Antrag, vergibt deine Mitgliedsnummer und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.';
       FCS.scrollTo('#welcome', -90);
     });
   }
