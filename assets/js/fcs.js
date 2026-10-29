@@ -1,5 +1,8 @@
 /* Flight Club Saar – gemeinsame Logik aller Seiten
    Smooth Scroll, Navigation, Einblendungen, Zähler, Zwei-Klick, Formulare, Termine. */
+// Immer über https (Natan 29.10. 21:25, Code ging nicht): Über http:// fehlt dem Browser die Verschlüsselung (crypto.subtle),
+// dann klappt kein Mitglieder-Login. Wer über http:// kommt, wird sofort auf https:// umgeleitet.
+if (location.protocol === 'http:' && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.test(location.hostname)) location.replace('https://' + location.host + location.pathname + location.search + location.hash);
 (function () {
   'use strict';
   const FCS = window.FCS = window.FCS || {};
@@ -72,14 +75,14 @@
       const u = new URL(api); u.searchParams.set('c', code);
       const ac = 'AbortController' in window ? new AbortController() : null; const to = ac && setTimeout(() => ac.abort(), 8000);
       const r = await fetch(u, { credentials: 'omit', cache: 'no-store', signal: ac && ac.signal }); clearTimeout(to);
-      const j = await r.json().catch(() => null);
+      const txt = await r.text(); let j = null; try { j = JSON.parse(txt); } catch (e) { return { ok: false, net: true }; }
       return j && j.ok && j.k ? { ok: true, n: String(j.n || '').slice(0, 40), bis: +j.bis || null, k: String(j.k) } : { ok: false };
     } catch (e) { return { ok: false, net: true }; }
   }
   M.isEnc = s => typeof s === 'string' && s.startsWith('enc1:');
   M.dec = async (s, key = M.key) => { const raw = u8(String(s).slice(5)); return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.slice(0, 12) }, key, raw.slice(12))); };
   M.enc = async (text) => { const iv = crypto.getRandomValues(new Uint8Array(12)); const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, M.key, new TextEncoder().encode(text))); const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12); return 'enc1:' + b64(out); };
-  async function mLoad(key) { const r = await fetch('assets/data/mitglieder.enc.json', { cache: 'no-cache' }); const j = await r.json(); return JSON.parse(await M.dec(j.data, key)); }
+  async function mLoad(key, frisch) { const r = await fetch('assets/data/mitglieder.enc.json' + (frisch ? '?t=' + Date.now() : ''), { cache: frisch ? 'reload' : 'no-cache' }); const j = await r.json(); return JSON.parse(await M.dec(j.data, key)); }
   function mApply(sec) {
     if (D.hallen) Object.assign(D.hallen, sec.hallen || {}); else D.hallen = sec.hallen || {};
     if (Array.isArray(sec.termine)) D.termine = sec.termine.map(t => Object.assign({}, t)).sort((a, b) => a.d < b.d ? -1 : 1);
@@ -90,9 +93,13 @@
   M.unlock = async (input) => {
     const c = fcsCode(input);
     if (!codeOk(c)) return 'form';
-    const r = await mCheck(c); if (!r.ok) return r.net ? 'net' : 'nein';
+    if (!window.crypto || !crypto.subtle) return 'unsicher';
+    let r = await mCheck(c);
+    if (!r.ok && r.net) { await new Promise(z => setTimeout(z, 1500)); r = await mCheck(c); }   // ein zweiter Versuch bei wackliger Verbindung
+    if (!r.ok) return r.net ? 'net' : 'nein';
     if (r.bis && r.bis < new Date().getFullYear()) return 'alt';
-    try { const key = await mDerive(r.k); await mLoad(key); } catch (e) { return 'nein'; }
+    // Code ist laut Server gültig: ab hier nie mehr „Code stimmt nicht“ melden, höchstens einen Ladefehler
+    try { const key = await mDerive(r.k); await mLoad(key).catch(() => mLoad(key, true)); } catch (e) { return 'laden'; }
     lsS(BKEY, r.k); lsS(MKEY, { c, n: r.n, bis: r.bis });
     return 'ok';
   };
@@ -144,7 +151,7 @@
         btn.disabled = true; const bt = btn.textContent; btn.textContent = 'Prüfe …'; err.hidden = true;
         const res = await M.unlock(inp.value);
         if (res === 'ok') { btn.textContent = 'Freigeschaltet'; location.reload(); return; }
-        err.textContent = { form: 'Dieser Code ist zu kurz oder enthält Sonderzeichen. Tipp ihn so ein, wie du ihn vom Vorstand bekommen hast.', net: 'Gerade keine Verbindung, versuch es gleich nochmal.', alt: 'Dieser Code ist abgelaufen. Den neuen Code bekommst du vom Vorstand.' }[res] || 'Dieser Code stimmt nicht. Achte auf die Schreibweise oder frag den Vorstand.';
+        err.textContent = { form: 'Dieser Code ist zu kurz oder enthält Sonderzeichen. Tipp ihn so ein, wie du ihn vom Vorstand bekommen hast.', net: 'Gerade keine Verbindung, versuch es gleich nochmal.', alt: 'Dieser Code ist abgelaufen. Den neuen Code bekommst du vom Vorstand.', laden: 'Dein Code stimmt, aber die Mitgliederdaten ließen sich gerade nicht laden. Bitte Seite neu laden und nochmal versuchen.', unsicher: 'Bitte die Seite über https://flightclub-saar.de öffnen, dann klappt die Anmeldung.' }[res] || 'Dieser Code stimmt nicht. Achte auf die Schreibweise oder frag den Vorstand.';
         btn.disabled = false; btn.textContent = bt; err.hidden = false; inp.select();
       });
     });
