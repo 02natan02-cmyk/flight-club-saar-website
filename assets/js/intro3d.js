@@ -248,7 +248,7 @@ export async function playIntro(root, opts = {}) {
       const timeout = new Promise(r => setTimeout(() => r('timeout'), O.threeTimeout || 9000));   // Handy im Mobilfunk: three.js (690 kB) braucht beim ersten Besuch oft länger als 3 s, sonst bricht das Intro nach dem Boot ab (Natan 29.10. 01:19)
       const mod = await Promise.race([loadP, timeout]);
       if (finished || exiting) return;
-      if (mod === 'timeout') { skip(); return; }     // sehr langsame Verbindung: Intro sauber beenden
+      if (mod === 'timeout') { fail(); return; }     // sehr langsame Verbindung: statt halbem Intro das 2D-Intro ganz zeigen (Natan 29.10. 12:07)
       THREE = mod;
       if (document.fonts && document.fonts.load) {
         await Promise.race([Promise.all([document.fonts.load('400 100px "Bebas Neue"'), document.fonts.load('600 16px "Chakra Petch"')]), new Promise(r => setTimeout(r, 700))]).catch(() => {});
