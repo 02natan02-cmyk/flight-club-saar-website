@@ -74,7 +74,7 @@
       <form id="tp-form" class="panel tp-form" novalidate data-reveal>
         <label class="check tp-guest" for="tp-guest"><input type="checkbox" id="tp-guest"><span><b>Ich trage einen Gast ein.</b> Jemand, der nicht im Verein ist, will mitfliegen? Dann steht er im Plan und bekommt einen Kanal und eine Flugzeit.</span></label>
         <div class="field" id="tp-f-name"><label for="tp-name">Dein Name oder Pilotenname <b class="req" aria-hidden="true">*</b></label><input id="tp-name" name="n" maxlength="40" autocomplete="nickname" enterkeyhint="next" required><span class="err">Bitte gib einen Namen mit mindestens 2 Zeichen ein.</span></div>
-        <fieldset class="field tp-sys" id="tp-f-sys"><legend class="lbl">Videosystem <b class="req" aria-hidden="true">*</b></legend><div class="chips" id="tp-sys-chips"></div><span class="err">Wähl dein Videosystem oder „weiß nicht“.</span></fieldset>
+        <fieldset class="field tp-sys" id="tp-f-sys"><legend class="lbl">Videosystem <b class="req" aria-hidden="true">*</b></legend><div class="chips" id="tp-sys-chips"></div><span class="hint">Mehrere Drohnen? Kreuz alle Videosysteme an, du fliegst dann mit jedem in einer eigenen Runde.</span><span class="hint" id="tp-sys-multi" hidden>Mit mehreren Videosystemen teilt der Plan die Kanäle zu und setzt dich nie gleichzeitig in die Luft.</span><span class="err">Wähl dein Videosystem oder „weiß nicht“.</span></fieldset>
         <div class="tp-chrow">
           <div class="field"><label for="tp-ch">Kanal</label><select id="tp-ch"><option value="">Kein Wunsch, der Plan teilt zu</option></select></div>
           <label class="check tp-fix"><input type="checkbox" id="tp-fix"><span>Mein Kanal lässt sich nicht umstellen</span></label>
@@ -204,6 +204,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=96d0e303"></script>
-<script src="assets/js/termin.js?v=72d62c25"></script>
+<script src="assets/js/termin.js?v=6aeee692"></script>
 </body>
 </html>
