@@ -245,7 +245,7 @@ export async function playIntro(root, opts = {}) {
     try {
       const url = O.threeUrl || new URL('../lib/three.module.min.js', import.meta.url).href;
       const loadP = import(url);
-      const timeout = new Promise(r => setTimeout(() => r('timeout'), 3200));
+      const timeout = new Promise(r => setTimeout(() => r('timeout'), O.threeTimeout || 9000));   // Handy im Mobilfunk: three.js (690 kB) braucht beim ersten Besuch oft länger als 3 s, sonst bricht das Intro nach dem Boot ab (Natan 29.10. 01:19)
       const mod = await Promise.race([loadP, timeout]);
       if (finished || exiting) return;
       if (mod === 'timeout') { skip(); return; }     // sehr langsame Verbindung: Intro sauber beenden

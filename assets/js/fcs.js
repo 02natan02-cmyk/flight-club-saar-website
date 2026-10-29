@@ -434,7 +434,7 @@
     const mail = (D.verein || {}).formMail || 'info@flightclub-saar.de';
     const fd = new FormData(form);
     if (fd.get('_honey')) return { ok: true };
-    const an = ANTWORT[form.dataset.antwort]; if (an && String(fd.get('email') || '').includes('@') && !fd.get('_autoresponse')) fd.append('_autoresponse', an);
+    const art = form.dataset.antwort, mailTo = String(fd.get('email') || '').trim();
     Object.entries(extra).forEach(([k, v]) => v instanceof Blob ? fd.append(k, v, k + '.png') : fd.append(k, v));
     fd.append('_template', 'table'); fd.append('_captcha', 'false');
     const hasFile = [...fd.values()].some(v => v instanceof Blob && v.size);
@@ -442,7 +442,10 @@
       ? { method: 'POST', body: fd, headers: { Accept: 'application/json' }, credentials: 'omit' }
       : { method: 'POST', body: JSON.stringify([...fd.entries()].filter(([, v]) => !(v instanceof Blob)).reduce((o, [k, v]) => { o[k] = k in o ? o[k] + ', ' + v : v; return o; }, {})), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });
     let j = {}; try { j = await res.json(); } catch (e) {}
-    return { ok: res.ok && String(j.success) !== 'false', j };
+    const ok = res.ok && String(j.success) !== 'false';
+    // Eingangsbestätigung schickt info@flightclub-saar.de selbst (Make-Szenario „FCS Formular-Bestätigung“, IONOS-Postfach), FormSubmit liefert sie nicht zuverlässig
+    if (ok && ANTWORT[art] && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) { try { fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60) }) }).catch(() => {}); } catch (e) {} }
+    return { ok, j };
   };
   // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
   FCS.notify = async (subject, fields = {}) => {
