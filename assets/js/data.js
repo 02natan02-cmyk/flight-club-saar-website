@@ -43,6 +43,7 @@ FCS.data = {
     { nr: '007', n: 'Jan S.', a: 'Jan FPV', r: 'Jugend', seit: '', stil: '', ort: '', m: 1 },
     { nr: '008', n: 'Stefan S.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '', m: 1 },
     { nr: '009', n: 'Julian B.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '', m: 1 },
+    { nr: '010', n: 'Axel P.', a: 'Mr_Batch', r: 'Mitglied', seit: 2021, stil: 'Freestyle', ort: '', img: 'media/piloten/mr-batch.webp', m: 1 },
     { n: 'Alexander K.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
     { n: 'Dimitri S.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
     { n: '', a: 'Jonny FPV Magic', r: 'Jugend', seit: 2024, stil: 'Aggro Acro · Whoops · Cinematic', ok: 1 }
