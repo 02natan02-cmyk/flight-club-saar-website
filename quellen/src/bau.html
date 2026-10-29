@@ -19,7 +19,6 @@
     <div class="bk-stagecol">
     <div class="bk-tools">
       <p class="bk-tname"><span data-bk-osd-name>Dein Kopter</span><b data-bk-osd-w>0 g</b></p>
-      <button type="button" class="bk-zoom" data-bk-zoom aria-pressed="false">Lötstellen groß</button>
       <div class="bk-views" role="group" aria-label="Ansicht">
         <button type="button" class="on" data-bk-view="3d" aria-pressed="true">3D</button>
         <button type="button" data-bk-view="loeten" aria-pressed="false">Lötplan</button>
@@ -29,6 +28,8 @@
     <div class="bk-stage" data-bk-stage>
       <canvas class="bk-cv" aria-hidden="true"></canvas>
       <svg class="bk-solder" data-bk-solder viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Lötplan" hidden></svg>
+      <div class="bk-boards" data-bk-boards role="group" aria-label="Welche Platine anzeigen" hidden></div>
+      <div class="bk-zm" data-bk-zm role="group" aria-label="Lötplan vergrößern" hidden><button type="button" data-zm="in" aria-label="Vergrößern">+</button><button type="button" data-zm="out" aria-label="Verkleinern">−</button><button type="button" data-zm="0" aria-label="Ganze Platine zeigen">⤢</button></div>
       <p class="bk-vlabel" data-bk-vlabel hidden></p>
       <p class="bk-hint" data-bk-hint aria-live="polite"><span class="dot" aria-hidden="true"></span><span data-bk-hint-t>Ziehen dreht die Drohne</span></p>
       <div class="bk-fly" data-bk-flyhud hidden>

@@ -439,3 +439,33 @@
 .bk-solnav .btn{justify-content:center}
 .bk-nav [data-bk-next]{font-size:13px;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:1100px){.bk-steps{position:static;border-radius:var(--r) var(--r) 0 0}}
+
+/* Lötplan: Platine wählen und vergrößern (29.10.) */
+.bk-boards{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 20px)}
+.bk-boards[hidden],.bk-zm[hidden]{display:none}
+.bk-boards button{display:grid;gap:2px;justify-items:start;min-height:44px;padding:6px 12px;border-radius:12px;border:1px solid var(--line-hi);background:rgba(4,9,18,.86);color:var(--osd);cursor:pointer;text-align:left}
+.bk-boards button b{font:600 12.5px/1 var(--hud);letter-spacing:.06em;text-transform:uppercase}
+.bk-boards button small{font:500 11px/1.1 var(--body);color:var(--mute)}
+.bk-boards button.on{background:var(--sig);border-color:var(--sig);color:var(--night)}
+.bk-boards button.on small{color:rgba(4,16,24,.75)}
+.bk-boards button:focus-visible,.bk-zm button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.bk-zm{position:absolute;right:10px;bottom:10px;z-index:4;display:flex;flex-direction:column;gap:6px}
+.bk-zm button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line-hi);background:rgba(4,9,18,.86);color:var(--osd);font:600 22px/1 var(--hud);cursor:pointer}
+.bk-zm button:disabled{opacity:.35;cursor:default}
+.bk-solder.zoomed{cursor:grab}
+.bk-solder.zoomed:active{cursor:grabbing}
+.bk-vlabel{left:12px;right:66px;bottom:12px;top:auto;max-width:none}
+@media (max-width:1100px){
+  .bk-app.is-solder .bk-stagecol{position:static;padding:0}
+  .bk-app.is-solder .bk-stage{height:58svh;min-height:330px}
+  .bk-vlabel{position:static;margin:8px 0 0;max-width:none}
+  .bk-stage > .bk-vlabel{position:absolute;left:10px;right:62px;bottom:10px}
+}
+@media (max-width:560px){
+  .bk-boards button{min-height:40px;padding:5px 9px}
+  .bk-boards button small{display:none}
+  .bk-vlabel small{display:none}
+}
+.bk-stage > .bk-vlabel{top:64px;bottom:auto;left:10px;right:auto;max-width:min(62%,420px);padding:6px 10px;font-size:12.5px}
+@media (max-width:1100px){.bk-stage > .bk-vlabel{top:62px;bottom:auto;left:10px;right:auto}}
+@media (max-width:560px){.bk-stage > .bk-vlabel{top:56px;max-width:calc(100% - 20px)}}
