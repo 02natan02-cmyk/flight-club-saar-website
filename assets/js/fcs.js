@@ -440,7 +440,7 @@
     const hasFile = [...fd.values()].some(v => v instanceof Blob && v.size);
     const res = await fetch('https://formsubmit.co/ajax/' + mail, hasFile
       ? { method: 'POST', body: fd, headers: { Accept: 'application/json' }, credentials: 'omit' }
-      : { method: 'POST', body: JSON.stringify(Object.fromEntries([...fd.entries()].filter(([, v]) => !(v instanceof Blob)))), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });
+      : { method: 'POST', body: JSON.stringify([...fd.entries()].filter(([, v]) => !(v instanceof Blob)).reduce((o, [k, v]) => { o[k] = k in o ? o[k] + ', ' + v : v; return o; }, {})), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });
     let j = {}; try { j = await res.json(); } catch (e) {}
     return { ok: res.ok && String(j.success) !== 'false', j };
   };
