@@ -179,13 +179,13 @@
   }
   function crew() {
     const deck = $('#cdeck'); if (!deck) return;
-    const list = (D.crew || []).filter(c => c.ok), rest = (D.crew || []).length - list.length;
+    const list = (D.crew || []).filter(c => c.ok || c.m), rest = (D.crew || []).length - list.length;
     const top = '<div class="mc-top"><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Mitgliedskarte<br><b>2026</b></span></div>';
     deck.innerHTML = list.map(c => {
       const name = c.n || c.a, alias = c.n ? c.a : '';
       const back = [c.seit ? `<span>FPV seit <b>${esc(c.seit)}</b></span>` : '', c.stil ? `<span>Stil <b>${esc(c.stil)}</b></span>` : '', c.ort ? `<span>Aus <b>${esc(c.ort)}</b></span>` : ''].filter(Boolean).join('') || '<span>Mitglied im Flight Club Saar</span>';
       return `<div class="card3${c.v ? ' v' : ''}" tabindex="0" role="button" aria-pressed="false"><span class="sr">Karte umdrehen: </span><div class="c3-in">
-        <div class="c3-f c3-front">${top}
+        <div class="c3-f c3-front">${c.nr ? top.replace('Mitgliedskarte<br><b>2026</b>', `Mitgliedskarte 2026<br><b>Nr. ${esc(c.nr)}</b>`) : top}
         ${c.img ? `<img class="mc-ph" src="${esc(c.img)}" alt="" loading="lazy" width="400" height="400">` : ''}<div style="align-self:end"><div class="mc-name">${esc(name)}</div><div class="mc-alias">${esc(alias)}</div></div>
         <div class="mc-bot"><span>Flight Club Saar e. V.</span><span class="mc-role">${esc(c.r || 'Mitglied')}</span></div><i class="mc-shine"></i></div>
         <div class="c3-f c3-back"><div class="cc-b">${back}</div></div></div></div>`;

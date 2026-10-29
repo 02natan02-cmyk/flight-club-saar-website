@@ -33,13 +33,16 @@ FCS.data = {
   // Datenschutz: ok:1 = Einwilligung liegt vor (stand schon auf der alten Vereinsseite, Natan 24.10.2026). Ohne ok erscheint nur die Anzahl.
   // Jugendliche nur mit Pilotennamen.
   crew: [
-    { n: 'Manuel Hoffstetter', a: 'Alcutruz', r: 'Vorsitzender', seit: 2019, stil: 'Freestyle · Cinematic · Long Range', ort: 'Dillingen', v: 1, img: 'media/piloten/alcutruz.webp', ok: 1 },
-    { n: 'Bianca Jozwiak', a: 'Etjoz', r: 'Kassenwartin', seit: 2019, stil: '', ort: 'Dillingen', v: 1, img: 'media/piloten/etjoz.webp', ok: 1 },
-    { n: 'Natan Wojtasczyk', a: 'Booyaka FPV', r: 'Schriftführer', seit: 2021, stil: 'Freestyle · Long Range · Cinematic', ort: 'Dudweiler', v: 1, img: 'media/piloten/booyaka-fpv.webp', ok: 1 },
-    { n: 'Boris H.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
-    { n: 'Dima K.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
-    { n: 'Stefan S.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '' },
-    { n: 'Julian B.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '' },
+    { nr: '001', n: 'Manuel Hoffstetter', a: 'Alcutruz', r: 'Vorsitzender', seit: 2019, stil: 'Freestyle · Cinematic · Long Range', ort: 'Dillingen', v: 1, img: 'media/piloten/alcutruz.webp', ok: 1 },
+    { nr: '002', n: 'Bianca Jozwiak', a: 'Etjoz', r: 'Kassenwartin', seit: 2019, stil: '', ort: 'Dillingen', v: 1, img: 'media/piloten/etjoz.webp', ok: 1 },
+    { nr: '003', n: 'Natan Wojtasczyk', a: 'Booyaka FPV', r: 'Schriftführer', seit: 2021, stil: 'Freestyle · Long Range · Cinematic', ort: 'Dudweiler', v: 1, img: 'media/piloten/booyaka-fpv.webp', ok: 1 },
+    // Mitglieder 2026 (Natan 29.10.: „gib allen eine Mitgliedsnummer … dass die, wo bezahlt haben … richtig auftauchen“). Öffentlich nur Vorname und Anfangsbuchstabe, kein Foto.
+    { nr: '004', n: 'Boris H.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '', m: 1 },
+    { nr: '005', n: 'Dima K.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '', m: 1 },
+    { nr: '006', n: 'Nikola W.', a: '', r: 'Spotter & Security', seit: '', stil: '', ort: '', m: 1 },
+    { nr: '007', n: 'Jan S.', a: 'Jan FPV', r: 'Jugend', seit: '', stil: '', ort: '', m: 1 },
+    { nr: '008', n: 'Stefan S.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '', m: 1 },
+    { nr: '009', n: 'Julian B.', a: '', r: 'Neu 2026', seit: '', stil: '', ort: '', m: 1 },
     { n: 'Alexander K.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
     { n: 'Dimitri S.', a: '', r: 'Mitglied', seit: '', stil: '', ort: '' },
     { n: '', a: 'Jonny FPV Magic', r: 'Jugend', seit: 2024, stil: 'Aggro Acro · Whoops · Cinematic', ok: 1 }

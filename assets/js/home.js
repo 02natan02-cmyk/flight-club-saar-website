@@ -144,12 +144,12 @@
   /* ---------- Crew-Karten ---------- */
   function crew() {
     const deck = $('#deck'); if (!deck) return;
-    const okc = D.crew.filter(c => c.ok), rest = D.crew.length - okc.length;
+    const okc = D.crew.filter(c => c.ok || c.m), rest = D.crew.length - okc.length;
     const cards = okc.map((c, i) => {
       const name = c.n || c.a, alias = c.n ? c.a : '';
       const back = `<strong class="mc-bn">${name}</strong>${alias ? `<em class="mc-ba">${alias}</em>` : ''}` + ([c.seit ? `<span>FPV seit <b>${c.seit}</b></span>` : '', c.stil ? `<span>Stil <b>${c.stil}</b></span>` : '', c.ort ? `<span>Aus <b>${c.ort}</b></span>` : ''].filter(Boolean).join('') || '<span>Mitglied im Flight Club Saar</span>') + `<span class="mc-br">${c.r || 'Mitglied'} · Crew 2026</span>`;
       return `<div class="mcard${c.v ? ' v' : ''}" tabindex="0" role="button" title="Antippen dreht die Karte um">
-        <div class="mc-top"><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Mitgliedskarte<br><b>2026</b></span></div>
+        <div class="mc-top"><img src="assets/img/logo-mark.svg" alt="" width="44" height="44"><span>Mitgliedskarte 2026<br><b>${c.nr ? 'Nr. ' + c.nr : '2026'}</b></span></div>
         ${c.img ? `<img class="mc-ph" src="${c.img}" alt="" loading="lazy" width="400" height="400">` : ''}<div class="mc-name">${name}</div><div class="mc-alias">${alias || ''}</div>
         <div class="mc-bot"><span>Flight Club Saar e. V.</span><span class="mc-role">${c.r || 'Mitglied'}</span></div>
         <div class="mc-back">${back}</div><i class="mc-shine"></i></div>`;
