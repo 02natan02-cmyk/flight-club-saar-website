@@ -440,26 +440,63 @@
     antrag: 'Hallo,\n\ndanke fürs Ausfüllen deines Mitgliedsantrags und willkommen beim Flight Club Saar!\n\nDein Antrag ist bei uns angekommen. Der Vorstand schaut ihn sich an und meldet sich bei dir, sobald einer unserer Piloten Zeit hat. Wenn alles geklärt ist, bekommst du deinen persönlichen Mitgliedscode für Spot-Karte, Hallentermine und Gyroflow.' + GRUSS,
     frage: 'Hallo,\n\ndanke für deine Frage und willkommen beim Flight Club Saar!\n\nSie ist bei uns angekommen. Wir melden uns, sobald einer unserer Piloten Zeit hat.' + GRUSS
   };
+  // Versand (Natan 29.10. 12:32 „Mindestens 2 Leute haben das Formular ausgefüllt“): FormSubmit war ab dem Vormittag ausgefallen (521).
+  // Jetzt zuerst über das eigene IONOS-Postfach (Make-Szenario 8252737 „FCS Formular-Eingang“), FormSubmit nur noch als Ersatzweg.
+  const EINGANG = 'https://hook.eu1.make.com/2kae2j2vbnmxbaagmhfv2wpn19i4577w';
+  const escH = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const mailHtml = (subject, rows) => {
+    const tr = rows.map(([k, v]) => {
+      const val = String(v);
+      const cell = /^data:image\//.test(val) ? `<img src="${escH(val)}" alt="Unterschrift" style="max-width:360px;border:1px solid #dbe5f2;border-radius:6px"><br><span style="font-size:11px;color:#6b7c93;word-break:break-all">${escH(val.slice(0, 80))}…</span>` : escH(val).replace(/\n/g, '<br>');
+      return `<tr><th style="text-align:left;vertical-align:top;padding:7px 12px 7px 0;color:#41536b;font-weight:600;white-space:nowrap">${escH(k)}</th><td style="padding:7px 0;color:#0b1a33">${cell}</td></tr>`;
+    }).join('');
+    return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;max-width:680px"><div style="background:#050b17;color:#eaf4ff;padding:16px 20px;border-radius:10px 10px 0 0"><div style="font-size:11px;letter-spacing:3px;color:#3fe0ff;text-transform:uppercase">flightclub-saar.de · Formular</div><div style="font-size:20px;font-weight:bold;margin-top:4px">${escH(subject)}</div></div><table style="border-collapse:collapse;width:100%;padding:12px 20px;border:1px solid #dbe5f2;border-top:0">${tr}</table><p style="font-size:12px;color:#6b7c93">Antworten geht direkt an die Person, die das Formular ausgefüllt hat.</p></div>`;
+  };
+  const rowsOf = fd => { const seen = {}, rows = []; for (const [k, v] of fd.entries()) { if (/^_/.test(k) || v instanceof Blob || !String(v).trim()) continue; if (k in seen) { seen[k][1] += ', ' + v; continue; } const r = [k, String(v)]; seen[k] = r; rows.push(r); } return rows; };
+  const viaEingang = async (subject, rows, email) => {
+    try {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
+      const res = await fetch(EINGANG, { method: 'POST', body: new URLSearchParams({ subject, html: mailHtml(subject, rows), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email || '') ? email : '' }), signal: ctl.signal, credentials: 'omit' });
+      clearTimeout(t);
+      const j = await res.json().catch(() => ({}));
+      return !!(res.ok && j && j.ok === true);
+    } catch (e) { return false; }
+  };
+  const viaFormSubmit = async (mail, fd, hasFile) => {
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/' + mail, hasFile
+        ? { method: 'POST', body: fd, headers: { Accept: 'application/json' }, credentials: 'omit' }
+        : { method: 'POST', body: JSON.stringify([...fd.entries()].filter(([, v]) => !(v instanceof Blob)).reduce((o, [k, v]) => { o[k] = k in o ? o[k] + ', ' + v : v; return o; }, {})), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });
+      let j = {}; try { j = await res.json(); } catch (e) {}
+      return res.ok && String(j.success) !== 'false';
+    } catch (e) { return false; }
+  };
   FCS.send = async (form, extra = {}) => {
     const mail = (D.verein || {}).formMail || 'info@flightclub-saar.de';
     const fd = new FormData(form);
     if (fd.get('_honey')) return { ok: true };
     const art = form.dataset.antwort, mailTo = String(fd.get('email') || '').trim();
     Object.entries(extra).forEach(([k, v]) => v instanceof Blob ? fd.append(k, v, k + '.png') : fd.append(k, v));
-    fd.append('_template', 'table'); fd.append('_captcha', 'false');
+    const subject = String(fd.get('_subject') || 'Nachricht über die Website (Flight Club Saar)');
     const hasFile = [...fd.values()].some(v => v instanceof Blob && v.size);
-    const res = await fetch('https://formsubmit.co/ajax/' + mail, hasFile
-      ? { method: 'POST', body: fd, headers: { Accept: 'application/json' }, credentials: 'omit' }
-      : { method: 'POST', body: JSON.stringify([...fd.entries()].filter(([, v]) => !(v instanceof Blob)).reduce((o, [k, v]) => { o[k] = k in o ? o[k] + ', ' + v : v; return o; }, {})), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });
-    let j = {}; try { j = await res.json(); } catch (e) {}
-    const ok = res.ok && String(j.success) !== 'false';
-    // Eingangsbestätigung schickt info@flightclub-saar.de selbst (Make-Szenario „FCS Formular-Bestätigung“, IONOS-Postfach), FormSubmit liefert sie nicht zuverlässig
+    const rows = [...rowsOf(fd), ['Seite', location.href]];
+    let ok;
+    if (hasFile) {     // Dateien kann nur FormSubmit anhängen; fällt es aus, kommt der Text trotzdem an
+      fd.append('_template', 'table'); fd.append('_captcha', 'false');
+      ok = await viaFormSubmit(mail, fd, true) || await viaEingang(subject, [...rows, ['Hinweis', 'Die angehängte Datei konnte nicht mitgeschickt werden, bitte bei der Person nachfragen.']], mailTo);
+    } else {
+      ok = await viaEingang(subject, rows, mailTo);
+      if (!ok) { fd.append('_template', 'table'); fd.append('_captcha', 'false'); ok = await viaFormSubmit(mail, fd, false); }
+    }
+    // Eingangsbestätigung schickt info@flightclub-saar.de selbst (Make-Szenario „FCS Formular-Bestätigung“, IONOS-Postfach)
     if (ok && ANTWORT[art] && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) { try { fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60), nr: /^\d{3,}$/.test(String(fd.get('Mitgliedsnummer') || '')) ? String(fd.get('Mitgliedsnummer')) : '', mandat: String(fd.get('Mandatsreferenz') || '').slice(0, 20) }) }).catch(() => {}); } catch (e) {} }
-    return { ok, j };
+    return { ok, j: {} };
   };
   // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
   FCS.notify = async (subject, fields = {}) => {
     const mail = (D.verein || {}).formMail || 'info@flightclub-saar.de';
+    const rows = [...Object.entries(fields).filter(([k, v]) => !/^_/.test(k) && String(v).trim()).map(([k, v]) => [k, String(v)]), ['Seite', location.href]];
+    if (await viaEingang(subject, rows, String(fields.email || fields['E-Mail'] || ''))) return { ok: true };
     const body = Object.assign({ _subject: subject, _template: 'table', _captcha: 'false', Seite: location.href }, fields);
     try {
       const res = await fetch('https://formsubmit.co/ajax/' + mail, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'omit' });
