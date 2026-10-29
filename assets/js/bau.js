@@ -903,13 +903,13 @@ function iron(mk, x, y) {
 }
 function vlabel(txt, layer) {
   if (!ui.vlabel) return;
-  ui.vlabel.innerHTML = `<span class="bk-stk ${layer}" aria-hidden="true"><i></i><i></i></span><span>Du siehst: <b>${esc(txt)}</b></span><small>Nur zum Anschauen · Schritte ${innerWidth > 1100 ? 'rechts' : 'darunter'}</small>`;
+  ui.vlabel.innerHTML = `<span class="bk-stk ${layer}" aria-hidden="true"><i></i><i></i></span><span>Du siehst: <b>${esc(txt)}</b></span>`;
 }
 let solderSvg = null;
-function drawSolder() {
+function drawSolder() { drawSolder0(); boardsUI(); baseVB = (ui.solder.getAttribute('viewBox') || '0 0 1000 1000').split(/\s+/).map(Number); applyVZ(); }
+function drawSolder0() {
   const svg = ui.solder; const b = P(B.board);
   svg.innerHTML = ''; svg.setAttribute('viewBox', '0 0 1000 1000');
-  if (ui.zoom) { ui.zoom.textContent = zoomOn() ? 'Ganzer Plan' : 'Lötstellen groß'; ui.zoom.setAttribute('aria-pressed', zoomOn()); }
   const mk = (t, a, p) => { const n = D.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); (p || svg).appendChild(n); return n; };
   if (!b) { vlabel('noch keinen Flugcontroller', ''); mk('text', { x: 500, y: 500, 'text-anchor': 'middle', class: 'sv-t big' }).textContent = 'Wähl zuerst einen Flugcontroller'; return; }
   const plan = wiring(), steps = solderSteps(plan), act = steps[state.solderStep] || {};
@@ -1329,7 +1329,7 @@ function toSim() {
    Start
    ===================================================================== */
 function bindUI(app) {
-  ui = { app, steps: $('[data-bk-steps]', app), body: $('[data-bk-body]', app), prev: $('[data-bk-prev]', app), next: $('[data-bk-next]', app), go: $('[data-bk-go]', app), checkB: $('[data-bk-check]', app), checks: $('[data-bk-checks]', app), ampel: $('[data-bk-ampel]', app), checkT: $('[data-bk-check-t]', app), solder: $('[data-bk-solder]', app), stage: $('[data-bk-stage]', app), osdW: $('[data-bk-osd-w]', app), osdName: $('[data-bk-osd-name]', app), hint: $('[data-bk-hint-t]', app), hintBox: $('[data-bk-hint]', app), zoom: $('[data-bk-zoom]', app), flyhud: $('[data-bk-flyhud]', app), flyT: $('[data-bk-fly-t]', app), vlabel: $('[data-bk-vlabel]', app), m: {} };
+  ui = { app, steps: $('[data-bk-steps]', app), body: $('[data-bk-body]', app), prev: $('[data-bk-prev]', app), next: $('[data-bk-next]', app), go: $('[data-bk-go]', app), checkB: $('[data-bk-check]', app), checks: $('[data-bk-checks]', app), ampel: $('[data-bk-ampel]', app), checkT: $('[data-bk-check-t]', app), solder: $('[data-bk-solder]', app), stage: $('[data-bk-stage]', app), osdW: $('[data-bk-osd-w]', app), osdName: $('[data-bk-osd-name]', app), hint: $('[data-bk-hint-t]', app), hintBox: $('[data-bk-hint]', app), zoom: $('[data-bk-zoom]', app), flyhud: $('[data-bk-flyhud]', app), flyT: $('[data-bk-fly-t]', app), vlabel: $('[data-bk-vlabel]', app), boards: $('[data-bk-boards]', app), zm: $('[data-bk-zm]', app), m: {} };
   $$('[data-bk-m]', app).forEach(n => { ui.m[n.dataset.bkM] = n; });
   ui.steps.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b && !b.disabled) go(+b.dataset.i); });
   ui.prev.addEventListener('click', () => go(step - 1));
@@ -1339,7 +1339,9 @@ function bindUI(app) {
   $('[data-bk-land]', app).addEventListener('click', land);
   $('[data-bk-sim]', app).addEventListener('click', toSim);
   $$('[data-bk-view]', app).forEach(b => b.addEventListener('click', () => setView(b.dataset.bkView)));
-  if (ui.zoom) ui.zoom.addEventListener('click', () => { state.zoom = !zoomOn(); drawSolder(); });
+  if (ui.zm) ui.zm.addEventListener('click', e => { const b = e.target.closest('[data-zm]'); if (!b) return; const z = b.dataset.zm; if (z === '0') VZ.k = 1, VZ.x = 0, VZ.y = 0; else VZ.k = clamp(VZ.k * (z === 'in' ? 1.5 : 1 / 1.5), 1, 6); if (VZ.k === 1) VZ.x = VZ.y = 0; applyVZ(); });
+  if (ui.boards) ui.boards.addEventListener('click', e => { const b = e.target.closest('[data-board]'); if (!b) return; const i = +b.dataset.step; VZ.k = 1; VZ.x = VZ.y = 0; solderTo(i); });
+  bindVZ(ui.solder);
   const onAct = e => {
     const t = e.target;
     const kl = t.closest('[data-klasse]'); if (kl) { setKlasse(kl.dataset.klasse); return; }
@@ -1405,9 +1407,10 @@ function stopSolderAuto() {}
 function setView(v) {
   view = v; ui.solder.toggleAttribute('hidden', v !== 'loeten'); ui.app.classList.toggle('is-solder', v === 'loeten');
   if (ui.vlabel) ui.vlabel.hidden = v !== 'loeten';
+  if (v !== 'loeten') { if (ui.boards) ui.boards.hidden = true; if (ui.zm) ui.zm.hidden = true; }
   $$('[data-bk-view]', ui.app).forEach(b => { const on = b.dataset.bkView === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   if (v === 'loeten') drawSolder();
-  hint(v === 'loeten' ? 'Lötplan: zum Anschauen, Schritte rechts' : v === 'explode' ? 'Alle Teile auseinandergezogen' : 'Ziehen dreht die Drohne');
+  hint(v === 'loeten' ? 'Platine oben wählen · + oder Doppelklick vergrößert, Ziehen verschiebt' : v === 'explode' ? 'Alle Teile auseinandergezogen' : 'Ziehen dreht die Drohne');
 }
 function go(i, force) {
   i = clamp(i, 0, STEPS.length - 1);
@@ -1427,7 +1430,7 @@ function liftoff() {
   renderSteps();
 }
 function land() { G3.fly = 0; if (ui.flyhud) ui.flyhud.hidden = true; }
-const zoomOn = () => state.zoom == null ? innerWidth < 700 : state.zoom;
+const zoomOn = () => !!state.zoom;   // ganze Platine mit allen Bauteilen zeigen, vergrößern über + / − / Ziehen
 let hintT = 0;
 function hint(t) { const el = ui.hintBox; if (!el) return; ui.hint.textContent = t; el.classList.remove('gone'); clearTimeout(hintT); hintT = setTimeout(() => el.classList.add('gone'), 4500); }
 
@@ -1468,3 +1471,43 @@ async function main() {
   W.__fcsBau = { B, checks, wiring, metrics, preset, go, pick: pickPart, state, DB: () => DB };
 }
 main();
+
+/* ---------- Lötplan: Platine selbst wählen, vergrößern, verschieben (Natan 29.10. 08:25: „Lötpläne vom ESC und FC nicht selbst wählen, zoomen“) ---------- */
+const VZ = { k: 1, x: 0, y: 0 }; let baseVB = [0, 0, 1000, 1000];
+const isEscStep = (st) => (st.pads || []).some(x => /^(BAT|M\d|ESC)/.test(x));
+function boardsUI() {
+  if (!ui.boards) return;
+  const b = P(B.board); if (!b || view !== 'loeten') { ui.boards.hidden = true; if (ui.zm) ui.zm.hidden = true; return; }
+  const plan = wiring(), steps = solderSteps(plan), cur = state.solderStep, act = steps[cur] || {};
+  const L = plan.layout, under = L ? new Set([...((L.unterseite && L.unterseite.buchsen) || []).map(c => 'BUCHSE:' + c.n), ...L.pads.filter(p => p.unten).map(p => String(p.id || p.n))]) : new Set();
+  const isUnder = (st) => (st.ids || []).some(x => under.has(String(x)));
+  const iEsc = steps.findIndex(isEscStep), iTop = steps.findIndex(st => !isEscStep(st) && !isUnder(st) && (st.pads || []).length), iUnd = steps.findIndex(isUnder);
+  const nowEsc = isEscStep(act), nowUnd = isUnder(act);
+  const aio = isAio(b), btn = (lbl, sub, i, on) => i < 0 ? '' : `<button type="button" data-board data-step="${i}" class="${on ? 'on' : ''}" aria-pressed="${on}"><b>${lbl}</b><small>${sub}</small></button>`;
+  ui.boards.innerHTML = aio
+    ? btn('Platine', 'Akku und Motoren', iEsc, nowEsc) + btn('Oberseite', 'Empfänger, Video', iTop, !nowEsc && !nowUnd) + btn('Unterseite', 'Stecker unten', iUnd, nowUnd)
+    : btn('ESC', 'untere Platine', iEsc, nowEsc) + btn('Flugcontroller', 'obere Platine', iTop >= 0 ? iTop : steps.length - 1, !nowEsc && !nowUnd) + btn('FC Unterseite', 'Stecker unten', iUnd, nowUnd);
+  ui.boards.hidden = false; if (ui.zm) ui.zm.hidden = false;
+}
+function applyVZ() {
+  const svg = ui.solder; if (!svg) return; const [bx, by, bw, bh] = baseVB, w = bw / VZ.k, h = bh / VZ.k;
+  const mx = (bw - w) / 2, my = (bh - h) / 2; VZ.x = clamp(VZ.x, -mx, mx); VZ.y = clamp(VZ.y, -my, my);
+  svg.setAttribute('viewBox', `${bx + mx + VZ.x} ${by + my + VZ.y} ${w} ${h}`);
+  svg.classList.toggle('zoomed', VZ.k > 1.01); svg.style.touchAction = VZ.k > 1.01 ? 'none' : 'pan-y';
+  if (ui.zm) { const o = $('[data-zm="out"]', ui.zm), z = $('[data-zm="0"]', ui.zm); if (o) o.disabled = VZ.k <= 1.01; if (z) z.disabled = VZ.k <= 1.01; }
+}
+function bindVZ(svg) {
+  if (!svg) return; const pts = new Map(); let start = null;
+  const unit = () => { const r = svg.getBoundingClientRect(); return (baseVB[2] / VZ.k) / Math.max(1, Math.min(r.width, r.height * baseVB[2] / baseVB[3])); };
+  svg.addEventListener('wheel', e => { if (view !== 'loeten') return; e.preventDefault(); VZ.k = clamp(VZ.k * (e.deltaY < 0 ? 1.2 : 1 / 1.2), 1, 6); if (VZ.k === 1) VZ.x = VZ.y = 0; applyVZ(); }, { passive: false });
+  svg.addEventListener('dblclick', () => { VZ.k = VZ.k > 1.01 ? 1 : 2.2; VZ.x = VZ.y = 0; applyVZ(); });
+  svg.addEventListener('pointerdown', e => { pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (VZ.k > 1.01 || pts.size > 1) { try { svg.setPointerCapture(e.pointerId); } catch (er) {} } start = { k: VZ.k, x: VZ.x, y: VZ.y, d: pts.size > 1 ? dist() : 0, p: { x: e.clientX, y: e.clientY } }; });
+  const dist = () => { const a = [...pts.values()]; return a.length > 1 ? Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) : 0; };
+  svg.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId) || !start) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size > 1 && start.d) { VZ.k = clamp(start.k * dist() / start.d, 1, 6); applyVZ(); return; }
+    if (VZ.k > 1.01) { const u = unit(); VZ.x = start.x - (e.clientX - start.p.x) * u; VZ.y = start.y - (e.clientY - start.p.y) * u; applyVZ(); }
+  });
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) start = pts.size ? { k: VZ.k, x: VZ.x, y: VZ.y, d: 0, p: [...pts.values()][0] } : null; };
+  svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+}
