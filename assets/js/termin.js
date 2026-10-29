@@ -152,6 +152,8 @@
 
     /* Durchgänge: jeder kommt gleich oft dran (wer am wenigsten geflogen ist und am längsten wartet, zuerst),
        im selben Durchgang nur Kanäle, die sich vertragen. keep = schon festgelegte Durchgänge (zum Beispiel bereits geflogen). */
+    // Gleiche Person mit mehreren Videosystemen (Natan 29.10.: „dass man in mehreren Gruppen dann fliegen kann“): eigene Einträge, aber nie gleichzeitig
+    const same = (a, b) => !!a.own && a.own === b.own;
     function heats(pilots, chOf, k, nH, keep = []) {
       const fl = {}, last = {}, out = [];
       pilots.forEach(p => { fl[p.key] = 0; last[p.key] = -1e9; });
@@ -160,7 +162,7 @@
         const cand = pilots.slice().sort((a, b) => fl[a.key] - fl[b.key] || last[a.key] - last[b.key] || a.o - b.o);
         // Gerechtigkeit: Wer schon einen Flug mehr hat als der am wenigsten Geflogene, wartet. Lieber ein Platz frei als einer, der ständig fliegt.
         const min = cand.length ? fl[cand[0].key] : 0, pick = [];
-        for (const p of cand) { if (pick.length >= k) break; if (fl[p.key] > min + 1) continue; const c = chOf[p.key]; if (c && pick.every(q => compat(chOf[q.key], c))) pick.push(p); }
+        for (const p of cand) { if (pick.length >= k) break; if (fl[p.key] > min + 1) continue; const c = chOf[p.key]; if (c && pick.every(q => compat(chOf[q.key], c) && !same(p, q))) pick.push(p); }
         pick.sort((a, b) => chOf[a.key].f - chOf[b.key].f);
         out.push(pick.map(p => p.key)); pick.forEach(p => { fl[p.key]++; last[p.key] = i; });
       }
@@ -183,7 +185,7 @@
           for (let g = 0; g < G; g++) {
             if (mem[g].length >= cap) continue;
             if (!mem[g].length && prev[p.key] !== g) { if (empty) continue; empty = true; }
-            if (mem[g].some(q => !compat(c, chOf[q.key]))) continue;
+            if (mem[g].some(q => !compat(c, chOf[q.key]) || same(p, q))) continue;
             cands.push([(prev[p.key] === g ? -100 : 0) + mem[g].length * 10 + g * .01, g]);
           }
           cands.sort((x, y) => x[0] - y[0]);
@@ -262,7 +264,7 @@
   const DEF = () => ({ b: toMin((D.zeit || {}).von) || 1080, e: toMin((D.zeit || {}).bis) || 1260, slot: 3, pause: 2, k: 0, all: 0, mode: 'g' });
   function fromReg(r, o) {
     const sys = C.sysOf(r.kat), chs = C.parseCh(r.titel, sys), nt = C.parseNote(r.t);
-    return { key: r.id, ref: r.id, n: String(r.n || 'Pilot').slice(0, 40), sys, fix: chs.fix || null, wish: chs.wish || null, ch: null, lock: false, here: true, cls: nt.cls, note: nt.note.slice(0, 200), o, d: r.d || '', gast: r.art === 'gast' ? 1 : 0 };
+    return { key: r.id, ref: r.id, own: r.art === 'gast' ? '' : String(r.n || '').toLowerCase().replace(/\s+/g, ' ').trim(), n: String(r.n || 'Pilot').slice(0, 40), sys, fix: chs.fix || null, wish: chs.wish || null, ch: null, lock: false, here: true, cls: nt.cls, note: nt.note.slice(0, 200), o, d: r.d || '', gast: r.art === 'gast' ? 1 : 0 };
   }
   const regsOf = d => T.regs.filter(x => x && x.b === 'termin:' + d).sort((a, b) => String(a.d || '').localeCompare(String(b.d || '')) || String(a.id).localeCompare(String(b.id)));
   const B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -302,7 +304,7 @@
   function reconcile(pl, regsD) {
     let changed = false; const by = new Map(regsD.map(r => [r.id, r]));
     pl.pilots = pl.pilots.filter(p => { if (!p.ref) return true; if (!by.has(p.ref)) { changed = true; return false; } return true; });
-    pl.pilots.forEach(p => { if (!p.ref) return; const f = fromReg(by.get(p.ref), p.o); p.n = f.n; p.gast = f.gast; p.cls = f.cls; p.note = f.note; p.d = f.d; p.fix = f.fix; p.wish = f.wish; if (!p.sysx && p.sys !== f.sys) { p.sys = f.sys; p.ch = null; p.lock = false; changed = true; } delete p.gone; });
+    pl.pilots.forEach(p => { if (!p.ref) return; const f = fromReg(by.get(p.ref), p.o); p.n = f.n; p.own = f.own; p.gast = f.gast; p.cls = f.cls; p.note = f.note; p.d = f.d; p.fix = f.fix; p.wish = f.wish; if (!p.sysx && p.sys !== f.sys) { p.sys = f.sys; p.ch = null; p.lock = false; changed = true; } delete p.gone; });
     let o = pl.pilots.reduce((m, p) => Math.max(m, p.o), -1);
     regsD.forEach(r => { if (!pl.pilots.some(p => p.ref === r.id)) { pl.pilots.push(fromReg(r, ++o)); changed = true; } });
     const keys = new Set(pl.pilots.map(p => p.key));
@@ -498,14 +500,17 @@
   /* ---------- Formular ---------- */
   function initForm() {
     const chips = $('#tp-sys-chips');
-    chips.innerHTML = C.ORDER.map(k => `<label class="chip"><input type="radio" name="tp-sys" value="${k}"><span>${esc(SYS[k].n)}</span></label>`).join('');
+    chips.innerHTML = C.ORDER.map(k => `<label class="chip"><input type="checkbox" name="tp-sys" value="${k}"><span>${esc(SYS[k].n)}</span></label>`).join('');
+    // „weiß nicht“ schließt die anderen aus und umgekehrt
+    chips.addEventListener('change', e => { const t = e.target; if (!t.checked) return; $$('input[name=tp-sys]', chips).forEach(x => { if (x !== t && (t.value === 'u' || x.value === 'u')) x.checked = false; }); });
     $('#tp-cls-chips').innerHTML = CLASSES.map(c => `<label class="chip"><input type="radio" name="tp-cls" value="${esc(c)}"><span>${esc(c)}</span></label>`).join('');
     $('#tp-late-s').innerHTML = C.ORDER.map(k => `<option value="${k}"${k === 'u' ? ' selected' : ''}>${esc(SYS[k].n)}</option>`).join('');
     $('#tp-name').value = myName();
     $('#tp-pw').value = FCS.board && FCS.board.code ? FCS.board.code() : '';
     const sel = $('#tp-ch');
     const fillCh = () => {
-      const s = ($('input[name=tp-sys]:checked') || {}).value, all = T.plan && T.plan.s.all, cur = sel.value;
+      const sysAll = $$('input[name=tp-sys]:checked').map(x => x.value), s = sysAll.length === 1 ? sysAll[0] : '', all = T.plan && T.plan.s.all, cur = sel.value;
+      const hint = $('#tp-sys-multi'); if (hint) hint.hidden = sysAll.length < 2;
       sel.innerHTML = '<option value="">Kein Wunsch, der Plan teilt zu</option>' + (s ? SYS[s].ch.map(c => { const ch = C.chan(s, c.id); return `<option value="${ch.id}">${esc(C.label(ch))} · ${esc(C.mhz(ch.f))}${ch.legal ? '' : ' (außerhalb 5725 bis 5875 MHz)'}</option>`; }).join('') : '');
       sel.disabled = !s; $('#tp-fix').disabled = !s; if (!s) $('#tp-fix').checked = false;
       if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
@@ -525,7 +530,7 @@
   }
   function fieldBad(id, bad) { const f = $(id); if (f) f.classList.toggle('bad', !!bad); return !bad; }
   async function submit() {
-    const name = $('#tp-name').value.trim().replace(/\s+/g, ' ').slice(0, 40), sys = ($('input[name=tp-sys]:checked') || {}).value, pw = $('#tp-pw').value.trim();
+    const name = $('#tp-name').value.trim().replace(/\s+/g, ' ').slice(0, 40), sysAll = $$('input[name=tp-sys]:checked').map(x => x.value), sys = sysAll[0], pw = $('#tp-pw').value.trim();
     const ok = [fieldBad('#tp-f-name', name.length < 2), fieldBad('#tp-f-sys', !sys), fieldBad('#tp-f-pw', pw.length < 4), fieldBad('#tp-f-ok', !$('#tp-ok-dsgvo').checked)];
     const msg = $('#tp-form-msg'); msg.hidden = true;
     if (ok.includes(false)) { const first = $('#tp-form .bad'); if (first) { FCS.scrollTo(first, -170); const i = $('input', first); if (i) i.focus({ preventScroll: true }); } return; }
@@ -538,11 +543,18 @@
     const btn = $('#tp-submit'); btn.disabled = true; btn.textContent = 'Wird eingetragen …';
     let r = { ok: false, err: 'netz' };
     try { r = await FCS.board.add(fields); } catch (e) {}
+    // Weitere Videosysteme: je ein eigener Eintrag mit demselben Namen und Löschcode, ohne Kanalwunsch (der Plan teilt zu)
+    const more = [];
+    if (r.ok && sysAll.length > 1) for (const sx of sysAll.slice(1)) {
+      const f2 = { b: fields.b, n: name, kat: SYS[sx].kat, pw }; if (guest) f2.art = 'gast'; if (fields.t) f2.t = fields.t;
+      try { const r2 = await FCS.board.add(f2); if (r2.ok) more.push({ id: r2.id, kat: f2.kat }); } catch (e) {}
+    }
     btn.disabled = false; btn.textContent = guest ? 'Gast eintragen' : 'Eintragen';
     if (!r.ok) { msg.textContent = r.err === 'abgelehnt' ? 'Das hat nicht geklappt. Prüf deinen Namen und versuch es nochmal.' : r.err === 'aus' ? 'Eintragen ist gerade nicht möglich.' : 'Gerade nicht erreichbar, versuch es gleich nochmal.'; msg.hidden = false; say(msg.textContent); return; }
     if (guest) {
       // Gast (nicht im Verein, Natan 28.10.2026): steht im Plan, der eigene Eintrag bleibt unverändert
       T.regs.unshift({ id: r.id, b: 'termin:' + T.d, n: name, kat: fields.kat, art: 'gast', titel: fields.titel || null, t: fields.t || null, d: new Date().toISOString().slice(0, 19) });
+      more.forEach(m => T.regs.unshift({ id: m.id, b: 'termin:' + T.d, n: name, kat: m.kat, art: 'gast', titel: null, t: fields.t || null, d: new Date().toISOString().slice(0, 19) }));
       $('#tp-name').value = ''; $('#tp-note').value = ''; $('#tp-pw').value = FCS.board && FCS.board.code ? FCS.board.code() : '';
       rebuildKeep();
       msg.textContent = `${name} ist als Gast eingetragen und steht im Plan. Noch ein Gast? Einfach den nächsten Namen eintragen.`; msg.classList.add('ok'); msg.hidden = false;
@@ -551,8 +563,9 @@
     keepName(name);
     const old = T.replace; T.replace = null; T.formOpen = false; $('#tp-form-x').hidden = true;
     T.regs.unshift({ id: r.id, b: 'termin:' + T.d, n: name, kat: fields.kat, titel: fields.titel || null, t: fields.t || null, d: new Date().toISOString().slice(0, 19) });
+    more.forEach(m => T.regs.unshift({ id: m.id, b: 'termin:' + T.d, n: name, kat: m.kat, titel: null, t: fields.t || null, d: new Date().toISOString().slice(0, 19) }));
     if (old) { try { const dr = await FCS.board.del(old.id, old.pw); if (dr.ok) T.regs = T.regs.filter(x => x.id !== old.id); } catch (e) {} }
-    T.done = { id: r.id, pw: r.pw, name };
+    T.done = { id: r.id, pw: r.pw, name, more: more.length };
     store.del('fcs-plan-ich:' + T.d);
     rebuildKeep();
     renderDone();
@@ -570,7 +583,7 @@
     const wa = `Mein Löschcode für den Hallenabend am ${FCS.fmtDate(T.d, 1)} beim Flight Club Saar: ${d.pw}\n${location.origin}${location.pathname}?d=${T.d}`;
     $('#tp-form').hidden = true; $('#tp-me').hidden = true; box.hidden = false;
     box.innerHTML = `<p class="tp-me-k hud" style="color:var(--green)"><span class="dot" aria-hidden="true"></span>Eingetragen</p>
-      <h3 class="tp-done-h">Du bist dabei, ${esc(d.name)}!</h3>
+      <h3 class="tp-done-h">Du bist dabei, ${esc(d.name)}!</h3>${d.more ? `<p class="tp-done-m">Du bist mit ${d.more + 1} Videosystemen eingetragen. Mit jedem fliegst du in einer eigenen Runde, nie zwei gleichzeitig. Der Löschcode gilt für alle.</p>` : ''}
       ${c ? `<div class="tp-me-row"><span class="tp-me-ch" style="--c:${colorOf(d.id, gs)}">${esc(C.label(c))}</span><div class="tp-me-t"><h3>Dein Kanal</h3><p>${esc(SYS[p.sys].n)} · ${esc(C.mhz(c.f))}</p></div></div>` : ''}
       <p class="tp-code-l">Dein Löschcode</p><p class="tp-code" id="tp-code">${esc(d.pw)}</p>
       <div class="btns"><button class="btn solid" type="button" id="tp-copy">${IC.copy}<span>Code kopieren</span></button><a class="btn" href="https://wa.me/?text=${encodeURIComponent(wa)}" target="_blank" rel="noopener">${IC.wa}Per WhatsApp an mich senden</a></div>
