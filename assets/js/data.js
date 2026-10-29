@@ -132,7 +132,7 @@ FCS.data = {
     { a: 'Jonny FPV Magic', n: '', ort: '', seit: 2024, stil: 'Aggro Acro, Whoops, Freestyle, Cinematic' },
     { a: 'Lord FPV', n: 'Waldemar', ort: 'Saarlouis', seit: 2019, stil: 'Race, Freestyle, Long Range', img: 'media/piloten/lord-fpv.webp' },
     { a: 'Kenny FPV', n: 'Kenny', ort: 'Merzig', seit: 2020, stil: 'Freestyle', img: 'media/piloten/kenny-fpv.webp' },
-    { a: 'Metty FPV', n: 'Matthias', ort: 'Weiskirchen', seit: 2020, stil: 'Freestyle', img: 'media/piloten/metty-fpv.webp' },
+    { a: 'MaNa', n: 'Matthias', ort: 'Weiskirchen', seit: 2020, stil: 'Freestyle', img: 'media/piloten/mana.webp' },
     { a: 'Lukas FPV', n: 'Lukas', ort: 'Schwalbach', seit: 2018, stil: 'Freestyle', img: 'media/piloten/lukas-fpv.webp' },
     { a: 'Jens FPV', n: 'Jens', ort: '', seit: 2023, stil: 'Freestyle', img: 'media/piloten/jens-fpv.webp' },
     { a: 'Pascal FPV', n: 'Pascal', ort: 'Saarbrücken', seit: 2018, stil: 'Freestyle, Juicy SBang', img: 'media/piloten/pascal-fpv.webp' },
