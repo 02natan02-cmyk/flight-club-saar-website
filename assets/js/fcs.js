@@ -170,7 +170,8 @@
       film.wait = true; let go = false;
       const start = () => { if (go) return; go = true; film(); };
       document.addEventListener('fcs:intro-done', start, { once: true });
-      setTimeout(start, 25000);
+      // Sicherheitsnetz ohne Zeitdruck: Film erst, wenn das Intro wirklich weg ist (langsame Handys brauchen länger), spätestens nach 60 s
+      const t0 = Date.now(), poll = setInterval(() => { if (go) return clearInterval(poll); if (!intro.isConnected || intro.classList.contains('gone') || Date.now() - t0 > 60000) { clearInterval(poll); start(); } }, 500);
       return;
     }
     const V = 'assets/film/';
