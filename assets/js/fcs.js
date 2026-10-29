@@ -453,10 +453,38 @@
     return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;max-width:680px"><div style="background:#050b17;color:#eaf4ff;padding:16px 20px;border-radius:10px 10px 0 0"><div style="font-size:11px;letter-spacing:3px;color:#3fe0ff;text-transform:uppercase">flightclub-saar.de · Formular</div><div style="font-size:20px;font-weight:bold;margin-top:4px">${escH(subject)}</div></div><table style="border-collapse:collapse;width:100%;padding:12px 20px;border:1px solid #dbe5f2;border-top:0">${tr}</table><p style="font-size:12px;color:#6b7c93">Antworten geht direkt an die Person, die das Formular ausgefüllt hat.</p></div>`;
   };
   const rowsOf = fd => { const seen = {}, rows = []; for (const [k, v] of fd.entries()) { if (/^_/.test(k) || v instanceof Blob || !String(v).trim()) continue; if (k in seen) { seen[k][1] += ', ' + v; continue; } const r = [k, String(v)]; seen[k] = r; rows.push(r); } return rows; };
-  const viaEingang = async (subject, rows, email) => {
+  // Anhänge (Natan 29.10. 20:56, Fotos kamen nicht an): bis zu 3 Dateien gehen als echte Mail-Anhänge mit (a1n/a1d … a3n/a3d, Base64).
+  // Fotos werden vorher auf höchstens 1600 px verkleinert, damit der Antrag auch über das Handynetz schnell durchgeht.
+  const b64of = buf => { const a = new Uint8Array(buf); let s = ''; for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); };
+  const shrink = async (file, max = 1600) => {
     try {
-      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
-      const res = await fetch(EINGANG, { method: 'POST', body: new URLSearchParams({ subject, html: mailHtml(subject, rows), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email || '') ? email : '' }), signal: ctl.signal, credentials: 'omit' });
+      const bmp = await createImageBitmap(file); const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+      const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(bmp, 0, 0, c.width, c.height);
+      const b = await new Promise(r => c.toBlob(r, 'image/jpeg', .82)); return b || file;
+    } catch (e) { return file; }
+  };
+  const attOf = async (fd) => {
+    const out = [];
+    for (const [k, v] of fd.entries()) {
+      if (out.length >= 3) break;
+      if (v instanceof Blob && v.size) {
+        const img = /^image\//.test(v.type) && !/svg/.test(v.type), b = img ? await shrink(v) : v;
+        if (b.size > 6e6) continue;
+        const base = String(v.name || k).replace(/\.[^.]+$/, '').replace(/[^\wäöüÄÖÜß-]+/g, '_').slice(0, 40) || 'anhang';
+        out.push([img ? base + '.jpg' : String(v.name || k).slice(0, 60), b64of(await b.arrayBuffer())]);
+      } else if (typeof v === 'string' && /^data:image\/(png|jpeg);base64,/.test(v)) {
+        out.push([(/^Unterschrift/.test(k) ? 'Unterschrift' : k.replace(/[^\wäöüÄÖÜß-]+/g, '_').slice(0, 30)) + (v.startsWith('data:image/png') ? '.png' : '.jpg'), v.split(',')[1]]);
+      }
+    }
+    return out;
+  };
+  const viaEingang = async (subject, rows, email, atts = []) => {
+    try {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), atts.length ? 40000 : 15000);
+      const body = new URLSearchParams({ subject, html: mailHtml(subject, rows), email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email || '') ? email : '' });
+      atts.slice(0, 3).forEach(([n, d], i) => { body.set(`a${i + 1}n`, n); body.set(`a${i + 1}d`, d); });
+      const res = await fetch(EINGANG, { method: 'POST', body, signal: ctl.signal, credentials: 'omit' });
       clearTimeout(t);
       const j = await res.json().catch(() => ({}));
       return !!(res.ok && j && j.ok === true);
@@ -481,15 +509,14 @@
     const hasFile = [...fd.values()].some(v => v instanceof Blob && v.size);
     const rows = [...rowsOf(fd), ['Seite', location.href]];
     let ok;
-    if (hasFile) {     // Dateien kann nur FormSubmit anhängen; fällt es aus, kommt der Text trotzdem an
-      fd.append('_template', 'table'); fd.append('_captcha', 'false');
-      ok = await viaFormSubmit(mail, fd, true) || await viaEingang(subject, [...rows, ['Hinweis', 'Die angehängte Datei konnte nicht mitgeschickt werden, bitte bei der Person nachfragen.']], mailTo);
-    } else {
-      ok = await viaEingang(subject, rows, mailTo);
-      if (!ok) { fd.append('_template', 'table'); fd.append('_captcha', 'false'); ok = await viaFormSubmit(mail, fd, false); }
-    }
+    // Zuerst das eigene Postfach, Dateien und Unterschrift als echte Anhänge; FormSubmit nur noch als Ersatzweg
+    const atts = await attOf(fd).catch(() => []);
+    const attRows = atts.length ? [['Anhänge', atts.map(a => a[0]).join(', ')]] : [];
+    ok = await viaEingang(subject, [...rows, ...attRows], mailTo, atts);
+    if (!ok && atts.length) ok = await viaEingang(subject, [...rows, ['Hinweis', 'Die angehängte Datei konnte nicht mitgeschickt werden, bitte bei der Person nachfragen.']], mailTo);
+    if (!ok) { fd.append('_template', 'table'); fd.append('_captcha', 'false'); ok = await viaFormSubmit(mail, fd, hasFile); }
     // Eingangsbestätigung schickt info@flightclub-saar.de selbst (Make-Szenario „FCS Formular-Bestätigung“, IONOS-Postfach)
-    if (ok && ANTWORT[art] && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) { try { fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60), nr: /^\d{3,}$/.test(String(fd.get('Mitgliedsnummer') || '')) ? String(fd.get('Mitgliedsnummer')) : '', mandat: String(fd.get('Mandatsreferenz') || '').slice(0, 20), zahlung: String(fd.get('Zahlungsart') || ''), jugend: /Jugend/.test(String(fd.get('Mitgliedschaft') || '')) ? '1' : '0', voll: `${fd.get('Vorname') || ''} ${fd.get('Nachname') || ''}`.trim().slice(0, 80) }) }).catch(() => {}); } catch (e) {} }
+    if (ok && ANTWORT[art] && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) { try { fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60), nr: /^\d{3,}$/.test(String(fd.get('Mitgliedsnummer') || '')) ? String(fd.get('Mitgliedsnummer')) : '', mandat: String(fd.get('Mandatsreferenz') || '').slice(0, 20), zahlung: String(fd.get('Zahlungsart') || ''), jugend: /Jugend/.test(String(fd.get('Mitgliedschaft') || '')) ? '1' : '0', bisher: /^Schon/.test(String(fd.get('Aufnahme') || '')) ? '1' : '0', voll: `${fd.get('Vorname') || ''} ${fd.get('Nachname') || ''}`.trim().slice(0, 80) }) }).catch(() => {}); } catch (e) {} }
     return { ok, j: {} };
   };
   // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)

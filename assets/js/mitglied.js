@@ -18,8 +18,8 @@
   }
   function summary() {
     const jung = $$('input[name=Mitgliedschaft]')[1].checked, b = D.verein.beitrag;
-    const jb = jung ? b.u18 : b.erwachsen;
-    $('#sum').innerHTML = `<div class="sum-row"><span>Aufnahmebeitrag (einmalig)</span><b>${b.aufnahme},00 €</b></div><div class="sum-row"><span>Jahresbeitrag${jung ? ' unter 18' : ''}</span><b>${jb},00 €</b></div><div class="sum-row tot"><span>Zusammen</span><b>${b.aufnahme + jb},00 €</b></div>`;
+    const jb = jung ? b.u18 : b.erwachsen, alt = !!($$('input[name=Aufnahme]')[1] || {}).checked, auf = alt ? 0 : b.aufnahme;
+    $('#sum').innerHTML = `<div class="sum-row"><span>Aufnahmebeitrag (einmalig)</span><b>${alt ? 'entfällt' : auf + ',00 €'}</b></div><div class="sum-row"><span>Jahresbeitrag${jung ? ' unter 18' : ''}</span><b>${jb},00 €</b></div><div class="sum-row tot"><span>Zusammen</span><b>${auf + jb},00 €</b></div>`;
   }
   function pay() {
     const sepa = $$('input[name=Zahlungsart]')[0].checked;
@@ -129,7 +129,7 @@
 
   /* ---------- Mitgliedskarte (Vorschau beim Tippen und fertige Karte) ---------- */
   const LOGO = new Image(); let logoOk = false; const waitLogo = new Promise(r => { LOGO.onload = () => { logoOk = true; r(); }; LOGO.onerror = r; }); LOGO.src = 'assets/img/logo-mark.svg';
-  function draw(c, name, alias, ph) {
+  function draw(c, name, alias, ph, nr) {
     const x = c.getContext('2d'), W = c.width, H = c.height;
     x.clearRect(0, 0, W, H); x.save();
     x.beginPath(); x.roundRect ? x.roundRect(0, 0, W, H, 40) : x.rect(0, 0, W, H); x.clip();
@@ -141,7 +141,7 @@
     x.fillStyle = '#cfe5ff'; x.font = '600 26px "Chakra Petch"'; x.textAlign = 'right'; x.fillText('MITGLIEDSKARTE', W - 60, 90); x.fillStyle = '#fff'; x.font = '700 54px "Chakra Petch"'; x.fillText(String(new Date().getFullYear()), W - 60, 150);
     x.textAlign = 'left'; x.globalAlpha = ph && ph.n ? .45 : 1; x.fillStyle = '#fff'; x.font = '700 64px "Chakra Petch"'; x.fillText(name.toUpperCase().slice(0, 26), 60, H - 190);
     x.globalAlpha = ph && ph.a ? .45 : 1; x.fillStyle = '#3fe0ff'; x.font = '500 36px "Chakra Petch"'; x.fillText((alias || 'Pilot im Flight Club Saar').slice(0, 34), 60, H - 135);
-    x.globalAlpha = 1; x.fillStyle = '#a9c3e4'; x.font = '600 24px "Chakra Petch"'; x.fillText('FLIGHT CLUB SAAR E. V.', 60, H - 60); x.textAlign = 'right'; x.fillText('NR. FOLGT', W - 60, H - 60);
+    x.globalAlpha = 1; x.fillStyle = '#a9c3e4'; x.font = '600 24px "Chakra Petch"'; x.fillText('FLIGHT CLUB SAAR E. V.', 60, H - 60); x.textAlign = 'right'; x.fillText(nr ? 'NR. ' + nr : 'NR. FOLGT', W - 60, H - 60);
     x.restore();
   }
   function live() {
@@ -159,11 +159,27 @@
       box.addEventListener('pointerleave', () => { box.style.setProperty('--ry', '0deg'); box.style.setProperty('--rx', '0deg'); box.classList.remove('hold'); });
     }
   }
-  function card(name, alias) {
+  function card(name, alias, nr) {
     const c = $('#mycard');
-    const run = () => draw(c, name, alias);
+    const run = () => draw(c, name, alias, null, nr);
     Promise.all([waitLogo, document.fonts ? document.fonts.ready : null]).then(run); run();
-    $('#dl-card').onclick = () => { const a = document.createElement('a'); a.download = 'Mitgliedskarte_Flight_Club_Saar.png'; a.href = c.toDataURL('image/png'); a.click(); };
+    // Speichern (Natan 29.10.: „klappt nicht mit der Mitgliedskarte“): ein riesiger Daten-Link wird auf dem iPhone und in WhatsApp-/Instagram-Browsern
+    // nicht heruntergeladen. Jetzt als Datei: auf dem Handy über „Teilen“ (Fotos sichern), sonst normaler Download, und als letzter Weg das Bild in groß zum Gedrückthalten.
+    const fn = `Mitgliedskarte_Flight_Club_Saar${nr ? '_' + nr : ''}.png`;
+    $('#dl-card').onclick = async () => {
+      const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+      if (!blob) return;
+      const file = new File([blob], fn, { type: 'image/png' });
+      const touch = matchMedia('(pointer:coarse)').matches;
+      if (touch && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: 'Meine Mitgliedskarte' }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+      const url = URL.createObjectURL(blob);
+      const inApp = /FBAN|FBAV|Instagram|WhatsApp|Line\/|; wv\)/i.test(navigator.userAgent);
+      if (!inApp && 'download' in HTMLAnchorElement.prototype) { const a = document.createElement('a'); a.download = fn; a.href = url; document.body.appendChild(a); a.click(); a.remove(); }
+      // Sichtbarer Ersatz: Bild zum Gedrückthalten („Bild sichern“), funktioniert überall
+      let box = $('#card-save');
+      if (!box) { box = document.createElement('div'); box.id = 'card-save'; box.className = 'card-save'; c.closest('.welcome-card').after(box); }
+      box.innerHTML = `<p class="hint">${touch ? 'Falls nichts gespeichert wurde: Bild gedrückt halten und „Bild sichern“ oder „In Fotos sichern“ wählen.' : 'Falls der Download nicht startet: Rechtsklick aufs Bild und „Bild speichern unter“.'}</p><img src="${url}" alt="Deine Mitgliedskarte als Bild" width="1012" height="638">`;
+    };
     if (window.gsap && !RM) gsap.fromTo(c, { rotateY: -70, rotateX: 20, opacity: 0, scale: .8 }, { rotateY: 0, rotateX: 0, opacity: 1, scale: 1, duration: 1.6, ease: 'expo.out' });
   }
 
@@ -180,7 +196,7 @@
     const wa = $('#mg-wa');
     if (wa) wa.innerHTML = (D.kontakte || []).filter(k => k.wa).map(k => `<a class="btn ghost" href="https://wa.me/${encodeURIComponent(k.wa)}?text=${encodeURIComponent(`Hallo ${k.name}, ich habe eine Frage zur Mitgliedschaft im Flight Club Saar: `)}" target="_blank" rel="noopener">WhatsApp an ${esc(k.name)}<small>${esc(k.rolle || '')}</small></a>`).join('');
     $('#a-geb').addEventListener('change', u18);
-    $$('input[name=Mitgliedschaft]').forEach(i => i.addEventListener('change', summary));
+    $$('input[name=Mitgliedschaft], input[name=Aufnahme]').forEach(i => i.addEventListener('change', summary));
     $$('input[name=Zahlungsart]').forEach(i => i.addEventListener('change', pay));
     $$('input[name=Drohnenführerschein]').forEach(i => i.addEventListener('change', () => $('#a-fs-s').hidden = !$('input[name=Drohnenführerschein][value=Sonstige]').checked));
     $$('input[name=Haftpflicht]').forEach(i => i.addEventListener('change', () => { const ja = $$('input[name=Haftpflicht]')[1].checked; $('#a-vers').hidden = !ja; $('#a-novers').hidden = ja; }));
@@ -201,7 +217,7 @@
     const jetzt = () => new Date().toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
     // Wortlaut des Lastschriftmandats geht mit, damit der Verein das unterschriebene Mandat vollständig in der Mail hat
     const mandat = () => { const on = $$('input[name=Zahlungsart]')[0].checked, m = $('#sepa .mandate'); return on && m ? { 'SEPA-Lastschriftmandat (Wortlaut, mit Unterschrift erteilt)': [...m.querySelectorAll('p')].map(x => x.textContent.replace(/\s+/g, ' ').trim()).join(' | ') } : {}; };
-    f._extra = () => (sigDirty ? { ...mandat(), Unterschrift: 'Auf der Website mit Finger oder Maus unterschrieben am ' + jetzt(), 'Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)': sigData() } : mandat());
+    f._extra = () => (sigDirty ? { ...mandat(), Unterschrift: 'Auf der Website mit Finger oder Maus unterschrieben am ' + jetzt(), 'Unterschrift (Bild, auch als Anhang)': sigData() } : mandat());
     // Sicherheitsnetz: Nimmt der Mailweg den Unterschrift-Anhang nicht an, geht der Antrag ohne Bild raus
     // und der Vorstand liest in der Mail, dass die Unterschrift nachgeholt werden muss
     // Fortlaufende Mitgliedsnummer (Natan 29.10.): vergibt Make-Szenario 8247590 aus dem Zähler im Datenspeicher 231679 (Schlüssel mnr_zaehler).
@@ -235,14 +251,14 @@
         }
       }
       let r = await send0(form, extra).catch(() => ({ ok: false }));
-      if (!r.ok && form === f && extra.Unterschrift) try { const ohne = { ...extra }; delete ohne['Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)']; ohne.Unterschrift = 'Das Bild der Unterschrift konnte nicht angehängt werden, bitte beim Vorstand persönlich nachholen'; r = await send0(form, ohne); } catch (e) { r = { ok: false }; }
+      if (!r.ok && form === f && extra.Unterschrift) try { const ohne = { ...extra }; delete ohne['Unterschrift (Bild, auch als Anhang)']; ohne.Unterschrift = 'Das Bild der Unterschrift konnte nicht angehängt werden, bitte beim Vorstand persönlich nachholen'; r = await send0(form, ohne); } catch (e) { r = { ok: false }; }
       return r;
     };
     f.addEventListener('fcs:sent', () => {
       const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), alias = $('#a-alias').value.trim();
-      $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias);
+      $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias, NR && NR.nr);
       const wl = $('#welcome .lede');
-      if (wl) wl.textContent = NR ? `Deine Mitgliedsnummer ist ${NR.nr}${$$('input[name=Zahlungsart]')[0].checked ? `, deine Mandatsreferenz ${NR.mandat}` : ''}. Der Vorstand prüft deinen Antrag und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.` : 'Der Vorstand prüft deinen Antrag, vergibt deine Mitgliedsnummer und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.';
+      if (wl) wl.textContent = NR && NR.bekannt ? `Du bist bei uns schon mit der Mitgliedsnummer ${NR.nr} eingetragen, die bleibt deine. Der Vorstand gleicht deinen Antrag ab und meldet sich bei dir. Hier ist deine Mitgliedskarte.` : NR ? `Deine Mitgliedsnummer ist ${NR.nr}${$$('input[name=Zahlungsart]')[0].checked ? `, deine Mandatsreferenz ${NR.mandat}` : ''}. Der Vorstand prüft deinen Antrag und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.` : 'Der Vorstand prüft deinen Antrag, vergibt deine Mitgliedsnummer und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.';
       FCS.scrollTo('#welcome', -90);
     });
   }
