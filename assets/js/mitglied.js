@@ -199,13 +199,15 @@
     // FormSubmit hängt bei Formularen über JavaScript keine Dateien an. Die Unterschrift geht deshalb als kleines Bild in Textform mit (29.10. getestet)
     const sigData = () => { const w = 360, h = Math.round(360 * cv.height / cv.width) || 120, o = document.createElement('canvas'); o.width = w; o.height = h; const c = o.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, w, h); c.drawImage(cv, 0, 0, w, h); return o.toDataURL('image/jpeg', .6); };
     const jetzt = () => new Date().toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
-    f._extra = () => (sigDirty ? { Unterschrift: 'Auf der Website mit Finger oder Maus unterschrieben am ' + jetzt(), 'Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)': sigData() } : {});
+    // Wortlaut des Lastschriftmandats geht mit, damit der Verein das unterschriebene Mandat vollständig in der Mail hat
+    const mandat = () => { const on = $$('input[name=Zahlungsart]')[0].checked, m = $('#sepa .mandate'); return on && m ? { 'SEPA-Lastschriftmandat (Wortlaut, mit Unterschrift erteilt)': [...m.querySelectorAll('p')].map(x => x.textContent.replace(/\s+/g, ' ').trim()).join(' | ') } : {}; };
+    f._extra = () => (sigDirty ? { ...mandat(), Unterschrift: 'Auf der Website mit Finger oder Maus unterschrieben am ' + jetzt(), 'Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)': sigData() } : mandat());
     // Sicherheitsnetz: Nimmt der Mailweg den Unterschrift-Anhang nicht an, geht der Antrag ohne Bild raus
     // und der Vorstand liest in der Mail, dass die Unterschrift nachgeholt werden muss
     const send0 = FCS.send;
     FCS.send = async (form, extra = {}) => {
       let r = await send0(form, extra).catch(() => ({ ok: false }));
-      if (!r.ok && form === f && extra.Unterschrift) r = await send0(form, { Unterschrift: 'Das Bild der Unterschrift konnte nicht angehängt werden, bitte beim Vorstand persönlich nachholen' }).catch(() => ({ ok: false }));
+      if (!r.ok && form === f && extra.Unterschrift) try { const ohne = { ...extra }; delete ohne['Unterschrift als Bild (diesen Text in die Adresszeile des Browsers kopieren)']; ohne.Unterschrift = 'Das Bild der Unterschrift konnte nicht angehängt werden, bitte beim Vorstand persönlich nachholen'; r = await send0(form, ohne); } catch (e) { r = { ok: false }; }
       return r;
     };
     f.addEventListener('fcs:sent', () => {
