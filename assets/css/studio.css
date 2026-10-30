@@ -568,3 +568,4 @@ body.st-work .st-steps small{display:none}
 .st-loaded{animation:stLoaded 1.4s ease-out 1}
 @keyframes stLoaded{0%{box-shadow:0 0 0 0 rgba(63,224,255,.7)}100%{box-shadow:0 0 0 22px rgba(63,224,255,0)}}
 @media (prefers-reduced-motion:reduce){.st-loaded{animation:none}}
+.st-diag{margin-top:18px;opacity:.85}
