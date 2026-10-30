@@ -30,6 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$JOB" =~ ^[0-9a-f]{16}$ ]] || { echo "Ungültige Auftragsnummer"; exit 1; }
+          cd "$RUNNER_TEMP"
           curl -sS -X POST "$HOOK" --data-urlencode a=job --data-urlencode id="$JOB" -o job.json
           python3 - <<'PY'
           import json, sys
@@ -69,9 +70,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p auftrag/teile
-          echo "::notice::Rezept-Adresse: $(wc -c < dl.txt) Zeichen, Host $(sed -E 's#https?://([^/]+)/.*#\1#' dl.txt | cut -c1-40)"
-          if ! curl -sS -L --retry 5 --retry-delay 5 -o auftrag/rezept.json "$(cat dl.txt)"; then echo "::warning::Rezept-Download fehlgeschlagen (curl $?)"; exit 4; fi
-          echo "::notice::Rezept geladen: $(wc -c < auftrag/rezept.json) Bytes"
+          if ! curl -sS -L --retry 5 --retry-delay 5 -o auftrag/rezept.json "$(cat "$RUNNER_TEMP/dl.txt")"; then echo "::warning::Rezept-Download fehlgeschlagen"; exit 4; fi
+          echo "Rezept geladen: $(wc -c < auftrag/rezept.json) Bytes"
           python3 - <<'PY'
           import json, os, subprocess, sys, time, urllib.parse, urllib.request
           HOOK = os.environ['HOOK']
@@ -138,7 +138,7 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import os, json, time, urllib.request, urllib.error
-          up = open('up.txt').read().strip()
+          up = open(os.environ['RUNNER_TEMP'] + '/up.txt').read().strip()
           p = 'auftrag/fertig.mp4'; size = os.path.getsize(p)
           C = 327680 * 30
           item = None
