@@ -3,11 +3,14 @@
    - Vorschau zeigt das echte Video-Element des Browsers (HDR, Drehung, alle abspielbaren Formate), Looks und Übergänge
      rechnet derselbe WebGL-Compositor wie der Export. Ein Selbsttest liest Pixel und erkennt schwarze Bilder.
    - Export in Originalqualität (bis 4K, hohe Bitrate) per WebCodecs, Einsenden in voller Qualität in den Vereins-OneDrive.
+   - Render-Station (Natan 29.10./30.10.: „Das muss immer geschnitten werden, immer runterladbar sein und ohne Fehler“):
+     Handys, HDR/10-Bit-Clips und alles, was der Browser nicht selbst sauber rechnet, schicken Originale + rezept.json in den
+     Vereins-OneDrive; GitHub Actions rechnet mit echtem ffmpeg (quellen/render) und der Link kommt hier zurück (cloudRender).
    - Premium für Mitglieder: Auto-Schnitt, eigene Musik, Piloten-Tag, Gyroflow.
    Module (werden erst bei Bedarf geladen): studio-media.js, studio-gl.js, studio-cloud.js, studio-beat.js (Worker). */
 (function () {
   'use strict';
-  const REV = '2026-10-30-a';
+  const REV = '2026-10-30-b';
   const SELF = document.currentScript && document.currentScript.src || '';
   const BASE = SELF ? SELF.replace(/[^/?#]*([?#].*)?$/, '') : 'assets/js/';
   const VQ = '?r=' + REV + (SELF.includes('?v=') ? '&' + SELF.split('?')[1] : '');
@@ -22,10 +25,10 @@
   async function diag(grund, manuell) {
     if (!manuell && sentDiag.has(grund)) return false; sentDiag.add(grund);
     let st = {}; try { st = await FCS.studioStatus(); } catch (e) { st = { fehler: e && e.message }; }
-    const extra = S.clips.filter(c => !c.demo).map(c => `${c.name}: Zustand ${c.state}, Modus ${c.mode || '-'}, Dauer ${c.dur ? c.dur.toFixed(1) : 0} s, umgewandelt ${c.conv ? 'ja' : 'nein'}${c.state === 'wandeln' ? `, ${Math.round((c.wp || 0) * 100)} % (${c.wph})` : ''}, Info ${c.info ? JSON.stringify({ c: c.info.codec, b: c.info.bits, h: c.info.hdr, t: c.info.transfer, p: c.info.primaries, w: c.info.w, hh: c.info.h, d: c.info.dur, fps: c.info.fps, dec: c.info.canDecode, err: c.info.err }) : '-'}`).join('\n');
-    try { return !!(await FCS.notify('Clip-Studio Technik-Bericht: ' + grund, { Grund: grund, Mitglied: (S.member && S.member.n) || 'nein', Schritt: S.step, Clips: extra, Status: JSON.stringify(st, null, 1).slice(0, 5000), Protokoll: LOG.slice(-60).join('\n') })).ok; } catch (e) { return false; }
+    const extra = S.clips.filter(c => !c.demo).map(c => `${c.name}: Zustand ${c.state}, Modus ${c.mode || '-'}, Bild ${c.ref === true ? 'ja' : c.ref === false ? 'leer' : 'offen'}, WebGL ${c.glBad ? 'aus' : 'an'}, Dauer ${c.dur ? c.dur.toFixed(1) : 0} s, Info ${c.info ? JSON.stringify({ c: c.info.codec, b: c.info.bits, h: c.info.hdr, t: c.info.transfer, p: c.info.primaries, w: c.info.w, hh: c.info.h, d: c.info.dur, fps: c.info.fps, dec: c.info.canDecode, err: c.info.err }) : '-'}`).join('\n');
+    try { return !!(await FCS.notify('Clip-Studio Technik-Bericht: ' + grund, { Grund: grund, Mitglied: (S.member && S.member.n) || 'nein', Schritt: S.step, Auftrag: S.cloudJob || '-', Clips: extra, Status: JSON.stringify(st, null, 1).slice(0, 5000), Protokoll: LOG.slice(-60).join('\n') })).ok; } catch (e) { return false; }
   }
-  const media = () => load('studio-media.js'), glm = () => load('studio-gl.js'), cloud = () => load('studio-cloud.js'), wand = () => load('studio-wandeln.js');
+  const media = () => load('studio-media.js'), glm = () => load('studio-gl.js'), cloud = () => load('studio-cloud.js');
 
   /* ===== Sticker: neue einfach als Zeile ergänzen =====
      k = Schlüssel, n = Name, src = Datei, w = Startbreite (Anteil der Bildbreite), top = steht oben groß, typ 'osd' = Live-OSD, opt = Datei eventuell später */
@@ -176,7 +179,6 @@
     const i = S.clips.indexOf(c); if (i < 0) return;
     S.clips.splice(i, 1);
     [c.el, c.el2].forEach(v => { if (v) { try { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); } catch (e) {} } });
-    if (c.wctl) { try { c.wctl.abort(); } catch (e) {} }
     if (c.src && c.file) URL.revokeObjectURL(c.src);
     if (c.file) media().then(m => m.drop(c.file)).catch(() => {});
     if (!quiet) {
@@ -201,74 +203,10 @@
     renderClips(); tlDraw(); strip(); panUI(); markUI();
     if (P.on && playMode() === 'clip') { stopAll(); play(); } else seekView();
   }
-  /* ---------- Arbeitskopie für Clips, die der Browser nicht selbst rechnen kann (studio-wandeln.js) ---------- */
-  // Sofort umwandeln nur in Samsung Internet (dort kommt bei HDR/10 Bit nie ein Bild); sonst entscheidet der Selbsttest
+  /* Samsung Internet gibt HDR/10-Bit-Bilder nie zum Rechnen frei (lila Fläche): dort rechnet immer die Render-Station */
   const SAMSUNG = /SamsungBrowser/i.test(navigator.userAgent);
+  // HDR oder 10 Bit: der Browser würde beim Rechnen Farben verfälschen oder nur eine leere Fläche liefern → Render-Station
   const needsConv = i => !!(i && i.ok && (i.hdr || i.bits > 8 || i.transfer === 'pq' || i.transfer === 'hlg' || i.primaries === 'bt2020'));
-  function wpText(c) {
-    const p = Math.round((c.wp || 0) * 100);
-    if (c.wph === 'warten') return 'Wartet auf die Umwandlung (die Clips kommen nacheinander dran) … Bildschirm bitte anlassen.';
-    if (c.wph === 'laden') return `Umwandler wird geladen (einmalig, etwa 10 bis 30 MB) … ${p} %`;
-    let t = `Wird für dein Gerät umgewandelt … ${p} %`;
-    if (c.wt0 && c.wp > .04) { const el = (performance.now() - c.wt0) / 1000, rest = el / c.wp - el; t += rest > 90 ? ` · noch etwa ${Math.round(rest / 60)} min` : rest > 5 ? ` · noch etwa ${Math.round(rest)} s` : ''; }
-    return t + '. Bildschirm anlassen und die Seite offen lassen. Das Original bleibt unverändert.';
-  }
-  let convQ = 0;
-  async function convertClip(c) {
-    if (c.state === 'wandeln' || c.conv) return;
-    const prev = { state: c.state, mode: c.mode, msg: c.msg }, keep = c.b > 0 ? [c.a, c.b] : null;
-    c.state = 'wandeln'; c.wp = 0; c.wph = 'warten'; c.wt0 = 0; c.mode = null; convQ++;
-    const ctl = c.wctl = new AbortController();
-    renderClips(); rebuild(); steps(); goState();
-    let last = 0, wake = null;
-    const upd = () => { const sp = $(`[data-wp="${c.id}"]`); if (sp) sp.textContent = wpText(c); };
-    // Bildschirm anlassen, sonst bremst Android die Umwandlung oder beendet den Tab
-    const lock = async () => { try { if ('wakeLock' in navigator && !wake && document.visibilityState === 'visible') wake = await navigator.wakeLock.request('screen'); } catch (e) {} };
-    const vis = () => { if (document.visibilityState === 'visible') lock(); };
-    document.addEventListener('visibilitychange', vis); lock();
-    const tStart = performance.now(), watch = setInterval(() => { if (c.state !== 'wandeln') { clearInterval(watch); return; } const t = (performance.now() - tStart) / 1000; if (t > 150 && (c.wp || 0) < .01) { clearInterval(watch); diag('Umwandlung kommt nicht voran: ' + c.name); } }, 15000);
-    try {
-      const W = await wand();
-      const out = await W.wandeln(c.file, c.info, { dur: c.dur || (c.info && c.info.dur) || (c.el && isFinite(c.el.duration) ? c.el.duration : 0), signal: ctl.signal, onProgress: (p, ph) => {
-        if (ph === 'rechnen' && !c.wt0) c.wt0 = performance.now();
-        c.wp = Math.min(1, p || 0); c.wph = ph; const now = performance.now(); if (now - last > 400) { last = now; upd(); }
-      } });
-      if (!S.clips.includes(c) || ctl.signal.aborted) return;
-      // Arbeitskopie übernehmen, Original merken (geht weiter in voller Qualität an den Verein und an Gyroflow)
-      const old = c.file;
-      c.orig = c.orig || old; c.conv = true;
-      [c.el, c.el2].forEach(v => { if (v) { try { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); } catch (e) {} } });
-      c.el = c.el2 = null;
-      if (c.src) URL.revokeObjectURL(c.src);
-      media().then(m => m.drop(old)).catch(() => {});
-      Object.assign(c, { file: out, src: URL.createObjectURL(out), info: null, mode: null, ref: null, tested: false, elBlack: false, glBad: false, lum: {}, elSamples: [], thumbs: [], _thumbing: 0, wctl: null });
-      await loadClip(c);
-      // Schnitt, den der Nutzer schon gesetzt hatte, bleibt erhalten
-      if (keep && c.dur) { c.a = Math.min(keep[0], Math.max(0, c.dur - MINLEN)); c.b = Math.min(keep[1], c.dur); if (c.b - c.a < MINLEN) { c.a = 0; c.b = Math.min(c.dur, MAXLEN); } rebuild(); tlDraw(); }
-      note1(`„${c.name}“ ist umgewandelt und bereit zum Schneiden. Das Original schickst du unten in voller Qualität an den Verein.`);
-      if (S.afterConv && !own().some(x => x.state === 'wandeln')) { S.afterConv = false; err(null); }
-    } catch (e) {
-      if (!S.clips.includes(c) || ctl.signal.aborted) return;
-      console.info('Clip-Studio: Umwandeln fehlgeschlagen', e && e.message);
-      diag('Umwandeln fehlgeschlagen: ' + c.name);
-      mod['studio-wandeln.js'] = mod['studio-wandeln.js'] && mod['studio-wandeln.js'].catch(() => { delete mod['studio-wandeln.js']; });
-      c.wctl = null;
-      if (S.afterConv) { S.afterConv = false; err(null); }
-      if (prev.state === 'ok' || prev.state === 'nurExport') {
-        // Ging vorher schon (zum Beispiel Vorschau läuft): so weitermachen wie vor dem Umwandeln, später nochmal versuchbar
-        c.state = prev.state; c.mode = prev.mode; c.msg = prev.msg;
-        finishLoad(c);
-      } else {
-        c.state = 'nicht';
-        c.msg = 'Dieser Clip ließ sich auf diesem Gerät nicht umwandeln (Speicher oder Verbindung). Lösch ihn und füg ihn nochmal hinzu, oder schick das Original unten an den Verein, dort wird es in voller Qualität verarbeitet.';
-        renderClips(); rebuild(); steps(); goState(); if (curClip() === c) stageMsg();
-      }
-    } finally {
-      clearInterval(watch);
-      convQ = Math.max(0, convQ - 1);
-      document.removeEventListener('visibilitychange', vis); if (wake) wake.release().catch(() => {});
-    }
-  }
   async function loadClip(c) {
     c.state = 'laden'; renderClips();
     const el = c.el = mkVideo('', c.poster);
@@ -292,9 +230,8 @@
       c.state = 'nicht'; c.msg = notPlayable(info);
       if (info && info.ok && info.canDecode) { c.mode = 'draw'; c.state = 'nurExport'; c.msg = `Dein Browser spielt dieses Format (${fmtLine(info)}) nicht ab, kann es aber rechnen: Die Vorschau zeigt ein Standbild, das fertige Video wird trotzdem vollständig.`; }
     } else c.state = 'ok';
-    // Arbeitskopie (Natan 29.10. 23:33: jeder Clip vom Handy, von der GoPro oder der Drohne muss gehen):
-    // HDR/10 Bit am Handy sofort umwandeln, Dateien ohne abspielbares Bild ebenso. Das Original bleibt für den Verein.
-    if (c.file && !c.conv && info && info.ok && (c.state === 'nicht' || (SAMSUNG && needsConv(info)))) { convertClip(c); return; }
+    // Spielt der Browser die Datei nicht ab, kann WebCodecs sie aber lesen (nurExport): rechnen tut die Render-Station,
+    // die Vorschau zeigt Standbilder. Gar nicht lesbar (nicht): nur das Original an den Verein schicken.
     finishLoad(c);
   }
   function finishLoad(c) {
@@ -353,17 +290,17 @@
     const wcDone = !c.info || !c.info.canDecode || WAYS.every(w => L[w]) || !!wc || (c.tested && !wc);
     c.ref = wc || elOk ? true : (wcDone && el) ? false : null;
     c.elBlack = !!(el && !elOk && c.ref === true);
-    if (c.elBlack) c.glBad = true;
+    // Liefert das Video-Element beim Zeichnen nur eine leere oder einfarbige Fläche (Samsung: lila), darf WebGL es nicht
+    // anfassen, sonst zeigt die Vorschau genau diese Fläche. Egal, ob ein anderer Weg Bild hat oder keiner (Natan 30.10., Screenshot).
+    if (el && !elOk) c.glBad = true;
     const before = c.mode;
-    // Kein Weg mit echtem Bild und auch die Vorschau ist leer: nichts exportieren (sonst entsteht ein leeres Video)
+    // Kein Weg mit echtem Bild und auch die Vorschau ist leer: der Browser rechnet nichts, das übernimmt die Render-Station
     if (wc) c.mode = wc;
     else if (c.state === 'ok') c.mode = c.elBlack || c.ref === false ? null : 'element';
     else if (c.info && c.info.canDecode && !c.tested) c.mode = 'draw';
     else c.mode = null;
-    // Kein Weg liefert ein echtes Bild: Arbeitskopie rechnen statt aufzugeben
-    if (!c.mode && c.tested && c.ref === false && c.file && !c.conv && c.state !== 'wandeln' && !S.locked && !S.busy) { convertClip(c); return; }
     if (before !== c.mode && WAYS.includes(c.mode) && before !== null && !c._thumbing && c.thumbs.length) { c.thumbs = []; thumbsFor(c); }
-    renderClips();
+    renderClips(); if (c.tested) goState();
   }
   function k24() { return sampleEl.c || (sampleEl.c = (() => { const x = document.createElement('canvas'); x.width = x.height = 24; return x.getContext('2d', { willReadFrequently: true }); })()); }
   function lum24(k, n = 24) {
@@ -393,8 +330,9 @@
       let st = '';
       if (c.demo) st = '<span class="cl-st">Beispielclip vom Verein</span>';
       else if (c.state === 'laden') st = '<span class="cl-st wait">Wird geöffnet …</span>';
-      else if (c.state === 'wandeln') st = `<span class="cl-st wait" data-wp="${c.id}">${esc(wpText(c))}</span>`;
-      else if (c.state === 'nicht' || c.state === 'nurExport') st = `<span class="cl-st bad">${ICON.warn}${esc(c.msg)}</span>`;
+      else if (c.state === 'nicht') st = `<span class="cl-st bad">${ICON.warn}${esc(c.msg)}</span>`;
+      else if (c.state === 'nurExport') st = `<span class="cl-st">${ICON.ok}${esc(c.msg)}</span>`;
+      else if (apiClips() && (c.ref === false || (c.state === 'ok' && c.elBlack && !c.mode) || (c.tested && needsConv(c.info)) || SAMSUNG)) st = `<span class="cl-st ok">${ICON.ok}Läuft. Gerechnet wird dieser Clip im Verein${c.info && (c.info.hdr || c.info.bits > 8) ? ' (HDR, dort in voller Qualität)' : ''}.</span>`;
       else if (c.ref === false) st = `<span class="cl-st">${ICON.ok}Läuft. Das Bild ist an den geprüften Stellen sehr dunkel oder schwarz.</span>`;
       else if (c.mode && c.ref) st = `<span class="cl-st ok">${ICON.ok}Bild geprüft: Vorschau und Export laufen${['cpu', 'copy', 'raw', 'sw'].includes(c.mode) ? ' (über den sicheren Weg)' : c.mode === 'element' ? ' (in Echtzeit)' : ''}</span>`;
       else if (c.state === 'ok' && c.elBlack && !c.mode) st = `<span class="cl-st bad">${ICON.warn}Die Vorschau läuft, aber dieser Browser gibt die Bilder nicht zum Rechnen frei. Rechne das Video in Chrome oder Edge oder schick das Original an den Verein.</span>`;
@@ -837,59 +775,17 @@
     }
     drawLower(c, W, H, t, preview && S.ln.force);
   }
-  function drawOSD(c, W, H, t) {
-    const u = Math.min(W, H) / 100, m = 4.2 * u, L = 7 * u;
-    c.save();
-    c.shadowColor = 'rgba(0,0,0,.7)'; c.shadowBlur = 1.4 * u; c.strokeStyle = '#fff'; c.lineWidth = Math.max(1.5, .6 * u); c.lineCap = 'square';
-    c.beginPath();
-    c.moveTo(m, m + L); c.lineTo(m, m); c.lineTo(m + L, m);
-    c.moveTo(W - m - L, m); c.lineTo(W - m, m); c.lineTo(W - m, m + L);
-    c.moveTo(W - m, H - m - L); c.lineTo(W - m, H - m); c.lineTo(W - m - L, H - m);
-    c.moveTo(m + L, H - m); c.lineTo(m, H - m); c.lineTo(m, H - m - L);
-    const cx = W / 2, cy = H / 2, g = 2.6 * u, l = 2.6 * u;
-    c.moveTo(cx - g - l, cy); c.lineTo(cx - g, cy); c.moveTo(cx + g, cy); c.lineTo(cx + g + l, cy);
-    c.moveTo(cx, cy - g - l * .5); c.lineTo(cx, cy - g); c.moveTo(cx, cy + g); c.lineTo(cx, cy + g + l * .5);
-    c.stroke();
-    c.fillStyle = SIG; c.beginPath(); c.arc(cx, cy, .7 * u, 0, Math.PI * 2); c.fill();
-    const fs = 3.3 * u, top = m + 3.4 * u, bot = H - m - 3.4 * u;
-    c.font = `600 ${fs}px "Chakra Petch", ui-monospace, monospace`; c.textBaseline = 'middle';
-    const v = Math.max(14, 16.4 - t * .012), lvl = (v - 14) / 2.6;
-    c.fillStyle = '#fff'; c.textAlign = 'left'; const vt = v.toFixed(1) + 'V'; c.fillText(vt, m + 2.2 * u, top);
-    const bx = m + 2.2 * u + c.measureText(vt).width + 1.6 * u, bw = 6.4 * u, bh = 2.8 * u;
-    c.lineWidth = Math.max(1, .4 * u); c.strokeRect(bx, top - bh / 2, bw, bh); c.fillRect(bx + bw, top - bh / 4, .6 * u, bh / 2);
-    c.fillStyle = lvl > .35 ? SIG : AMBER; c.fillRect(bx + .5 * u, top - bh / 2 + .5 * u, (bw - u) * clamp(lvl, .05, 1), bh - u);
-    c.fillStyle = SIG; c.textAlign = 'right'; c.fillText(tS(t).padStart(5, '0'), W - m - 2.2 * u, top);
-    if (Math.floor(t * 2) % 2 === 0) { c.fillStyle = RED; c.beginPath(); c.arc(m + 3 * u, bot, 1 * u, 0, Math.PI * 2); c.fill(); }
-    c.fillStyle = '#fff'; c.textAlign = 'left'; c.fillText('REC', m + 4.9 * u, bot);
-    c.globalAlpha = .88; c.textAlign = 'right'; c.font = `600 ${2.5 * u}px "Chakra Petch", ui-monospace, monospace`;
-    c.fillText('FLIGHT CLUB SAAR', W - m - 2.2 * u, bot);
-    c.restore();
-  }
-  function drawLower(c, W, H, t, force) {
-    const name = S.ln.name.trim(); if (!name || S.ln.mode === 'off') return;
-    let p = 1;
-    if (!force) {
-      if (S.ln.mode === 'start') { if (t < .3 || t > 5.6) return; p = Math.min(1, (t - .3) / .55, (5.6 - t) / .5); }
-      else { p = clamp((t - .3) / .55, 0, 1); if (p <= 0) return; }
+  const OV = window.FCS_OVERLAY;
+  function drawOSD(c, W, H, t) { OV.drawOSD(c, W, H, t); }
+  function drawLower(c, W, H, t, force) { OV.drawLower(c, W, H, t, S.ln, S.osd, force); }
+  /* Nur die Sticker (ohne OSD und Namens-Einblendung) als Bild in Ausgabegröße: für die Render-Station des Vereins */
+  function drawStickers(c, W, H) {
+    for (const s of S.st) {
+      const im = IMG[s.k]; if (!im || !im.ok || s.a <= 0) continue;
+      const w = s.w * W, h = w * im.ar;
+      c.save(); c.globalAlpha = s.a; c.translate(s.x * W, s.y * H); c.rotate(s.r * Math.PI / 180);
+      c.drawImage(im.el, -w / 2, -h / 2, w, h); c.restore();
     }
-    const e = 1 - Math.pow(1 - p, 3);
-    const u = Math.min(W, H) / 100, x = 5 * u, yb = H - (S.osd ? 13.5 * u : 6 * u);
-    const big = `400 ${7.6 * u}px "Bebas Neue", "Chakra Petch", sans-serif`, small = `600 ${2.2 * u}px "Chakra Petch", ui-monospace, monospace`;
-    c.save();
-    c.font = big; const nw = c.measureText(name.toUpperCase()).width;
-    c.font = small; const sub = 'FLIGHT CLUB SAAR E. V.'; const sw = c.measureText(sub).width + 2.2 * u * .15 * sub.length;
-    const bw = Math.max(nw, sw) + 6.5 * u, bh = 12.6 * u, y = yb - bh;
-    c.fillStyle = SIG; c.shadowColor = 'rgba(0,0,0,.5)'; c.shadowBlur = 2 * u; c.fillRect(x, y + bh * (1 - e), 1.1 * u, bh * e);
-    c.shadowBlur = 0;
-    c.beginPath(); c.rect(x + 1.1 * u, y, bw * e, bh); c.clip();
-    c.fillStyle = 'rgba(4,9,18,.84)'; c.fillRect(x + 1.1 * u, y, bw, bh);
-    c.fillStyle = 'rgba(63,224,255,.16)'; c.fillRect(x + 1.1 * u, y + bh - .5 * u, bw, .5 * u);
-    const tx = x + 3.8 * u - (1 - e) * 4 * u;
-    c.textBaseline = 'alphabetic'; c.textAlign = 'left';
-    c.font = big; c.fillStyle = '#fff'; c.fillText(name.toUpperCase(), tx, y + 7.9 * u);
-    c.font = small; c.fillStyle = AMBER; if ('letterSpacing' in c) c.letterSpacing = (.3 * u) + 'px';
-    c.fillText(sub, tx, y + 10.8 * u);
-    c.restore();
   }
 
   /* =====================================================================
@@ -1642,34 +1538,60 @@
   }
   function outDimsFor(q) { const k = S.q; S.q = q; const o = outDims(); S.q = k; return o; }
   function goState() {
-    const why = $('#st-why'); if (!why) return;
+    const why = $('#st-why'); if (!why || S.busy) return;
     why.classList.remove('bad', 'lock');
+    const segs = S.seq ? S.seq.segs : [];
     if (S.demo) why.innerHTML = 'Das ist ein Beispiel. <button type="button" class="linkbtn" data-st-pick2>Wähl zuerst dein Video</button>, dann rechnet das Studio es fertig.';
     else if (!own().some(c => c.state === 'ok' || c.state === 'nurExport')) why.textContent = 'Dieses Video kann dein Browser nicht bearbeiten. In voller Qualität an den Verein schicken geht trotzdem, unten bei „An den Verein schicken“.';
+    else if (cloudWhy(segs)) why.innerHTML = `${CLOUD_TXT} <button type="button" class="linkbtn" id="st-local">Lieber hier im Browser rechnen</button>`;
     else if (S.locked) lockNote();
-    else why.textContent = 'Das Video wird in voller Qualität gerechnet: so groß wie dein Original (bis 4K), mit hoher Bitrate, als MP4.';
+    else why.innerHTML = `Das Video wird hier im Browser gerechnet: so groß wie dein Original (bis 4K), mit hoher Bitrate, als MP4.${apiClips() ? ' <button type="button" class="linkbtn" id="st-cloud">Lieber im Verein rechnen lassen</button>' : ''}`;
     const p2 = $('[data-st-pick2]', why); if (p2) p2.addEventListener('click', pick);
+    const bc = $('#st-cloud', why); if (bc) bc.addEventListener('click', () => { interact(); S.cloudPref = true; exportVideo(); });
+    const bl = $('#st-local', why); if (bl) bl.addEventListener('click', () => { interact(); S.cloudPref = false; S.localPref = true; exportVideo(); });
     const dl = $('#st-dl'); if (dl) dl.classList.toggle('wait', S.demo);
   }
+  const CLOUD_TXT = 'Dein Video wird im Verein gerechnet: Die Clips gehen in voller Qualität hoch, die Render-Station schneidet sie mit Look, Logo und Musik genau wie in der Vorschau (bis 4K, als MP4). Den Download bekommst du hier, die Seite darf zwischendurch zu.';
 
   /* =====================================================================
      Export
      ===================================================================== */
   const sig = () => JSON.stringify([S.fmt, S.q, S.look, S.lookK, S.osd, S.ln, S.st.map(s => [s.k, s.x.toFixed(3), s.y.toFixed(3), s.w.toFixed(3), Math.round(s.r)]), S.seq && S.seq.segs.map(s => [s.c.id, s.a.toFixed(2), s.len.toFixed(2), s.kind, s.tr]), S.clips.map(c => [c.pan.x, c.pan.y]), S.music && [S.music.start, S.music.vol, S.music.fin, S.music.fout], S.origVol, S.tag]);
   let expCtl = null;
+  /* Wo wird gerechnet? '' = hier im Browser, sonst der Grund für die Render-Station des Vereins */
+  function cloudWhy(segs) {
+    if (!apiClips()) return '';
+    const T = window.FCS_STUDIO_TEST || {};
+    if (T.forceLocal || S.localPref) return '';
+    if (T.forceCloud) return 'test';
+    if (S.cloudPref) return 'wunsch';
+    if (S.locked) return 'gesperrt';
+    if (SAMSUNG) return 'samsung';
+    for (const s of segs || []) {
+      const c = s.c; if (!c.file) continue;
+      if (c.state !== 'ok' || !c.mode || c.ref !== true || c.glBad || needsConv(c.info) || !(c.info && c.info.canDecode)) return 'clip';
+    }
+    if (glOff) return 'webgl';
+    return '';
+  }
   async function exportVideo() {
     if (S.busy) return;
     interact();
     if (S.demo) { pick(); flash($('#st-steps li:first-child')); return; }
-    { const w = own().find(c => c.state === 'wandeln'); if (w) { err(`„${esc(w.name)}“ wird gerade für dein Gerät umgewandelt (${esc(wpText(w))}). Danach kannst du das Video erstellen. Das Studio sagt Bescheid.`); S.afterConv = true; return; } }
     if (!S.seq || !S.seq.segs.length) { err('Wähl zuerst einen Clip, den dein Browser abspielen kann.'); return; }
     if (S.result && S.resultSig === sig()) { saveResult(); return; }
     const segs = S.seq.segs;
-    // Selbsttest abwarten
+    // Selbsttest abwarten (höchstens 20 s), damit die Entscheidung Browser oder Verein auf echten Prüfungen beruht
     for (let i = 0; i < 140 && segs.some(s => s.c.file && s.c.info && s.c.info.canDecode && !s.c.tested); i++) await new Promise(r => setTimeout(r, 150));
+    const why = cloudWhy(segs);
+    if (why) return cloudRender(why);
     const bad = segs.find(s => !s.c.mode);
-    if (bad && bad.c.file && !bad.c.conv && !S.locked) { convertClip(bad.c); S.afterConv = true; err(`„${esc(bad.c.name)}“ gibt sein Bild in diesem Browser nicht zum Rechnen frei. Das Studio wandelt ihn jetzt um, danach geht „Video erstellen“.`); return; }
     if (bad) { failMsg((bad.c.ref === false ? `In „${bad.c.name}“ findet der Browser kein Videobild, nur eine leere Fläche. Damit kein leeres Video entsteht, rechnet das Studio hier nicht. Probier den Clip in Chrome am PC oder schick das Original in voller Qualität an den Verein.` : `Dieser Browser gibt die Bilder von „${bad.c.name}“ nicht zum Rechnen frei. Rechne das Video in Chrome oder Edge am PC oder schick das Original in voller Qualität an den Verein.`) + hdrTip(bad.c)); return; }
+    const r = await exportLocal(segs);
+    // Der Browser hat es nicht geschafft: nicht aufgeben, der Verein rechnet (Natan: „immer geschnitten, immer runterladbar“)
+    if (r && r.fail) { if (apiClips() && !S.localPref) { note1(`Dein Browser konnte das Video nicht selbst fertig rechnen. Der Vereinsrechner übernimmt jetzt.`); S.cloudPref = true; return cloudRender('ersatz:' + r.fail); } failMsg(r.msg); }
+  }
+  async function exportLocal(segs) {
     S.busy = true; $('#st').classList.add('busy'); pause();
     const prog = $('#prog'), fillEl = $('#bat-fill'), pt = $('#prog-t'), eta = $('#prog-eta'), goBox = $('#st-go');
     prog.hidden = false; $('#res').hidden = true; if (goBox) goBox.hidden = true;
@@ -1792,10 +1714,9 @@
       if (e && e.name === 'AbortError') { goState(); return false; }
       console.info('Clip-Studio: Export fehlgeschlagen', e);
       const m = e && e.message;
-      failMsg(m === 'leer-alle' ? `Dieser Browser liefert beim Rechnen von „${e.clip ? e.clip.name : 'deinem Clip'}“ nur eine leere Fläche statt des Videobilds (alle Wege geprüft). Damit du kein leeres Video bekommst, speichert das Studio nichts. Rechne es in Chrome am PC oder schick das Original in voller Qualität an den Verein.` + hdrTip(e.clip)
+      return { fail: String(m || 'fehler').slice(0, 40), msg: m === 'leer-alle' ? `Dieser Browser liefert beim Rechnen von „${e.clip ? e.clip.name : 'deinem Clip'}“ nur eine leere Fläche statt des Videobilds (alle Wege geprüft). Damit du kein leeres Video bekommst, speichert das Studio nichts. Rechne es in Chrome am PC oder schick das Original in voller Qualität an den Verein.` + hdrTip(e.clip)
         : m === 'kaputt' ? 'Die fertige Datei war unvollständig, deshalb speichert das Studio sie nicht. Tipp noch einmal auf „Video erstellen“ oder schick das Original in voller Qualität an den Verein.'
-        : 'Rechnen hat in diesem Browser nicht geklappt. Probier es in Chrome, Edge oder Safari in der neuesten Version, oder schick das Original in voller Qualität an den Verein.');
-      return false;
+        : 'Rechnen hat in diesem Browser nicht geklappt. Probier es in Chrome, Edge oder Safari in der neuesten Version, oder schick das Original in voller Qualität an den Verein.' };
     }
   }
   // Handy-HDR-Videos (zum Beispiel Samsung „HDR10+“) geben manche Browser nicht zum Rechnen frei: konkreter Tipp
@@ -1899,6 +1820,141 @@
   }
 
   /* =====================================================================
+     Render-Station des Vereins: Originale, Sticker-Bild und Musik gehen als „Teile“ in den OneDrive, zuletzt das rezept.json.
+     Make stößt .github/workflows/render.yml an, quellen/render/render.mjs rechnet mit ffmpeg, der Link kommt per Status zurück.
+     Format: quellen/render/REZEPT.md
+     ===================================================================== */
+  const TEIL_GUELTIG = 6 * 3600e3;
+  const r3 = v => Math.round((+v || 0) * 1000) / 1000;
+  function pilotName() { return (S.ln.name !== 'Dein Pilotenname' && S.ln.name.trim()) || (S.member && S.member.n) || ((($('#snd-name') || {}).value) || '').trim() || 'clip'; }
+  /* Rezept aus dem aktuellen Zustand, genau wie die Vorschau rechnet (Teil-Nummern werden nach dem Upload eingetragen) */
+  function buildRecipe(segs, W, H, fps) {
+    const list = []; const idx = c => { let i = list.indexOf(c); if (i < 0) { i = list.length; list.push(c); } return i; };
+    const rs = segs.map(s => { const cr = cropPx(s.c.w, s.c.h, W / H, s.c.pan); return { clip: idx(s.c), a: r3(s.a), len: r3(s.len), at: r3(s.at), kind: s.kind || '1', tr: s.tr || null, d: r3(s.d || 0), crop: { left: Math.round(cr.left), top: Math.round(cr.top), width: Math.round(cr.width), height: Math.round(cr.height) } }; });
+    const name = S.ln.name !== 'Dein Pilotenname' ? S.ln.name.trim().slice(0, 28) : '';
+    const ln = name && S.ln.mode !== 'off' ? { name, mode: S.ln.mode } : { name: '', mode: 'off' };
+    const music = S.music && S.music.file ? { teil: null, start: r3(grid().music ? grid().t0 : S.music.start), vol: r3(S.music.vol), fin: r3(S.music.fin), fout: r3(S.music.fout) } : null;
+    return {
+      R: { v: 1, name: pilotName().slice(0, 40), rev: REV, out: { W, H, fps, bitrate: bitrate(W, H, fps) },
+        clips: list.map(c => ({ teil: null, fn: (c.orig || c.file).name, w: c.w, h: c.h, fps: c.fps || 30, dur: r3(c.dur) })),
+        segs: rs, total: r3(S.seq.total), fade: r3(S.seq.fade || 0), look: { id: S.look, k: r3(S.lookK) },
+        overlay: { teil: null, osd: !!S.osd, ln }, audio: { origVol: r3(S.origVol), music } },
+      list
+    };
+  }
+  /* Logo und Sticker als ein PNG in Ausgabegröße (OSD und Namens-Einblendung zeichnet die Station selbst mit studio-overlay.js) */
+  async function stickerPNG(W, H) {
+    if (!S.st.some(s => { const im = IMG[s.k]; return im && im.ok && s.a > 0; })) return null;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    drawStickers(cv.getContext('2d'), W, H);
+    const blob = await new Promise(res => { try { cv.toBlob(res, 'image/png'); } catch (e) { res(null); } });
+    return blob && blob.size > 100 ? new File([blob], 'sticker.png', { type: 'image/png' }) : null;
+  }
+  let cloudCancel = null, waitT = 0;
+  async function cloudRender(why) {
+    if (S.busy) return false;
+    const segs = S.seq.segs;
+    S.busy = true; $('#st').classList.add('busy'); pause(); clearInterval(waitT);
+    const prog = $('#prog'), fillEl = $('#bat-fill'), pt = $('#prog-t'), eta = $('#prog-eta'), goBox = $('#st-go'), px = $('#prog-x'), whyEl = $('#st-why');
+    prog.hidden = false; $('#res').hidden = true; if (goBox) goBox.hidden = true;
+    if (whyEl) { whyEl.classList.remove('bad', 'lock'); whyEl.textContent = CLOUD_TXT; }
+    let box = $('#st-up'); if (!box) { box = document.createElement('div'); box.className = 'snd-up st-up'; box.id = 'st-up'; prog.after(box); }
+    box.hidden = false; box.innerHTML = '';
+    const set = (p, label, rest) => { p = clamp(p, 0, 1); fillEl.style.transform = `scaleX(${p})`; pt.textContent = `${label} … ${Math.round(p * 100)} %`; eta.textContent = rest || ''; };
+    set(0, 'Wird vorbereitet');
+    if (!inView(prog)) go(prog, -200);
+    if (px) { px.textContent = 'Abbrechen'; px.hidden = false; }
+    let cancelled = false;
+    cloudCancel = () => { cancelled = true; for (const u of [...UPS.values()]) { if (u.meta && (u.meta.zweck === 'teil' || u.meta.zweck === 'render')) u.discard().catch(() => {}); } };
+    let wake = null; try { if ('wakeLock' in navigator) wake = await navigator.wakeLock.request('screen'); } catch (e) {}
+    const doneUI = () => { S.busy = false; $('#st').classList.remove('busy'); prog.hidden = true; box.hidden = true; if (goBox) goBox.hidden = false; cloudCancel = null; if (wake) wake.release().catch(() => {}); };
+    console.info('Clip-Studio: Render-Station übernimmt, Grund:', why);
+    try {
+      const C = await cloud();
+      const { W, H } = outDims(), fps = outFps();
+      const { R, list } = buildRecipe(segs, W, H, fps);
+      // Teile: Originale der Clips, Sticker-Bild, Musik. Schon hochgeladene Teile (gleiche Datei, keine 6 Stunden her) werden wiederverwendet.
+      const parts = list.map((c, i) => ({ art: 'clip', file: c.orig || c.file, holder: c, label: `Clip ${i + 1}: ${(c.orig || c.file).name}`, set: id => { R.clips[i].teil = id; } }));
+      const png = await stickerPNG(W, H); if (png) parts.push({ art: 'sticker', file: png, holder: null, label: 'Logo und Sticker', set: id => { R.overlay.teil = id; } });
+      if (R.audio.music) parts.push({ art: 'musik', file: S.music.file, holder: S.music, label: 'Musik: ' + S.music.name, set: id => { R.audio.music.teil = id; } });
+      const total = parts.reduce((a, p) => a + p.file.size, 0) || 1; let doneBytes = 0;
+      const n = pilotName().slice(0, 40), code = S.member ? S.member.c : '';
+      for (let i = 0; i < parts.length; i++) {
+        const p = parts[i];
+        if (cancelled) throw new DOMException('abgebrochen', 'AbortError');
+        const cache = p.holder && p.holder.teil;
+        if (cache && cache.file === p.file && Date.now() - cache.t < TEIL_GUELTIG) { p.set(cache.id); doneBytes += p.file.size; set(doneBytes / total, `${p.label} ist schon im Verein`); continue; }
+        const label = `${i + 1} von ${parts.length} · ${p.label} geht hoch`;
+        const res = await runUpload(C, box, p.file, { n, zweck: 'teil', t: 'Render-Teil: ' + p.art, c: code, label: p.label }, (ev, d) => { if (ev === 'progress') set((doneBytes + d.sent) / total, label, d.bps > 1000 ? `noch etwa ${tS((total - doneBytes - d.sent) / d.bps)}` : ''); });
+        if (cancelled || !res || !res.job) throw new DOMException('abgebrochen', 'AbortError');
+        p.set(res.job); doneBytes += p.file.size;
+        if (p.holder) p.holder.teil = { id: res.job, file: p.file, t: Date.now() };
+      }
+      // Zuletzt das Rezept: damit startet die Station
+      const rf = new File([JSON.stringify(R)], 'rezept.json', { type: 'application/json' });
+      set(.99, 'Auftrag wird übergeben');
+      const sum = (($('#st-sum') || {}).textContent) || '';
+      const res = await runUpload(C, box, rf, { n, zweck: 'render', t: ('Render-Auftrag aus dem Clip-Studio: ' + sum).slice(0, 500), opt: { W, H, fps, total: R.total, clips: R.clips.length, segs: R.segs.length, look: S.look, grund: String(why).slice(0, 40) }, c: code, label: 'Schnitt-Rezept' });
+      if (cancelled || !res || !res.job) throw new DOMException('abgebrochen', 'AbortError');
+      const fn = `flightclubsaar_${slug(pilotName()) || 'clip'}_${today()}.mp4`;
+      const j = jobs(); j.unshift({ id: res.job, typ: 'render', fn, d: Date.now(), st: 'wartet', url: '', msg: '', lp: 0, W, H, fps, total: R.total, sig: sig() }); saveJobs(j);
+      S.cloudJob = res.job;
+      doneUI(); waitUI(j[0]); jobsUI(); pollJobs(true);
+      return true;
+    } catch (e) {
+      doneUI(); goState();
+      if (e && e.name === 'AbortError') return false;
+      console.info('Clip-Studio: Render-Auftrag nicht übergeben', e);
+      failMsg('Der Auftrag kam nicht beim Verein an. Versuch es gleich nochmal, am besten im WLAN.');
+      return false;
+    }
+  }
+  /* Warten auf die Station: Balken schätzt die Dauer (Start der Station plus etwa 6 s je Sekunde Video), Status kommt per pollJobs */
+  function waitUI(x) {
+    const prog = $('#prog'), fillEl = $('#bat-fill'), pt = $('#prog-t'), eta = $('#prog-eta'), px = $('#prog-x'); if (!prog) return;
+    prog.hidden = false; S.cloudWait = true;
+    if (px) { px.textContent = 'Später nachsehen'; px.hidden = false; }
+    const t0 = x.d || Date.now(), est = 100 + 6 * (x.total || 30);
+    clearInterval(waitT);
+    const tick = () => { const el = (Date.now() - t0) / 1000, p = Math.min(.95, el / est * .9); fillEl.style.transform = `scaleX(${p})`; pt.textContent = `Dein Video wird im Verein gerechnet … (seit ${tS(el)})`; eta.textContent = el < est ? `meist fertig in etwa ${tS(Math.max(30, est - el))}` : 'dauert gerade etwas länger, die Seite darf zu'; };
+    tick(); waitT = setInterval(tick, 5000);
+  }
+  function waitOff() { clearInterval(waitT); S.cloudWait = false; const prog = $('#prog'); if (prog && !S.busy) prog.hidden = true; const px = $('#prog-x'); if (px) px.textContent = 'Abbrechen'; }
+  /* Fertig: Link zeigen, Datei im Hintergrund holen (dann Speichern mit richtigem Namen, Teilen und Einsenden wie beim Rechnen im Browser) */
+  async function showCloudResult(x) {
+    const waited = S.cloudWait; waitOff();
+    const rv = $('#res-v'), dl = $('#res-dl'), rt = $('#res-t'), ri = $('#res-info'), rn = $('#res-note'), sh = $('#res-share'), res = $('#res');
+    if (!rv || !dl || !res) return;
+    S.result = null; S.done.dl = false;
+    if (rv.src && rv.src.startsWith('blob:')) URL.revokeObjectURL(rv.src);
+    rv.src = x.url; dl.href = x.url; dl.download = x.fn; dl.target = '_blank'; dl.rel = 'noopener';
+    rt.textContent = 'Fertig gerechnet im Verein';
+    ri.textContent = `MP4 · H.264 · ${x.W} × ${x.H} · ${String(Math.round((x.fps || 30) * 100) / 100).replace('.', ',')} fps${x.size ? ' · ' + MB(x.size) : ''}`;
+    if (rn) { rn.textContent = 'Der Download-Link gilt etwa eine Stunde. Danach holst du dir unter „Meine Aufträge“ jederzeit einen neuen.'; rn.hidden = false; }
+    if (sh) sh.hidden = true;
+    res.hidden = false; const why = $('#st-why'); if (why) { why.classList.remove('bad'); why.textContent = CLOUD_TXT; }
+    if (gs() && !RM) gs().from(res, { y: 16, opacity: 0, duration: .6, ease: 'expo.out' });
+    if (waited) { if (S.step !== 5) setStep(5, true); if (!inView(res)) go(res, -120); try { navigator.vibrate && navigator.vibrate(60); } catch (e) {} }
+    steps(); sndUI();
+    if (!(x.size > 0 && x.size <= 300 * 1048576)) return;
+    try {
+      const r = await fetch(x.url, { credentials: 'omit' }); if (!r.ok) return;
+      const b = await r.blob(); if (b.size < 1000 || S.cloudJob !== x.id || res.hidden) return;
+      const file = new File([b], x.fn, { type: 'video/mp4' });
+      S.result = file; S.resultSig = x.sig || sig();
+      const u = URL.createObjectURL(file); rv.src = u; dl.href = u; dl.removeAttribute('target');
+      if (rn) rn.hidden = true;
+      if (sh) sh.hidden = !(navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })());
+      sndUI();
+    } catch (e) {}
+  }
+  function cloudFail(x) {
+    waitOff();
+    diag('Render-Station meldet Fehler: ' + String(x.msg || '').slice(0, 100));
+    failMsg(x.msg || 'Die Render-Station konnte das Video nicht fertig rechnen. Versuch es noch einmal.');
+  }
+
+  /* =====================================================================
      An den Verein schicken (voller Qualität, OneDrive über Make)
      ===================================================================== */
   const UPS = new Map();
@@ -1946,12 +2002,12 @@
     reach();
   }
   /* Ein Upload mit Fortschritt, Pause/Fortsetzen und Abbrechen. Liefert true, wenn fertig. */
-  function runUpload(C, box, file, meta) {
+  function runUpload(C, box, file, meta, hook) {
     return new Promise(resolve => {
       const up = new C.Upload(apiClips(), file, meta);
       UPS.set(up.key, up);
       const el = document.createElement('div'); el.className = 'up'; box.appendChild(el);
-      el.innerHTML = `<p class="up-h"><b>${esc(file.name)}</b><span class="up-st hud">Startet …</span></p>
+      el.innerHTML = `<p class="up-h"><b>${esc(meta.label || file.name)}</b><span class="up-st hud">Startet …</span></p>
         <div class="up-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Upload ${esc(file.name)}"><i></i></div>
         <p class="up-row hud" aria-live="polite"><span class="up-mb">0 MB von ${MB(file.size)}</span><span class="up-eta"></span></p>
         <p class="up-err" hidden></p>
@@ -1961,6 +2017,7 @@
       const btn = k => q(`[data-u="${k}"]`);
       const show = (...ks) => ['pause', 'go', 'again', 'stop'].forEach(k => { btn(k).hidden = !ks.includes(k); });
       up.on = (ev, d) => {
+        if (hook) { try { hook(ev, d, up); } catch (e) {} }
         if (ev === 'progress') { const p = d.total ? d.sent / d.total : 0; bar.firstChild.style.transform = `scaleX(${p})`; bar.setAttribute('aria-valuenow', Math.round(p * 100)); mb.textContent = `${MB(d.sent)} von ${MB(d.total)}`; eta.textContent = d.bps > 1000 ? `${MB(d.bps)}/s · noch etwa ${tS((d.total - d.sent) / d.bps)}` : ''; }
         else if (ev === 'retry') { st.textContent = `Verbindung hakt, Versuch ${d.n} von 5 …`; }
         else if (ev === 'phase') {
@@ -1970,6 +2027,7 @@
           else if (d === 'pause') { st.textContent = 'Pausiert'; show('go', 'stop'); }
           else if (d === 'done') { st.textContent = 'Angekommen'; el.classList.add('ok'); bar.firstChild.style.transform = 'scaleX(1)'; show(); eta.textContent = ''; UPS.delete(up.key); resolve(up.done || { job: up.job }); }
           else if (d === 'fehler') { st.textContent = 'Unterbrochen'; show('again', 'stop'); }
+          else if (d === 'neu') { el.remove(); UPS.delete(up.key); resolve(false); } // verworfen (zum Beispiel „Abbrechen“ beim Render-Auftrag)
         } else if (ev === 'error') { er.hidden = false; er.textContent = d.msg; if (d.restart) show('again', 'stop'); }
       };
       btn('pause').addEventListener('click', () => up.pause());
@@ -2047,37 +2105,60 @@
     const list = $('#jobs-list'), box = $('#jobs'); if (!list || !box) return;
     const j = jobs(); box.hidden = !j.length;
     const lbl = { eingegangen: 'Wird stabilisiert …', wartet: 'In der Warteschlange', 'läuft': 'Wird stabilisiert …', fertig: 'Fertig', fehler: 'Fehler' };
+    const lblR = { upload: 'Auftrag kommt an …', eingegangen: 'Wird gerechnet …', wartet: 'Wird gerechnet …', 'läuft': 'Wird gerechnet …', fertig: 'Fertig', fehler: 'Fehler' };
     const DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
     list.innerHTML = j.map(x => {
+      const R = x.typ === 'render';
       const whole = x.ganz || (x.len && x.von <= .05 && x.bis >= x.len - .05);
-      const what = [x.von != null && x.bis != null && !whole ? `Schnitt ${tD(x.von)} bis ${tD(x.bis)}` : x.von != null ? 'ganzes Video' : '', x.qual === 'original' ? 'volle Auflösung' : x.qual ? 'Social Media' : ''].filter(Boolean).join(' · ');
-      return `<li class="job st-${esc(slug(x.st || 'wartet'))}"><span class="job-h"><b>${esc(x.fn)}</b><small>${new Date(x.d).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}${what ? ' · ' + esc(what) : ''}</small></span>
-      <span class="job-st hud">${esc(lbl[x.st] || x.st || 'Wird stabilisiert …')}</span>
-      ${x.st === 'fertig' && x.url ? `<a class="btn solid job-dl" href="${esc(x.url)}" target="_blank" rel="noopener" download>${DL}Stabilisiertes Video herunterladen</a>` : x.st === 'fertig' ? '<span class="job-msg">Fertig. Der Link kommt in einer Minute hier an.</span>' : x.st === 'fehler' ? `<span class="job-msg">${esc(x.msg || 'Das Stabilisieren hat nicht geklappt. Der Vorstand ist informiert.')}</span>` : '<span class="job-msg">Dauert je nach Länge 5 bis 30 Minuten, die Seite darf zu. Der Download-Knopf erscheint dann hier unter „Meine Aufträge“.</span>'}
+      const what = R ? [x.W ? `${x.W} × ${x.H}` : '', x.total ? tS(x.total) : ''].filter(Boolean).join(' · ') : [x.von != null && x.bis != null && !whole ? `Schnitt ${tD(x.von)} bis ${tD(x.bis)}` : x.von != null ? 'ganzes Video' : '', x.qual === 'original' ? 'volle Auflösung' : x.qual ? 'Social Media' : ''].filter(Boolean).join(' · ');
+      const wait = R ? 'Dauert je nach Länge 3 bis 20 Minuten, die Seite darf zu. Der Download-Knopf erscheint dann hier unter „Meine Aufträge“.' : 'Dauert je nach Länge 5 bis 30 Minuten, die Seite darf zu. Der Download-Knopf erscheint dann hier unter „Meine Aufträge“.';
+      return `<li class="job st-${esc(slug(x.st || 'wartet'))}${R ? ' render' : ''}"><span class="job-h"><b>${esc(x.fn)}</b><small>${R ? 'Schnitt aus dem Studio · ' : ''}${new Date(x.d).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}${what ? ' · ' + esc(what) : ''}</small></span>
+      <span class="job-st hud">${esc((R ? lblR : lbl)[x.st] || x.st || 'Wird gerechnet …')}</span>
+      ${x.st === 'fertig' && x.url ? `<a class="btn solid job-dl" href="${esc(x.url)}" data-jid="${esc(x.id)}" target="_blank" rel="noopener" download="${esc(x.fn)}">${DL}${R ? 'Fertiges Video herunterladen' : 'Stabilisiertes Video herunterladen'}</a>` : x.st === 'fertig' ? '<span class="job-msg">Fertig. Der Link kommt in einer Minute hier an.</span>' : x.st === 'fehler' ? `<span class="job-msg">${esc(x.msg || (R ? 'Das Rechnen hat nicht geklappt. Der Vorstand ist informiert.' : 'Das Stabilisieren hat nicht geklappt. Der Vorstand ist informiert.'))}</span>` : `<span class="job-msg">${wait}</span>`}
       <button type="button" class="linkbtn job-x" data-job="${esc(x.id)}">Aus der Liste nehmen</button></li>`;
     }).join('');
   }
   let pollT = 0;
   const pollMs = () => (window.FCS_STUDIO_TEST && FCS_STUDIO_TEST.poll) || 60000;
+  // Der Auftrag, auf den die Seite gerade wartet, wird doppelt so oft gefragt (alle 30 s), die anderen einmal pro Minute
+  const pollFor = x => x.typ === 'render' && x.id === S.cloudJob && S.cloudWait ? Math.min(pollMs(), 30000) : pollMs();
   async function pollJobs(now) {
     clearTimeout(pollT);
     const api = apiClips(); if (!api) return;
     const open = jobs().filter(x => x.st !== 'fertig' && x.st !== 'fehler'); if (!open.length) return;
     if (document.visibilityState !== 'visible') { pollT = setTimeout(() => pollJobs(), pollMs()); return; }
     const C = await cloud(); const j = jobs(); const t = Date.now();
+    let next = pollMs();
     for (const x of j) {
       if (x.st === 'fertig' || x.st === 'fehler') continue;
-      if (t - (x.lp || 0) < pollMs() - 500) continue; // höchstens einmal pro Minute
+      const every = pollFor(x); next = Math.min(next, every);
+      if (t - (x.lp || 0) < every - 500) continue;
       x.lp = t; const r = await C.gyroStatus(api, x.id);
-      if (r.ok) { x.st = r.st || x.st; x.url = r.url || ''; x.msg = r.msg || ''; }
+      if (!r.ok) continue;
+      const was = x.st;
+      x.st = r.st || x.st; x.url = r.url || ''; x.msg = r.msg || ''; if (r.url) x.lu = t; if (r.size) x.size = r.size;
+      if (x.typ === 'render' && x.id === S.cloudJob && x.st !== was) { if (x.st === 'fertig') showCloudResult(x); else if (x.st === 'fehler') cloudFail(x); }
     }
     saveJobs(j); jobsUI();
-    if (j.some(x => x.st !== 'fertig' && x.st !== 'fehler')) pollT = setTimeout(() => pollJobs(), pollMs() + 500);
+    if (j.some(x => x.st !== 'fertig' && x.st !== 'fehler')) pollT = setTimeout(() => pollJobs(), next + 500);
   }
   function jobsInit() {
     jobsUI();
-    const list = $('#jobs-list'); if (list) list.addEventListener('click', e => { const b = e.target.closest('[data-job]'); if (!b) return; saveJobs(jobs().filter(x => x.id !== b.dataset.job)); jobsUI(); });
+    const list = $('#jobs-list');
+    if (list) list.addEventListener('click', async e => {
+      const b = e.target.closest('[data-job]'); if (b) { saveJobs(jobs().filter(x => x.id !== b.dataset.job)); jobsUI(); return; }
+      // Download-Links aus dem OneDrive gelten etwa eine Stunde: ältere vor dem Öffnen erneuern
+      const a = e.target.closest('a.job-dl'); if (!a) return;
+      const x = jobs().find(z => z.id === a.dataset.jid); if (!x || Date.now() - (x.lu || 0) < 45 * 60e3) return;
+      e.preventDefault(); a.textContent = 'Link wird erneuert …';
+      const C = await cloud(); const r = await C.gyroStatus(apiClips(), x.id);
+      if (r.ok && r.url) { const j = jobs(); const y = j.find(z => z.id === x.id); if (y) { y.url = r.url; y.lu = Date.now(); saveJobs(j); } jobsUI(); window.open(r.url, '_blank', 'noopener'); }
+      else { a.textContent = 'Gerade nicht erreichbar, gleich nochmal'; setTimeout(jobsUI, 4000); }
+    });
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pollJobs(); else clearTimeout(pollT); });
+    // Wartet die Seite noch auf einen Render-Auftrag von vorhin (Seite neu geladen)? Dann oben weiter warten
+    const open = jobs().find(x => x.typ === 'render' && x.st !== 'fertig' && x.st !== 'fehler' && Date.now() - x.d < 3 * 3600e3);
+    if (open) { S.cloudJob = open.id; }
     pollJobs();
   }
   function gyroClips() {
@@ -2218,7 +2299,7 @@
     }
     const inp = $('#st-file'); if (inp) inp.addEventListener('change', () => { if (inp.files.length) addFiles(inp.files); inp.value = ''; });
     const dl = $('#st-dl'); if (dl) dl.addEventListener('click', exportVideo);
-    const px = $('#prog-x'); if (px) px.addEventListener('click', () => { if (expCtl) expCtl.abort(); });
+    const px = $('#prog-x'); if (px) px.addEventListener('click', () => { if (expCtl) expCtl.abort(); else if (cloudCancel) cloudCancel(); else if (S.cloudWait) { waitOff(); goState(); } });
     const rs = $('#res-send'); if (rs) rs.addEventListener('click', () => { const r = $('input[name=snd-what][value=fertig]'); if (r && !r.disabled) { r.checked = true; sndUI(); } go($('#snd') || $('#snd-off'), -120); });
     const sh = $('#res-share'); if (sh) sh.addEventListener('click', async () => { try { await navigator.share({ files: [S.result], title: 'Mein Clip · Flight Club Saar', text: '#flightclubsaar @flightclubsaar' }); } catch (e) {} });
     const rdl = $('#res-dl'); if (rdl) rdl.addEventListener('click', () => { S.done.dl = true; steps(); });

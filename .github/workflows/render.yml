@@ -1,0 +1,183 @@
+# Render-Station des Flight Club Saar
+# Startet nur auf Anstoß von Make (workflow_dispatch mit der Auftragsnummer).
+# Holt das Rezept (rezept.json) und alle Teile (Clips, Sticker-Bild, Musik) aus dem Vereins-OneDrive,
+# rechnet mit quellen/render/render.mjs (echtes ffmpeg) das fertige Video genau wie die Vorschau im Clip-Studio
+# und lädt es wieder in den OneDrive (Render-Fertig). Adressen werden im Protokoll maskiert.
+# Rezept-Format: quellen/render/REZEPT.md
+name: Render-Station
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Auftragsnummer (16 Zeichen)
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: render-${{ inputs.job }}
+  cancel-in-progress: false
+env:
+  HOOK: https://hook.eu1.make.com/ue6rysv2dwkk9lozrsnjzyy55edkpz9i
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Auftrag holen
+        id: auftrag
+        env:
+          JOB: ${{ inputs.job }}
+        run: |
+          set -euo pipefail
+          [[ "$JOB" =~ ^[0-9a-f]{16}$ ]] || { echo "Ungültige Auftragsnummer"; exit 1; }
+          curl -sS -X POST "$HOOK" --data-urlencode a=job --data-urlencode id="$JOB" -o job.json
+          python3 - <<'PY'
+          import json, sys
+          try:
+              j = json.load(open('job.json'))
+          except Exception:
+              print('Kein gültiger Auftrag (schon in Arbeit oder unbekannt)'); sys.exit(1)
+          if not j.get('ok'):
+              print('Auftrag abgelehnt'); sys.exit(1)
+          if j.get('zweck') != 'render':
+              print('Kein Render-Auftrag:', j.get('zweck')); sys.exit(1)
+          for k in ('dl', 'up'):
+              print(f"::add-mask::{j[k]}")
+          open('dl.txt', 'w').write(j['dl']); open('up.txt', 'w').write(j['up'])
+          print('Rezept:', j.get('fn', '?'), '| von:', j.get('n', '?'))
+          PY
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            quellen/render
+            assets/js/studio-overlay.js
+            assets/js/studio-gl.js
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Werkzeuge
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg >/dev/null
+          ffmpeg -hide_banner -version | head -1
+          cd quellen/render
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund --loglevel=error; else npm install --no-audit --no-fund --loglevel=error; fi
+      - name: Rezept und Teile laden
+        id: teile
+        run: |
+          set -euo pipefail
+          mkdir -p auftrag/teile
+          curl -sS -L --retry 5 --retry-delay 5 -o auftrag/rezept.json "$(cat dl.txt)"
+          python3 - <<'PY'
+          import json, os, subprocess, sys, time, urllib.parse, urllib.request
+          HOOK = os.environ['HOOK']
+          try:
+              r = json.load(open('auftrag/rezept.json'))
+          except Exception:
+              print('Das Rezept ist nicht lesbar'); sys.exit(2)
+          teile = []
+          for c in r.get('clips') or []:
+              teile.append(('clip', c.get('teil')))
+          ov = r.get('overlay') or {}
+          if ov.get('teil'): teile.append(('overlay', ov['teil']))
+          mu = (r.get('audio') or {}).get('music') or {}
+          if mu.get('teil'): teile.append(('musik', mu['teil']))
+          if not any(k == 'clip' for k, _ in teile):
+              print('Das Rezept enthält keinen Clip'); sys.exit(2)
+          fehlt = []
+          for art, tid in teile:
+              if not isinstance(tid, str) or len(tid) != 16:
+                  print('Ungültige Teilnummer bei', art); sys.exit(2)
+              info = None
+              for versuch in range(4):
+                  try:
+                      req = urllib.request.Request(HOOK, data=urllib.parse.urlencode({'a': 'teil', 'id': tid}).encode(), method='POST')
+                      with urllib.request.urlopen(req, timeout=60) as resp:
+                          info = json.loads(resp.read().decode() or '{}')
+                      break
+                  except Exception:
+                      time.sleep(3 * (versuch + 1))
+              if not info or not info.get('ok') or not info.get('dl'):
+                  print(f'Teil {art} {tid[:6]}… ist nicht angekommen')
+                  fehlt.append(art); continue
+              print(f"::add-mask::{info['dl']}")
+              fn = str(info.get('fn') or '')
+              ext = os.path.splitext(fn)[1].lower()
+              if not ext or len(ext) > 6 or not ext[1:].isalnum(): ext = '.bin'
+              ziel = f'auftrag/teile/{tid}{ext}'
+              rc = subprocess.run(['curl', '-sS', '-L', '--retry', '5', '--retry-delay', '5', '-o', ziel, info['dl']]).returncode
+              if rc != 0 or not os.path.exists(ziel) or os.path.getsize(ziel) < 100:
+                  print(f'Teil {art} {tid[:6]}… konnte nicht geladen werden'); fehlt.append(art); continue
+              print(f'{art}: {tid[:6]}… {os.path.getsize(ziel) // 1024} kB ({ext})')
+          if 'clip' in fehlt:
+              sys.exit(3)
+          if fehlt:
+              print('Ohne', ', '.join(fehlt), 'weiter')
+          PY
+          ls -la auftrag/teile
+      - name: Rechnen
+        id: render
+        run: |
+          set -uo pipefail
+          START=$(date +%s)
+          node quellen/render/render.mjs --rezept auftrag/rezept.json --teile auftrag/teile --out auftrag/fertig.mp4 --tmp auftrag/tmp --preset veryfast 2> auftrag/fehler.txt | grep -v '^progress' || true
+          RC=${PIPESTATUS[0]}
+          echo "Dauer: $(( $(date +%s) - START )) s, Rückgabe $RC"
+          tail -n 12 auftrag/fehler.txt || true
+          [ "$RC" = "0" ] && test -s auftrag/fertig.mp4 || { echo "Kein fertiges Video"; exit 1; }
+          ffprobe -v error -show_entries format=duration,size:stream=codec_name,profile,pix_fmt,width,height -of compact auftrag/fertig.mp4 | head -4
+      - name: Ergebnis hochladen
+        env:
+          JOB: ${{ inputs.job }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, json, time, urllib.request, urllib.error
+          up = open('up.txt').read().strip()
+          p = 'auftrag/fertig.mp4'; size = os.path.getsize(p)
+          C = 327680 * 30
+          item = None
+          with open(p, 'rb') as f:
+              pos = 0
+              while pos < size:
+                  f.seek(pos); data = f.read(min(C, size - pos)); end = pos + len(data) - 1
+                  for versuch in range(6):
+                      req = urllib.request.Request(up, data=data, method='PUT', headers={'Content-Range': f'bytes {pos}-{end}/{size}', 'Content-Length': str(len(data))})
+                      try:
+                          with urllib.request.urlopen(req, timeout=300) as r:
+                              body = r.read().decode() or '{}'
+                              if r.status in (200, 201):
+                                  item = json.loads(body).get('id')
+                              break
+                      except urllib.error.HTTPError as e:
+                          if e.code == 416 or e.code >= 500:
+                              time.sleep(2 ** versuch); continue
+                          raise
+                      except Exception:
+                          time.sleep(2 ** versuch)
+                  pos = end + 1
+                  print(f'{pos * 100 // size} %')
+          if not item:
+              raise SystemExit('Upload ohne Datei-ID')
+          open('item.txt', 'w').write(item)
+          PY
+          curl -sS -X POST "$HOOK" --data-urlencode a=fertig --data-urlencode id="$JOB" --data-urlencode item="$(cat item.txt)"
+      - name: Fehler melden
+        # Nur wenn dieser Lauf den Auftrag wirklich übernommen hat (sonst gehört er einem anderen Lauf).
+        if: failure() && steps.auftrag.outcome == 'success'
+        env:
+          JOB: ${{ inputs.job }}
+          TEILE: ${{ steps.teile.outcome }}
+          RENDER: ${{ steps.render.outcome }}
+        run: |
+          if [ "$TEILE" = "failure" ]; then
+            MSG="Nicht alle Dateien des Auftrags sind im Verein angekommen. Bitte schick den Schnitt noch einmal los, am besten im WLAN."
+          elif [ "$RENDER" = "failure" ]; then
+            GRUND=$(grep -v '^\s*$' auftrag/fehler.txt 2>/dev/null | grep -iv 'deprecated\|warning' | tail -n 1 | cut -c1-160)
+            MSG="Die Render-Station konnte das Video nicht fertig rechnen. ${GRUND:-Technischer Fehler beim Rechnen.} Bitte versuch es noch einmal, zur Not mit weniger Clips."
+          else
+            MSG="Technischer Fehler beim Laden oder Speichern des Videos. Bitte schick den Schnitt später noch einmal los."
+          fi
+          curl -sS -X POST "$HOOK" --data-urlencode a=fehler --data-urlencode id="$JOB" --data-urlencode msg="$MSG" || true

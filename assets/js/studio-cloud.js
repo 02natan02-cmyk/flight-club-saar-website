@@ -5,7 +5,9 @@
    - Hochladen:      PUT  url  (Content-Range: bytes a-b/total, Stücke als Vielfaches von 327 680 Bytes, KEIN Authorization-Header)
                      202 → weiter (nextExpectedRanges), 200/201 → Datei-Objekt {id,name,size}; GET url → nextExpectedRanges; 404 = abgelaufen
    - Abschließen:    POST api.clips a=done, id, item → {ok:true}
-   - Status:         GET  api.clips?a=status&id=<job> → {ok, st:'eingegangen'|'wartet'|'läuft'|'fertig'|'fehler', url, msg}
+   - Status:         GET  api.clips?a=status&id=<job> → {ok, st:'upload'|'eingegangen'|'wartet'|'läuft'|'fertig'|'fehler', url, msg, name, size}
+   - zweck: 'einsenden' (Mail an den Verein) · 'gyroflow' (Mitglieder, Station stabilisiert) · 'teil' (Clip, Sticker-Bild oder Musik
+     für einen Render-Auftrag) · 'render' (rezept.json, startet die Render-Station; Format in quellen/render/REZEPT.md)
    - Ein Stück, das mit Netzfehler oder 5xx scheitert, wird bis zu 5-mal wiederholt (1, 2, 4, 8, 16 s Pause),
      vorher fragt ein GET auf die Upload-URL ab, wo es weitergeht (nextExpectedRanges). 416 = Bereich passt nicht → ebenso.
    Make-Kosten: start und done einmal pro Datei, Status höchstens einmal pro Minute und nur bei offener Seite. */
@@ -54,7 +56,7 @@ export async function gyroStatus(url, id) {
     const res = await fetch(u, { credentials: 'omit', signal: timeout(20000) });
     const j = await readJSON(res);
     if (!j || !j.ok) return { ok: false, net: !j };
-    return { ok: true, st: j.st, url: j.url && /^https:\/\//.test(j.url) ? j.url : '', msg: j.msg ? String(j.msg).slice(0, 300) : '' };
+    return { ok: true, st: j.st, url: j.url && /^https:\/\//.test(j.url) ? j.url : '', msg: j.msg ? String(j.msg).slice(0, 300) : '', size: +j.size || 0, name: j.name ? String(j.name).slice(0, 160) : '' };
   } catch (e) { return { ok: false, net: true }; }
 }
 
