@@ -190,27 +190,35 @@
     if (P.on && playMode() === 'clip') { stopAll(); play(); } else seekView();
   }
   /* ---------- Arbeitskopie für Clips, die der Browser nicht selbst rechnen kann (studio-wandeln.js) ---------- */
-  const COARSE = matchMedia('(pointer:coarse)').matches;
+  // Sofort umwandeln nur in Samsung Internet (dort kommt bei HDR/10 Bit nie ein Bild); sonst entscheidet der Selbsttest
+  const SAMSUNG = /SamsungBrowser/i.test(navigator.userAgent);
   const needsConv = i => !!(i && i.ok && (i.hdr || i.bits > 8 || i.transfer === 'pq' || i.transfer === 'hlg' || i.primaries === 'bt2020'));
   function wpText(c) {
     const p = Math.round((c.wp || 0) * 100);
-    if (c.wph === 'laden') return `Umwandler wird geladen (einmalig, ca. 10 MB) … ${p} %`;
+    if (c.wph === 'warten') return 'Wartet auf die Umwandlung (die Clips kommen nacheinander dran) … Bildschirm bitte anlassen.';
+    if (c.wph === 'laden') return `Umwandler wird geladen (einmalig, etwa 10 bis 30 MB) … ${p} %`;
     let t = `Wird für dein Gerät umgewandelt … ${p} %`;
     if (c.wt0 && c.wp > .04) { const el = (performance.now() - c.wt0) / 1000, rest = el / c.wp - el; t += rest > 90 ? ` · noch etwa ${Math.round(rest / 60)} min` : rest > 5 ? ` · noch etwa ${Math.round(rest)} s` : ''; }
-    return t + '. Das Original bleibt unverändert.';
+    return t + '. Bildschirm anlassen und die Seite offen lassen. Das Original bleibt unverändert.';
   }
+  let convQ = 0;
   async function convertClip(c) {
     if (c.state === 'wandeln' || c.conv) return;
-    c.state = 'wandeln'; c.wp = 0; c.wph = 'rechnen'; c.wt0 = 0; c.mode = null;
+    const prev = { state: c.state, mode: c.mode, msg: c.msg }, keep = c.b > 0 ? [c.a, c.b] : null;
+    c.state = 'wandeln'; c.wp = 0; c.wph = 'warten'; c.wt0 = 0; c.mode = null; convQ++;
     const ctl = c.wctl = new AbortController();
     renderClips(); rebuild(); steps(); goState();
-    let last = 0;
+    let last = 0, wake = null;
     const upd = () => { const sp = $(`[data-wp="${c.id}"]`); if (sp) sp.textContent = wpText(c); };
+    // Bildschirm anlassen, sonst bremst Android die Umwandlung oder beendet den Tab
+    const lock = async () => { try { if ('wakeLock' in navigator && !wake && document.visibilityState === 'visible') wake = await navigator.wakeLock.request('screen'); } catch (e) {} };
+    const vis = () => { if (document.visibilityState === 'visible') lock(); };
+    document.addEventListener('visibilitychange', vis); lock();
     try {
       const W = await wand();
       const out = await W.wandeln(c.file, c.info, { dur: c.dur || (c.info && c.info.dur) || 0, signal: ctl.signal, onProgress: (p, ph) => {
         if (ph === 'rechnen' && !c.wt0) c.wt0 = performance.now();
-        c.wp = p || 0; c.wph = ph; const now = performance.now(); if (now - last > 400) { last = now; upd(); }
+        c.wp = Math.min(1, p || 0); c.wph = ph; const now = performance.now(); if (now - last > 400) { last = now; upd(); }
       } });
       if (!S.clips.includes(c) || ctl.signal.aborted) return;
       // Arbeitskopie übernehmen, Original merken (geht weiter in voller Qualität an den Verein und an Gyroflow)
@@ -220,16 +228,30 @@
       c.el = c.el2 = null;
       if (c.src) URL.revokeObjectURL(c.src);
       media().then(m => m.drop(old)).catch(() => {});
-      Object.assign(c, { file: out, src: URL.createObjectURL(out), info: null, mode: null, ref: null, tested: false, elBlack: false, glBad: false, lum: {}, elSamples: [], thumbs: [], wctl: null });
+      Object.assign(c, { file: out, src: URL.createObjectURL(out), info: null, mode: null, ref: null, tested: false, elBlack: false, glBad: false, lum: {}, elSamples: [], thumbs: [], _thumbing: 0, wctl: null });
       await loadClip(c);
+      // Schnitt, den der Nutzer schon gesetzt hatte, bleibt erhalten
+      if (keep && c.dur) { c.a = Math.min(keep[0], Math.max(0, c.dur - MINLEN)); c.b = Math.min(keep[1], c.dur); if (c.b - c.a < MINLEN) { c.a = 0; c.b = Math.min(c.dur, MAXLEN); } rebuild(); tlDraw(); }
       note1(`„${c.name}“ ist umgewandelt und bereit zum Schneiden. Das Original schickst du unten in voller Qualität an den Verein.`);
       if (S.afterConv && !own().some(x => x.state === 'wandeln')) { S.afterConv = false; err(null); }
     } catch (e) {
       if (!S.clips.includes(c) || ctl.signal.aborted) return;
       console.info('Clip-Studio: Umwandeln fehlgeschlagen', e && e.message);
-      c.conv = true; c.state = 'nicht';
-      c.msg = 'Dieser Clip ließ sich auf diesem Gerät nicht umwandeln. Schick das Original unten an den Verein, dort wird es in voller Qualität verarbeitet.';
-      renderClips(); rebuild(); steps(); goState(); if (curClip() === c) stageMsg();
+      mod['studio-wandeln.js'] = mod['studio-wandeln.js'] && mod['studio-wandeln.js'].catch(() => { delete mod['studio-wandeln.js']; });
+      c.wctl = null;
+      if (S.afterConv) { S.afterConv = false; err(null); }
+      if (prev.state === 'ok' || prev.state === 'nurExport') {
+        // Ging vorher schon (zum Beispiel Vorschau läuft): so weitermachen wie vor dem Umwandeln, später nochmal versuchbar
+        c.state = prev.state; c.mode = prev.mode; c.msg = prev.msg;
+        finishLoad(c);
+      } else {
+        c.state = 'nicht';
+        c.msg = 'Dieser Clip ließ sich auf diesem Gerät nicht umwandeln (Speicher oder Verbindung). Lösch ihn und füg ihn nochmal hinzu, oder schick das Original unten an den Verein, dort wird es in voller Qualität verarbeitet.';
+        renderClips(); rebuild(); steps(); goState(); if (curClip() === c) stageMsg();
+      }
+    } finally {
+      convQ = Math.max(0, convQ - 1);
+      document.removeEventListener('visibilitychange', vis); if (wake) wake.release().catch(() => {});
     }
   }
   async function loadClip(c) {
@@ -257,7 +279,10 @@
     } else c.state = 'ok';
     // Arbeitskopie (Natan 29.10. 23:33: jeder Clip vom Handy, von der GoPro oder der Drohne muss gehen):
     // HDR/10 Bit am Handy sofort umwandeln, Dateien ohne abspielbares Bild ebenso. Das Original bleibt für den Verein.
-    if (c.file && !c.conv && info && info.ok && (c.state === 'nicht' || (COARSE && needsConv(info)))) { convertClip(c); return; }
+    if (c.file && !c.conv && info && info.ok && (c.state === 'nicht' || (SAMSUNG && needsConv(info)))) { convertClip(c); return; }
+    finishLoad(c);
+  }
+  function finishLoad(c) {
     if (c.dur) { c.a = 0; c.b = Math.min(c.dur, MAXLEN); }
     if (c.demo) c.fps = 25;
     if (S.clips[0] === c && S.fmt === 'orig') setFmt('orig');
@@ -321,7 +346,7 @@
     else if (c.info && c.info.canDecode && !c.tested) c.mode = 'draw';
     else c.mode = null;
     // Kein Weg liefert ein echtes Bild: Arbeitskopie rechnen statt aufzugeben
-    if (!c.mode && c.tested && c.ref === false && c.file && !c.conv && c.state !== 'wandeln' && !S.locked) { convertClip(c); return; }
+    if (!c.mode && c.tested && c.ref === false && c.file && !c.conv && c.state !== 'wandeln' && !S.locked && !S.busy) { convertClip(c); return; }
     if (before !== c.mode && WAYS.includes(c.mode) && before !== null && !c._thumbing && c.thumbs.length) { c.thumbs = []; thumbsFor(c); }
     renderClips();
   }
@@ -406,12 +431,12 @@
   }
   async function thumbsFor(c) {
     if (!c.dur || c._thumbing) return;
-    c._thumbing = 1; c.thumbs = new Array(NTH).fill(null);
+    c._thumbing = 1; const arr = c.thumbs = new Array(NTH).fill(null);
     const times = Array.from({ length: NTH }, (_, i) => (i + .5) * c.dur / NTH);
     const upd = () => { if (curClip() === c) strip(); };
     const done = () => { c._thumbing = 0; upd(); renderClips(); sbDraw(); if (c.state === 'nurExport' && c.el && c.thumbs[0]) { try { c.el.poster = c.thumbs[Math.floor(NTH / 3)].toDataURL('image/jpeg', .8); c.el.classList.add('on'); } catch (e) {} } };
     if (c.file && c.info && c.info.canDecode && c.mode !== 'element') {
-      try { const M = await media(); await M.thumbs(c.file, times, 160, 90, WAYS.includes(c.mode) ? c.mode : 'draw', (i, t) => { c.thumbs[i] = t; upd(); }); done(); return; } catch (e) {}
+      try { const M = await media(); await M.thumbs(c.file, times, 160, 90, WAYS.includes(c.mode) ? c.mode : 'draw', (i, t) => { if (c.thumbs === arr) { c.thumbs[i] = t; upd(); } }); if (c.thumbs === arr) done(); return; } catch (e) {}
     }
     if (c.state !== 'ok') { c._thumbing = 0; return; }
     // Ersatz: eigenes Video-Element springen lassen
@@ -1982,7 +2007,7 @@
       go2.disabled = false;
       if (!res) return;
       const id = res.job;
-      if (id) { const j = jobs(); j.unshift({ id, fn: c.file.name, d: Date.now(), st: 'eingegangen', url: '', msg: '', lp: Date.now(), von: opt.von, bis: opt.bis, len: cut[2], ganz, qual }); saveJobs(j); }
+      if (id) { const j = jobs(); j.unshift({ id, fn: (c.orig || c.file).name, d: Date.now(), st: 'eingegangen', url: '', msg: '', lp: Date.now(), von: opt.von, bis: opt.bis, len: cut[2], ganz, qual }); saveJobs(j); }
       jobsUI(); pollJobs(true);
     });
   }
