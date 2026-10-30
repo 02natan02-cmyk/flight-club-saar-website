@@ -148,6 +148,7 @@ def scripts(extra, file):
     for e in extra:
         if e in ('leaflet', 'three', 'intro3d'): continue
         js = f'assets/js/{e}.js'
+        if e == 'studio': tags.append(f'<script src="assets/js/studio-overlay.js?v={ver("assets/js/studio-overlay.js")}"></script>')
         if (OUT / js).exists():
             mod = ' type="module"' if 'three' in extra and e in ('home', 'wissen', 'sim', 'bau') else ''
             tags.append(f'<script src="{js}?v={ver(js)}"{mod}></script>')

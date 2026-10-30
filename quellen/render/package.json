@@ -1,0 +1,16 @@
+{
+  "name": "fcs-render-station",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Render-Station des Flight Club Saar: rechnet ein Rezept aus dem Clip-Studio mit ffmpeg zum fertigen Video",
+  "type": "module",
+  "main": "render.mjs",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "selbsttest": "node render.mjs --selbsttest",
+    "test": "node test/run.mjs"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "1.0.11"
+  }
+}
