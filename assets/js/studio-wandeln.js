@@ -21,7 +21,7 @@ async function blobURL(url, type, onBytes) {
   const len = +r.headers.get('content-length') || 0;
   if (onBytes && r.body && r.body.getReader) {
     const rd = r.body.getReader(), parts = []; let got = 0;
-    for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got += value.length; onBytes(got, len); }
+    for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got += value.length; onBytes(got, len ? Math.max(len, got) : 0); }
     b = new Blob(parts);
   } else b = await r.blob();
   if (b.size < 1000) throw new Error('leer');
@@ -47,7 +47,9 @@ async function engine(onStatus) {
           const o = { coreURL, wasmURL };
           if (multi) o.workerURL = await blobURL(base + 'ffmpeg-core.worker.js', 'text/javascript');
           const ff = new window.FFmpegWASM.FFmpeg();
-          await Promise.race([ff.load(o), new Promise((_, no) => setTimeout(() => no(new Error('laden dauert zu lange')), 60000))]);
+          try { await Promise.race([ff.load(o), new Promise((_, no) => setTimeout(() => no(new Error('laden dauert zu lange')), 60000))]); }
+          catch (e) { try { ff.terminate(); } catch (e2) {} throw e; }
+          finally { [coreURL, wasmURL].forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} }); }
           ff._multi = multi;
           return ff;
         } catch (e) { lastErr = e; console.info('Clip-Studio: Umwandler-Kern nicht geladen von', base, e && e.message); }
@@ -88,6 +90,7 @@ export function wandeln(file, info, { onProgress, signal, dur } = {}) {
 async function run(file, info, { onProgress, signal, dur }) {
   if (signal && signal.aborted) throw new Error('abgebrochen');
   const ff = await engine((ph, p) => onProgress && onProgress(p, ph));
+  if (signal && signal.aborted) throw new Error('abgebrochen');
   const id = ++nr, dir = '/in' + id, out = `/out${id}.mp4`, safe = 'clip' + id + (String(file.name || '').match(/\.[a-z0-9]{2,5}$/i) || ['.mp4'])[0];
   const total = dur || (info && info.dur) || 0;
   const tr = info && info.transfer, wide = tr === 'pq' || tr === 'hlg' || (info && info.primaries === 'bt2020');
@@ -99,7 +102,7 @@ async function run(file, info, { onProgress, signal, dur }) {
   const onLog = e => { logs.push(e.message); if (logs.length > 60) logs.shift(); const m = /time=(\d+):(\d+):(\d+(?:\.\d+)?)/.exec(e.message); if (m && total && onProgress) onProgress(Math.min(.99, ((+m[1]) * 3600 + (+m[2]) * 60 + (+m[3])) / total), 'rechnen'); };
   const stop = () => { try { ff.terminate(); } catch (e) {} ffP = null; };
   ff.on('log', onLog);
-  if (signal) signal.addEventListener('abort', stop, { once: true });
+  if (signal) { signal.addEventListener('abort', stop, { once: true }); if (signal.aborted) stop(); }
   let mounted = false;
   try {
     await ff.createDir(dir);
@@ -107,24 +110,32 @@ async function run(file, info, { onProgress, signal, dur }) {
     const f2 = file.name === safe ? file : new File([file], safe, { type: file.type || 'video/mp4' });
     await ff.mount('WORKERFS', { files: [f2] }, dir); mounted = true;
     onProgress && onProgress(0, 'rechnen');
-    const args = ton => ['-hide_banner', '-i', `${dir}/${safe}`, '-map', '0:v:0', ...(ton ? ['-map', '0:a:0?'] : ['-an']), '-sn', '-dn', '-vf', vf.join(','), '-fpsmax', '60',
-      '-c:v', 'libx264', '-preset', ff._multi ? 'veryfast' : 'superfast', '-crf', '20', '-maxrate', '12M', '-bufsize', '24M', '-pix_fmt', 'yuv420p',
+    // Höchstens 5 Minuten (das Studio schneidet bis 3 Minuten), damit der Speicher am Handy reicht
+    const args = ton => ['-hide_banner', '-i', `${dir}/${safe}`, '-t', '300', '-map', '0:v:0', ...(ton ? ['-map', '0:a:0?'] : ['-an']), '-sn', '-dn', '-vf', vf.join(','), '-fpsmax', '60',
+      '-c:v', 'libx264', '-preset', ff._multi ? 'veryfast' : 'superfast', '-crf', '22', '-maxrate', '8M', '-bufsize', '16M', '-pix_fmt', 'yuv420p',
       '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
       ...(ton ? ['-c:a', 'aac', '-b:a', '192k', '-ac', '2'] : []), '-movflags', '+faststart', '-y', out];
     // Nur für automatische Tests (Testbrowser ohne H.264): fertige Arbeitskopie von außen
     const T = window.FCS_STUDIO_TEST || {};
     if (T.wandelnFake) { const r = await fetch(T.wandelnFake); const b = new Uint8Array(await r.arrayBuffer()); onProgress && onProgress(1, 'rechnen'); return new File([b], String(file.name).replace(/\.[^.]+$/, '') + '_studio.webm', { type: 'video/webm' }); }
+    const t1 = performance.now();
     let rc = await ff.exec(args(true));
-    // Ton macht Ärger (zum Beispiel PCM oder seltene Formate): ohne Ton nochmal, das Studio kann Musik drunterlegen
-    if (rc !== 0 && !(signal && signal.aborted)) rc = await ff.exec(args(false));
+    // Ton macht Ärger (zum Beispiel PCM oder seltene Formate): ohne Ton nochmal, das Studio kann Musik drunterlegen.
+    // Nur wenn es gleich am Anfang scheiterte oder das Protokoll auf den Ton zeigt, sonst wäre es nur doppelte Wartezeit.
+    const tonFehler = logs.some(l => /audio|aac|Audio|codec.*a:|Stream #0:1/.test(l) && /rror|nvalid|not supported|unsupported/i.test(l));
+    if (rc !== 0 && !(signal && signal.aborted) && (tonFehler || performance.now() - t1 < 20000)) { try { await ff.deleteFile(out); } catch (e) {} rc = await ff.exec(args(false)); }
     if (rc !== 0) throw new Error('ffmpeg ' + rc + ': ' + logs.slice(-4).join(' | '));
     const data = await ff.readFile(out);
-    try { await ff.deleteFile(out); } catch (e) {}
     if (!data || data.length < 2000) throw new Error('leer');
     onProgress && onProgress(1, 'rechnen');
     const base = String(file.name || 'clip').replace(/\.[^.]+$/, '');
-    return new File([data.buffer], base + '_studio.mp4', { type: 'video/mp4', lastModified: Date.now() });
+    return new File([data], base + '_studio.mp4', { type: 'video/mp4', lastModified: Date.now() });
+  } catch (e) {
+    // Nach einem Fehler (zum Beispiel Speicher voll) kann der WebAssembly-Speicher kaputt sein: nächstes Mal frisch laden
+    if (!(signal && signal.aborted)) stop();
+    throw e;
   } finally {
+    try { await ff.deleteFile(out); } catch (e) {}
     ff.off && ff.off('log', onLog);
     if (signal) signal.removeEventListener('abort', stop);
     if (mounted) { try { await ff.unmount(dir); } catch (e) {} }
