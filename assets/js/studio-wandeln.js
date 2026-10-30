@@ -92,14 +92,14 @@ async function run(file, info, { onProgress, signal, dur }) {
   const ff = await engine((ph, p) => onProgress && onProgress(p, ph));
   if (signal && signal.aborted) throw new Error('abgebrochen');
   const id = ++nr, dir = '/in' + id, out = `/out${id}.mp4`, safe = 'clip' + id + (String(file.name || '').match(/\.[a-z0-9]{2,5}$/i) || ['.mp4'])[0];
-  const total = dur || (info && info.dur) || 0;
+  let total = dur || (info && info.dur) || 0;
   const tr = info && info.transfer, wide = tr === 'pq' || tr === 'hlg' || (info && info.primaries === 'bt2020');
   const fit = "scale='if(gte(iw,ih),min(1920,iw),-2)':'if(gte(iw,ih),-2,min(1920,ih))':flags=bilinear";
   const vf = tr === 'pq' ? [fit + ':in_color_matrix=bt2020:in_range=tv:out_range=pc', 'format=gbrp10le', `lutrgb=r='${PQ_RGB}':g='${PQ_RGB}':b='${PQ_RGB}'`, MIX, 'scale=out_color_matrix=bt709:in_range=pc:out_range=tv', 'format=yuv420p']
     : wide ? [fit + ':in_color_matrix=bt2020:in_range=tv:out_range=pc', 'format=gbrp10le', MIX, 'scale=out_color_matrix=bt709:in_range=pc:out_range=tv', 'format=yuv420p']
     : [fit, 'format=yuv420p'];
   const logs = [];
-  const onLog = e => { logs.push(e.message); if (logs.length > 60) logs.shift(); const m = /time=(\d+):(\d+):(\d+(?:\.\d+)?)/.exec(e.message); if (m && total && onProgress) onProgress(Math.min(.99, ((+m[1]) * 3600 + (+m[2]) * 60 + (+m[3])) / total), 'rechnen'); };
+  const onLog = e => { logs.push(e.message); if (logs.length > 60) logs.shift(); if (!total) { const d = /Duration: (\d+):(\d+):(\d+(?:\.\d+)?)/.exec(e.message); if (d) total = (+d[1]) * 3600 + (+d[2]) * 60 + (+d[3]); } const m = /time=(\d+):(\d+):(\d+(?:\.\d+)?)/.exec(e.message); if (m && total && onProgress) onProgress(Math.min(.99, ((+m[1]) * 3600 + (+m[2]) * 60 + (+m[3])) / total), 'rechnen'); };
   const stop = () => { try { ff.terminate(); } catch (e) {} ffP = null; };
   ff.on('log', onLog);
   if (signal) { signal.addEventListener('abort', stop, { once: true }); if (signal.aborted) stop(); }

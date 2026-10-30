@@ -13,6 +13,18 @@
   const VQ = '?r=' + REV + (SELF.includes('?v=') ? '&' + SELF.split('?')[1] : '');
   const mod = {};
   const load = n => mod[n] || (mod[n] = import(BASE + n + VQ));
+  // Technik-Protokoll für Fehlerberichte (Natan 30.10.: Fehler nur als Screenshot, ohne Gerät zum Nachsehen)
+  const LOG = [];
+  ['info', 'warn', 'error'].forEach(k => { const o = console[k].bind(console); console[k] = (...a) => { try { LOG.push(new Date().toTimeString().slice(0, 8) + ' ' + k + ' ' + a.map(x => typeof x === 'string' ? x : (() => { try { return JSON.stringify(x); } catch (e) { return String(x); } })()).join(' ').slice(0, 300)); if (LOG.length > 80) LOG.shift(); } catch (e) {} o(...a); }; });
+  addEventListener('error', e => { try { LOG.push('fehler ' + (e.message || '') + ' ' + (e.filename || '').split('/').pop() + ':' + (e.lineno || '')); } catch (x) {} });
+  addEventListener('unhandledrejection', e => { try { LOG.push('promise ' + String(e.reason && (e.reason.message || e.reason)).slice(0, 200)); } catch (x) {} });
+  const sentDiag = new Set();
+  async function diag(grund, manuell) {
+    if (!manuell && sentDiag.has(grund)) return false; sentDiag.add(grund);
+    let st = {}; try { st = await FCS.studioStatus(); } catch (e) { st = { fehler: e && e.message }; }
+    const extra = S.clips.filter(c => !c.demo).map(c => `${c.name}: Zustand ${c.state}, Modus ${c.mode || '-'}, Dauer ${c.dur ? c.dur.toFixed(1) : 0} s, umgewandelt ${c.conv ? 'ja' : 'nein'}${c.state === 'wandeln' ? `, ${Math.round((c.wp || 0) * 100)} % (${c.wph})` : ''}, Info ${c.info ? JSON.stringify({ c: c.info.codec, b: c.info.bits, h: c.info.hdr, t: c.info.transfer, p: c.info.primaries, w: c.info.w, hh: c.info.h, d: c.info.dur, fps: c.info.fps, dec: c.info.canDecode, err: c.info.err }) : '-'}`).join('\n');
+    try { return !!(await FCS.notify('Clip-Studio Technik-Bericht: ' + grund, { Grund: grund, Mitglied: (S.member && S.member.n) || 'nein', Schritt: S.step, Clips: extra, Status: JSON.stringify(st, null, 1).slice(0, 5000), Protokoll: LOG.slice(-60).join('\n') })).ok; } catch (e) { return false; }
+  }
   const media = () => load('studio-media.js'), glm = () => load('studio-gl.js'), cloud = () => load('studio-cloud.js'), wand = () => load('studio-wandeln.js');
 
   /* ===== Sticker: neue einfach als Zeile ergänzen =====
@@ -214,9 +226,10 @@
     const lock = async () => { try { if ('wakeLock' in navigator && !wake && document.visibilityState === 'visible') wake = await navigator.wakeLock.request('screen'); } catch (e) {} };
     const vis = () => { if (document.visibilityState === 'visible') lock(); };
     document.addEventListener('visibilitychange', vis); lock();
+    const tStart = performance.now(), watch = setInterval(() => { if (c.state !== 'wandeln') { clearInterval(watch); return; } const t = (performance.now() - tStart) / 1000; if (t > 150 && (c.wp || 0) < .01) { clearInterval(watch); diag('Umwandlung kommt nicht voran: ' + c.name); } }, 15000);
     try {
       const W = await wand();
-      const out = await W.wandeln(c.file, c.info, { dur: c.dur || (c.info && c.info.dur) || 0, signal: ctl.signal, onProgress: (p, ph) => {
+      const out = await W.wandeln(c.file, c.info, { dur: c.dur || (c.info && c.info.dur) || (c.el && isFinite(c.el.duration) ? c.el.duration : 0), signal: ctl.signal, onProgress: (p, ph) => {
         if (ph === 'rechnen' && !c.wt0) c.wt0 = performance.now();
         c.wp = Math.min(1, p || 0); c.wph = ph; const now = performance.now(); if (now - last > 400) { last = now; upd(); }
       } });
@@ -237,6 +250,7 @@
     } catch (e) {
       if (!S.clips.includes(c) || ctl.signal.aborted) return;
       console.info('Clip-Studio: Umwandeln fehlgeschlagen', e && e.message);
+      diag('Umwandeln fehlgeschlagen: ' + c.name);
       mod['studio-wandeln.js'] = mod['studio-wandeln.js'] && mod['studio-wandeln.js'].catch(() => { delete mod['studio-wandeln.js']; });
       c.wctl = null;
       if (S.afterConv) { S.afterConv = false; err(null); }
@@ -250,6 +264,7 @@
         renderClips(); rebuild(); steps(); goState(); if (curClip() === c) stageMsg();
       }
     } finally {
+      clearInterval(watch);
       convQ = Math.max(0, convQ - 1);
       document.removeEventListener('visibilitychange', vis); if (wake) wake.release().catch(() => {});
     }
@@ -1787,6 +1802,7 @@
   function hdrTip(c) { const i = c && c.info; return i && (i.hdr || i.bits > 8) ? ' Tipp: Dein Clip ist HDR beziehungsweise 10 Bit. Am Samsung in der Kamera unter Einstellungen › Erweiterte Videooptionen „HDR10+-Video“ ausschalten, dann klappt es künftig direkt am Handy.' : ''; }
   function flatErr(c, stage, L) { const e = new Error('flach'); e.clip = c; e.stage = stage; e.L = L; return e; }
   function failMsg(t) {
+    diag('Video erstellen ging nicht: ' + String(t).slice(0, 120));
     const why = $('#st-why'); if (!why) return; why.classList.add('bad');
     why.innerHTML = esc(t) + ' <button class="btn" type="button" id="fail-send">Original an den Verein schicken</button>';
     const fs = $('#fail-send'); if (fs) fs.addEventListener('click', () => { const r = $('input[name=snd-what][value=orig]'); if (r) { r.checked = true; r.dispatchEvent(new Event('change')); } go($('#snd'), -120); });
@@ -2381,6 +2397,10 @@
     if (window.ScrollTrigger) ScrollTrigger.create({ trigger: st, start: 'top 85%', once: true, onEnter: demo }); else demo();
     ['pointerdown', 'keydown'].forEach(ev => $('#studio').addEventListener(ev, e => { if (e.isTrusted && !e.target.closest('#demo-auto')) interact(); }, true));
     setStep(1, true); goState(); steps(); sumLine(); pendingUploads(); syncUp();
+    // Knopf für Fehlerberichte: schickt Technik-Infos (Format, Zustand, Protokoll, keine Videos) an info@flightclub-saar.de
+    { const box = document.createElement('p'); box.className = 'st-help st-diag'; box.innerHTML = 'Klappt etwas nicht? <button type="button" class="linkbtn" id="st-diag">Technik-Infos an den Verein schicken</button> (nur Format und Fehlermeldungen, kein Video).';
+      $('#studio').appendChild(box);
+      $('#st-diag').addEventListener('click', async e => { const b = e.currentTarget; b.disabled = true; b.textContent = 'Wird gesendet …'; const ok = await diag('Gemeldet vom Nutzer', true); b.textContent = ok ? 'Gesendet, danke!' : 'Ging gerade nicht, bitte später nochmal'; setTimeout(() => { b.disabled = false; b.textContent = 'Technik-Infos an den Verein schicken'; }, 8000); }); }
     // Diagnose für Tests auf echten Geräten: in der Konsole  await FCS.studioStatus()  aufrufen
     if (window.FCS) FCS.studioStatus = async () => {
       const WEG = { draw: 'WebCodecs direkt (Grafikchip)', cpu: 'WebCodecs über den Arbeitsspeicher (sicherer Weg)', copy: 'WebCodecs über RGBA-Kopie in sRGB (sicherer Weg)', raw: 'WebCodecs-Rohdaten, eigene Umrechnung inklusive HDR → SDR (sicherster Weg)', sw: 'WebCodecs mit Software-Dekoder (sicherer Weg)', element: 'Echtzeit über das Video-Element' };
