@@ -7,13 +7,13 @@
    Module (werden erst bei Bedarf geladen): studio-media.js, studio-gl.js, studio-cloud.js, studio-beat.js (Worker). */
 (function () {
   'use strict';
-  const REV = '2026-10-28-a';
+  const REV = '2026-10-30-a';
   const SELF = document.currentScript && document.currentScript.src || '';
   const BASE = SELF ? SELF.replace(/[^/?#]*([?#].*)?$/, '') : 'assets/js/';
   const VQ = '?r=' + REV + (SELF.includes('?v=') ? '&' + SELF.split('?')[1] : '');
   const mod = {};
   const load = n => mod[n] || (mod[n] = import(BASE + n + VQ));
-  const media = () => load('studio-media.js'), glm = () => load('studio-gl.js'), cloud = () => load('studio-cloud.js');
+  const media = () => load('studio-media.js'), glm = () => load('studio-gl.js'), cloud = () => load('studio-cloud.js'), wand = () => load('studio-wandeln.js');
 
   /* ===== Sticker: neue einfach als Zeile ergänzen =====
      k = Schlüssel, n = Name, src = Datei, w = Startbreite (Anteil der Bildbreite), top = steht oben groß, typ 'osd' = Live-OSD, opt = Datei eventuell später */
@@ -164,6 +164,7 @@
     const i = S.clips.indexOf(c); if (i < 0) return;
     S.clips.splice(i, 1);
     [c.el, c.el2].forEach(v => { if (v) { try { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); } catch (e) {} } });
+    if (c.wctl) { try { c.wctl.abort(); } catch (e) {} }
     if (c.src && c.file) URL.revokeObjectURL(c.src);
     if (c.file) media().then(m => m.drop(c.file)).catch(() => {});
     if (!quiet) {
@@ -188,6 +189,49 @@
     renderClips(); tlDraw(); strip(); panUI(); markUI();
     if (P.on && playMode() === 'clip') { stopAll(); play(); } else seekView();
   }
+  /* ---------- Arbeitskopie für Clips, die der Browser nicht selbst rechnen kann (studio-wandeln.js) ---------- */
+  const COARSE = matchMedia('(pointer:coarse)').matches;
+  const needsConv = i => !!(i && i.ok && (i.hdr || i.bits > 8 || i.transfer === 'pq' || i.transfer === 'hlg' || i.primaries === 'bt2020'));
+  function wpText(c) {
+    const p = Math.round((c.wp || 0) * 100);
+    if (c.wph === 'laden') return `Umwandler wird geladen (einmalig, ca. 10 MB) … ${p} %`;
+    let t = `Wird für dein Gerät umgewandelt … ${p} %`;
+    if (c.wt0 && c.wp > .04) { const el = (performance.now() - c.wt0) / 1000, rest = el / c.wp - el; t += rest > 90 ? ` · noch etwa ${Math.round(rest / 60)} min` : rest > 5 ? ` · noch etwa ${Math.round(rest)} s` : ''; }
+    return t + '. Das Original bleibt unverändert.';
+  }
+  async function convertClip(c) {
+    if (c.state === 'wandeln' || c.conv) return;
+    c.state = 'wandeln'; c.wp = 0; c.wph = 'rechnen'; c.wt0 = 0; c.mode = null;
+    const ctl = c.wctl = new AbortController();
+    renderClips(); rebuild(); steps(); goState();
+    let last = 0;
+    const upd = () => { const sp = $(`[data-wp="${c.id}"]`); if (sp) sp.textContent = wpText(c); };
+    try {
+      const W = await wand();
+      const out = await W.wandeln(c.file, c.info, { dur: c.dur || (c.info && c.info.dur) || 0, signal: ctl.signal, onProgress: (p, ph) => {
+        if (ph === 'rechnen' && !c.wt0) c.wt0 = performance.now();
+        c.wp = p || 0; c.wph = ph; const now = performance.now(); if (now - last > 400) { last = now; upd(); }
+      } });
+      if (!S.clips.includes(c) || ctl.signal.aborted) return;
+      // Arbeitskopie übernehmen, Original merken (geht weiter in voller Qualität an den Verein und an Gyroflow)
+      const old = c.file;
+      c.orig = c.orig || old; c.conv = true;
+      [c.el, c.el2].forEach(v => { if (v) { try { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); } catch (e) {} } });
+      c.el = c.el2 = null;
+      if (c.src) URL.revokeObjectURL(c.src);
+      media().then(m => m.drop(old)).catch(() => {});
+      Object.assign(c, { file: out, src: URL.createObjectURL(out), info: null, mode: null, ref: null, tested: false, elBlack: false, glBad: false, lum: {}, elSamples: [], thumbs: [], wctl: null });
+      await loadClip(c);
+      note1(`„${c.name}“ ist umgewandelt und bereit zum Schneiden. Das Original schickst du unten in voller Qualität an den Verein.`);
+      if (S.afterConv && !own().some(x => x.state === 'wandeln')) { S.afterConv = false; err(null); }
+    } catch (e) {
+      if (!S.clips.includes(c) || ctl.signal.aborted) return;
+      console.info('Clip-Studio: Umwandeln fehlgeschlagen', e && e.message);
+      c.conv = true; c.state = 'nicht';
+      c.msg = 'Dieser Clip ließ sich auf diesem Gerät nicht umwandeln. Schick das Original unten an den Verein, dort wird es in voller Qualität verarbeitet.';
+      renderClips(); rebuild(); steps(); goState(); if (curClip() === c) stageMsg();
+    }
+  }
   async function loadClip(c) {
     c.state = 'laden'; renderClips();
     const el = c.el = mkVideo('', c.poster);
@@ -211,6 +255,9 @@
       c.state = 'nicht'; c.msg = notPlayable(info);
       if (info && info.ok && info.canDecode) { c.mode = 'draw'; c.state = 'nurExport'; c.msg = `Dein Browser spielt dieses Format (${fmtLine(info)}) nicht ab, kann es aber rechnen: Die Vorschau zeigt ein Standbild, das fertige Video wird trotzdem vollständig.`; }
     } else c.state = 'ok';
+    // Arbeitskopie (Natan 29.10. 23:33: jeder Clip vom Handy, von der GoPro oder der Drohne muss gehen):
+    // HDR/10 Bit am Handy sofort umwandeln, Dateien ohne abspielbares Bild ebenso. Das Original bleibt für den Verein.
+    if (c.file && !c.conv && info && info.ok && (c.state === 'nicht' || (COARSE && needsConv(info)))) { convertClip(c); return; }
     if (c.dur) { c.a = 0; c.b = Math.min(c.dur, MAXLEN); }
     if (c.demo) c.fps = 25;
     if (S.clips[0] === c && S.fmt === 'orig') setFmt('orig');
@@ -273,6 +320,8 @@
     else if (c.state === 'ok') c.mode = c.elBlack || c.ref === false ? null : 'element';
     else if (c.info && c.info.canDecode && !c.tested) c.mode = 'draw';
     else c.mode = null;
+    // Kein Weg liefert ein echtes Bild: Arbeitskopie rechnen statt aufzugeben
+    if (!c.mode && c.tested && c.ref === false && c.file && !c.conv && c.state !== 'wandeln' && !S.locked) { convertClip(c); return; }
     if (before !== c.mode && WAYS.includes(c.mode) && before !== null && !c._thumbing && c.thumbs.length) { c.thumbs = []; thumbsFor(c); }
     renderClips();
   }
@@ -304,6 +353,7 @@
       let st = '';
       if (c.demo) st = '<span class="cl-st">Beispielclip vom Verein</span>';
       else if (c.state === 'laden') st = '<span class="cl-st wait">Wird geöffnet …</span>';
+      else if (c.state === 'wandeln') st = `<span class="cl-st wait" data-wp="${c.id}">${esc(wpText(c))}</span>`;
       else if (c.state === 'nicht' || c.state === 'nurExport') st = `<span class="cl-st bad">${ICON.warn}${esc(c.msg)}</span>`;
       else if (c.ref === false) st = `<span class="cl-st">${ICON.ok}Läuft. Das Bild ist an den geprüften Stellen sehr dunkel oder schwarz.</span>`;
       else if (c.mode && c.ref) st = `<span class="cl-st ok">${ICON.ok}Bild geprüft: Vorschau und Export laufen${['cpu', 'copy', 'raw', 'sw'].includes(c.mode) ? ' (über den sicheren Weg)' : c.mode === 'element' ? ' (in Echtzeit)' : ''}</span>`;
@@ -1571,12 +1621,14 @@
     if (S.busy) return;
     interact();
     if (S.demo) { pick(); flash($('#st-steps li:first-child')); return; }
+    { const w = own().find(c => c.state === 'wandeln'); if (w) { err(`„${esc(w.name)}“ wird gerade für dein Gerät umgewandelt (${esc(wpText(w))}). Danach kannst du das Video erstellen. Das Studio sagt Bescheid.`); S.afterConv = true; return; } }
     if (!S.seq || !S.seq.segs.length) { err('Wähl zuerst einen Clip, den dein Browser abspielen kann.'); return; }
     if (S.result && S.resultSig === sig()) { saveResult(); return; }
     const segs = S.seq.segs;
     // Selbsttest abwarten
     for (let i = 0; i < 140 && segs.some(s => s.c.file && s.c.info && s.c.info.canDecode && !s.c.tested); i++) await new Promise(r => setTimeout(r, 150));
     const bad = segs.find(s => !s.c.mode);
+    if (bad && bad.c.file && !bad.c.conv && !S.locked) { convertClip(bad.c); S.afterConv = true; err(`„${esc(bad.c.name)}“ gibt sein Bild in diesem Browser nicht zum Rechnen frei. Das Studio wandelt ihn jetzt um, danach geht „Video erstellen“.`); return; }
     if (bad) { failMsg((bad.c.ref === false ? `In „${bad.c.name}“ findet der Browser kein Videobild, nur eine leere Fläche. Damit kein leeres Video entsteht, rechnet das Studio hier nicht. Probier den Clip in Chrome am PC oder schick das Original in voller Qualität an den Verein.` : `Dieser Browser gibt die Bilder von „${bad.c.name}“ nicht zum Rechnen frei. Rechne das Video in Chrome oder Edge am PC oder schick das Original in voller Qualität an den Verein.`) + hdrTip(bad.c)); return; }
     S.busy = true; $('#st').classList.add('busy'); pause();
     const prog = $('#prog'), fillEl = $('#bat-fill'), pt = $('#prog-t'), eta = $('#prog-eta'), goBox = $('#st-go');
@@ -1819,7 +1871,7 @@
     const what = ($('input[name=snd-what]:checked') || {}).value || 'orig';
     const list = $('#snd-files');
     if (list) {
-      const files = what === 'fertig' && S.result ? [{ f: S.result, n: 'Fertiges Video' }] : own().filter(c => c.file).map((c, i) => ({ f: c.file, n: `Clip ${i + 1}` }));
+      const files = what === 'fertig' && S.result ? [{ f: S.result, n: 'Fertiges Video' }] : own().filter(c => c.file).map((c, i) => ({ f: c.orig || c.file, n: `Clip ${i + 1}` }));
       list.innerHTML = files.length ? files.map(x => `<li><b>${esc(x.f.name)}</b><span>${esc(x.n)} · ${MB(x.f.size)}</span></li>`).join('') : '<li class="mute">Noch kein Video ausgewählt.</li>';
       f._files = files.map(x => x.f);
     }
@@ -1926,7 +1978,7 @@
       const opt = { glaettung: +$('#gy-smooth').value, horizont: $('#gy-hor').checked, zoom: ($('input[name=gy-zoom]:checked') || {}).value || 'dynamisch', von: ganz ? 0 : cut[0], bis: ganz ? cut[2] : cut[1], ganz, qual };
       const C = await cloud(); const box = $('#gy-up'); box.hidden = false; box.innerHTML = ''; go2.disabled = true;
       const n = (S.member.n || 'Mitglied').slice(0, 40);
-      const res = await runUpload(C, box, c.file, { n, zweck: 'gyroflow', opt, c: S.member.c, t: 'Gyroflow-Auftrag aus dem Clip-Studio' });
+      const res = await runUpload(C, box, c.orig || c.file, { n, zweck: 'gyroflow', opt, c: S.member.c, t: 'Gyroflow-Auftrag aus dem Clip-Studio' });
       go2.disabled = false;
       if (!res) return;
       const id = res.job;
