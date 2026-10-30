@@ -76,7 +76,7 @@ jobs:
           try:
               r = json.load(open('auftrag/rezept.json'))
           except Exception:
-              print('Das Rezept ist nicht lesbar'); sys.exit(2)
+              print('::warning::Das Rezept ist nicht lesbar'); sys.exit(2)
           teile = []
           for c in r.get('clips') or []:
               teile.append(('clip', c.get('teil')))
@@ -100,7 +100,7 @@ jobs:
                   except Exception:
                       time.sleep(3 * (versuch + 1))
               if not info or not info.get('ok') or not info.get('dl'):
-                  print(f'Teil {art} {tid[:6]}… ist nicht angekommen')
+                  print(f'::warning::Teil {art} {tid[:6]}… ist nicht angekommen: {json.dumps(info)[:300] if info else "keine Antwort"}')
                   fehlt.append(art); continue
               print(f"::add-mask::{info['dl']}")
               fn = str(info.get('fn') or '')
@@ -109,7 +109,7 @@ jobs:
               ziel = f'auftrag/teile/{tid}{ext}'
               rc = subprocess.run(['curl', '-sS', '-L', '--retry', '5', '--retry-delay', '5', '-o', ziel, info['dl']]).returncode
               if rc != 0 or not os.path.exists(ziel) or os.path.getsize(ziel) < 100:
-                  print(f'Teil {art} {tid[:6]}… konnte nicht geladen werden'); fehlt.append(art); continue
+                  print(f'::warning::Teil {art} {tid[:6]}… konnte nicht geladen werden (curl {rc}, {os.path.getsize(ziel) if os.path.exists(ziel) else -1} B)'); fehlt.append(art); continue
               print(f'{art}: {tid[:6]}… {os.path.getsize(ziel) // 1024} kB ({ext})')
           if 'clip' in fehlt:
               sys.exit(3)
@@ -126,6 +126,7 @@ jobs:
           RC=${PIPESTATUS[0]}
           echo "Dauer: $(( $(date +%s) - START )) s, Rückgabe $RC"
           tail -n 12 auftrag/fehler.txt || true
+          [ "$RC" = "0" ] || echo "::warning::Renderer: $(grep -v '^\s*$' auftrag/fehler.txt | tail -n 3 | tr '\n' ' ' | cut -c1-400)"
           [ "$RC" = "0" ] && test -s auftrag/fertig.mp4 || { echo "Kein fertiges Video"; exit 1; }
           ffprobe -v error -show_entries format=duration,size:stream=codec_name,profile,pix_fmt,width,height -of compact auftrag/fertig.mp4 | head -4
       - name: Ergebnis hochladen
