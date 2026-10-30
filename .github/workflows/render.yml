@@ -69,7 +69,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p auftrag/teile
-          curl -sS -L --retry 5 --retry-delay 5 -o auftrag/rezept.json "$(cat dl.txt)"
+          echo "::notice::Rezept-Adresse: $(wc -c < dl.txt) Zeichen, Host $(sed -E 's#https?://([^/]+)/.*#\1#' dl.txt | cut -c1-40)"
+          if ! curl -sS -L --retry 5 --retry-delay 5 -o auftrag/rezept.json "$(cat dl.txt)"; then echo "::warning::Rezept-Download fehlgeschlagen (curl $?)"; exit 4; fi
+          echo "::notice::Rezept geladen: $(wc -c < auftrag/rezept.json) Bytes"
           python3 - <<'PY'
           import json, os, subprocess, sys, time, urllib.parse, urllib.request
           HOOK = os.environ['HOOK']
