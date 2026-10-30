@@ -124,11 +124,12 @@ jobs:
         run: |
           set -uo pipefail
           START=$(date +%s)
-          node quellen/render/render.mjs --rezept auftrag/rezept.json --teile auftrag/teile --out auftrag/fertig.mp4 --tmp auftrag/tmp --preset veryfast 2> auftrag/fehler.txt | grep -v '^progress' || true
-          RC=${PIPESTATUS[0]}
+          node quellen/render/render.mjs --rezept auftrag/rezept.json --teile auftrag/teile --out auftrag/fertig.mp4 --tmp auftrag/tmp --preset veryfast > auftrag/ausgabe.txt 2> auftrag/fehler.txt
+          RC=$?
+          grep -v '^progress' auftrag/ausgabe.txt || true
           echo "Dauer: $(( $(date +%s) - START )) s, Rückgabe $RC"
           tail -n 12 auftrag/fehler.txt || true
-          [ "$RC" = "0" ] || echo "::warning::Renderer: $(grep -v '^\s*$' auftrag/fehler.txt | tail -n 3 | tr '\n' ' ' | cut -c1-400)"
+          [ "$RC" = "0" ] || echo "::warning::Renderer $RC: $(grep -v '^\s*$' auftrag/fehler.txt | tail -n 4 | tr '\n' ' ' | cut -c1-500)"
           [ "$RC" = "0" ] && test -s auftrag/fertig.mp4 || { echo "Kein fertiges Video"; exit 1; }
           ffprobe -v error -show_entries format=duration,size:stream=codec_name,profile,pix_fmt,width,height -of compact auftrag/fertig.mp4 | head -4
       - name: Ergebnis hochladen

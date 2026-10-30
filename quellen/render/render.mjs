@@ -283,6 +283,8 @@ function argumenteLesen(argv) {
   if (a.hilfe || a.selbsttest) return a;
   for (const k of ['rezept', 'teile', 'out']) if (!a[k]) throw new RenderFehler(`Beim Aufruf fehlt --${k}.\n${HILFE}`, 2);
   if (!PRESETS.includes(a.preset)) throw new RenderFehler(`Unbekanntes Preset „${a.preset}“ (erlaubt: ${PRESETS.join(', ')}).`, 2);
+  // Absolute Pfade: ffmpeg läuft im Tmp-Ordner, relative Angaben (auftrag/teile) gingen dort ins Leere
+  for (const k of ['rezept', 'teile', 'out', 'tmp']) if (a[k]) a[k] = path.resolve(a[k]);
   return a;
 }
 
