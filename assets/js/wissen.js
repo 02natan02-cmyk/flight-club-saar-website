@@ -1062,7 +1062,7 @@ const BANDS = {
   E: { n: 'Band E', f: [5705, 5685, 5665, 5645, 5885, 5905, 5925, 5945] }
 };
 const DE_LO = 5725, DE_HI = 5875, F0 = 5630, F1 = 5960;
-// Vorschläge (vorab berechnet, 31.10.2026 nach Rückmeldung aus dem Verein): mindestens 37 MHz Abstand UND keine Intermodulation.
+// Vorschläge (vorab berechnet, 31.10.2026 nach dem Hinweis von Stefan „mensste_fpv“ über Axel): mindestens 37 MHz Abstand UND keine Intermodulation.
 // Zwei Sender auf f1 und f2 erzeugen im Empfänger Störprodukte bei 2·f1 − f2 und 2·f2 − f1, im selben Abstand neben dem Paar.
 // Gleichmäßig verteilte Kanäle (F1, F3, F5, F7) legen diese Produkte genau auf die Nachbarn. Darum: zu dritt F1, F3, F7
 // (Produkte 40 MHz von jedem Kanal weg), zu viert bleibt im erlaubten Bereich ein Rest von rund 22 MHz, ab fünf zwei Gruppen nacheinander.
