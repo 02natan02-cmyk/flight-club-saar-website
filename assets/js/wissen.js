@@ -1062,8 +1062,11 @@ const BANDS = {
   E: { n: 'Band E', f: [5705, 5685, 5665, 5645, 5885, 5905, 5925, 5945] }
 };
 const DE_LO = 5725, DE_HI = 5875, F0 = 5630, F1 = 5960;
-// Vorschläge: möglichst großer Abstand, mit Luft zu den Rändern (vorab berechnet)
-const PICKS = { 1: ['F4'], 2: ['F2', 'F6'], 3: ['F1', 'F4', 'F7'], 4: ['F1', 'F3', 'F5', 'F7'], 5: ['F1', 'A6', 'F4', 'A3', 'F7'], 6: ['R3', 'F2', 'A5', 'F5', 'R6', 'A1'] };
+// Vorschläge (vorab berechnet, 31.10.2026 nach Rückmeldung aus dem Verein): mindestens 37 MHz Abstand UND keine Intermodulation.
+// Zwei Sender auf f1 und f2 erzeugen im Empfänger Störprodukte bei 2·f1 − f2 und 2·f2 − f1, im selben Abstand neben dem Paar.
+// Gleichmäßig verteilte Kanäle (F1, F3, F5, F7) legen diese Produkte genau auf die Nachbarn. Darum: zu dritt F1, F3, F7
+// (Produkte 40 MHz von jedem Kanal weg), zu viert bleibt im erlaubten Bereich ein Rest von rund 22 MHz, ab fünf zwei Gruppen nacheinander.
+const PICKS = { 1: [['F4']], 2: [['F1', 'F7']], 3: [['F1', 'F3', 'F7']], 4: [['R3', 'R4', 'B6', 'A1']], 5: [['F1', 'F3', 'F7'], ['F1', 'F7']], 6: [['F1', 'F3', 'F7'], ['F1', 'F3', 'F7']] };
 const chFreq = (c) => BANDS[c[0]].f[+c.slice(1) - 1];
 const allowed = (f) => f >= DE_LO && f <= DE_HI;
 function kanaele() {
@@ -1095,7 +1098,7 @@ function kanaele() {
     }
     const u = el('text', { x: w - padR, y: yAxis + 19, 'text-anchor': 'end', 'font-size': narrow ? 9 : 10.5, fill: '#9db1cc', opacity: narrow ? 0 : 1 }, svg); u.textContent = 'MHz';
     // Vorschlagskurven
-    const pk = PICKS[n] || [];
+    const groups = PICKS[n] || [], pk = [...new Set(groups.flat())];
     const gP = el('g', { class: 'picks' }, svg);
     pk.forEach((c, i) => {
       const f = chFreq(c), x = X(f), hw = X(f + 11) - x, base = topH - 6, hgt = topH - 50;
@@ -1134,8 +1137,12 @@ function kanaele() {
   function pickOut() {
     title.textContent = WORD[n];
     outL.innerHTML = '';
-    (PICKS[n] || []).forEach((c, i) => { const li = D.createElement('li'); li.innerHTML = `<small>Pilot ${i + 1}</small><b>${c}</b><span>${chFreq(c)} MHz · ${BANDS[c[0]].n}</span>`; outL.appendChild(li); });
-    note.textContent = n >= 5 ? 'Ab fünf Piloten wird es eng. Wenn sich die Bilder stören, fliegt lieber in zwei Gruppen nacheinander. Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.' : 'Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt. Wer später dazukommt, fragt erst, welche Kanäle belegt sind.';
+    const groups = PICKS[n] || []; let nr = 0;
+    groups.forEach((g, gi) => g.forEach((c) => { nr++; const li = D.createElement('li'); li.innerHTML = `<small>${groups.length > 1 ? `Gruppe ${'AB'[gi]} · ` : ''}Pilot ${nr}</small><b>${c}</b><span>${chFreq(c)} MHz · ${BANDS[c[0]].n}</span>`; outL.appendChild(li); }));
+    note.textContent = n >= 5 ? 'Ab fünf passen nicht alle gleichzeitig störungsfrei in den erlaubten Bereich: Fliegt in zwei Gruppen nacheinander (Gruppe A landet, Gruppe B startet). Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
+      : n === 4 ? 'Zu viert bleibt im erlaubten Bereich ein Rest: Zwei Sender erzeugen Störprodukte neben sich (Intermodulation), hier liegen sie rund 22 MHz neben einem Kanal. Mit 25 mW geht das meist gut; flimmert es, fliegt zu dritt. Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
+      : n === 3 ? 'Nicht gleichmäßig verteilt, mit Absicht: Zwei Sender erzeugen Störprodukte im selben Abstand neben sich (Intermodulation). F1, F3 und F7 halten diese Produkte 40 MHz von jedem Kanal fern. Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
+      : 'Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt. Wer später dazukommt, fragt erst, welche Kanäle belegt sind.';;
     nBtns.forEach(b => b.setAttribute('aria-pressed', +b.dataset.n === n ? 'true' : 'false'));
     if (GS() && !RM) gsap.fromTo(outL.children, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: .45, stagger: .06, ease: 'expo.out' });
   }

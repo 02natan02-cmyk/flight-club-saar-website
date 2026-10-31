@@ -148,7 +148,9 @@ FCS.data = {
     { a: 'Mailo FPV', n: 'Kevin', ort: 'Saarland', seit: 2018, stil: 'Freestyle, Whoop', img: 'media/piloten/mailo-fpv.webp' },
     { a: 'Olli FPV', n: 'Oliver', ort: 'Orscholz', seit: 2020, stil: 'Freestyle, Whoop', img: 'media/piloten/olli-fpv.webp' },
     { a: 'Mr_Batch', n: 'Axel', ort: 'Saarland', seit: 2021, stil: 'Freestyle', yt: 'mr_batch', img: 'media/piloten/mr-batch.webp' },
-    { a: 'Spotter & Security', n: 'Nikola', ort: 'Dudweiler', seit: 2019, stil: 'Aggressive', img: 'media/piloten/spotter.webp' }
+    { a: 'Spotter & Security', n: 'Nikola', ort: 'Dudweiler', seit: 2019, stil: 'Aggressive', img: 'media/piloten/spotter.webp' },
+    // Leon über das Profil-Formular (31.10.2026, Foto und Freigabe „Profil zeigen: ja“ von ihm selbst)
+    { a: 'FPVLardy', n: 'Leon', ort: 'Kreis Neunkirchen', seit: 2024, stil: 'Freestyle, Racing, Whoops, Bando', ig: 'fpvlardy', tt: 'leon_gsxr', img: 'media/piloten/fpvlardy.webp' }
   ],
   // Video-Einsendungen: OneDrive-Datei-Anfrage (Link folgt, solange leer: Formular + WhatsApp)
   upload: { link: '', maxMail: 9 },

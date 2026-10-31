@@ -37,7 +37,13 @@
        Digital zu Digital: Schutzabstand 0, die Signale dürfen sich nur nicht überlappen. Die Hersteller legen ihre eigenen
        Kanäle selbst so dicht (DJI O4 Kanal 1 und 2: 21 MHz Abstand bei 20 MHz Bandbreite).
        Beispiele: Analog/Analog 37 · Analog/HDZero 35,5 · Analog/DJI 32 · HDZero/HDZero 27 · DJI/DJI 20 MHz.
-       Nicht abgebildet: Intermodulation (2·f1 − f2) bei sehr vielen Sendern und die Startphase digitaler Brillen.
+     Intermodulation (Rückmeldung Axel/Sebastian 31.10.2026): Zwei Sender auf f1 und f2 erzeugen im Empfänger Störprodukte bei
+       2·f1 − f2 und 2·f2 − f1, also im selben Abstand links und rechts neben dem Paar. Gleichmäßig verteilte Kanäle (F1, F3, F5, F7)
+       legen diese Produkte genau auf die Nachbarn: dann sieht niemand mehr etwas. Darum prüft der Plan jede Gruppe, die zusammen
+       fliegt, zusätzlich auf diese Produkte (imdOk): kein Produkt näher als halbe Bandbreite + 5 MHz an einem belegten Kanal.
+       Im erlaubten Bereich geht das störungsfrei bis drei Analog-Piloten; bei vier bleibt ein Rest (Produkt rund 22 MHz neben
+       einem Kanal), den der Plan so groß wie möglich hält. Quelle unter anderem https://www.oscarliang.com/fpv-channels/ (IMD).
+       Nicht abgebildet: die Startphase digitaler Brillen.
        „weiß nicht“ wird wie Analog behandelt, weil Analog am meisten Platz braucht (sichere Seite).
      ===================================================================================== */
   const CORE = (() => {
@@ -64,6 +70,18 @@
     }
     const need = (A, B) => A.bw / 2 + B.bw / 2 + ((SYS[A.s].analog || SYS[B.s].analog) ? GUARD : 0);
     const compat = (A, B) => !!A && !!B && Math.abs(A.f - B.f) + 1e-6 >= need(A, B);
+    /* Intermodulation dritter Ordnung in einer Gruppe: 2·fa − fb darf keinem dritten Kanal näher kommen als dessen halbe Bandbreite + 5 MHz.
+       Liefert den kleinsten Abstand eines Störprodukts zu einem belegten Kanal (999 = keines in der Nähe). */
+    function imdGap(chs) {
+      const L = chs.filter(Boolean); let gap = 999;
+      for (let i = 0; i < L.length; i++) for (let j = 0; j < L.length; j++) {
+        if (i === j) continue; const p = 2 * L[i].f - L[j].f;
+        for (let k = 0; k < L.length; k++) { if (k === i || k === j) continue; const d = Math.abs(p - L[k].f) - L[k].bw / 2; if (d < gap) gap = d; }
+      }
+      return gap;
+    }
+    const IMD_GUARD = 5;
+    const imdOk = chs => imdGap(chs) >= IMD_GUARD;
     const label = c => !c ? '' : c.race ? c.id + ' Race' : c.id;
     const mhz = f => String(f).replace('.', ',') + ' MHz';
     // Kanalwunsch steckt im Feld titel: „Wunsch R4“ oder „Fest CH2“
@@ -106,7 +124,10 @@
               let ok = true;
               if (!loose) for (let c2 = 0; c2 < k && ok; c2++) { if (c2 === c) continue; for (const q of mem[c2]) if (!compat(ch, pick[q])) { ok = false; break; } }
               if (!ok) continue;
-              let sc = size[c] * 30 + ch.pen * 40 + oi * .01;
+              // Intermodulation: Kandidat zusammen mit je einem Piloten aus jeder anderen Spalte (so fliegen sie später zusammen)
+              let imdPen = 0;
+              if (!loose && k > 2) { const others = []; for (let c2 = 0; c2 < k; c2++) if (c2 !== c) for (const q of mem[c2]) others.push(pick[q]); const g = imdGap(others.concat(ch)); if (g < IMD_GUARD) imdPen = 80 + (IMD_GUARD - g) * 4; }
+              let sc = size[c] * 30 + ch.pen * 40 + oi * .01 + imdPen;
               if (p.ch && ch.id === p.ch) sc -= 100;
               if (p.wish && ch.id === p.wish) sc -= 60;
               if (mem[c].some(q => Math.abs(pick[q].f - ch.f) < 1)) sc -= 25;
@@ -140,7 +161,7 @@
         if (best >= cap || chosen.length + items.length - start <= best) return;
         for (let i = start; i < items.length; i++) {
           const it = items[i]; if ((used.get(it.ti) || 0) >= it.cap) continue;
-          if (chosen.some(c => !compat(c, it.c))) continue;
+          if (chosen.some(c => !compat(c, it.c)) || !imdOk(chosen.concat(it.c))) continue;
           chosen.push(it.c); used.set(it.ti, (used.get(it.ti) || 0) + 1);
           go(i + 1);
           chosen.pop(); used.set(it.ti, used.get(it.ti) - 1);
@@ -162,7 +183,7 @@
         const cand = pilots.slice().sort((a, b) => fl[a.key] - fl[b.key] || last[a.key] - last[b.key] || a.o - b.o);
         // Gerechtigkeit: Wer schon einen Flug mehr hat als der am wenigsten Geflogene, wartet. Lieber ein Platz frei als einer, der ständig fliegt.
         const min = cand.length ? fl[cand[0].key] : 0, pick = [];
-        for (const p of cand) { if (pick.length >= k) break; if (fl[p.key] > min + 1) continue; const c = chOf[p.key]; if (c && pick.every(q => compat(chOf[q.key], c) && !same(p, q))) pick.push(p); }
+        for (const p of cand) { if (pick.length >= k) break; if (fl[p.key] > min + 1) continue; const c = chOf[p.key]; if (c && pick.every(q => compat(chOf[q.key], c) && !same(p, q)) && imdOk(pick.map(q => chOf[q.key]).concat(c))) pick.push(p); }
         pick.sort((a, b) => chOf[a.key].f - chOf[b.key].f);
         out.push(pick.map(p => p.key)); pick.forEach(p => { fl[p.key]++; last[p.key] = i; });
       }
@@ -185,7 +206,7 @@
           for (let g = 0; g < G; g++) {
             if (mem[g].length >= cap) continue;
             if (!mem[g].length && prev[p.key] !== g) { if (empty) continue; empty = true; }
-            if (mem[g].some(q => !compat(c, chOf[q.key]) || same(p, q))) continue;
+            if (mem[g].some(q => !compat(c, chOf[q.key]) || same(p, q)) || !imdOk(mem[g].map(q => chOf[q.key]).concat(c))) continue;
             cands.push([(prev[p.key] === g ? -100 : 0) + mem[g].length * 10 + g * .01, g]);
           }
           cands.sort((x, y) => x[0] - y[0]);
@@ -203,9 +224,17 @@
     const rotation = (tm, nH, keep = []) => { const out = keep.slice(0, nH).map(h => h.slice()); for (let i = out.length; i < nH; i++) out.push(tm.length ? tm[i % tm.length].slice() : []); return out; };
     const heatCount = (s) => { const cyc = s.slot + s.pause; return cyc > 0 ? Math.max(0, Math.min(120, Math.floor((s.e - s.b + s.pause) / cyc + 1e-9))) : 0; };
     // Konflikte innerhalb eines Durchgangs (nach Handänderungen möglich)
-    function conflicts(keys, chOf) { const out = []; for (let i = 0; i < keys.length; i++) for (let j = i + 1; j < keys.length; j++) { const a = chOf[keys[i]], b = chOf[keys[j]]; if (a && b && !compat(a, b)) out.push([keys[i], keys[j]]); } return out; }
+    function conflicts(keys, chOf) {
+      const out = [];
+      for (let i = 0; i < keys.length; i++) for (let j = i + 1; j < keys.length; j++) { const a = chOf[keys[i]], b = chOf[keys[j]]; if (a && b && !compat(a, b)) out.push([keys[i], keys[j]]); }
+      // Intermodulation: Störprodukt von a und b trifft c → c ist der Gestörte, b der zuletzt Dazugekommene
+      const L = keys.filter(x => chOf[x]);
+      for (let i = 0; i < L.length; i++) for (let j = 0; j < L.length; j++) { if (i === j) continue; const p = 2 * chOf[L[i]].f - chOf[L[j]].f;
+        for (let k = 0; k < L.length; k++) { if (k === i || k === j) continue; const v = chOf[L[k]]; if (Math.abs(p - v.f) - v.bw / 2 < IMD_GUARD && !out.some(o => o[2] === L[k] && o.imd)) { const o = [L[i], L[k]]; o.imd = L[j]; o[2] = L[k]; out.push(o); } } }
+      return out;
+    }
 
-    return { BAND, RB, SYS, ORDER, GUARD, legal, sysOf, chan, need, compat, label, mhz, parseCh, fmtCh, parseNote, options, assign, maxSimul, heats, teams, rotation, heatCount, conflicts };
+    return { BAND, RB, SYS, ORDER, GUARD, IMD_GUARD, legal, sysOf, chan, need, compat, imdGap, imdOk, label, mhz, parseCh, fmtCh, parseNote, options, assign, maxSimul, heats, teams, rotation, heatCount, conflicts };
   })();
 
   root.FCS_TERMIN = CORE;
@@ -660,7 +689,7 @@
   function renderConf() {
     const box = $('#tp-conf'); if (!box || !T.plan) return;
     const pl = T.plan, m = chMap(), out = [];
-    pl.heats.forEach((h, i) => C.conflicts(h, m).forEach(([a, b]) => { const sug = suggest(b, i); out.push(`<div class="tp-cf"><p><b>Durchgang ${i + 1}:</b> ${esc(pName(a))} (${esc(C.label(m[a]))}) und ${esc(pName(b))} (${esc(C.label(m[b]))}) stören sich.</p><div class="tp-cf-a">${sug ? `<button class="tp-mini" type="button" data-sug="${esc(b)}" data-ch="${esc(sug.id)}">${esc(pName(b))} auf ${esc(C.label(sug))}</button>` : ''}<button class="tp-mini" type="button" data-fixh="${i}">Durchgang neu einteilen</button></div></div>`); }));
+    pl.heats.forEach((h, i) => C.conflicts(h, m).forEach((cf) => { const [a, b] = cf; const sug = suggest(b, i); out.push(`<div class="tp-cf"><p><b>Durchgang ${i + 1}:</b> ${cf.imd ? `${esc(pName(a))} (${esc(C.label(m[a]))}) und ${esc(pName(cf.imd))} (${esc(C.label(m[cf.imd]))}) erzeugen zusammen ein Störprodukt bei ${esc(C.mhz(Math.round(2 * m[a].f - m[cf.imd].f)))}, genau auf dem Kanal von ${esc(pName(b))} (${esc(C.label(m[b]))}) (Intermodulation).` : `${esc(pName(a))} (${esc(C.label(m[a]))}) und ${esc(pName(b))} (${esc(C.label(m[b]))}) stören sich.`}</p><div class="tp-cf-a">${sug ? `<button class="tp-mini" type="button" data-sug="${esc(b)}" data-ch="${esc(sug.id)}">${esc(pName(b))} auf ${esc(C.label(sug))}</button>` : ''}<button class="tp-mini" type="button" data-fixh="${i}">Durchgang neu einteilen</button></div></div>`); }));
     const ps = present(pl), unk = ps.filter(p => p.sys === 'u').length, dji = ps.some(p => p.sys === '3' || p.sys === '4'), race = ps.some(p => m[p.key] && m[p.key].race), out5 = ps.filter(p => m[p.key] && !m[p.key].legal);
     const info = [];
     if (unk) info.push(`${unk} ${unk === 1 ? 'Pilot hat' : 'Piloten haben'} kein Videosystem angegeben und ${unk === 1 ? 'ist' : 'sind'} wie Analog eingeplant (braucht am meisten Platz).`);
@@ -677,13 +706,14 @@
     const p = pOf(key); if (!p) return null; const m = chMap();
     const mates = new Set(); T.plan.heats.forEach(h => { if (h.includes(key)) h.forEach(k => { if (k !== key) mates.add(k); }); });
     const opts = C.options({ sys: p.sys }, !!T.plan.s.all);
-    return opts.find(c => c.id !== p.ch && [...mates].every(k => !m[k] || C.compat(c, m[k]))) || opts.find(c => c.id !== p.ch && T.plan.heats[hi].every(k => k === key || !m[k] || C.compat(c, m[k]))) || null;
+    const fits = (c, keys) => keys.every(k => k === key || !m[k] || C.compat(c, m[k])) && C.imdOk(keys.filter(k => k !== key && m[k]).map(k => m[k]).concat(c));
+    return opts.find(c => c.id !== p.ch && fits(c, [...mates])) || opts.find(c => c.id !== p.ch && fits(c, T.plan.heats[hi])) || null;
   }
   function renderTable() {
     const box = $('#tp-table'); if (!box) return;
     const row = (k, extra) => { const S = SYS[k]; return `<div class="tp-tr"><h4>${esc(S.n)} <small>${S.bw} MHz breit</small></h4><p class="tp-tr-c">${S.ch.map(c => { const ch = C.chan(k, c.id); return `<span class="${ch.legal ? '' : 'off'}"><b>${esc(C.label(ch))}</b> ${esc(String(ch.f).replace('.', ','))}</span>`; }).join('')}</p>${extra ? `<p class="mute">${extra}</p>` : ''}</div>`; };
     box.innerHTML = `<div class="tp-trs">
-      ${row('a', 'Raceband, 37 MHz Abstand. Frei nutzbar sind R3 bis R6.')}
+      ${row('a', 'Raceband, 37 MHz Abstand. Frei nutzbar sind R3 bis R6. Wegen Intermodulation (2·f1 − f2) fliegen im erlaubten Bereich höchstens drei Analog-Piloten gleichzeitig störungsfrei, zum Beispiel R3, R4 und R6.')}
       ${row('4', 'Manueller Modus mit 20 oder 10 MHz. Mit 40 oder 60 MHz gibt es nur einen Kanal bei 5794,5 MHz.')}
       ${row('3', 'Manueller Modus mit 20 oder 10 MHz. Mit 40 MHz gibt es nur einen Kanal bei 5794,5 MHz.')}
       ${row('h', 'Raceband-Frequenzen, verträgt sich auf dem 37-MHz-Raster mit Analog. In Europa R3 bis R6.')}
