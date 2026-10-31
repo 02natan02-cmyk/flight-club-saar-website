@@ -237,8 +237,10 @@
     };
     const send0 = FCS.send;
     FCS.send = async (form, extra = {}) => {
+      let n = null, sepaOn = false;
       if (form === f) {
-        const n = await nummer(), name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), sepaOn = $$('input[name=Zahlungsart]')[0].checked;
+        n = await nummer(); sepaOn = $$('input[name=Zahlungsart]')[0].checked;
+        const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim();
         const subj = f.querySelector('[name=_subject]');
         const mk = 'SEPA-Lastschriftmandat (Wortlaut, mit Unterschrift erteilt)';
         if (n) {
@@ -250,15 +252,39 @@
           extra = { Mitgliedsnummer: 'Konnte nicht automatisch vergeben werden. Bitte die nächste freie Nummer vergeben (Make-Datenspeicher „FCS Clip-Studio“, Schlüssel mnr_zaehler).', ...extra };
         }
       }
+      // Lastschrift: die Eingangsbestätigung schickt der Sofortcode mit (unten), sonst die normale Bestätigung
+      if (form === f) { if (sepaOn && n && !n.bekannt) f.dataset.bestaetigung = 'selbst'; else delete f.dataset.bestaetigung; }
       let r = await send0(form, extra).catch(() => ({ ok: false }));
       if (!r.ok && form === f && extra.Unterschrift) try { const ohne = { ...extra }; delete ohne['Unterschrift (Bild, auch als Anhang)']; ohne.Unterschrift = 'Das Bild der Unterschrift konnte nicht angehängt werden, bitte beim Vorstand persönlich nachholen'; r = await send0(form, ohne); } catch (e) { r = { ok: false }; }
+      if (r.ok && form === f && f.dataset.bestaetigung === 'selbst') { CODE = await sofortcode(n).catch(() => null); if (!CODE) FCS.bestaetigung(f, extra); }
       return r;
+    };
+    // Sofortcode bei Lastschrift (Natan 31.10.: „wenn jemand SEPA ausgewählt hat und die Kontodaten von ihm stimmen, dann kann der schon den Code bekommen
+    // und wir kümmern uns um den Einzug“): IBAN hier geprüft, Make-Szenario 8293213 prüft Nummer und E-Mail gegen den Datenspeicher, legt den Code an,
+    // mailt ihn dem Mitglied und schickt dem Vorstand die Einzugsdaten (Mandatsreferenz, IBAN, Betrag) fürs Online-Banking.
+    let CODE = null;
+    const neuerCode = () => { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', b = crypto.getRandomValues(new Uint8Array(8)); let s = ''; b.forEach(x => { s += A[x % 32]; }); return `FCS-${s.slice(0, 4)}-${s.slice(4)}`; };
+    const sofortcode = async (n) => {
+      const iban = $('#a-iban').value.replace(/\s+/g, '').toUpperCase();
+      if (!n || !n.nr || !window.crypto || !FCS.checks.iban(iban)) return null;
+      const code = neuerCode(), v = id => (($(id) || {}).value || '').trim();
+      const body = new URLSearchParams({ email: v('#a-mail'), name: v('#a-vn'), voll: `${v('#a-vn')} ${v('#a-nn')}`.trim(), nr: n.nr, mandat: n.mandat || '', code, iban, inhaber: v('#a-kinh'), bank: v('#a-bank'), jugend: /Jugend/.test(String(new FormData(f).get('Mitgliedschaft') || '')) ? '1' : '0', bisher: /^Schon/.test(String(new FormData(f).get('Aufnahme') || '')) ? '1' : '0', adresse: `${v('#a-str')}, ${v('#a-ort')}` });
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
+      const res = await fetch('https://hook.eu1.make.com/lyx6jw7r91y75g1a767myei83hbafb7n', { method: 'POST', body, signal: ctl.signal, credentials: 'omit' });
+      clearTimeout(t);
+      const j = await res.json();
+      return j && j.ok && !j.schon ? code : null;
     };
     f.addEventListener('fcs:sent', () => {
       const name = `${$('#a-vn').value} ${$('#a-nn').value}`.trim(), alias = $('#a-alias').value.trim();
       $('.mg-grid').hidden = true; $('#antrag .mg-sh').hidden = true; $('#welcome').hidden = false; card(name, alias, NR && NR.nr);
       const wl = $('#welcome .lede');
-      if (wl) wl.textContent = NR && NR.bekannt ? `Du bist bei uns schon mit der Mitgliedsnummer ${NR.nr} eingetragen, die bleibt deine. Der Vorstand gleicht deinen Antrag ab und meldet sich bei dir. Hier ist deine Mitgliedskarte.` : NR ? `Deine vorläufige Mitgliedsnummer ist ${NR.nr}${$$('input[name=Zahlungsart]')[0].checked ? `, deine Mandatsreferenz ${NR.mandat}` : ''}. Fest wird sie, sobald dein Beitrag da ist: Dann bekommst du eine Mail mit der Bestätigung und deinem Mitgliedscode. Hier ist schon mal die Vorschau deiner Mitgliedskarte.` : 'Der Vorstand prüft deinen Antrag, vergibt deine Mitgliedsnummer und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.';
+      if (wl) wl.textContent = CODE ? `Deine Mitgliedsnummer ist ${NR.nr}. Den Beitrag ziehen wir per Lastschrift ein (Mandatsreferenz ${NR.mandat}), du musst nichts weiter tun. Dein Mitgliedscode steht hier und ist gerade auch per Mail zu dir unterwegs. Hier ist deine Mitgliedskarte.` : NR && NR.bekannt ? `Du bist bei uns schon mit der Mitgliedsnummer ${NR.nr} eingetragen, die bleibt deine. Der Vorstand gleicht deinen Antrag ab und meldet sich bei dir. Hier ist deine Mitgliedskarte.` : NR ? `Deine vorläufige Mitgliedsnummer ist ${NR.nr}${$$('input[name=Zahlungsart]')[0].checked ? `, deine Mandatsreferenz ${NR.mandat}` : ''}. Fest wird sie, sobald dein Beitrag da ist: Dann bekommst du eine Mail mit der Bestätigung und deinem Mitgliedscode. Hier ist schon mal die Vorschau deiner Mitgliedskarte.` : 'Der Vorstand prüft deinen Antrag, vergibt deine Mitgliedsnummer und meldet sich bei dir. Hier ist schon mal die Vorschau deiner Mitgliedskarte.';
+      if (CODE && wl) {
+        const box = document.createElement('div'); box.className = 'mg-code';
+        box.innerHTML = `<span class="mg-code-l">Dein Mitgliedscode</span><strong class="mg-code-v"></strong><span class="mg-code-h">Oben rechts aufs Schloss, Code eingeben, freischalten. Gehört nur dir.</span>`;
+        box.querySelector('.mg-code-v').textContent = CODE; wl.after(box);
+      }
       FCS.scrollTo('#welcome', -90);
     });
   }

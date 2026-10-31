@@ -112,3 +112,8 @@ main [hidden]{display:none!important}
 @media (max-width:420px){.mg-flow{grid-template-columns:minmax(0,1fr)}}
 .card-save{width:min(100%,560px);margin-top:14px}
 .card-save img{display:block;width:100%;height:auto;border-radius:14px;margin-top:8px;-webkit-touch-callout:default;user-select:auto}
+/* Sofortcode bei Lastschrift (31.10.): Mitgliedscode direkt auf der Willkommensseite */
+.mg-code{display:grid;gap:4px;justify-items:center;text-align:center;padding:18px 22px;border:2px solid var(--sig);border-radius:16px;background:rgba(63,224,255,.08);box-shadow:0 0 40px -10px rgba(63,224,255,.5)}
+.mg-code-l{font:600 12px/1 var(--hud);letter-spacing:.2em;text-transform:uppercase;color:var(--sig)}
+.mg-code-v{font:700 clamp(24px,5vw,34px)/1.1 Consolas,Menlo,monospace;letter-spacing:.12em;user-select:all}
+.mg-code-h{font-size:13px;color:var(--mute)}
