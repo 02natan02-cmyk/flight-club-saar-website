@@ -566,9 +566,19 @@ if (location.protocol === 'http:' && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.te
     ok = await viaEingang(subject, [...rows, ...attRows], mailTo, atts);
     if (!ok && atts.length) ok = await viaEingang(subject, [...rows, ['Hinweis', 'Die angehängte Datei konnte nicht mitgeschickt werden, bitte bei der Person nachfragen.']], mailTo);
     if (!ok) { fd.append('_template', 'table'); fd.append('_captcha', 'false'); ok = await viaFormSubmit(mail, fd, hasFile); }
-    // Eingangsbestätigung schickt info@flightclub-saar.de selbst (Make-Szenario „FCS Formular-Bestätigung“, IONOS-Postfach)
-    if (ok && ANTWORT[art] && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) { try { fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60), nr: /^\d{3,}$/.test(String(fd.get('Mitgliedsnummer') || '')) ? String(fd.get('Mitgliedsnummer')) : '', mandat: String(fd.get('Mandatsreferenz') || '').slice(0, 20), zahlung: String(fd.get('Zahlungsart') || ''), jugend: /Jugend/.test(String(fd.get('Mitgliedschaft') || '')) ? '1' : '0', bisher: /^Schon/.test(String(fd.get('Aufnahme') || '')) ? '1' : '0', voll: `${fd.get('Vorname') || ''} ${fd.get('Nachname') || ''}`.trim().slice(0, 80) }) }).catch(() => {}); } catch (e) {} }
+    // Eingangsbestätigung schickt info@flightclub-saar.de selbst (Make-Szenario „FCS Formular-Bestätigung“, IONOS-Postfach).
+    // Der Mitgliedsantrag mit Lastschrift schickt sie selbst (mitglied.js, Sofortcode) und setzt dafür data-bestaetigung="selbst".
+    if (ok && ANTWORT[art] && form.dataset.bestaetigung !== 'selbst') FCS.bestaetigung(form, extra);
     return { ok, j: {} };
+  };
+  // Eingangsbestätigung an die Person, die das Formular ausgefüllt hat (art = antrag, zahlung, frage, kontakt)
+  FCS.bestaetigung = (form, extra = {}) => {
+    try {
+      const fd = new FormData(form); Object.entries(extra).forEach(([k, v]) => { if (!(v instanceof Blob)) fd.append(k, v); });
+      const art = form.dataset.antwort, mailTo = String(fd.get('email') || '').trim();
+      if (!ANTWORT[art] || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mailTo)) return;
+      fetch('https://hook.eu1.make.com/n4dnqopwtfm7rf1yefsujh7fynlrq2h3', { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ art, email: mailTo, name: String(fd.get('Vorname') || fd.get('Name') || '').trim().slice(0, 60), nr: /^\d{3,}$/.test(String(fd.get('Mitgliedsnummer') || '')) ? String(fd.get('Mitgliedsnummer')) : '', mandat: String(fd.get('Mandatsreferenz') || '').slice(0, 20), zahlung: String(fd.get('Zahlungsart') || ''), jugend: /Jugend/.test(String(fd.get('Mitgliedschaft') || '')) ? '1' : '0', bisher: /^Schon/.test(String(fd.get('Aufnahme') || '')) ? '1' : '0', voll: `${fd.get('Vorname') || ''} ${fd.get('Nachname') || ''}`.trim().slice(0, 80) }) }).catch(() => {});
+    } catch (e) {}
   };
   // Kurze Nachricht an den Vorstand ohne sichtbares Formular (zum Beispiel „Löschcode vergessen“, „Beitrag melden“, „Neue Anzeige“)
   FCS.notify = async (subject, fields = {}) => {
