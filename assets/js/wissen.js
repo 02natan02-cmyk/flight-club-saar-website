@@ -1067,14 +1067,22 @@ const DE_LO = 5725, DE_HI = 5875, F0 = 5630, F1 = 5960;
 // Gleichmäßig verteilte Kanäle (F1, F3, F5, F7) legen diese Produkte genau auf die Nachbarn. Darum: zu dritt F1, F3, F7
 // (Produkte 40 MHz von jedem Kanal weg), zu viert bleibt im erlaubten Bereich ein Rest von rund 22 MHz, ab fünf zwei Gruppen nacheinander.
 const PICKS = { 1: [['F4']], 2: [['F1', 'F7']], 3: [['F1', 'F3', 'F7']], 4: [['R3', 'R4', 'B6', 'A1']], 5: [['F1', 'F3', 'F7'], ['F1', 'F7']], 6: [['F1', 'F3', 'F7'], ['F1', 'F3', 'F7']] };
+// Mit einem Amateurfunk-Lizenzinhaber in der Gruppe (darf 5650 bis 5850 MHz, also auch R1 und R2): der Lizenzpilot nimmt den
+// tiefsten Kanal, damit rücken die Störprodukte weit weg (zu viert liegt das nächste Störprodukt 59 MHz statt 22 MHz neben einem Kanal). Zu fünft bleibt es knapp (Produkt
+// rund 19 MHz neben einem Kanal), ab sechs wieder zwei Gruppen. Berechnet per Brute-Force am 31.10.2026 (scratchpad/lic.js).
+const PICKS_LIC = { 1: [['F4']], 2: [['F1', 'F7']], 3: [['F1', 'F3', 'F7']], 4: [['R2', 'R3', 'B6', 'A1']], 5: [['R1', 'B1', 'B3', 'B6', 'A1']], 6: [['R2', 'R3', 'B6', 'A1'], ['F1', 'F7']] };
+const AM_LO = 5650, AM_HI = 5850;
 const chFreq = (c) => BANDS[c[0]].f[+c.slice(1) - 1];
 const allowed = (f) => f >= DE_LO && f <= DE_HI;
+const amateur = (f) => f >= AM_LO && f <= AM_HI;
 function kanaele() {
   const sec = $('#kanaele'); if (!sec) return;
   const box = $('.wi-spec-box', sec), svg = $('.wi-spec-svg', sec), tip = $('.wi-spec-tip', sec);
   const nBtns = $$('.wi-pick-n button', sec), outL = $('.wi-pick-out', sec), title = $('[data-pick-t]', sec), note = $('[data-pick-note]', sec);
   const hint = makeHint($('.wi-hint-pick', sec));
-  let n = 4, active = ['R', 'F', 'A', 'B', 'E'], selCh = null, shown = false, w = 0;
+  let n = 4, lic = false, active = ['R', 'F', 'A', 'B', 'E'], selCh = null, shown = false, w = 0;
+  const licBox = $('#wi-lic', sec);
+  const picks = () => (lic ? PICKS_LIC : PICKS)[n] || [];
   const WORD = { 1: 'Ich fliege allein: welcher Kanal?', 2: 'Wir fliegen zu zweit: welche Kanäle?', 3: 'Wir fliegen zu dritt: welche Kanäle?', 4: 'Wir fliegen zu viert: welche Kanäle?', 5: 'Wir fliegen zu fünft: welche Kanäle?', 6: 'Wir fliegen zu sechst: welche Kanäle?' };
 
   function render() {
@@ -1089,6 +1097,10 @@ function kanaele() {
     el('rect', { x: X(DE_LO), y: 26, width: X(DE_HI) - X(DE_LO), height: yAxis - 26, rx: 6, fill: 'rgba(62,224,138,.08)', stroke: 'rgba(62,224,138,.45)', 'stroke-dasharray': '4 5' }, zone);
     const zt = el('text', { x: (X(DE_LO) + X(DE_HI)) / 2, y: 14, 'text-anchor': 'middle', 'font-size': narrow ? 10 : 11.5, 'font-weight': 600, fill: '#3ee08a', 'letter-spacing': '.08em' }, zone);
     zt.textContent = narrow ? 'IN DEUTSCHLAND ERLAUBT' : 'IN DEUTSCHLAND ERLAUBT · 5725 BIS 5875 MHz · 25 mW';
+    if (lic) {
+      el('rect', { x: X(AM_LO), y: 26, width: X(DE_LO) - X(AM_LO), height: yAxis - 26, rx: 6, fill: 'rgba(63,224,255,.07)', stroke: 'rgba(63,224,255,.45)', 'stroke-dasharray': '4 5' }, zone);
+      const at = el('text', { x: (X(AM_LO) + X(DE_LO)) / 2, y: narrow ? 14 : 24, 'text-anchor': 'middle', 'font-size': narrow ? 9 : 10.5, 'font-weight': 600, fill: '#3fe0ff', 'letter-spacing': '.06em' }, zone); at.textContent = narrow ? 'LIZENZ' : 'MIT LIZENZ';
+    }
     // Achse
     el('line', { x1: padL, x2: w - padR, y1: yAxis, y2: yAxis, stroke: 'rgba(158,196,255,.4)' }, svg);
     for (let f = 5640; f <= 5960; f += 20) {
@@ -1098,7 +1110,7 @@ function kanaele() {
     }
     const u = el('text', { x: w - padR, y: yAxis + 19, 'text-anchor': 'end', 'font-size': narrow ? 9 : 10.5, fill: '#9db1cc', opacity: narrow ? 0 : 1 }, svg); u.textContent = 'MHz';
     // Vorschlagskurven
-    const groups = PICKS[n] || [], pk = [...new Set(groups.flat())];
+    const groups = picks(), pk = [...new Set(groups.flat())];
     const gP = el('g', { class: 'picks' }, svg);
     pk.forEach((c, i) => {
       const f = chFreq(c), x = X(f), hw = X(f + 11) - x, base = topH - 6, hgt = topH - 50;
@@ -1112,9 +1124,9 @@ function kanaele() {
       const bl = el('text', { x: padL - 10, y: y0 + rowH / 2 + 4, 'text-anchor': 'end', 'font-size': narrow ? 11 : 12, 'font-weight': 700, fill: '#eaf4ff' }, g); bl.textContent = narrow ? b : BANDS[b].n.replace('Band ', '');
       el('line', { x1: padL, x2: w - padR, y1: y0 + rowH - 2, y2: y0 + rowH - 2, stroke: 'rgba(158,196,255,.08)' }, g);
       BANDS[b].f.forEach((f, i) => {
-        const id = b + (i + 1), ok = allowed(f), isPick = pk.includes(id);
-        const col = isPick ? '#ffb020' : ok ? '#3ee08a' : '#ff4b5c';
-        const cg = el('g', { class: 'sp-ch' + (selCh === id ? ' on' : ''), 'data-ch': id, tabindex: 0, role: 'button', 'aria-label': `${id}, ${f} Megahertz, ${ok ? 'in Deutschland erlaubt' : 'in Deutschland nicht erlaubt'}${isPick ? ', Vorschlag' : ''}`, style: `color:${col}` }, g);
+        const id = b + (i + 1), ok = allowed(f), am = !ok && lic && amateur(f), isPick = pk.includes(id);
+        const col = isPick ? '#ffb020' : ok ? '#3ee08a' : am ? '#3fe0ff' : '#ff4b5c';
+        const cg = el('g', { class: 'sp-ch' + (selCh === id ? ' on' : ''), 'data-ch': id, tabindex: 0, role: 'button', 'aria-label': `${id}, ${f} Megahertz, ${ok ? 'in Deutschland erlaubt' : am ? 'nur mit Amateurfunk-Lizenz' : 'in Deutschland nicht erlaubt'}${isPick ? ', Vorschlag' : ''}`, style: `color:${col}` }, g);
         const bw = narrow ? 5 : 7, bh = rowH - 22, x = X(f);
         el('rect', { x: x - 9, y: y0, width: 18, height: rowH - 2, fill: 'transparent' }, cg);
         el('rect', { class: 'bar', x: x - bw / 2, y: y0 + 16, width: bw, height: bh, rx: 2, fill: col, opacity: isPick ? 1 : ok ? .85 : .75 }, cg);
@@ -1132,14 +1144,17 @@ function kanaele() {
   function info(id) {
     const b = id[0], f = chFreq(id), ok = allowed(f);
     const same = []; Object.keys(BANDS).forEach(k => BANDS[k].f.forEach((g, i) => { if (g === f && k + (i + 1) !== id) same.push(k + (i + 1)); }));
-    tip.innerHTML = `<b>${id}</b> · ${f} MHz · ${BANDS[b].n} · <span class="${ok ? 'ok' : 'no'}">${ok ? 'in DE erlaubt' : 'in DE nicht erlaubt: liegt ' + (f < DE_LO ? 'unter 5725' : 'über 5875') + ' MHz'}</span>${same.length ? ' · gleiche Frequenz wie ' + same.join(', ') : ''}`;
+    tip.innerHTML = `<b>${id}</b> · ${f} MHz · ${BANDS[b].n} · <span class="${ok ? 'ok' : amateur(f) ? 'lic' : 'no'}">${ok ? 'in DE erlaubt' : amateur(f) ? 'nur mit Amateurfunk-Lizenz (5650 bis 5850 MHz)' : 'in DE nicht erlaubt: liegt ' + (f < DE_LO ? 'unter 5725' : 'über 5875') + ' MHz'}</span>${same.length ? ' · gleiche Frequenz wie ' + same.join(', ') : ''}`;
   }
   function pickOut() {
     title.textContent = WORD[n];
     outL.innerHTML = '';
-    const groups = PICKS[n] || []; let nr = 0;
-    groups.forEach((g, gi) => g.forEach((c) => { nr++; const li = D.createElement('li'); li.innerHTML = `<small>${groups.length > 1 ? `Gruppe ${'AB'[gi]} · ` : ''}Pilot ${nr}</small><b>${c}</b><span>${chFreq(c)} MHz · ${BANDS[c[0]].n}</span>`; outL.appendChild(li); }));
-    note.textContent = n >= 5 ? 'Ab fünf passen nicht alle gleichzeitig störungsfrei in den erlaubten Bereich: Fliegt in zwei Gruppen nacheinander (Gruppe A landet, Gruppe B startet). Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
+    const groups = picks(); let nr = 0;
+    groups.forEach((g, gi) => g.forEach((c) => { nr++; const f = chFreq(c), li = D.createElement('li'); li.innerHTML = `<small>${groups.length > 1 ? `Gruppe ${'AB'[gi]} · ` : ''}${!allowed(f) ? 'Lizenz-Pilot' : 'Pilot ' + nr}</small><b>${c}</b><span>${f} MHz · ${BANDS[c[0]].n}${!allowed(f) ? ' · nur mit Lizenz' : ''}</span>`; outL.appendChild(li); }));
+    note.textContent = lic && n === 4 ? 'Der Lizenz-Pilot nimmt R2 ganz unten, die anderen rücken auf: So liegt jedes Störprodukt mindestens 59 MHz neben den anderen Kanälen, statt 22 MHz ohne Lizenz. Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
+      : lic && n === 5 ? 'Zu fünft wird es auch mit Lizenz knapp: Ein Störprodukt liegt rund 19 MHz neben einem Kanal. Mit 25 mW und etwas Abstand zwischen den Piloten geht es meist; flimmert es, fliegt zu viert. Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
+      : lic && n === 6 ? 'Sechs passen auch mit Lizenz nicht gleichzeitig: Gruppe A fliegt zu viert (mit dem Lizenz-Piloten), Gruppe B zu zweit, nacheinander.'
+      : n >= 5 ? 'Ab fünf passen nicht alle gleichzeitig störungsfrei in den erlaubten Bereich: Fliegt in zwei Gruppen nacheinander (Gruppe A landet, Gruppe B startet). Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
       : n === 4 ? 'Zu viert bleibt im erlaubten Bereich ein Rest: Zwei Sender erzeugen Störprodukte neben sich (Intermodulation), hier liegen sie rund 22 MHz neben einem Kanal. Mit 25 mW geht das meist gut; flimmert es, fliegt zu dritt. Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
       : n === 3 ? 'Nicht gleichmäßig verteilt, mit Absicht: Zwei Sender erzeugen Störprodukte im selben Abstand neben sich (Intermodulation). F1, F3 und F7 halten diese Produkte 40 MHz von jedem Kanal fern. Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt.'
       : 'Alle stellen ihren Kanal ein, bevor jemand den Akku einsteckt. Wer später dazukommt, fragt erst, welche Kanäle belegt sind.';;
@@ -1148,6 +1163,7 @@ function kanaele() {
   }
   function setN(v, anim = true) { n = v; render(); pickOut(); if (anim) pickAnim(); }
   nBtns.forEach(b => b.addEventListener('click', () => { stopAuto(); hint.done(); setN(+b.dataset.n); }));
+  if (licBox) licBox.addEventListener('change', () => { lic = licBox.checked; stopAuto(); setN(n); grow(false); });
   $$('input[name=wi-band]', sec).forEach(i => i.addEventListener('change', () => { active = $$('input[name=wi-band]:checked', sec).map(x => x.value); render(); grow(false); }));
   svg.addEventListener('click', ev => { const g = ev.target.closest('.sp-ch'); if (!g) return; selCh = g.dataset.ch; $$('.sp-ch', svg).forEach(x => x.classList.toggle('on', x === g)); info(selCh); });
   svg.addEventListener('keydown', ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.closest('.sp-ch')) { ev.preventDefault(); ev.target.closest('.sp-ch').dispatchEvent(new MouseEvent('click', { bubbles: true })); } });
@@ -1162,6 +1178,68 @@ function kanaele() {
     const seq = { v: 1 };
     auto = gsap.to(seq, { v: 4, duration: 1.6, delay: 1, ease: 'none', snap: { v: 1 }, onUpdate: () => { if (+seq.v !== n) setN(+seq.v); } });
   }, .3);
+}
+
+/* Warum höchstens vier analog: Sender als Hügel, Störprodukte 2·f1 − f2 als Nadeln. Trifft eine Nadel einen Hügel, blinkt er rot. */
+function physik() {
+  const sec = $('#kanaele-physik'); if (!sec) return;
+  const box = $('.wi-phys-box', sec), svg = $('.wi-phys-svg', sec), tip = $('.wi-phys-tip', sec), btns = $$('.wi-phys-btns button', sec);
+  const hint = makeHint($('.wi-hint-phys', sec));
+  const SETS = {
+    alt: { ch: ['F1', 'F3', 'F5', 'F7'], t: 'Gleichmäßig verteilt, je 40 MHz: Das Produkt von F1 und F3 (2·5740 − 5780 = 5700) liegt links daneben, aber das von F3 und F1 (2·5780 − 5740 = 5820) genau auf F5. Dasselbe von F3 und F5 auf F1 und F7. Jeder stört jeden.' },
+    drei: { ch: ['F1', 'F3', 'F7'], t: 'Abstände 40 und 80 MHz: Alle Störprodukte (5700, 5820, 5940 MHz) liegen mindestens 40 MHz neben den belegten Kanälen. Störungsfrei.' },
+    vier: { ch: ['R3', 'R4', 'B6', 'A1'], t: 'Ohne Lizenz die beste Vierergruppe: Das Produkt von R4 und R3 (5806) liegt 22 MHz neben B6. Mit 25 mW geht das meist, flimmert es, fliegt zu dritt.' },
+    lic: { ch: ['R2', 'R3', 'B6', 'A1'], lic: 'R2', t: 'Der Lizenz-Pilot nimmt R2 (5695 MHz, nur mit Amateurfunk-Lizenz). Jetzt liegt jedes Störprodukt mindestens 59 MHz neben den anderen Kanälen: eine saubere Vierergruppe.' }
+  };
+  let cur = 'alt', w = 0, shown = false;
+  const F_LO = 5630, F_HI = 5960;
+  function draw(animate) {
+    w = Math.round(box.clientWidth); if (!w) return;
+    const narrow = w < 520, padL = 10, padR = 10, H = narrow ? 190 : 220, base = H - 30, hgt = narrow ? 70 : 90;
+    svg.setAttribute('viewBox', `0 0 ${w} ${H}`); svg.setAttribute('height', H); svg.innerHTML = '';
+    const X = f => padL + (f - F_LO) / (F_HI - F_LO) * (w - padL - padR);
+    const set = SETS[cur], chs = set.ch.map(id => ({ id, f: chFreq(id) }));
+    el('rect', { x: X(DE_LO), y: 8, width: X(DE_HI) - X(DE_LO), height: base - 8, rx: 6, fill: 'rgba(62,224,138,.07)', stroke: 'rgba(62,224,138,.4)', 'stroke-dasharray': '4 5' }, svg);
+    const zt = el('text', { x: (X(DE_LO) + X(DE_HI)) / 2, y: 22, 'text-anchor': 'middle', 'font-size': narrow ? 9.5 : 11, 'font-weight': 600, fill: '#3ee08a', 'letter-spacing': '.08em' }, svg); zt.textContent = narrow ? 'ERLAUBT 5725–5875' : 'ERLAUBT · 5725 BIS 5875 MHz';
+    if (set.lic) { el('rect', { x: X(AM_LO), y: 8, width: X(DE_LO) - X(AM_LO), height: base - 8, rx: 6, fill: 'rgba(63,224,255,.07)', stroke: 'rgba(63,224,255,.4)', 'stroke-dasharray': '4 5' }, svg); const lt = el('text', { x: (X(AM_LO) + X(DE_LO)) / 2, y: 22, 'text-anchor': 'middle', 'font-size': narrow ? 9 : 10.5, 'font-weight': 600, fill: '#3fe0ff' }, svg); lt.textContent = 'LIZENZ'; }
+    el('line', { x1: padL, x2: w - padR, y1: base, y2: base, stroke: 'rgba(158,196,255,.4)' }, svg);
+    for (let f = 5650; f <= 5950; f += 50) { el('line', { x1: X(f), x2: X(f), y1: base, y2: base + 6, stroke: 'rgba(158,196,255,.5)' }, svg); const t = el('text', { x: X(f), y: base + 19, 'text-anchor': 'middle', 'font-size': narrow ? 9.5 : 11, fill: '#9db1cc' }, svg); t.textContent = f; }
+    // Störprodukte
+    const prods = [];
+    chs.forEach(a => chs.forEach(b => { if (a === b) return; const f = 2 * a.f - b.f; if (f < F_LO + 8 || f > F_HI - 8) return; const hit = chs.find(c => Math.abs(c.f - f) <= 15); prods.push({ f, a, b, hit }); }));
+    const gN = el('g', { class: 'needles' }, svg);
+    prods.forEach(p => {
+      const x = X(p.f), col = p.hit ? '#ff4b5c' : 'rgba(255,176,32,.7)';
+      el('line', { class: 'nd', x1: x, x2: x, y1: base, y2: base - hgt * (p.hit ? .95 : .55), stroke: col, 'stroke-width': p.hit ? 2.2 : 1.4, 'stroke-dasharray': p.hit ? '' : '3 3' }, gN);
+      if (p.hit) { const t = el('text', { class: 'nd', x, y: base - hgt - 4, 'text-anchor': 'middle', 'font-size': narrow ? 9 : 10.5, 'font-weight': 700, fill: '#ff4b5c' }, gN); t.textContent = `${p.a.id}+${p.b.id} → ${p.hit.id}`; }
+    });
+    // Sender als Hügel
+    const gH = el('g', { class: 'hills' }, svg);
+    chs.forEach(c => {
+      const x = X(c.f), hw = X(c.f + 15) - x, hit = prods.some(p => p.hit === c), col = hit ? '#ff4b5c' : c.id === set.lic ? '#3fe0ff' : '#ffb020';
+      el('path', { class: 'hl', d: `M${x - hw * 1.5} ${base} C${x - hw * .6} ${base} ${x - hw * .5} ${base - hgt} ${x} ${base - hgt} S${x + hw * .6} ${base} ${x + hw * 1.5} ${base}`, fill: hit ? 'rgba(255,75,92,.22)' : c.id === set.lic ? 'rgba(63,224,255,.2)' : 'rgba(255,176,32,.2)', stroke: col, 'stroke-width': 1.8 }, gH);
+      const t = el('text', { class: 'hl', x, y: base - hgt - (hit ? 18 : 6), 'text-anchor': 'middle', 'font-size': narrow ? 10.5 : 12, 'font-weight': 700, fill: col }, gH); t.textContent = c.id;
+    });
+    const hits = prods.filter(p => p.hit).length;
+    tip.innerHTML = `<span class="${hits ? 'no' : 'ok'}">${hits ? `${hits} Treffer: Störprodukte liegen auf belegten Kanälen.` : 'Kein Treffer: alle Störprodukte liegen neben den Kanälen.'}</span> ${set.t}`;
+    if (animate && GS() && !RM) {
+      gsap.fromTo($$('.hl', gH), { scaleY: 0, transformOrigin: '50% 100%', opacity: 0 }, { scaleY: 1, opacity: 1, duration: .6, ease: 'back.out(1.5)', stagger: .08 });
+      gsap.fromTo($$('.nd', gN), { scaleY: 0, transformOrigin: '50% 100%', opacity: 0 }, { scaleY: 1, opacity: 1, duration: .5, ease: 'expo.out', stagger: .05, delay: .45 });
+      if (hits) gsap.fromTo($$('.hills .hl', svg).filter(e => e.getAttribute('stroke') === '#ff4b5c' || e.getAttribute('fill') === '#ff4b5c'), { opacity: .3 }, { opacity: 1, duration: .35, repeat: 3, yoyo: true, delay: .9 });
+    }
+  }
+  const setCur = (k, animate = true) => { cur = k; btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.set === k ? 'true' : 'false')); draw(animate); };
+  btns.forEach(b => b.addEventListener('click', () => { stopAuto(); hint.done(); setCur(b.dataset.set); }));
+  let lastW = 0; new ResizeObserver(() => { const nw = Math.round(box.clientWidth); if (nw && nw !== lastW) { lastW = nw; draw(false); } }).observe(box);
+  draw(false);
+  let auto = null; const stopAuto = () => { if (auto) { clearTimeout(auto); auto = null; } };
+  firstSight(box, () => {
+    shown = true; draw(!RM && GS()); hint.show();
+    if (RM || !GS()) return;
+    // Selbst-Impuls: alt → zu dritt einmal vorführen
+    auto = setTimeout(() => { if (cur === 'alt') { setCur('drei'); auto = setTimeout(() => { if (cur === 'drei') setCur('alt'); }, 2600); } }, 2800);
+  }, .3);
+  void shown;
 }
 
 /* =====================================================================
@@ -1369,6 +1447,7 @@ whenReady(() => {
   run('Schaltplan', schaltplan);
   run('Videosysteme', videosysteme);
   run('Kanäle', kanaele);
+  run('Kanäle Physik', physik);
   run('Weg', weg);
   run('Checkliste', checkliste);
   run('Glossar', glossar);
