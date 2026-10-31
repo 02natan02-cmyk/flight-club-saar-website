@@ -163,7 +163,7 @@ if (location.protocol === 'http:' && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.te
       const plugins = ['ScrollTrigger', 'SplitText', 'Draggable', 'InertiaPlugin', 'DrawSVGPlugin', 'MotionPathPlugin', 'ScrambleTextPlugin', 'Observer'].filter(has).map(n => window[n]);
       gsap.registerPlugin(...plugins);
     }
-    film(); kontaktUI(); loginUI(); locks(); smooth(); nav(); toc(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); magnets(); forms(); year(); nextBadge();
+    film(); kontaktUI(); loginUI(); locks(); smooth(); nav(); toc(); teilen(); reveal(); counters(); glow(); reticle(); twoclick(); videos(); magnets(); forms(); year(); nextBadge();
     document.dispatchEvent(new CustomEvent('fcs:ready'));
   }
 
@@ -307,6 +307,50 @@ if (location.protocol === 'http:' && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.te
     const mark = i => { if (i === cur) return; cur = i; links.forEach((a, k) => a.classList.toggle('on', k === i)); const a = links[i]; if (a) inner.scrollTo({ left: a.offsetLeft - inner.clientWidth / 2 + a.offsetWidth / 2, behavior: RM ? 'auto' : 'smooth' }); };
     const upd = () => { const y = innerHeight * .35; let i = 0; secs.forEach((s, k) => { if (s.getBoundingClientRect().top < y) i = k; }); mark(i); };
     addEventListener('scroll', upd, { passive: true }); upd();
+  }
+
+  /* ---------- Abschnitt teilen (Natan 31.10.2026: „ganz klein, ganz fein … statt einen Screenshot direkt auf die Seite schicken“)
+     Auf den Wissensseiten bekommt jeder Abschnitt mit Überschrift einen kleinen Teilen-Knopf: Handy → Teilen-Blatt des Systems,
+     PC → WhatsApp, Facebook, E-Mail oder Link kopieren. Geteilt wird immer der Link direkt auf den Abschnitt (#id). ---------- */
+  function teilen() {
+    const page = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '');
+    if (!['wissen', 'werkstatt', 'hilfe', 'bau', 'filmen', 'hallenfliegen'].includes(page)) return;
+    const hosts = $$('main [data-toc]:not(.nur-mitglied), main [data-teilen]').filter(h => h.id);
+    if (!hosts.length) return;
+    let pop = null;
+    const close = () => { if (pop) { pop.remove(); pop = null; document.removeEventListener('click', onDoc, true); } };
+    const onDoc = e => { if (pop && !pop.contains(e.target) && !e.target.closest('.teilen')) close(); };
+    const say = (btn, t) => { const o = btn.querySelector('.teilen-t').textContent; btn.querySelector('.teilen-t').textContent = t; btn.classList.add('ok'); setTimeout(() => { btn.querySelector('.teilen-t').textContent = o; btn.classList.remove('ok'); }, 1800); };
+    hosts.forEach(h => {
+      const anchor = h.querySelector(':scope .sec-head, :scope .wi-phys-head, :scope .pagehead') || h;
+      const hd = anchor.querySelector('h2, h3') || h.querySelector('h2, h3'); if (!hd) return;
+      const title = hd.textContent.replace(/\s+/g, ' ').trim();
+      const url = location.origin + location.pathname + '#' + h.id;
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'teilen'; btn.setAttribute('aria-label', `Abschnitt „${title}“ teilen`); btn.setAttribute('aria-haspopup', 'menu');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.7l7.4-4.4M8.3 13.3l7.4 4.4"/></svg><span class="teilen-t">Teilen</span>';
+      const wrap = document.createElement('span'); wrap.className = 'teilen-w'; wrap.appendChild(btn); anchor.appendChild(wrap);
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        const text = `${title} · Flight Club Saar`;
+        if (navigator.share && matchMedia('(pointer: coarse)').matches) { try { await navigator.share({ title: text, text, url }); return; } catch (err) { if (err && err.name === 'AbortError') return; } }
+        if (pop) { close(); return; }
+        pop = document.createElement('div'); pop.className = 'teilen-pop'; pop.setAttribute('role', 'menu'); pop.setAttribute('aria-label', 'Teilen über');
+        const enc = encodeURIComponent;
+        pop.innerHTML = `
+          <a role="menuitem" href="https://wa.me/?text=${enc(text + ' ' + url)}" target="_blank" rel="noopener">WhatsApp</a>
+          <a role="menuitem" href="https://www.facebook.com/sharer/sharer.php?u=${enc(url)}" target="_blank" rel="noopener">Facebook</a>
+          <a role="menuitem" href="mailto:?subject=${enc(text)}&body=${enc(url)}">E-Mail</a>
+          <button role="menuitem" type="button" data-copy>Link kopieren</button>`;
+        wrap.appendChild(pop);
+        $('[data-copy]', pop).addEventListener('click', async () => { try { await navigator.clipboard.writeText(url); say(btn, 'Kopiert'); } catch (err) { prompt('Link zum Abschnitt:', url); } close(); });
+        $$('a', pop).forEach(a => a.addEventListener('click', close));
+        setTimeout(() => document.addEventListener('click', onDoc, true), 0);
+        $('a', pop).focus();
+      });
+      btn.addEventListener('keydown', e => { if (e.key === 'Escape') { close(); btn.focus(); } });
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   }
 
   function reveal() {
