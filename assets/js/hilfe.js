@@ -242,9 +242,9 @@
       more: ['faq_system'], acts: [['Kompatibilitäts-Check öffnen', 'check']] },
 
     { id: 'kanaele', cat: 'Videosystem', t: 'Analoge Kanäle auf 5,8 GHz', viz: 'band',
-      kw: 'kanal:3 kanaele:3 channel:3 channels:3 frequenz:3 frequenzen:3 raceband:4 band:2 mhz:3 r1:3 r2:3 r3:2 r4:2 r5:2 r6:2 r7:3 r8:3 mw:2 erlaubt:2 legal:2 bundesnetzagentur:3 bnetza:3 ghz:1.5',
-      i: 'Raceband hat acht Kanäle mit je 37 MHz Abstand. Deshalb fliegen mehrere Piloten gern gleichzeitig darauf.',
-      s: ['In Deutschland ist für solche Funkanwendungen ohne Amateurfunk-Lizenz der Bereich 5725 bis 5875 MHz mit höchstens 25 mW (EIRP) freigegeben.', 'Damit liegen R3 bis R6 im Bereich. R1 (5658), R2 (5695) und R8 (5917) liegen außerhalb, R7 (5880) knapp darüber.', 'VTX auf 25 mW stellen und nur Kanäle im erlaubten Bereich nutzen.', 'In der Halle: Kanäle absprechen, damit sich niemand gegenseitig stört.'],
+      kw: 'kanal:3 kanaele:3 channel:3 channels:3 frequenz:3 frequenzen:3 raceband:4 band:2 mhz:3 r1:3 r2:3 r3:2 r4:2 r5:2 r6:2 r7:3 r8:3 mw:2 erlaubt:2 legal:2 bundesnetzagentur:3 bnetza:3 ghz:1.5 intermodulation:4 imd:4 stoerprodukt:3 lizenz:3 amateurfunk:4 gleichzeitig:2',
+      i: 'Raceband hat acht Kanäle mit je 37 MHz Abstand. Deshalb fliegen mehrere Piloten gern gleichzeitig darauf, im erlaubten Bereich höchstens drei bis vier.',
+      s: ['In Deutschland ist für solche Funkanwendungen ohne Amateurfunk-Lizenz der Bereich 5725 bis 5875 MHz mit höchstens 25 mW (EIRP) freigegeben.', 'Damit liegen R3 bis R6 im Bereich. R1 (5658), R2 (5695) und R8 (5917) liegen außerhalb, R7 (5880) knapp darüber. Mit Amateurfunk-Lizenz (5650 bis 5850 MHz) kommen R1 und R2 dazu, nur für die Person mit Lizenz.', 'Nicht gleichmäßig verteilen: Zwei Sender erzeugen Störprodukte bei 2·f1 − f2, bei gleichem Abstand (F1, F3, F5, F7) genau auf dem nächsten Kanal. Zu dritt F1, F3, F7; zu viert R3, R4, B6, A1. Der Kanal-Rechner unter Wissen rechnet es vor.', 'VTX auf 25 mW stellen und nur Kanäle im erlaubten Bereich nutzen.', 'In der Halle: Kanäle absprechen oder den Hallenabend-Plan nehmen, der prüft Abstand und Störprodukte.'],
       n: 'Ohne Gewähr. Maßgeblich sind die Vorgaben der Bundesnetzagentur.',
       more: ['vtx', 'bild'] },
 

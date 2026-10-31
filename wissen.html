@@ -18,7 +18,7 @@
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v=6dc020c9">
-<link rel="stylesheet" href="assets/css/wissen.css?v=6298f8ff">
+<link rel="stylesheet" href="assets/css/wissen.css?v=2b0d8623">
 </head>
 <body>
 <a class="sr" href="#inhalt">Zum Inhalt springen</a>
@@ -286,6 +286,7 @@
           </div>
           <p class="wi-hint wi-hint-pick" aria-hidden="true">Wie viele?</p>
         </div>
+        <label class="check wi-lic"><input type="checkbox" id="wi-lic"><span>Einer von uns hat eine <b>Amateurfunk-Lizenz</b> (darf 5650 bis 5850 MHz, also auch R1 und R2)</span></label>
         <ol class="wi-pick-out" aria-live="polite"></ol>
         <p class="wi-pick-note mute" data-pick-note></p>
       </div>
@@ -307,12 +308,37 @@
         <p class="wi-spec-tip" aria-live="polite">Tipp auf einen Kanal, um Frequenz und Status zu sehen.</p>
       </div>
     </div>
+    <div class="wi-phys panel" id="kanaele-physik" aria-labelledby="phys-h" data-reveal>
+      <div class="wi-phys-head">
+        <p class="wi-card-k">Warum höchstens vier analog?</p>
+        <h3 class="h3" id="phys-h">Das Band ist 150 MHz breit, und die Sender stören sich auch über Bande</h3>
+        <p class="lede">Rückmeldung aus dem Verein (Danke an Axel, 31.10.2026): Unsere alte Empfehlung F1, F3, F5, F7 sah ordentlich aus und war trotzdem falsch. Hier siehst du, warum.</p>
+      </div>
+      <div class="wi-phys-grid">
+        <ol class="wi-phys-steps">
+          <li><b>150 MHz Platz.</b> Ohne Lizenz dürfen wir nur von 5725 bis 5875 MHz senden. Ein analoger Sender ist rund 30 MHz breit und braucht etwa 37 MHz Abstand zum Nächsten. Rechnerisch passen also vier Kanäle rein, mehr nie.</li>
+          <li><b>Störprodukte.</b> Zwei Sender auf f1 und f2 erzeugen im Empfänger Mischprodukte bei <em>2·f1 − f2</em> und <em>2·f2 − f1</em>, also im selben Abstand links und rechts neben dem Paar (Intermodulation). Sie sind schwächer als die Sender, reichen aber, um ein drittes Bild zu zerreißen.</li>
+          <li><b>Gleichmäßig ist falsch.</b> Bei gleichem Abstand (F1, F3, F5, F7, je 40 MHz) landet das Produkt von F1 und F3 genau auf F5, das von F3 und F5 auf F7, und so weiter: Jeder stört jeden. Darum fliegen Rennen weltweit in Vierer-Gruppen mit krummen Abständen.</li>
+          <li><b>Was hilft.</b> Zu dritt F1, F3, F7: alle Produkte liegen 40 MHz neben den Kanälen. Zu viert bleibt ohne Lizenz ein Rest. Hat jemand eine <b>Amateurfunk-Lizenz</b>, darf er ab 5650 MHz senden, nimmt R2 ganz unten, und die Vierergruppe wird sauber. Mehr Piloten gleichzeitig gehen nur digital: HDZero 6 bis 8, DJI mit 20 MHz 4 bis 6. Der <a href="termin.html#kanaele">Hallenabend-Plan</a> rechnet das alles automatisch und teilt bei Bedarf in Durchgänge ein.</li>
+        </ol>
+        <div class="wi-phys-demo">
+          <div class="wi-phys-btns" role="group" aria-label="Beispiel wählen">
+            <button type="button" data-set="alt" aria-pressed="true">Alt: F1 F3 F5 F7</button>
+            <button type="button" data-set="drei" aria-pressed="false">Zu dritt: F1 F3 F7</button>
+            <button type="button" data-set="vier" aria-pressed="false">Zu viert: R3 R4 B6 A1</button>
+            <button type="button" data-set="lic" aria-pressed="false">Mit Lizenz: R2 R3 B6 A1</button>
+          </div>
+          <div class="wi-phys-box"><svg class="wi-phys-svg" role="img" aria-label="Spektrum: Sender als Hügel, Störprodukte als rote Nadeln. Trifft eine Nadel einen Hügel, stört sie das Bild."></svg><p class="wi-hint wi-hint-phys" aria-hidden="true">Tipp die Beispiele durch</p></div>
+          <p class="wi-phys-tip mute" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
     <details class="fold wi-fold">
       <summary>Warum nur diese Kanäle?</summary>
       <div class="fold-in">
         <p>Jeder analoge Videosender funkt auf einem Kanal. Fliegen zwei Piloten auf demselben oder einem zu nahen Kanal, stören sie sich gegenseitig das Bild. Deshalb sucht der Rechner Kanäle mit möglichst viel Abstand und etwas Luft zu den Rändern.</p>
         <p>In Deutschland ist nur der Bereich von 5725 bis 5875 MHz frei nutzbar, mit höchstens 25 mW (EIRP). Kanäle außerhalb sind im Spektrum rot markiert.</p>
-        <p>Wer mehr Kanäle oder mehr Sendeleistung nutzen will, braucht ein Amateurfunkzeugnis mit eigenem Rufzeichen.</p>
+        <p>Wer eine Amateurfunk-Lizenz hat, darf zusätzlich von 5650 bis 5725 MHz senden (Amateurfunkband 5650 bis 5850 MHz), also auch R1 und R2. Das gilt nur für die Person mit Lizenz, nicht für die ganze Gruppe. Im Hallenabend-Plan beim Eintragen ankreuzen, dann rechnet der Plan damit.</p>
         <p class="wi-legal">Stand 2026, ohne Gewähr. Maßgeblich sind die Vorgaben der Bundesnetzagentur.</p>
       </div>
     </details>
@@ -554,6 +580,6 @@
 <script src="assets/lib/DrawSVGPlugin.min.js"></script>
 <script src="assets/lib/MotionPathPlugin.min.js"></script>
 <script src="assets/js/fcs.js?v=066af8b8"></script>
-<script src="assets/js/wissen.js?v=63af5370" type="module"></script>
+<script src="assets/js/wissen.js?v=8396ad18" type="module"></script>
 </body>
 </html>

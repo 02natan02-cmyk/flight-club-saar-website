@@ -61,6 +61,13 @@
     const ORDER = ['a', '4', '3', 'h', 'w', 'u'];
     const GUARD = 7;
     const legal = f => f >= BAND.lo && f <= BAND.hi;
+    /* Amateurfunk: Lizenzinhaber dürfen im Band 5650 bis 5850 MHz senden (Amateurfunkverordnung, Klasse A und E, zugewiesener
+       Bereich 5650 bis 5850 MHz, Quelle: https://www.bundesnetzagentur.de/ → Amateurfunk, Frequenznutzungsplan Eintrag 5650–5850).
+       Damit kommen für diese Person R1 (5658) und R2 (5695) dazu, R7 und R8 bleiben auch für sie außen vor. */
+    const AMAT = { lo: 5650, hi: 5850 };
+    const amateur = f => f >= AMAT.lo && f <= AMAT.hi;
+    // Darf dieser Pilot diesen Kanal nehmen? all = Vorstand hat alle Raceband-Kanäle freigegeben, p.lic = Amateurfunk-Lizenz
+    const allowed = (c, p, all) => !!c && (all || c.legal || (!!(p && p.lic) && amateur(c.f)));
     const sysOf = kat => { const k = String(kat || '').toLowerCase().replace(/\s+/g, ' ').trim(); if (k === 'analog') return 'a'; if (/o4/.test(k)) return '4'; if (/o3/.test(k)) return '3'; if (/hd ?zero/.test(k)) return 'h'; if (/walksnail|avatar/.test(k)) return 'w'; return 'u'; };
     const CC = {};
     function chan(s, id) {
@@ -84,9 +91,9 @@
     const imdOk = chs => imdGap(chs) >= IMD_GUARD;
     const label = c => !c ? '' : c.race ? c.id + ' Race' : c.id;
     const mhz = f => String(f).replace('.', ',') + ' MHz';
-    // Kanalwunsch steckt im Feld titel: „Wunsch R4“ oder „Fest CH2“
-    const parseCh = (titel, s) => { const m = /^(wunsch|fest)\s*:?\s*(R[1-8]|CH[1-8])\b/i.exec(String(titel || '').trim()); if (!m) return {}; const id = m[2].toUpperCase(); if (!chan(s, id)) return {}; return m[1].toLowerCase() === 'fest' ? { fix: id } : { wish: id }; };
-    const fmtCh = (id, fix) => id ? (fix ? 'Fest ' : 'Wunsch ') + id : '';
+    // Kanalwunsch steckt im Feld titel: „Wunsch R4“ oder „Fest CH2“, Amateurfunk-Lizenz als Zusatz „· Lizenz“ (auch allein)
+    const parseCh = (titel, s) => { const t = String(titel || '').trim(), out = {}; if (/\blizenz\b/i.test(t)) out.lic = 1; const m = /^(wunsch|fest)\s*:?\s*(R[1-8]|CH[1-8])\b/i.exec(t); if (!m) return out; const id = m[2].toUpperCase(); if (!chan(s, id)) return out; if (m[1].toLowerCase() === 'fest') out.fix = id; else out.wish = id; return out; };
+    const fmtCh = (id, fix, lic) => (id ? (fix ? 'Fest ' : 'Wunsch ') + id : '') + (lic ? (id ? ' · ' : '') + 'Lizenz' : '');
     // Kopterklasse steht vorne in der Notiz: „[75 mm Whoop] Text“
     const parseNote = t => { const m = /^\[([^\]]{1,30})\]\s*/.exec(String(t || '')); return m ? { cls: m[1], note: String(t).slice(m[0].length) } : { cls: '', note: String(t || '') }; };
 
@@ -94,7 +101,7 @@
       const S = SYS[p.sys] || SYS.u;
       if (p.lock && p.ch) { const c = chan(p.sys, p.ch); if (c) return [c]; } // von Hand gesetzt (Vorstand vor Ort) geht vor
       if (p.fix) { const c = chan(p.sys, p.fix); if (c) return [c]; }
-      return S.ch.map(c => chan(p.sys, c.id)).filter(c => all || c.legal);
+      return S.ch.map(c => chan(p.sys, c.id)).filter(c => allowed(c, p, all));
     }
 
     /* Kanalzuteilung: k Spalten = k gleichzeitig fliegende Plätze. Jeder Pilot einer Spalte verträgt sich mit jedem Piloten
@@ -234,7 +241,7 @@
       return out;
     }
 
-    return { BAND, RB, SYS, ORDER, GUARD, IMD_GUARD, legal, sysOf, chan, need, compat, imdGap, imdOk, label, mhz, parseCh, fmtCh, parseNote, options, assign, maxSimul, heats, teams, rotation, heatCount, conflicts };
+    return { BAND, AMAT, RB, SYS, ORDER, GUARD, IMD_GUARD, legal, amateur, allowed, sysOf, chan, need, compat, imdGap, imdOk, label, mhz, parseCh, fmtCh, parseNote, options, assign, maxSimul, heats, teams, rotation, heatCount, conflicts };
   })();
 
   root.FCS_TERMIN = CORE;
@@ -293,13 +300,13 @@
   const DEF = () => ({ b: toMin((D.zeit || {}).von) || 1080, e: toMin((D.zeit || {}).bis) || 1260, slot: 3, pause: 2, k: 0, all: 0, mode: 'g' });
   function fromReg(r, o) {
     const sys = C.sysOf(r.kat), chs = C.parseCh(r.titel, sys), nt = C.parseNote(r.t);
-    return { key: r.id, ref: r.id, own: r.art === 'gast' ? '' : String(r.n || '').toLowerCase().replace(/\s+/g, ' ').trim(), n: String(r.n || 'Pilot').slice(0, 40), sys, fix: chs.fix || null, wish: chs.wish || null, ch: null, lock: false, here: true, cls: nt.cls, note: nt.note.slice(0, 200), o, d: r.d || '', gast: r.art === 'gast' ? 1 : 0 };
+    return { key: r.id, ref: r.id, own: r.art === 'gast' ? '' : String(r.n || '').toLowerCase().replace(/\s+/g, ' ').trim(), n: String(r.n || 'Pilot').slice(0, 40), sys, fix: chs.fix || null, wish: chs.wish || null, lic: chs.lic ? 1 : 0, ch: null, lock: false, here: true, cls: nt.cls, note: nt.note.slice(0, 200), o, d: r.d || '', gast: r.art === 'gast' ? 1 : 0 };
   }
   const regsOf = d => T.regs.filter(x => x && x.b === 'termin:' + d).sort((a, b) => String(a.d || '').localeCompare(String(b.d || '')) || String(a.id).localeCompare(String(b.id)));
   const B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
   function encode(pl) {
     const idx = new Map();
-    const p = pl.pilots.map((x, i) => { idx.set(x.key, i); return [x.ref || ('~' + x.n), x.sys, x.ch || '', (x.here ? 1 : 0) | (x.lock ? 2 : 0) | (x.sysx ? 4 : 0)]; });
+    const p = pl.pilots.map((x, i) => { idx.set(x.key, i); return [x.ref || ('~' + x.n), x.sys, x.ch || '', (x.here ? 1 : 0) | (x.lock ? 2 : 0) | (x.sysx ? 4 : 0) | (x.lic ? 8 : 0)]; });
     const s = pl.s, o = { v: 1, s: [s.b, s.e, s.slot, s.pause, s.k || 0, s.all ? 1 : 0, s.mode === 'm' ? 1 : 0], p };
     if (s.mode !== 'm' && pl.teams && pl.teams.length && p.length <= 36) o.g = pl.teams.map(t => t.filter(k => idx.has(k)).map(k => B36[idx.get(k)]).join('')).join('.');
     const hs = pl.heats.map(h => h.filter(k => idx.has(k)).map(k => idx.get(k)));
@@ -319,7 +326,7 @@
       let p;
       if (ref[0] === '~') p = { key: 'L:' + i + ':' + ref.slice(1, 41), ref: null, n: ref.slice(1, 41) || 'Pilot', sys: sy, sysx: 1, local: 1, fix: null, wish: null, cls: '', note: '', o: i };
       else { const r = by.get(ref); p = r ? fromReg(r, i) : { key: ref, ref, n: 'Pilot', sys: 'u', fix: null, wish: null, cls: '', note: '', o: i, gone: 1 }; if (f & 4) { p.sys = sy; p.sysx = 1; } }
-      p.ch = C.chan(p.sys, ch) ? ch : null; p.lock = !!(f & 2) && !!p.ch; p.here = !!(f & 1);
+      p.ch = C.chan(p.sys, ch) ? ch : null; p.lock = !!(f & 2) && !!p.ch; p.here = !!(f & 1); if (f & 8) p.lic = 1;
       if (pl.pilots.some(q => q.key === p.key)) { keys.push(null); return; }
       pl.pilots.push(p); keys.push(p.key);
     });
@@ -333,7 +340,7 @@
   function reconcile(pl, regsD) {
     let changed = false; const by = new Map(regsD.map(r => [r.id, r]));
     pl.pilots = pl.pilots.filter(p => { if (!p.ref) return true; if (!by.has(p.ref)) { changed = true; return false; } return true; });
-    pl.pilots.forEach(p => { if (!p.ref) return; const f = fromReg(by.get(p.ref), p.o); p.n = f.n; p.own = f.own; p.gast = f.gast; p.cls = f.cls; p.note = f.note; p.d = f.d; p.fix = f.fix; p.wish = f.wish; if (!p.sysx && p.sys !== f.sys) { p.sys = f.sys; p.ch = null; p.lock = false; changed = true; } delete p.gone; });
+    pl.pilots.forEach(p => { if (!p.ref) return; const f = fromReg(by.get(p.ref), p.o); p.n = f.n; p.own = f.own; p.gast = f.gast; p.cls = f.cls; p.note = f.note; p.d = f.d; p.fix = f.fix; p.wish = f.wish; if (f.lic) p.lic = 1; if (!p.sysx && p.sys !== f.sys) { p.sys = f.sys; p.ch = null; p.lock = false; changed = true; } delete p.gone; });
     let o = pl.pilots.reduce((m, p) => Math.max(m, p.o), -1);
     regsD.forEach(r => { if (!pl.pilots.some(p => p.ref === r.id)) { pl.pilots.push(fromReg(r, ++o)); changed = true; } });
     const keys = new Set(pl.pilots.map(p => p.key));
@@ -343,7 +350,7 @@
   }
   const present = pl => pl.pilots.filter(p => p.here).sort((a, b) => a.o - b.o);
   const chMap = (pl = T.plan) => { const m = {}; pl.pilots.forEach(p => { m[p.key] = p.ch ? C.chan(p.sys, p.ch) : null; }); return m; };
-  const kAuto = pl => { const ps = present(pl); return ps.length ? Math.max(1, Math.min(4, C.maxSimul(ps, !!pl.s.all))) : 4; };
+  const kAuto = pl => { const ps = present(pl); return ps.length ? Math.max(1, Math.min(5, C.maxSimul(ps, !!pl.s.all))) : 4; };
   const kMax = pl => { const ps = present(pl); return ps.length ? C.maxSimul(ps, !!pl.s.all) : 0; };
   const kEff = pl => pl.s.k || kAuto(pl);
   function reassign(pl, fresh) {
@@ -540,7 +547,7 @@
     const fillCh = () => {
       const sysAll = $$('input[name=tp-sys]:checked').map(x => x.value), s = sysAll.length === 1 ? sysAll[0] : '', all = T.plan && T.plan.s.all, cur = sel.value;
       const hint = $('#tp-sys-multi'); if (hint) hint.hidden = sysAll.length < 2;
-      sel.innerHTML = '<option value="">Kein Wunsch, der Plan teilt zu</option>' + (s ? SYS[s].ch.map(c => { const ch = C.chan(s, c.id); return `<option value="${ch.id}">${esc(C.label(ch))} · ${esc(C.mhz(ch.f))}${ch.legal ? '' : ' (außerhalb 5725 bis 5875 MHz)'}</option>`; }).join('') : '');
+      sel.innerHTML = '<option value="">Kein Wunsch, der Plan teilt zu</option>' + (s ? SYS[s].ch.map(c => { const ch = C.chan(s, c.id); return `<option value="${ch.id}">${esc(C.label(ch))} · ${esc(C.mhz(ch.f))}${ch.legal ? '' : C.amateur(ch.f) ? ' (nur mit Amateurfunk-Lizenz)' : ' (außerhalb 5725 bis 5875 MHz)'}</option>`; }).join('') : '');
       sel.disabled = !s; $('#tp-fix').disabled = !s; if (!s) $('#tp-fix').checked = false;
       if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
       void all;
@@ -563,11 +570,11 @@
     const ok = [fieldBad('#tp-f-name', name.length < 2), fieldBad('#tp-f-sys', !sys), fieldBad('#tp-f-pw', pw.length < 4), fieldBad('#tp-f-ok', !$('#tp-ok-dsgvo').checked)];
     const msg = $('#tp-form-msg'); msg.hidden = true;
     if (ok.includes(false)) { const first = $('#tp-form .bad'); if (first) { FCS.scrollTo(first, -170); const i = $('input', first); if (i) i.focus({ preventScroll: true }); } return; }
-    const ch = $('#tp-ch').value, fix = $('#tp-fix').checked && !!ch, cls = ($('input[name=tp-cls]:checked') || {}).value || '', note = $('#tp-note').value.trim().slice(0, 200);
+    const ch = $('#tp-ch').value, fix = $('#tp-fix').checked && !!ch, lic = !!($('#tp-lic') && $('#tp-lic').checked), cls = ($('input[name=tp-cls]:checked') || {}).value || '', note = $('#tp-note').value.trim().slice(0, 200);
     const guest = !!($('#tp-guest') && $('#tp-guest').checked);
     const fields = { b: 'termin:' + T.d, n: name, kat: SYS[sys].kat, pw };
     if (guest) fields.art = 'gast';
-    if (ch) fields.titel = C.fmtCh(ch, fix);
+    if (ch || lic) fields.titel = C.fmtCh(ch, fix, lic);
     const t = (cls ? '[' + cls + '] ' : '') + note; if (t.trim()) fields.t = t.trim();
     const btn = $('#tp-submit'); btn.disabled = true; btn.textContent = 'Wird eingetragen …';
     let r = { ok: false, err: 'netz' };
@@ -653,7 +660,7 @@
         <button class="tp-p-b" type="button" data-pk="${esc(p.key)}" aria-label="${esc(p.n)}: Kanal, Anwesenheit und mehr">
           <span class="tp-av" style="--c:${col}" aria-hidden="true">${esc(ini(p.n))}</span>
           <span class="tp-p-t"><b>${p.key === me ? '<em>Du</em> · ' : ''}${esc(p.n)}</b><small>${esc(sub)}${p.note ? ' · „' + esc(p.note.slice(0, 60)) + (p.note.length > 60 ? '…' : '') + '“' : ''}</small></span>
-          <span class="tp-chb${c && !c.legal ? ' out' : ''}" style="--c:${col}">${p.here ? (c ? esc(C.label(c)) : '–') : 'nicht da'}</span>
+          <span class="tp-chb${c && !C.allowed(c, p, T.plan.s.all) ? ' out' : ''}" style="--c:${col}">${p.here ? (c ? esc(C.label(c)) : '–') : 'nicht da'}</span>
         </button>
       </li>`;
     }).join('');
@@ -690,12 +697,13 @@
     const box = $('#tp-conf'); if (!box || !T.plan) return;
     const pl = T.plan, m = chMap(), out = [];
     pl.heats.forEach((h, i) => C.conflicts(h, m).forEach((cf) => { const [a, b] = cf; const sug = suggest(b, i); out.push(`<div class="tp-cf"><p><b>Durchgang ${i + 1}:</b> ${cf.imd ? `${esc(pName(a))} (${esc(C.label(m[a]))}) und ${esc(pName(cf.imd))} (${esc(C.label(m[cf.imd]))}) erzeugen zusammen ein Störprodukt bei ${esc(C.mhz(Math.round(2 * m[a].f - m[cf.imd].f)))}, genau auf dem Kanal von ${esc(pName(b))} (${esc(C.label(m[b]))}) (Intermodulation).` : `${esc(pName(a))} (${esc(C.label(m[a]))}) und ${esc(pName(b))} (${esc(C.label(m[b]))}) stören sich.`}</p><div class="tp-cf-a">${sug ? `<button class="tp-mini" type="button" data-sug="${esc(b)}" data-ch="${esc(sug.id)}">${esc(pName(b))} auf ${esc(C.label(sug))}</button>` : ''}<button class="tp-mini" type="button" data-fixh="${i}">Durchgang neu einteilen</button></div></div>`); }));
-    const ps = present(pl), unk = ps.filter(p => p.sys === 'u').length, dji = ps.some(p => p.sys === '3' || p.sys === '4'), race = ps.some(p => m[p.key] && m[p.key].race), out5 = ps.filter(p => m[p.key] && !m[p.key].legal);
+    const ps = present(pl), unk = ps.filter(p => p.sys === 'u').length, dji = ps.some(p => p.sys === '3' || p.sys === '4'), race = ps.some(p => m[p.key] && m[p.key].race), out5 = ps.filter(p => m[p.key] && !C.allowed(m[p.key], p, pl.s.all)), lic = ps.filter(p => p.lic);
     const info = [];
     if (unk) info.push(`${unk} ${unk === 1 ? 'Pilot hat' : 'Piloten haben'} kein Videosystem angegeben und ${unk === 1 ? 'ist' : 'sind'} wie Analog eingeplant (braucht am meisten Platz).`);
     if (dji) info.push('DJI O3 und O4: In der Brille den Kanal von Hand wählen und 20 MHz Bandbreite einstellen. Mit 40 MHz belegt DJI fast das halbe Band.');
     if (race) info.push('Walksnail mit „Race“ am Kanal: In der Brille den Race-Modus einschalten (540p, Raceband-Frequenzen).');
     if (out5.length && !pl.s.all) info.push(`${out5.map(p => esc(p.n)).join(', ')}: fester Kanal außerhalb von 5725 bis 5875 MHz.`);
+    if (lic.length && !pl.s.all) info.push(`${lic.map(p => esc(p.n)).join(', ')}: Amateurfunk-Lizenz, darf zusätzlich R1 und R2 (5650 bis 5850 MHz) nutzen. Damit passt ein Analog-Pilot mehr gleichzeitig in die Luft.`);
     const k = kEff(pl), kx = kMax(pl);
     if (ps.length && pl.s.k && kx && pl.s.k > kx) info.push(`Mit diesen Videosystemen passen höchstens ${kx} gleichzeitig störungsfrei in die Luft. Der Plan nimmt ${kx}.`);
     void k;
@@ -705,7 +713,7 @@
   function suggest(key, hi) {
     const p = pOf(key); if (!p) return null; const m = chMap();
     const mates = new Set(); T.plan.heats.forEach(h => { if (h.includes(key)) h.forEach(k => { if (k !== key) mates.add(k); }); });
-    const opts = C.options({ sys: p.sys }, !!T.plan.s.all);
+    const opts = C.options({ sys: p.sys, lic: p.lic }, !!T.plan.s.all);
     const fits = (c, keys) => keys.every(k => k === key || !m[k] || C.compat(c, m[k])) && C.imdOk(keys.filter(k => k !== key && m[k]).map(k => m[k]).concat(c));
     return opts.find(c => c.id !== p.ch && fits(c, [...mates])) || opts.find(c => c.id !== p.ch && fits(c, T.plan.heats[hi])) || null;
   }
@@ -713,7 +721,7 @@
     const box = $('#tp-table'); if (!box) return;
     const row = (k, extra) => { const S = SYS[k]; return `<div class="tp-tr"><h4>${esc(S.n)} <small>${S.bw} MHz breit</small></h4><p class="tp-tr-c">${S.ch.map(c => { const ch = C.chan(k, c.id); return `<span class="${ch.legal ? '' : 'off'}"><b>${esc(C.label(ch))}</b> ${esc(String(ch.f).replace('.', ','))}</span>`; }).join('')}</p>${extra ? `<p class="mute">${extra}</p>` : ''}</div>`; };
     box.innerHTML = `<div class="tp-trs">
-      ${row('a', 'Raceband, 37 MHz Abstand. Frei nutzbar sind R3 bis R6. Wegen Intermodulation (2·f1 − f2) fliegen im erlaubten Bereich höchstens drei Analog-Piloten gleichzeitig störungsfrei, zum Beispiel R3, R4 und R6.')}
+      ${row('a', 'Raceband, 37 MHz Abstand. Frei nutzbar sind R3 bis R6. Wegen Intermodulation (2·f1 − f2) fliegen im erlaubten Bereich höchstens drei Analog-Piloten gleichzeitig störungsfrei, zum Beispiel R3, R4 und R6. Wer eine Amateurfunk-Lizenz hat (beim Eintragen ankreuzen), bekommt zusätzlich R1 und R2; dann passen vier.')}
       ${row('4', 'Manueller Modus mit 20 oder 10 MHz. Mit 40 oder 60 MHz gibt es nur einen Kanal bei 5794,5 MHz.')}
       ${row('3', 'Manueller Modus mit 20 oder 10 MHz. Mit 40 MHz gibt es nur einen Kanal bei 5794,5 MHz.')}
       ${row('h', 'Raceband-Frequenzen, verträgt sich auf dem 37-MHz-Raster mit Analog. In Europa R3 bis R6.')}
@@ -993,7 +1001,7 @@
     const opts = SYS[p.sys].ch.map(x => C.chan(p.sys, x.id));
     const chBtns = opts.map(o => {
       const clash = others.filter(q => !C.compat(o, m[q.key]));
-      const blocked = !o.legal && !pl.s.all && p.fix !== o.id;
+      const blocked = !C.allowed(o, p, pl.s.all) && p.fix !== o.id;
       const cur = c && c.id === o.id;
       const st = cur ? 'aktuell' : blocked ? 'außerhalb 5725 bis 5875 MHz' : clash.length ? `teilt sich mit ${clash.slice(0, 2).map(q => q.n).join(', ')}${clash.length > 2 ? ' +' + (clash.length - 2) : ''}` : 'frei';
       return `<button class="tp-opt${cur ? ' cur' : ''}${clash.length && !cur ? ' clash' : ''}" type="button" data-setch="${o.id}"${blocked ? ' disabled' : ''} aria-pressed="${cur ? 'true' : 'false'}"><b>${esc(C.label(o))}</b><span>${esc(C.mhz(o.f))}</span><small>${esc(st)}</small></button>`;
