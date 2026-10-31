@@ -37,7 +37,7 @@
        Digital zu Digital: Schutzabstand 0, die Signale dürfen sich nur nicht überlappen. Die Hersteller legen ihre eigenen
        Kanäle selbst so dicht (DJI O4 Kanal 1 und 2: 21 MHz Abstand bei 20 MHz Bandbreite).
        Beispiele: Analog/Analog 37 · Analog/HDZero 35,5 · Analog/DJI 32 · HDZero/HDZero 27 · DJI/DJI 20 MHz.
-     Intermodulation (Rückmeldung Axel/Sebastian 31.10.2026): Zwei Sender auf f1 und f2 erzeugen im Empfänger Störprodukte bei
+     Intermodulation (Hinweis von Stefan „mensste_fpv“, weitergegeben über Axel und Sebastian, 31.10.2026): Zwei Sender auf f1 und f2 erzeugen im Empfänger Störprodukte bei
        2·f1 − f2 und 2·f2 − f1, also im selben Abstand links und rechts neben dem Paar. Gleichmäßig verteilte Kanäle (F1, F3, F5, F7)
        legen diese Produkte genau auf die Nachbarn: dann sieht niemand mehr etwas. Darum prüft der Plan jede Gruppe, die zusammen
        fliegt, zusätzlich auf diese Produkte (imdOk): kein Produkt näher als halbe Bandbreite + 5 MHz an einem belegten Kanal.
