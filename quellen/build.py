@@ -162,6 +162,9 @@ def page_css(extra):
         if (OUT / css).exists(): out.append(f'<link rel="stylesheet" href="{css}?v={ver(css)}">')
     return '\n'.join(out)
 
+# Halloween 2026 (Natan 31.10.): Schleim-Intro und Deko bis Mo 02.11. 18:00 – schaltet sich selbst ab; in der Woche danach hier leeren.
+HW_PAGES = {'index.html', 'crew.html', 'mitglied.html', 'hallenfliegen.html', 'wissen.html'}
+
 def build():
     for file, title, desc, key, extra in PAGES:
         src = SRC / file
@@ -169,7 +172,9 @@ def build():
             print('fehlt:', src); continue
         body = src.read_text()
         body = re.sub(r'%%V:([^%]+)%%', lambda m: ver(m.group(1)), body)
-        html = head(file, title, desc) + page_css(extra) + '\n</head>\n<body>\n' + nav(key) + f'<main id="inhalt">\n{body}\n</main>\n' + foot() + scripts(extra, file) + '\n</body>\n</html>\n'
+        hw_css = f'\n<link rel="stylesheet" href="assets/css/halloween.css?v={ver("assets/css/halloween.css")}">' if file in HW_PAGES else ''
+        hw_js = f'\n<script src="assets/js/halloween.js?v={ver("assets/js/halloween.js")}" defer></script>' if file in HW_PAGES else ''
+        html = head(file, title, desc) + page_css(extra) + hw_css + '\n</head>\n<body>\n' + nav(key) + f'<main id="inhalt">\n{body}\n</main>\n' + foot() + scripts(extra, file) + hw_js + '\n</body>\n</html>\n'
         (OUT / file).write_text(html)
         print('gebaut:', file, len(html))
 
