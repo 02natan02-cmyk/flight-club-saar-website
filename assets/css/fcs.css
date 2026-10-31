@@ -130,6 +130,19 @@ h1,h2,h3{hyphens:auto;overflow-wrap:break-word}
 .sec{padding:clamp(72px,11vh,140px) 0}
 [id]{scroll-margin-top:96px}
 .sec-head{display:grid;gap:10px;margin-bottom:clamp(30px,5vw,56px)}
+/* Abschnitt teilen: kleiner Chip unter der Abschnittsüberschrift */
+.teilen-w{position:relative;display:inline-block;justify-self:start}
+.sec-head.center .teilen-w{justify-self:center}
+.teilen{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(4,9,18,.45);color:var(--mute);font:600 10.5px/1 var(--hud);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;opacity:.8;transition:opacity .25s,border-color .25s,color .25s}
+.teilen svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.teilen svg circle{fill:currentColor;stroke:none}
+.teilen:hover,.teilen:focus-visible{opacity:1;color:var(--sig);border-color:rgba(63,224,255,.5)}
+.teilen.ok{color:var(--green);border-color:rgba(62,224,138,.5);opacity:1}
+.teilen-pop{position:absolute;left:0;top:calc(100% + 6px);z-index:40;display:grid;min-width:170px;padding:6px;border-radius:14px;border:1px solid var(--line-hi);background:rgba(6,14,28,.96);box-shadow:0 18px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.sec-head.center .teilen-pop{left:50%;translate:-50% 0}
+.teilen-pop a,.teilen-pop button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-radius:9px;background:none;color:var(--osd);font:600 13px/1.2 var(--hud);letter-spacing:.04em;cursor:pointer;text-decoration:none}
+.teilen-pop a:hover,.teilen-pop button:hover,.teilen-pop a:focus-visible,.teilen-pop button:focus-visible{background:rgba(63,224,255,.12);color:#fff;outline:none}
+.wi-phys-head .teilen-w{margin-top:2px}
 .sec-head.center{text-align:center;justify-items:center}
 .sec-head.center .lede{margin-inline:auto}
 .divider{height:1px;background:linear-gradient(90deg,transparent,var(--line-hi),transparent)}
