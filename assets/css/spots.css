@@ -537,3 +537,17 @@ textarea.lv-in{min-height:72px;resize:vertical}
 .sg-lock{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);white-space:nowrap;font-size:11px;letter-spacing:.2em;color:var(--amber);background:rgba(4,9,18,.75);border:1px solid rgba(255,176,32,.45);border-radius:999px;padding:7px 14px}
 @media (max-width:860px){.sp-gast-grid{grid-template-columns:minmax(0,1fr)}.sp-gast-radar{max-width:320px;order:-1}}
 @media (prefers-reduced-motion:reduce){.sg-sweep,.sp-gast-radar b{animation:none}}
+
+/* „Neuen Spot melden“ (Natan 01.11.): groß im Kopf und direkt über der Karte, springt zum Formular */
+.btn.sp-cta{--b:var(--green);font-size:15px;padding:17px 26px}
+.sp-melden{display:flex;align-items:center;gap:18px;margin:0 0 22px;padding:18px 22px;border-radius:20px;border:1px solid rgba(62,224,138,.45);background:linear-gradient(135deg,rgba(62,224,138,.16),rgba(62,224,138,.04));color:var(--osd);text-decoration:none;box-shadow:0 0 40px -14px rgba(62,224,138,.6);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.sp-melden:hover{transform:translateY(-2px);box-shadow:0 10px 50px -14px rgba(62,224,138,.8)}
+.sp-melden-ic{flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:var(--green);color:var(--night)}
+.sp-melden-ic svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.sp-melden-t{display:grid;gap:4px;min-width:0}
+.sp-melden-t b{font:700 clamp(20px,2.4vw,26px)/1.1 var(--hud);text-transform:uppercase;letter-spacing:.04em}
+.sp-melden-t small{font-size:14px;color:var(--mute)}
+.sp-melden-arr{flex:none;margin-left:auto;width:26px;height:26px;fill:none;stroke:var(--green);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:sp-arr 1.8s ease-in-out infinite}
+@keyframes sp-arr{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@media (prefers-reduced-motion:reduce){.sp-melden-arr{animation:none}}
+@media (max-width:600px){.sp-melden{gap:14px;padding:16px}.sp-melden-ic{width:48px;height:48px}.sp-melden-arr{display:none}}
