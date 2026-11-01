@@ -31,7 +31,10 @@
     industrie: '<path d="M4 21V9l5 3V9l5 3V5h4v16z"/><path d="M8 17h2M13 17h2"/>',
     lost: '<path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-5l3-2 3 2v5M8 10l2 2M16 9l-3 3"/>',
     feld: '<path d="M3 18c4-3 14-3 18 0"/><path d="M7 15V9M12 14V6M17 15V9M5 11l2-2 2 2M10 8l2-2 2 2M15 11l2-2 2 2"/>',
-    bando: '<path d="M4 21V7h6v4h4V5h6v16"/><path d="M8 15h1M15 9h1M15 14h1"/>'
+    bando: '<path d="M4 21V7h6v4h4V5h6v16"/><path d="M8 15h1M15 9h1M15 14h1"/>',
+    grube: '<path d="M3 20h18"/><path d="M4 20c2-6 5-9 9-9 2 0 3 1 4 2l3 4"/><path d="M14 7l3-3 3 3"/><path d="M17 4v7"/>',
+    parkplatz: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
+    moto: '<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l3-7h4l2 3h3M9 10l-2-3h3"/>'
   };
   const typIcon = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${TYPIC[k] || TYPIC.halle}</svg>`;
   const starsHTML = s => {
