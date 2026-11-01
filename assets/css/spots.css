@@ -551,3 +551,7 @@ textarea.lv-in{min-height:72px;resize:vertical}
 @keyframes sp-arr{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 @media (prefers-reduced-motion:reduce){.sp-melden-arr{animation:none}}
 @media (max-width:600px){.sp-melden{gap:14px;padding:16px}.sp-melden-ic{width:48px;height:48px}.sp-melden-arr{display:none}}
+
+/* Hinweis im Radar auf Spots außerhalb des Saarland-Fensters (Weiter weg) */
+.radar-far{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:4;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,209,102,.55);background:rgba(4,9,18,.78);color:#ffd166;font:600 11px/1 var(--hud);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.radar-far:hover{background:rgba(255,209,102,.18)}
