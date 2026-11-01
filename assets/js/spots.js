@@ -1196,7 +1196,7 @@
       <div class="sp-det" id="sp-${esc(s.id)}-d" hidden>
         <dl class="sp-dl">
           <div><dt>Adresse</dt><dd>${esc(s.adr)}</dd></div>
-          <div><dt>Fliegen</dt><dd>${esc(s.regel)}</dd></div>
+          <div><dt>Hinweis</dt><dd>${esc(s.regel)}</dd></div>
           <div><dt>Bewertung</dt><dd class="sp-st" data-rt-big="${esc(s.id)}">${rtBig(s)}</dd></div>
         </dl>
         ${s.neu ? `<div class="sp-neu" data-lv-id="${esc(s.ref)}"><p class="sp-neu-t">Gemeldet von <b>${esc(s.von)}</b> ${lvTime(s.d)}. Der Vorstand schaut ihn sich noch an.${lvMine(s.ref) ? ' <span class="lv-mine">Deiner</span>' : ''}</p>${lvActs()}</div>` : ''}
