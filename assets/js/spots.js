@@ -34,7 +34,8 @@
     bando: '<path d="M4 21V7h6v4h4V5h6v16"/><path d="M8 15h1M15 9h1M15 14h1"/>',
     grube: '<path d="M3 20h18"/><path d="M4 20c2-6 5-9 9-9 2 0 3 1 4 2l3 4"/><path d="M14 7l3-3 3 3"/><path d="M17 4v7"/>',
     parkplatz: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
-    moto: '<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l3-7h4l2 3h3M9 10l-2-3h3"/>'
+    moto: '<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l3-7h4l2 3h3M9 10l-2-3h3"/>',
+    ausflug: '<path d="M3 17l18-8-5 10-4-4-4 2z"/><path d="M12 15l4-6"/>'
   };
   const typIcon = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${TYPIC[k] || TYPIC.halle}</svg>`;
   const starsHTML = s => {
@@ -554,6 +555,7 @@
       filter = i.value; touched = true;
       if (!vis().some(s => s.id === current)) current = vis()[0] ? vis()[0].id : null;
       radarPins(); list(); leafPins(true); sel();
+      if (filter === FAR && R.box && !R.box.hidden) setView('osm');
     }));
   }
 
@@ -1024,9 +1026,13 @@
     if (z) { const zr = z.getBoundingClientRect(); R.zr = { x0: zr.left - r.left - 6, y0: zr.top - r.top - 6, x1: zr.right - r.left + 6, y1: zr.bottom - r.top + 6 }; }
     touchMode(); R.dirty = false; render(performance.now());
   }
+  // Spots weit weg (Art „ausflug“ oder außerhalb des Radar-Fensters) zeigt nur die Straßenkarte
+  const FAR = 'ausflug';
+  const onRadar = s => { const q = km(s.lng, s.lat), m = 30; return q[0] >= SLB.x0 - m && q[0] <= SLB.x1 + m && q[1] >= SLB.y0 - m && q[1] <= SLB.y1 + m; };
   function radarPins() {
     const box = R.pins; if (!box) return;
-    const v = vis();
+    const all = vis(), v = all.filter(onRadar), far = all.length - v.length;
+    const fn = $('#radar-far'); if (fn) { fn.hidden = !far; fn.textContent = far === 1 ? '1 Spot weiter weg: Straßenkarte' : `${far} Spots weiter weg: Straßenkarte`; }
     box.innerHTML = v.map(s => `<button class="rpin${s.id === current ? ' on' : ''}" type="button" style="--c:${typ(s).c}" data-id="${esc(s.id)}" aria-pressed="${s.id === current}" aria-label="${esc(s.n)}: Spot öffnen"><span class="rp-ring"></span><span class="rp-dot"></span><span class="rp-l" aria-hidden="true">${esc(s.n)}</span></button>`).join('');
     R.pinEls = $$('.rpin', box).map(b => ({ b, s: byId(b.dataset.id), lab: $('.rp-l', b), ring: $('.rp-ring', b), dot: $('.rp-dot', b), lw: 0, pl: '' }));
     R.pinEls.forEach(e => e.b.addEventListener('click', ev => { if (R.dragged) { R.dragged = false; return; } stopImpulse(); if (ev.detail && R.pt && R.pt !== 'mouse') fanOut(e); pick(e.s.id, 'map'); }));
@@ -1112,7 +1118,7 @@
   function makeMap(kind) {
     const el = $('#leaf');
     if (/[?&]radardebug/.test(location.search)) window.__M = M;
-    M.map = L.map(el, { zoomControl: true, scrollWheelZoom: false, attributionControl: false, zoomSnap: .5, minZoom: 7, maxZoom: 19 });
+    M.map = L.map(el, { zoomControl: true, scrollWheelZoom: false, attributionControl: false, zoomSnap: .5, minZoom: 3, maxZoom: 19 });
     L.control.attribution({ position: 'bottomright', prefix: false }).addTo(M.map);
     M.map.on('click', () => { stopImpulse(); M.map.scrollWheelZoom.enable(); });
     el.addEventListener('mouseleave', () => { if (M.map) M.map.scrollWheelZoom.disable(); });
@@ -1148,7 +1154,8 @@
   }
   function fit(anim) {
     if (!M.map) return;
-    const v = vis(); if (!v.length) return;
+    const v0 = vis(); if (!v0.length) return;
+    const near = v0.filter(s => s.typ !== FAR), v = filter === 'alle' && near.length ? near : v0;
     const bb = L.latLngBounds(v.map(s => [s.lat, s.lng]));
     if (v.length === 1) M.map.setView(bb.getCenter(), 13, { animate: anim });
     else M.map.fitBounds(bb, { padding: [56, 56], maxZoom: 13, animate: anim });
@@ -1530,6 +1537,7 @@
     if (!S.length) return;
     rules(); filters(); radar(); list(); sel(); send(); rate(); impulse(); ratingsInit(); vidWire();
     $$('.mp-vbtn').forEach(b => b.addEventListener('click', () => { touched = true; setView(b.dataset.view); }));
+    const rf = $('#radar-far'); if (rf) rf.addEventListener('click', () => { touched = true; setView(rf.dataset.view); });
     $('#map-fail-radar').addEventListener('click', () => setView('radar'));
     const g = G();
     if (g && window.ScrollTrigger) g.from('#mapbox', { opacity: 0, y: 24, duration: .9, ease: 'expo.out', scrollTrigger: { trigger: '#mapbox', start: 'top 90%', once: true } });

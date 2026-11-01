@@ -58,7 +58,8 @@ FCS.data = {
     bando: { n: 'Bando / Ruine', c: '#c78bff' },
     grube: { n: 'Sand- / Kiesgrube', c: '#e8c070' },
     parkplatz: { n: 'Parkplatz / Gelände', c: '#9db1cc' },
-    moto: { n: 'Motocross-Strecke', c: '#ff5a8a' }
+    moto: { n: 'Motocross-Strecke', c: '#ff5a8a' },
+    ausflug: { n: 'Weiter weg', c: '#ffd166' }
   },
   // WhatsApp-Community „Flight Club Saar e.V.“ (gegründet 27.05.2023, Stand 24.10.2026)
   gruppen: [
