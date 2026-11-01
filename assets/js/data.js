@@ -136,7 +136,7 @@ FCS.data = {
     { a: 'Fireblast FPV', n: 'Sebastian', ort: 'Riegelsberg', seit: 2017, stil: 'Freestyle, 3D', tt: 'fireblast_fpv', ig: 'fireblast_fpv', img: 'media/piloten/fireblast-fpv.webp' },
     { a: 'GrobsFPV', n: 'Tom', ort: 'Merzig', seit: 2023, stil: 'Freestyle, Cinematic', yt: 'GrobsFPV', tt: 'grobsfpv', ig: 'grobsfpv', img: 'media/piloten/grobsfpv.webp' },
     { a: 'Orcinus', n: 'Ruben', ort: '', seit: 2020, stil: 'Freestyle, Cinema, Whoops', ig: 'orcinus.fpv', img: 'media/piloten/orcafpv.webp' },
-    { a: 'Foxxit FPV', n: 'Julian', ort: 'Völklingen', seit: 2023, stil: 'Cinema, Whoop, Freestyle', img: 'media/piloten/crystal-fpv.webp' },
+    { a: 'Foxxit FPV', n: 'Julian', ort: 'Völklingen', seit: 2023, stil: 'Cinema, Whoop, Freestyle', img: 'media/piloten/foxxit-fpv.webp' }, // Foto von Julian selbst, über Manuel 01.11.2026
     { a: 'Jonny FPV Magic', n: '', ort: '', seit: 2024, stil: 'Aggro Acro, Whoops, Freestyle, Cinematic' },
     { a: 'Lord FPV', n: 'Waldemar', ort: 'Saarlouis', seit: 2019, stil: 'Race, Freestyle, Long Range', img: 'media/piloten/lord-fpv.webp' },
     { a: 'Kenny FPV', n: 'Kenny', ort: 'Merzig', seit: 2020, stil: 'Freestyle', img: 'media/piloten/kenny-fpv.webp' },
