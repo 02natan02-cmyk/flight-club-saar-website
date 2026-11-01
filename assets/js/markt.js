@@ -122,7 +122,9 @@
   const photos = (ad) => ad.src === 'api' ? Array.from({ length: ad.nf }, (_, i) => B().foto(ad.id, i)) : (ad.img || []);
   const thumb = (ad) => ad.th || '';
   const mineMap = () => { try { return (B() && B().mine()) || {}; } catch (e) { return {}; } };
-  const isMine = (ad) => ad.src !== 'data' && !ad._pv && !!mineMap()[ad.id];
+  const mineOf = (id) => { try { return B() && B().isMine ? B().isMine(id) : (mineMap()[id] || null); } catch (e) { return null; } };
+  const asMember = () => { try { return !!(B() && B().member && B().member()); } catch (e) { return false; } };
+  const isMine = (ad) => ad.src !== 'data' && !ad._pv && !!mineOf(ad.id);
   const findAd = (id) => ADS.find(a => a.id === id);
 
   /* ---------- Karte ---------- */
@@ -419,17 +421,17 @@
   const REASONS = ['Betrug oder Spam', 'Unpassender Inhalt', 'Falsche Angaben', 'Schon verkauft', 'Sonstiges'];
   function act(mode) {
     const ad = DLG.ad, box = $('#mk-act'); if (!ad || !box) return;
-    const mine = mineMap()[ad.id];
+    const mine = mineOf(ad.id);
     $$('.mk-d-acts [data-act]').forEach(b => b.setAttribute('aria-expanded', b.dataset.act === mode || (mode === 'forgot' && b.dataset.act === 'del') ? 'true' : 'false'));
     if (mode === 'del' && ad.src === 'data') mode = 'forgot';
     if (mode === 'del') {
       box.innerHTML = `<form class="mk-act-f" data-f="del" novalidate>
         <p class="mk-act-h">${ico('trash')}Anzeige löschen</p>
-        ${mine ? '<p class="mk-act-p">Das ist deine Anzeige. Dein Löschcode ist schon eingetragen.</p>' : '<p class="mk-act-p">Gib den Löschcode ein, den du beim Aufgeben bekommen hast.</p>'}
-        <div class="field"><label for="mk-del-pw">Löschcode</label><input id="mk-del-pw" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="64" value="${esc(mine ? mine.pw : '')}" required></div>
+        ${mine && mine.member ? '<p class="mk-act-p">Das ist deine Anzeige. Du bist als Mitglied angemeldet, kein Löschcode nötig.</p>' : mine ? '<p class="mk-act-p">Das ist deine Anzeige. Dein Löschcode ist schon eingetragen.</p>' : '<p class="mk-act-p">Gib den Löschcode ein, den du beim Aufgeben bekommen hast.</p>'}
+        <div class="field"${mine && mine.member ? ' hidden' : ''}><label for="mk-del-pw">Löschcode</label><input id="mk-del-pw" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="64" value="${esc(mine ? mine.pw : '')}" required></div>
         <p class="mk-act-msg" role="alert" hidden></p>
         <div class="btns"><button type="submit" class="btn solid red">Endgültig löschen</button><button type="button" class="btn ghost" data-act-x>Abbrechen</button></div>
-        <button type="button" class="mk-linkbtn" data-act-go="forgot">Code vergessen?</button>
+        ${mine && mine.member ? '' : '<button type="button" class="mk-linkbtn" data-act-go="forgot">Code vergessen?</button>'}
       </form>`;
     } else if (mode === 'forgot') {
       box.innerHTML = `<form class="mk-act-f" data-f="forgot" novalidate>
@@ -558,7 +560,7 @@
     return n === 0 && F.art === 'biete' ? 'Zu verschenken' : (F.art === 'suche' ? 'bis ' : '') + eur(n);
   }
   function fields() {
-    return { b: 'markt', art: F.art, kat: radio('Kategorie'), titel: fval('Titel'), t: fval('Beschreibung'), preis: priceField(), zustand: radio('Zustand'), ort: fval('Ort'), kontakt: fval('Kontakt'), link: safeLink(fval('Kleinanzeigen-Link')), n: fval('Name'), pw: fval('Löschcode') };
+    return { b: 'markt', art: F.art, kat: radio('Kategorie'), titel: fval('Titel'), t: fval('Beschreibung'), preis: priceField(), zustand: radio('Zustand'), ort: fval('Ort'), kontakt: fval('Kontakt'), link: safeLink(fval('Kleinanzeigen-Link')), n: fval('Name'), pw: asMember() ? '' : fval('Löschcode') };
   }
   function formAd() {
     const f = fields(), now = new Date();
@@ -644,7 +646,7 @@
     mark($('#mk-name').closest('.field'), !!fval('Name'));
     const kv = fval('Kontakt'), c = contacts(kv);
     mark($('#mk-kontaktfield'), !!(c.mail || c.tel), !kv ? 'Bitte eine Telefonnummer oder E-Mail-Adresse angeben.' : kv.includes('@') ? 'Die E-Mail-Adresse sieht nicht richtig aus.' : 'Die Telefonnummer ist zu kurz.');
-    if (live()) mark($('#mk-pwfield'), fval('Löschcode').length >= 4);
+    if (live() && !asMember()) mark($('#mk-pwfield'), fval('Löschcode').length >= 4);
     const cons = f.querySelector('[name=Einwilligung]'); cons.closest('.check').classList.toggle('bad', !cons.checked); if (!cons.checked) bad.push(cons.closest('.check'));
     return bad;
   }
@@ -696,7 +698,8 @@
       F.newId = r.id; F.flashed = false; LOCAL.unshift(ad);
       if (S.loaded) { ADS = [ad, ...ADS.filter(a => a.id !== ad.id)]; resetFilter(); renderWall({ flip: true }); F.flashed = true; flash(r.id); }
       const pw = r.pw || data.pw, url = location.origin + location.pathname + '#a-' + r.id;
-      $('#mk-code').textContent = pw;
+      $('.mk-done-live', done).hidden = !!r.member; const mn = $('#mk-done-member'); if (mn) mn.hidden = !r.member;
+      $('#mk-code').textContent = r.member ? '' : pw;
       $('#mk-wa-me').href = 'https://wa.me/?text=' + encodeURIComponent(`Mein Löschcode für die Anzeige „${data.titel}“ auf der Biete/Suche-Wand des Flight Club Saar: ${pw}\n${url}`);
       // Info an den Vorstand (ohne Löschcode). Ein Fehler hier stört das Posten nicht.
       notify('Neue Anzeige auf der Biete/Suche-Wand', { ID: r.id, Art: data.art === 'suche' ? 'Suche' : 'Biete', Titel: data.titel, Kategorie: katOf(data.kat).n, Preis: data.preis || '', Ort: data.ort || '', Name: data.n, Kontakt: data.kontakt, Fotos: String(F.files.length), Anzeige: url });
@@ -738,6 +741,9 @@
     $('#mk-pw').value = newCode();
     $('#mk-dice').addEventListener('click', () => { const i = $('#mk-pw'); i.value = newCode(); i.closest('.field').classList.remove('bad'); if (anim()) gsap.fromTo('#mk-dice .mk-i', { rotation: 0 }, { rotation: 360, duration: .6, ease: 'back.out(1.6)', clearProps: 'transform' }); });
     if (!live()) { $('#mk-pwfield').hidden = true; $('#mk-submit span').textContent = 'Anzeige einschicken'; }
+    // Mitglieder brauchen keinen Löschcode (Natan 01.11.): Feld weg, sobald der Mitglieder-Bereich bereit ist
+    const pwMember = () => { const on = asMember(); const pf = $('#mk-pwfield'); if (pf && live()) pf.hidden = on; const mh = $('#mk-pw-member'); if (mh) mh.hidden = !on; };
+    if (FCS.member && FCS.member.ready) FCS.member.ready.then(() => (B() && B().ready ? B().ready : Promise.resolve()).then(pwMember)).catch(() => {});
     photosUI(); kontaktUI(); priceMode(); setArt('biete'); draft();
     f.addEventListener('submit', submit);
     $('#mk-again').addEventListener('click', again);

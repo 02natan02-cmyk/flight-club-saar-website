@@ -280,7 +280,7 @@
   const lvEsc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lvName = () => { try { return String(localStorage.getItem(LV_NAME) || '').slice(0, 40); } catch (e) { return ''; } };
   const lvKeepName = v => { try { if (v) localStorage.setItem(LV_NAME, String(v).slice(0, 40)); } catch (e) {} };
-  const lvMine = id => { try { const m = FCS.board.mine()[id]; return m && m.pw ? m : null; } catch (e) { return null; } };
+  const lvMine = id => { try { return FCS.board.isMine(id); } catch (e) { return null; } };
   const lvNow = () => { const z = new Date(), p = n => String(n).padStart(2, '0'); return `${z.getFullYear()}-${p(z.getMonth() + 1)}-${p(z.getDate())}T${p(z.getHours())}:${p(z.getMinutes())}:${p(z.getSeconds())}`; };
   const lvAgo = d => {
     const t = new Date(String(d || '').replace(' ', 'T')); if (isNaN(t)) return '';
@@ -327,11 +327,11 @@
     const delForm = (id) => {
       const m = lvMine(id), k = 'lv-' + id;
       return `<form class="lv-f" data-lv-f="del" novalidate>
-        ${head(opt.what + ' löschen', m ? `<span class="lv-yours">${LVI.ok}${opt.mine}</span> Der Code ist schon eingetragen.` : 'Gib den Löschcode ein, den du beim Veröffentlichen bekommen hast.')}
-        <label class="lv-l" for="${k}-pw">Löschcode</label>
-        <div class="lv-row"><input class="lv-in lv-code-in" id="${k}-pw" name="pw" required maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${m ? lvEsc(m.pw) : ''}" aria-describedby="${k}-msg"><button class="lv-go lv-danger" type="submit">${LVI.del}<span>Löschen</span></button></div>
+        ${head(opt.what + ' löschen', m && m.member ? `<span class="lv-yours">${LVI.ok}${opt.mine}</span> Du bist als Mitglied angemeldet, kein Löschcode nötig.` : m ? `<span class="lv-yours">${LVI.ok}${opt.mine}</span> Der Code ist schon eingetragen.` : 'Gib den Löschcode ein, den du beim Veröffentlichen bekommen hast.')}
+        <label class="lv-l" for="${k}-pw"${m && m.member ? ' hidden' : ''}>Löschcode</label>
+        <div class="lv-row"><input class="lv-in lv-code-in" id="${k}-pw" name="pw" required maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${m ? lvEsc(m.pw) : ''}" aria-describedby="${k}-msg"${m && m.member ? ' hidden' : ''}><button class="lv-go lv-danger" type="submit">${LVI.del}<span>Löschen</span></button></div>
         <p class="lv-msg" id="${k}-msg" role="alert"></p>
-        <div class="lv-links"><button type="button" data-lv-forgot>Code vergessen?</button><button type="button" data-lv-x>Abbrechen</button></div>
+        <div class="lv-links">${m && m.member ? '' : '<button type="button" data-lv-forgot>Code vergessen?</button>'}<button type="button" data-lv-x>Abbrechen</button></div>
       </form>`;
     };
     const forgotForm = (id) => {
@@ -531,6 +531,10 @@
     const nm = lvName(); if (nm) name.value = nm;
     const newCode = () => { code.value = FCS.board && FCS.board.code ? FCS.board.code() : ''; };
     newCode();
+    // Mitglieder brauchen keinen Löschcode (Natan 01.11.): Feld weg, FCS.board vergibt einen stillen Code
+    const isMem = () => { try { return !!(FCS.board && FCS.board.member && FCS.board.member()); } catch (e) { return false; } };
+    const memUI = () => { const on = isMem(), fld = $('#pw-code-f'); if (fld) { fld.hidden = on; code.required = !on; } const h = $('#pw-member'); if (h) h.hidden = !on; };
+    if (FCS.member && FCS.member.ready) FCS.member.ready.then(() => (FCS.board.ready || Promise.resolve()).then(memUI)).catch(() => {});
     const cnt = () => { $('#pw-cnt').textContent = txt.value.length; };
     txt.addEventListener('input', cnt); cnt();
     // Foto: Vorschau, entfernen, Ziehen und Ablegen
@@ -552,7 +556,7 @@
       e.preventDefault(); bad.hidden = true;
       if (!FCS.validate(f)) return;
       const hp = $('[name=_honey]', f); if (hp && hp.value) return;
-      const n = name.value.trim().replace(/\s+/g, ' ').slice(0, 40), t = txt.value.trim().slice(0, 800), pw = code.value.trim();
+      const n = name.value.trim().replace(/\s+/g, ' ').slice(0, 40), t = txt.value.trim().slice(0, 800), pw = isMem() ? '' : code.value.trim();
       lvKeepName(n);
       lvBusy(btn, true, live ? 'Wird veröffentlicht …' : 'Wird gesendet …');
       if (!live) {
@@ -582,10 +586,10 @@
       const wa = `Mein Löschcode für die Pinnwand vom Flight Club Saar: ${r.pw}\nBeitrag: „${t.slice(0, 80)}${t.length > 80 ? ' …' : ''}“\n${location.href.split('#')[0]}#pinnwand`;
       f.classList.add('sent');
       done.innerHTML = `<div class="pd-top">${LVI.ok}<p><b>Dein Beitrag ist online.</b> Er steht ab sofort auf der Pinnwand.</p></div>
-        <div class="lv-code pd-code"><span class="lv-code-l">Dein Löschcode</span><code>${esc(r.pw)}</code></div>
-        <div class="pd-btns"><button class="btn solid pd-copy" type="button" data-copy="${esc(r.pw)}">${LVI.copy}<span>Code kopieren</span></button><a class="btn ghost pd-wa" href="https://wa.me/?text=${encodeURIComponent(wa)}" target="_blank" rel="noopener">${LVI.wa}<span>Per WhatsApp an mich senden</span></a></div>
+        ${r.member ? '<p class="lv-note">Du bist als Mitglied angemeldet: Löschen geht ohne Code, auf jedem Gerät, auf dem du angemeldet bist.</p>' : `<div class="lv-code pd-code"><span class="lv-code-l">Dein Löschcode</span><code>${esc(r.pw)}</code></div>`}
+        ${r.member ? '' : `<div class="pd-btns"><button class="btn solid pd-copy" type="button" data-copy="${esc(r.pw)}">${LVI.copy}<span>Code kopieren</span></button><a class="btn ghost pd-wa" href="https://wa.me/?text=${encodeURIComponent(wa)}" target="_blank" rel="noopener">${LVI.wa}<span>Per WhatsApp an mich senden</span></a></div>
         <p class="lv-note">Auf diesem Gerät merken wir ihn uns. Auf einem anderen Gerät brauchst du den Code zum Löschen.</p>
-        <div class="pd-more"><a href="#pn-${esc(r.id)}" data-pd-see>Zu deinem Beitrag</a><button type="button" data-pd-again>Noch einen Beitrag schreiben</button></div>`;
+        `}<div class="pd-more"><a href="#pn-${esc(r.id)}" data-pd-see>Zu deinem Beitrag</a><button type="button" data-pd-again>Noch einen Beitrag schreiben</button></div>`;
       done.hidden = false; done.focus({ preventScroll: true });
       if (gs() && !RM) gs().from(done.children, { y: 14, opacity: 0, duration: .55, stagger: .07, ease: 'expo.out' });
       const r2 = done.getBoundingClientRect(); if (r2.top < 80 || r2.top > innerHeight * .7) go(done, -120);
