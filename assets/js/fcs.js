@@ -637,6 +637,17 @@ if (location.protocol === 'http:' && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.te
     const mine = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } };
     const remember = (id, v) => { try { const m = mine(); if (v) m[id] = v; else delete m[id]; localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} };
     const code = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const r = crypto.getRandomValues(new Uint8Array(6)); return [...r].map(x => a[x % a.length]).join(''); };
+    // Mitglieder (Natan 01.11.): Wer angemeldet ist, braucht keinen Löschcode. Der Beitrag bekommt einen stillen Löschcode aus dem
+    // Mitgliedscode (MPW, nie sichtbar) und eine Marke (MH, Hash ohne Code), an der die Seite auf jedem Gerät erkennt: das ist deiner.
+    let MPW = '', MH = ''; const OWN = new Map();
+    const mInit = (async () => {
+      try {
+        const m = JSON.parse(localStorage.getItem(MKEY) || 'null'); if (!m || !m.c || !window.crypto || !crypto.subtle) return;
+        MPW = (await hex(mNorm(m.c) + '|fcs-mitglied-loeschen')).slice(0, 24); MH = (await hex(mNorm(m.c) + '|fcs-mitglied-marke')).slice(0, 12);
+      } catch (e) {}
+    })();
+    const member = () => !!(MPW && FCS.member && FCS.member.ok);
+    const isMine = id => { const m = mine()[id]; if (m && m.pw) return m; if (member() && OWN.get(id) === MH) return { pw: MPW, member: true }; return null; };
     const shrink = (file, max, q) => new Promise((res, rej) => {
       const im = new Image(), u = URL.createObjectURL(file);
       im.onload = () => {
@@ -654,17 +665,20 @@ if (location.protocol === 'http:' && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.te
       const ck = 'fcs-b:' + b;
       if (!fresh) {
         if (cache.has(ck)) return cache.get(ck);
-        try { const s = JSON.parse(sessionStorage.getItem(ck) || 'null'); if (s && Date.now() - s.at < 120000) { cache.set(ck, s.list); return s.list; } } catch (e) {}
+        try { const s = JSON.parse(sessionStorage.getItem(ck) || 'null'); if (s && Date.now() - s.at < 120000) { s.list.forEach(x => { if (x.mh) OWN.set(x.id, x.mh); }); cache.set(ck, s.list); return s.list; } } catch (e) {}
       }
       const r = await fetch(url() + '?a=list&b=' + encodeURIComponent(b), { signal: sig(12000), credentials: 'omit' });
       const j = await r.json(); const out = Array.isArray(j.list) ? j.list.filter(x => x && x.id) : [];
+      out.forEach(x => { if (x.mh) OWN.set(x.id, x.mh); });
       cache.set(ck, out); try { sessionStorage.setItem(ck, JSON.stringify({ at: Date.now(), list: out })); } catch (e) {}
       return out;
     }
     const drop = () => { cache.clear(); try { Object.keys(sessionStorage).filter(k => k.startsWith('fcs-b:')).forEach(k => sessionStorage.removeItem(k)); } catch (e) {} };
     async function add(fields, files = [], opts = {}) {
       if (!url()) return { ok: false, err: 'aus' };
-      const f = Object.assign({}, fields); f.pw = String(f.pw || '').trim() || code();
+      await mInit;
+      const f = Object.assign({}, fields), asMember = member() && !String(f.pw || '').trim();
+      f.pw = String(f.pw || '').trim() || (asMember ? MPW : code()); if (asMember) f.mh = MH;
       const p = new URLSearchParams();
       Object.entries(f).forEach(([k, v]) => { if (v != null && v !== '') p.append(k, String(v)); });
       p.set('a', 'add'); p.set('web', ''); p.set('k', (await hex(`${f.b}|${f.n}|fcs-beitrag-2026`)).slice(0, 10));
@@ -679,18 +693,19 @@ if (location.protocol === 'http:' && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.te
       let txt = '';
       try { const r = await fetch(url(), { method: 'POST', body: p, signal: sig(30000), credentials: 'omit' }); txt = await r.text(); } catch (e) { return { ok: false, err: 'netz' }; }
       let j = {}; try { j = JSON.parse(txt); } catch (e) { return { ok: false, err: 'abgelehnt' }; }
-      if (j.ok && j.id) { if (opts.merken !== false) remember(j.id, { pw: f.pw, b: f.b, t: f.titel || f.t || '', d: new Date().toISOString().slice(0, 10) }); drop(); return { ok: true, id: j.id, pw: f.pw }; }
+      if (j.ok && j.id) { if (asMember) OWN.set(j.id, MH); if (opts.merken !== false) remember(j.id, { pw: f.pw, b: f.b, t: f.titel || f.t || '', d: new Date().toISOString().slice(0, 10), member: asMember }); drop(); return { ok: true, id: j.id, pw: f.pw, member: asMember }; }
       return { ok: false, err: 'abgelehnt' };
     }
     async function del(id, pw) {
       if (!url()) return { ok: false, err: 'aus' };
+      await mInit; if (!String(pw || '').trim()) { const m = isMine(id); if (m) pw = m.pw; }
       let j = {};
       try { const r = await fetch(url() + '?a=del&id=' + encodeURIComponent(id) + '&pw=' + encodeURIComponent(String(pw || '').trim()), { signal: sig(15000), credentials: 'omit' }); j = JSON.parse(await r.text()); } catch (e) { return { ok: false, err: 'netz' }; }
       if (j.ok) { remember(id, null); drop(); }
       return j.ok ? { ok: true } : { ok: false, err: j.err || 'code' };
     }
     const foto = (id, i = 0) => url() + '?a=foto&id=' + encodeURIComponent(id) + '&i=' + i;
-    return { list, add, del, foto, mine, code, on: () => !!url() };
+    return { list, add, del, foto, mine, isMine, member, ready: mInit, code, on: () => !!url() };
   })();
 
   FCS.validate = validate;

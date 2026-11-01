@@ -57,7 +57,7 @@
   const lvEsc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lvName = () => { try { return String(localStorage.getItem(LV_NAME) || '').slice(0, 40); } catch (e) { return ''; } };
   const lvKeepName = v => { try { if (v) localStorage.setItem(LV_NAME, String(v).slice(0, 40)); } catch (e) {} };
-  const lvMine = id => { try { const m = FCS.board.mine()[id]; return m && m.pw ? m : null; } catch (e) { return null; } };
+  const lvMine = id => { try { return FCS.board.isMine(id); } catch (e) { return null; } };
   const lvNow = () => { const z = new Date(), p = n => String(n).padStart(2, '0'); return `${z.getFullYear()}-${p(z.getMonth() + 1)}-${p(z.getDate())}T${p(z.getHours())}:${p(z.getMinutes())}:${p(z.getSeconds())}`; };
   const lvAgo = d => {
     const t = new Date(String(d || '').replace(' ', 'T')); if (isNaN(t)) return '';
@@ -105,11 +105,11 @@
     const delForm = (id) => {
       per(id); const m = lvMine(id), k = 'lv-' + id;
       return `<form class="lv-f" data-lv-f="del" novalidate>
-        ${head(opt.what + ' löschen', m ? `<span class="lv-yours">${LVI.ok}${opt.mine}</span> Der Code ist schon eingetragen.` : 'Gib den Löschcode ein, den du beim Veröffentlichen bekommen hast.')}
-        <label class="lv-l" for="${k}-pw">Löschcode</label>
-        <div class="lv-row"><input class="lv-in lv-code-in" id="${k}-pw" name="pw" required maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${m ? lvEsc(m.pw) : ''}" aria-describedby="${k}-msg"><button class="lv-go lv-danger" type="submit">${LVI.del}<span>Löschen</span></button></div>
+        ${head(opt.what + ' löschen', m && m.member ? `<span class="lv-yours">${LVI.ok}${opt.mine}</span> Du bist als Mitglied angemeldet, kein Löschcode nötig.` : m ? `<span class="lv-yours">${LVI.ok}${opt.mine}</span> Der Code ist schon eingetragen.` : 'Gib den Löschcode ein, den du beim Veröffentlichen bekommen hast.')}
+        <label class="lv-l" for="${k}-pw"${m && m.member ? ' hidden' : ''}>Löschcode</label>
+        <div class="lv-row"><input class="lv-in lv-code-in" id="${k}-pw" name="pw" required maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${m ? lvEsc(m.pw) : ''}" aria-describedby="${k}-msg"${m && m.member ? ' hidden' : ''}><button class="lv-go lv-danger" type="submit">${LVI.del}<span>Löschen</span></button></div>
         <p class="lv-msg" id="${k}-msg" role="alert"></p>
-        <div class="lv-links"><button type="button" data-lv-forgot>Code vergessen?</button><button type="button" data-lv-x>Abbrechen</button></div>
+        <div class="lv-links">${m && m.member ? '' : '<button type="button" data-lv-forgot>Code vergessen?</button>'}<button type="button" data-lv-x>Abbrechen</button></div>
       </form>`;
     };
     const forgotForm = (id) => {
