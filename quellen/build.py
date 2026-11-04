@@ -1,29 +1,29 @@
 #!/usr/bin/env python3
 """Baut die Seiten des Flight Club Saar aus src/*.html (nur der Inhalt) + gemeinsamem Kopf, Menü und Fuß.
 Aufruf: python3 quellen/build.py  → schreibt die Seiten in den Repo-Stamm"""
-import os, re, json, hashlib, pathlib
+import os, re, json, hashlib, pathlib, subprocess, datetime
 ROOT = pathlib.Path(__file__).parent
 SRC, OUT = ROOT / 'src', ROOT.parent  # Quellen in quellen/, fertige Seite im Repo-Stamm (GitHub Pages)
 BASE_URL = os.environ.get('FCS_BASE', 'https://flightclub-saar.de/')
 
 PAGES = [
   # datei, titel, beschreibung, menü-schlüssel, zusätzliche skripte
-  ('index.html', 'Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!', 'Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält.', 'start', ['home', 'game', 'intro3d']),
-  ('hallenfliegen.html', 'Hallenfliegen · Flight Club Saar e. V.', 'Tiny Whoops in der Halle: alle Termine der Wintersaison mit Kalender-Export, Ort und Abendplan für Mitglieder.', 'halle', ['halle']),
+  ('index.html', 'Flight Club Saar e. V. · FPV-Verein im Saarland · Brille an!', 'Der FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und eine Community, die zusammenhält. Anfänger willkommen.', 'start', ['home', 'game', 'intro3d']),
+  ('hallenfliegen.html', 'Hallenfliegen im Saarland · Flight Club Saar e. V.', 'Tiny Whoops in der Halle: alle Termine der Wintersaison mit Kalender-Export, Ort und Abendplan für Mitglieder.', 'halle', ['halle']),
   ('termin.html', 'Hallenabend planen · Flight Club Saar e. V.', 'Der Abendplan fürs Hallenfliegen: Piloten eintragen, Kanäle ohne Störungen zuteilen, Flugzeiten einteilen und vor Ort live steuern.', 'halle', ['termin']),
-  ('spots.html', 'Spot-Karte · Flight Club Saar e. V.', 'Unsere FPV-Spots im Saarland mit Route per Klick, Bewertungen und Spot-Vorschlag. Mit den Regeln, die für jeden Piloten gelten.', 'spots', ['leaflet', 'spots']),
+  ('spots.html', 'FPV-Spots im Saarland · Flight Club Saar e. V.', 'Unsere FPV-Spots im Saarland mit Route per Klick, Bewertungen und Spot-Vorschlag. Mit den Regeln, die für jeden Piloten gelten.', 'spots', ['leaflet', 'spots']),
   ('wissen.html', 'FPV-Wissen · Flight Club Saar e. V.', 'FPV einfach erklärt: Bauteile einer Drohne in 3D, Schaltplan zum Anklicken, Videosysteme, Kanäle und der Weg vom Simulator zum ersten Flug.', 'wissen', ['three', 'wissen']),
   ('werkstatt.html', 'Betaflight & Löten · Flight Club Saar e. V.', 'Betaflight einfach erklärt: Version, Flashen, die wichtigsten Einstellungen, dazu Löten Schritt für Schritt. Mit Animationen und Videos.', 'werkstatt', ['werkstatt']),
   ('hilfe.html', 'Technik-Hilfe · Flight Club Saar e. V.', 'Der FPV-Doktor hilft bei Betaflight, VTX, ELRS, Kanälen und Kompatibilität. Plus Forum-Fragen an den Verein.', 'hilfe', ['hilfe']),
-  ('mitglied.html', 'Mitglied werden · Flight Club Saar e. V.', 'Online-Mitgliedsantrag mit SEPA-Lastschrift: 30 € im Jahr, 20 € unter 18, einmalig 20 € Aufnahme. Plus deine Mitgliedskarte zum Mitnehmen.', 'mitglied', ['mitglied']),
+  ('mitglied.html', 'Mitglied werden im FPV-Verein · Flight Club Saar e. V.', 'Online-Mitgliedsantrag mit SEPA-Lastschrift: 30 € im Jahr, 20 € unter 18, einmalig 20 € Aufnahme. Plus deine Mitgliedskarte zum Mitnehmen.', 'mitglied', ['mitglied']),
   ('bau.html', 'Bau deine Drohne · Flight Club Saar e. V.', 'Bau deine FPV-Drohne Schritt für Schritt aus echten Teilen: nur was zusammenpasst, jede Lötstelle, danach im Simulator fliegen.', 'bau', ['three', 'bau']),
   ('studio.html', 'Clip-Studio · Flight Club Saar e. V.', 'Das Clip-Studio des Vereins: Video schneiden, Musik im Takt, Looks, Vereinslogo und dein Tag. Für Mitglieder stabilisieren wir dein FPV-Video mit Gyroflow.', 'studio', ['studio']),
   ('filmen.html', 'FPV filmen · Flight Club Saar e. V.', 'Der Film-Ratgeber für FPV: Kameras, ND-Filter, Einstellungen, Schnitt und Musik. Plus Gyroflow für Mitglieder und das Clip-Studio des Vereins.', 'filmen', ['filmen']),
-  ('simulator.html', 'FPV-Simulator · Flight Club Saar e. V.', 'FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.', 'sim', ['three', 'sim']),
-  ('crew.html', 'Crew · Flight Club Saar e. V.', 'Die Piloten des Flight Club Saar, dein Profil mit Social-Links und die Pinnwand der Crew.', 'crew', ['crew']),
+  ('simulator.html', 'FPV-Simulator im Browser · Flight Club Saar e. V.', 'FPV-Simulator im Browser: mit Funke, PlayStation- oder Xbox-Controller durch die Turnhalle fliegen. Acro und Angle, Betaflight-Rates, Rundenzeit.', 'sim', ['three', 'sim']),
+  ('crew.html', 'Die Crew · FPV-Verein Saarland · Flight Club Saar', 'Die Piloten des Flight Club Saar, dein Profil mit Social-Links und die Pinnwand der Crew im FPV-Verein im Saarland.', 'crew', ['crew']),
   ('markt.html', 'Biete/Suche · Flight Club Saar e. V.', 'Die Biete/Suche-Wand des Vereins: Kopter, Brillen und Teile von Pilot zu Pilot. Kostenlos einstellen und mit Löschcode selbst wieder löschen.', 'markt', ['markt']),
-  ('impressum.html', 'Impressum · Flight Club Saar e. V.', 'Impressum des Flight Club Saar e. V.', '', ['recht']),
-  ('datenschutz.html', 'Datenschutz · Flight Club Saar e. V.', 'Datenschutzerklärung des Flight Club Saar e. V.', '', ['recht']),
+  ('impressum.html', 'Impressum · Flight Club Saar e. V.', 'Impressum des Flight Club Saar e. V., Hedwigstraße 16, 66763 Dillingen, Vereinsregister Saarlouis VR 1665.', '', ['recht']),
+  ('datenschutz.html', 'Datenschutz · Flight Club Saar e. V.', 'Datenschutzerklärung des Flight Club Saar e. V., Dillingen: Hosting, Formulare, Mitgliedsantrag, Profile und Pinnwand.', '', ['recht']),
 ]
 NAV = [('hallenfliegen.html', 'halle', 'Hallenfliegen'), ('spots.html', 'spots', 'Spots'), ('simulator.html', 'sim', 'Simulator'),
        ('wissen.html', 'wissen', 'FPV lernen'), ('studio.html', 'studio', 'Clip-Studio'), ('crew.html', 'crew', 'Crew')]
@@ -69,7 +69,8 @@ LIB = {
   'gsap': ['assets/lib/gsap.min.js', 'assets/lib/ScrollTrigger.min.js', 'assets/lib/SplitText.min.js', 'assets/lib/ScrambleTextPlugin.min.js', 'assets/lib/Draggable.min.js', 'assets/lib/InertiaPlugin.min.js', 'assets/lib/DrawSVGPlugin.min.js', 'assets/lib/MotionPathPlugin.min.js'],
 }
 
-LDJSON = '''<script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsClub","name":"Flight Club Saar e. V.","alternateName":"Flight Club Saar","description":"FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und Programmieren.","sport":"FPV-Drohnenfliegen","foundingDate":"2022-12-10","email":"info@flightclub-saar.de","address":{"@type":"PostalAddress","streetAddress":"Hedwigstraße 16","postalCode":"66763","addressLocality":"Dillingen","addressRegion":"Saarland","addressCountry":"DE"},"sameAs":["https://www.instagram.com/flightclubsaar/","https://www.tiktok.com/@flightclubsaar","https://www.youtube.com/@flightclubsaar"],"sponsor":{"@type":"Organization","name":"Ayedo Cloud Solutions GmbH","url":"https://ayedo.de/"}}</script>
+LDJSON = '''<script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsClub","@id":"https://flightclub-saar.de/#verein","name":"Flight Club Saar e. V.","url":"https://flightclub-saar.de/","logo":"https://flightclub-saar.de/assets/img/logo.png","image":"https://flightclub-saar.de/og.jpg","areaServed":{"@type":"State","name":"Saarland"},"alternateName":"Flight Club Saar","description":"FPV-Drohnenverein im Saarland: Hallenfliegen im Winter, Spots im Frühjahr, Hilfe beim Bauen und Programmieren.","sport":"FPV-Drohnenfliegen","foundingDate":"2022-12-10","email":"info@flightclub-saar.de","address":{"@type":"PostalAddress","streetAddress":"Hedwigstraße 16","postalCode":"66763","addressLocality":"Dillingen","addressRegion":"Saarland","addressCountry":"DE"},"sameAs":["https://www.instagram.com/flightclubsaar/","https://www.tiktok.com/@flightclubsaar","https://www.youtube.com/@flightclubsaar"],"sponsor":{"@type":"Organization","name":"Ayedo Cloud Solutions GmbH","url":"https://ayedo.de/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Flight Club Saar e. V.","url":"https://flightclub-saar.de/","inLanguage":"de","publisher":{"@id":"https://flightclub-saar.de/#verein"}}</script>
 '''
 
 def ver(path):
@@ -82,7 +83,6 @@ def head(file, title, desc):
 <html lang="de" class="no-js">
 <head>
 <meta charset="utf-8">
-<script data-fe="bald">try{{if(new URLSearchParams(location.search).has("vorschau"))localStorage.setItem("fcs-vorschau","1");if(Date.now()<Date.parse("2026-10-29T08:00:00+01:00")&&!localStorage.getItem("fcs-vorschau"))location.replace(new URL("bald/",document.baseURI).href)}}catch(e){{}}</script>
 <script data-fe="film">try{{var q=location.search;if(/[?&]film/.test(q)||(Date.now()<Date.parse("2026-11-16T00:00:00+01:00")&&!localStorage.getItem("fcs-film")&&!/[?&](intro|nofilm)/.test(q)&&!navigator.webdriver))document.documentElement.classList.add("film-on")}}catch(e){{}}</script>
 <script data-fe="intro">try{{if(Date.now()-(+localStorage.getItem("fcs-intro")||0)<2592e5&&!/[?&]intro/.test(location.search))document.documentElement.classList.add("no-intro")}}catch(e){{}}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -93,12 +93,20 @@ def head(file, title, desc):
 <meta property="og:type" content="website"><meta property="og:locale" content="de_DE"><meta property="og:site_name" content="Flight Club Saar e. V.">
 <meta property="og:title" content="{title}"><meta property="og:description" content="{desc}">
 <meta property="og:url" content="{url}"><meta property="og:image" content="{BASE_URL}og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image:alt" content="Flight Club Saar e. V. · FPV-Verein im Saarland">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="{BASE_URL}og.jpg">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/bebas-neue-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fcs.css?v={ver('assets/css/fcs.css')}">
-''' + (LDJSON if file == 'index.html' else '')
+''' + (LDJSON if file == 'index.html' else crumbs(file, title, url))
+
+def crumbs(file, title, url):
+    name = title.split(' · ')[0]
+    data = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Start", "item": BASE_URL},
+        {"@type": "ListItem", "position": 2, "name": name, "item": url}]}
+    return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '</script>\n'
 
 def nav(key):
     top = {'termin': 'halle', 'werkstatt': 'wissen', 'hilfe': 'wissen', 'bau': 'wissen', 'filmen': 'wissen', 'markt': 'crew'}.get(key, key)
@@ -162,9 +170,6 @@ def page_css(extra):
         if (OUT / css).exists(): out.append(f'<link rel="stylesheet" href="{css}?v={ver(css)}">')
     return '\n'.join(out)
 
-# Halloween 2026 (Natan 31.10.): Schleim-Intro und Deko bis Mo 02.11. 18:00 – schaltet sich selbst ab; in der Woche danach hier leeren.
-HW_PAGES = {'index.html', 'crew.html', 'mitglied.html', 'hallenfliegen.html', 'wissen.html'}
-
 def build():
     for file, title, desc, key, extra in PAGES:
         src = SRC / file
@@ -172,11 +177,34 @@ def build():
             print('fehlt:', src); continue
         body = src.read_text()
         body = re.sub(r'%%V:([^%]+)%%', lambda m: ver(m.group(1)), body)
-        hw_css = f'\n<link rel="stylesheet" href="assets/css/halloween.css?v={ver("assets/css/halloween.css")}">' if file in HW_PAGES else ''
-        hw_js = f'\n<script src="assets/js/halloween.js?v={ver("assets/js/halloween.js")}" defer></script>' if file in HW_PAGES else ''
-        html = head(file, title, desc) + page_css(extra) + hw_css + '\n</head>\n<body>\n' + nav(key) + f'<main id="inhalt">\n{body}\n</main>\n' + foot() + scripts(extra, file) + hw_js + '\n</body>\n</html>\n'
+        html = head(file, title, desc) + page_css(extra) + '\n</head>\n<body>\n' + nav(key) + f'<main id="inhalt">\n{body}\n</main>\n' + foot() + scripts(extra, file) + '\n</body>\n</html>\n'
         (OUT / file).write_text(html)
         print('gebaut:', file, len(html))
+    build_404()
+    build_sitemap()
+
+def lastmod(file):
+    try:
+        d = subprocess.run(['git', 'log', '-1', '--format=%cs', '--', f'quellen/src/{file}', file], cwd=OUT, capture_output=True, text=True).stdout.strip()
+    except Exception:
+        d = ''
+    return d or datetime.date.today().isoformat()
+
+def build_sitemap():
+    rows = ''.join(f'  <url><loc>{BASE_URL}{"" if f == "index.html" else f}</loc><lastmod>{lastmod(f)}</lastmod></url>\n' for f, *_ in PAGES)
+    (OUT / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + rows + '</urlset>\n')
+    print('gebaut: sitemap.xml', len(PAGES), 'Seiten')
+
+def build_404():
+    src = SRC / '404.html'
+    if not src.exists(): return
+    h = head('404.html', 'Seite nicht gefunden · Flight Club Saar e. V.', 'Diese Seite gibt es beim Flight Club Saar nicht (mehr).')
+    h = re.sub(r'<link rel="canonical"[^>]*>\n', '', h)
+    h = re.sub(r'<script type="application/ld\+json">.*?</script>\n', '', h, flags=re.S)
+    h = h.replace('<meta charset="utf-8">', f'<meta charset="utf-8">\n<base href="{BASE_URL}">\n<meta name="robots" content="noindex">', 1)
+    html = h + '\n</head>\n<body>\n' + nav('') + f'<main id="inhalt">\n{src.read_text()}\n</main>\n' + foot() + scripts([], '404.html') + '\n</body>\n</html>\n'
+    (OUT / '404.html').write_text(html)
+    print('gebaut: 404.html', len(html))
 
 if __name__ == '__main__':
     build()
