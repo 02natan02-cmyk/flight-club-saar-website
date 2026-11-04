@@ -201,7 +201,7 @@ def build_404():
     h = head('404.html', 'Seite nicht gefunden · Flight Club Saar e. V.', 'Diese Seite gibt es beim Flight Club Saar nicht (mehr).')
     h = re.sub(r'<link rel="canonical"[^>]*>\n', '', h)
     h = re.sub(r'<script type="application/ld\+json">.*?</script>\n', '', h, flags=re.S)
-    h = h.replace('<meta charset="utf-8">', f'<meta charset="utf-8">\n<base href="{BASE_URL}">\n<meta name="robots" content="noindex">', 1)
+    h = h.replace('<meta charset="utf-8">', f'<meta charset="utf-8">\n<base href="/">\n<meta name="robots" content="noindex">', 1)
     html = h + '\n</head>\n<body>\n' + nav('') + f'<main id="inhalt">\n{src.read_text()}\n</main>\n' + foot() + scripts([], '404.html') + '\n</body>\n</html>\n'
     (OUT / '404.html').write_text(html)
     print('gebaut: 404.html', len(html))
