@@ -635,3 +635,5 @@
 @keyframes tGastBlink{50%{opacity:.35}}
 .t-list li.lock{filter:blur(2.5px);opacity:.7}
 @media (prefers-reduced-motion:reduce){.t-gast .cd b{animation:none}}
+/* 05.11.: bei niedrigen Handy-Fenstern rutschte die Kicker-Zeile unter Kopfleiste und OSD (Hinweis Falcon-Eye-Chat) */
+.hero-in{padding-top:118px}
